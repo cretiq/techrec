@@ -1,26 +1,214 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.5% 48%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-in-out;
+}
+
+.animate-scale {
+  animation: scale 0.2s ease-in-out;
+}
+
+/* Hover animation classes - REFINED */
+.hover-lift {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+/* Subtle hover animations for interactive lists */
+.hover-subtle {
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.hover-subtle:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* More responsive hover for profile items - REFINED */
+.hover-profile {
+  transition: box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.hover-profile:hover {
+  background-color: rgba(0, 0, 0, 0.01);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Hover effect for list items */
+.list-item-hover {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.list-item-hover:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Hover effect for cards */
+.card-hover {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Hover effect for navigation items */
+.nav-item-hover {
+  position: relative;
+  transition: color 0.2s ease-in-out;
+}
+
+.nav-item-hover::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: currentColor;
+  transition: width 0.2s ease-in-out;
+}
+
+.nav-item-hover:hover::after {
+  width: 100%;
+}
+
+/* Button animations */
+button,
+a {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Input focus animations */
+input,
+textarea,
+select {
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Staggered list animations */
+.stagger-list > * {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.stagger-list > *:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.stagger-list > *:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.stagger-list > *:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.stagger-list > *:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.stagger-list > *:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.stagger-list > *:nth-child(6) {
+  animation-delay: 0.6s;
+}
+.stagger-list > *:nth-child(7) {
+  animation-delay: 0.7s;
+}
+.stagger-list > *:nth-child(8) {
+  animation-delay: 0.8s;
+}
+
