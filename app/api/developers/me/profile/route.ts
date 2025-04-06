@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { connectToDatabase } from '@/lib/db'
-import Developer from '@/lib/models/Developer'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
@@ -12,11 +11,67 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    await connectToDatabase()
-    const developer = await Developer.findOne({ email: session.user.email })
+    let developer = await prisma.developer.findUnique({
+      where: { email: session.user.email },
+      include: {
+        skills: true,
+        experience: true,
+        education: true,
+        projects: true,
+        assessments: true,
+        applications: true,
+        savedRoles: {
+          include: {
+            role: true
+          }
+        }
+      }
+    })
     
     if (!developer) {
-      return NextResponse.json({ error: 'Developer not found' }, { status: 404 })
+      // Create a default profile for new users
+      developer = await prisma.developer.create({
+        data: {
+          email: session.user.email,
+          profileEmail: session.user.email,
+          name: session.user.name || 'New Developer',
+          title: 'Software Developer', // Default title
+          createdAt: new Date(),
+          updatedAt: new Date()
+        },
+        include: {
+          skills: true,
+          experience: true,
+          education: true,
+          projects: true,
+          assessments: true,
+          applications: true,
+          savedRoles: {
+            include: {
+              role: true
+            }
+          }
+        }
+      })
+    } else if (!developer.profileEmail) {
+      // Update existing developer if profileEmail is null
+      developer = await prisma.developer.update({
+        where: { id: developer.id },
+        data: { profileEmail: developer.email },
+        include: {
+          skills: true,
+          experience: true,
+          education: true,
+          projects: true,
+          assessments: true,
+          applications: true,
+          savedRoles: {
+            include: {
+              role: true
+            }
+          }
+        }
+      })
     }
 
     return NextResponse.json(developer)
@@ -38,7 +93,6 @@ export async function PUT(request: Request) {
     }
 
     const data = await request.json()
-    await connectToDatabase()
 
     // Validate required fields
     if (!data.name || !data.title) {
@@ -48,19 +102,32 @@ export async function PUT(request: Request) {
       )
     }
 
-    const developer = await Developer.findOneAndUpdate(
-      { email: session.user.email },
-      { 
-        $set: {
-          ...data,
-          updatedAt: new Date()
-        }
+    const developer = await prisma.developer.upsert({
+      where: { email: session.user.email },
+      update: {
+        ...data,
+        updatedAt: new Date()
       },
-      { 
-        new: true,
-        upsert: true // Create if doesn't exist
+      create: {
+        email: session.user.email,
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      include: {
+        skills: true,
+        experience: true,
+        education: true,
+        projects: true,
+        assessments: true,
+        applications: true,
+        savedRoles: {
+          include: {
+            role: true
+          }
+        }
       }
-    )
+    })
 
     return NextResponse.json(developer)
   } catch (error) {

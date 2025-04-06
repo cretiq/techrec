@@ -27,6 +27,7 @@ import {
   Calendar,
   Building,
   ExternalLink,
+  FileText,
 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
@@ -37,6 +38,7 @@ interface Profile {
   name: string
   title: string
   email: string
+  profileEmail: string
   location?: string
   about?: string
   phone?: string
@@ -66,6 +68,7 @@ interface Profile {
     appliedAt: string
     coverLetter?: string
   }>
+  cvUrl?: string
 }
 
 export default function DeveloperProfilePage() {
@@ -74,6 +77,7 @@ export default function DeveloperProfilePage() {
   const { data: session } = useSession()
   const [isUploading, setIsUploading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'analyzing' | 'success' | 'error'>('idle')
   const [uploadProgress, setUploadProgress] = useState(0)
   const [showUploadSuccess, setShowUploadSuccess] = useState(false)
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -149,17 +153,16 @@ export default function DeveloperProfilePage() {
     if (!file) return
 
     // Validate file type
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-    if (!allowedTypes.includes(file.type)) {
+    if (!file.type.includes('pdf')) {
       toast({
         title: 'Invalid file type',
-        description: 'Please upload a PDF or DOCX file',
+        description: 'Please upload a PDF file',
         variant: 'destructive',
       })
       return
     }
 
-    // Validate file size (5MB limit)
+    // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
       toast({
         title: 'File too large',
@@ -169,40 +172,64 @@ export default function DeveloperProfilePage() {
       return
     }
 
-    setIsUploading(true)
+    setUploadState('uploading')
     setUploadProgress(0)
 
     try {
       const formData = new FormData()
       formData.append('file', file)
 
+      // Start upload progress simulation
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval)
+            return prev
+          }
+          return prev + 10
+        })
+      }, 500)
+
       const response = await fetch('/api/developer/cv', {
         method: 'POST',
         body: formData,
       })
 
+      clearInterval(progressInterval)
+
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to process CV')
+        throw new Error('Failed to upload CV')
       }
 
-      const updatedProfile = await response.json()
-      setProfile(updatedProfile)
-      setShowUploadSuccess(true)
+      setUploadProgress(100)
+      setUploadState('success')
+      
+      const data = await response.json()
+      
+      // Update profile with new data
+      setProfile(prev => ({
+        ...prev!,
+        ...data.data,
+      }))
+
       toast({
-        title: 'CV processed successfully',
-        description: 'Your profile has been updated with the information from your CV',
+        title: 'Success',
+        description: 'CV uploaded and analyzed successfully',
       })
+
+      // Reset state after showing success animation
+      setTimeout(() => {
+        setUploadState('idle')
+        setUploadProgress(0)
+      }, 2000)
     } catch (error) {
       console.error('Error uploading CV:', error)
+      setUploadState('error')
       toast({
-        title: 'Error processing CV',
-        description: error instanceof Error ? error.message : 'Failed to process CV. Please try again.',
+        title: 'Error',
+        description: 'Failed to upload CV',
         variant: 'destructive',
       })
-    } finally {
-      setIsUploading(false)
-      setUploadProgress(0)
     }
   }
 
@@ -407,40 +434,102 @@ export default function DeveloperProfilePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {isUploading ? (
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-xs md:text-sm mb-1">
-                        <span>Uploading and analyzing...</span>
-                        <span>{uploadProgress}%</span>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-medium">CV</h3>
+                      <label className="relative">
+                        <input
+                          type="file"
+                          accept=".pdf"
+                          onChange={handleCVUpload}
+                          className="hidden"
+                          disabled={uploadState === 'uploading' || uploadState === 'analyzing'}
+                        />
+                        <span 
+                          className={cn(
+                            "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white",
+                            "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer transition-all duration-200",
+                            uploadState === 'uploading' || uploadState === 'analyzing' 
+                              ? "bg-indigo-400 cursor-not-allowed"
+                              : "bg-indigo-600 hover:bg-indigo-700"
+                          )}
+                        >
+                          {uploadState === 'uploading' && (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Uploading...
+                            </>
+                          )}
+                          {uploadState === 'analyzing' && (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Analyzing...
+                            </>
+                          )}
+                          {uploadState === 'idle' && 'Upload CV'}
+                          {uploadState === 'success' && (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2 animate-bounce" />
+                              Success!
+                            </>
+                          )}
+                          {uploadState === 'error' && 'Try Again'}
+                        </span>
+                      </label>
+                    </div>
+                    
+                    {(uploadState === 'uploading' || uploadState === 'analyzing' || uploadState === 'success') && (
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>
+                            {uploadState === 'uploading' && 'Uploading CV...'}
+                            {uploadState === 'analyzing' && 'Analyzing CV...'}
+                            {uploadState === 'success' && 'CV Processed Successfully!'}
+                          </span>
+                          <span>{uploadProgress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                          <div
+                            className={cn(
+                              "h-full rounded-full transition-all duration-300 ease-out",
+                              uploadState === 'success' 
+                                ? "bg-green-500" 
+                                : "bg-indigo-600",
+                              uploadState === 'success' && "animate-pulse"
+                            )}
+                            style={{ 
+                              width: `${uploadProgress}%`,
+                              transition: 'width 0.5s ease-out'
+                            }}
+                          />
+                        </div>
                       </div>
-                      <Progress value={uploadProgress} className="h-2" />
-                    </div>
-                  ) : showUploadSuccess ? (
-                    <div className="flex items-center gap-2 p-3 bg-green-50 text-green-700 rounded-md">
-                      <CheckCircle className="h-5 w-5" />
-                      <div>
-                        <p className="font-medium text-sm md:text-base">CV analyzed successfully</p>
-                        <p className="text-xs md:text-sm">Your profile has been updated</p>
+                    )}
+                    
+                    {uploadState === 'success' && (
+                      <div className="flex items-center gap-2 p-3 bg-green-50 text-green-700 rounded-md animate-fade-in">
+                        <CheckCircle className="h-5 w-5" />
+                        <div>
+                          <p className="font-medium">CV analyzed successfully!</p>
+                          <p className="text-sm">Your profile has been updated with the extracted information.</p>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center p-4 md:p-6 border-2 border-dashed rounded-md">
-                      <Upload className="h-8 w-8 md:h-10 md:w-10 text-muted-foreground mb-2" />
-                      <p className="mb-2 text-xs md:text-sm text-center text-muted-foreground">
-                        Drag and drop your CV here, or click to browse
-                      </p>
-                      <Input
-                        id="cv-upload"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        className="hidden"
-                        onChange={handleCVUpload}
-                      />
-                      <Button variant="outline" onClick={() => document.getElementById("cv-upload")?.click()} className="w-full md:w-auto">
-                        Select File
-                      </Button>
-                    </div>
-                  )}
+                    )}
+                    
+                    {profile?.cvUrl && (
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-5 w-5 text-gray-400" />
+                        <a
+                          href={profile.cvUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-600 hover:text-indigo-500"
+                        >
+                          View CV
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
                 <CardFooter className="text-xs text-muted-foreground">
                   Supported formats: PDF, DOC, DOCX. Max size: 5MB
@@ -501,14 +590,16 @@ export default function DeveloperProfilePage() {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="email" className="text-sm">Email</Label>
+                          <Label htmlFor="profile-email" className="text-sm">CV Email</Label>
                           <Input
-                            id="email"
+                            id="profile-email"
                             type="email"
-                            value={profile?.email || ''}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
+                            value={profile?.profileEmail || ''}
+                            onChange={(e) => handleInputChange('profileEmail', e.target.value)}
                             className="text-sm md:text-base"
+                            placeholder="Email shown on your CV"
                           />
+                          <p className="text-xs text-muted-foreground">This email will be visible on your CV</p>
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="phone" className="text-sm">Phone</Label>
@@ -520,14 +611,16 @@ export default function DeveloperProfilePage() {
                           />
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="location" className="text-sm">Location</Label>
-                        <Input
-                          id="location"
-                          value={profile?.location || ''}
-                          onChange={(e) => handleInputChange('location', e.target.value)}
-                          className="text-sm md:text-base"
-                        />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="location" className="text-sm">Location</Label>
+                          <Input
+                            id="location"
+                            value={profile?.location || ''}
+                            onChange={(e) => handleInputChange('location', e.target.value)}
+                            className="text-sm md:text-base"
+                          />
+                        </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="about" className="text-sm">About</Label>
@@ -746,8 +839,8 @@ export default function DeveloperProfilePage() {
                       </div>
 
                       <div className="space-y-4">
-                        <h3 className="font-medium">Your Applications ({profile.applications.length})</h3>
-                        {profile.applications.length === 0 ? (
+                        <h3 className="font-medium">Your Applications ({profile?.applications?.length || 0})</h3>
+                        {(!profile?.applications || profile.applications.length === 0) ? (
                           <div className="text-center py-8 text-muted-foreground">
                             <Building className="h-12 w-12 mx-auto mb-2 opacity-20" />
                             <p>No job applications added yet</p>

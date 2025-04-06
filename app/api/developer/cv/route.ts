@@ -1,170 +1,210 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import Developer from '@/lib/models/Developer'
-import { connectToDatabase } from '@/lib/db'
-import mammoth from 'mammoth'
-import pdfParse from 'pdf-parse'
-import OpenAI from 'openai'
+import { OpenAI } from 'openai'
+import PDFParser from 'pdf2json'
+import { prisma } from '@/lib/prisma'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 })
+
+function extractJSON(text: string) {
+  try {
+    // Find the first { and last } in the text
+    const start = text.indexOf('{')
+    const end = text.lastIndexOf('}')
+    if (start === -1 || end === -1) {
+      throw new Error('No JSON object found in text')
+    }
+    // Extract and parse the JSON
+    const jsonStr = text.slice(start, end + 1)
+    return JSON.parse(jsonStr)
+  } catch (error) {
+    console.error('Error extracting JSON:', error)
+    throw error
+  }
+}
+
+function validateCVData(data: any) {
+  const requiredFields = ['name', 'profile-email', 'skills']
+  const missingFields = requiredFields.filter(field => !data[field])
+  if (missingFields.length > 0) {
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
+  }
+}
 
 export async function POST(req: Request) {
   try {
-    console.log('Starting CV processing...')
+    console.log('Processing CV upload...')
     const session = await getServerSession(authOptions)
+    
     if (!session?.user?.email) {
-      console.log('Unauthorized: No session or email found')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const formData = await req.formData()
     const file = formData.get('file') as File
+    
     if (!file) {
-      console.log('No file provided')
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
     }
 
-    console.log('File received:', {
-      name: file.name,
-      type: file.type,
-      size: file.size
-    })
-
-    // Validate file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      console.log('File too large:', file.size)
-      return NextResponse.json(
-        { error: 'File size exceeds 5MB limit' },
-        { status: 400 }
-      )
+    console.log(`Received file: ${file.name} (${file.type}, ${file.size} bytes)`)
+    
+    if (file.type !== 'application/pdf') {
+      return NextResponse.json({ error: 'Only PDF files are supported' }, { status: 400 })
     }
 
+    console.log('Processing PDF file...')
     const buffer = Buffer.from(await file.arrayBuffer())
-    let text = ''
-
-    try {
-      console.log('Extracting text from file...')
-      if (file.name.endsWith('.pdf')) {
-        console.log('Processing PDF file...')
+    
+    // Parse PDF using pdf2json
+    const pdfParser = new PDFParser()
+    const text = await new Promise<string>((resolve, reject) => {
+      let extractedText = ''
+      
+      pdfParser.on('pdfParser_dataReady', (pdfData) => {
         try {
-          const pdfData = await pdfParse(buffer)
-          text = pdfData.text
-          console.log('PDF text extracted:', text.substring(0, 100) + '...')
-          if (!text.trim()) {
-            throw new Error('No text could be extracted from the PDF')
-          }
-        } catch (pdfError) {
-          console.error('Error parsing PDF:', pdfError)
-          // If PDF parsing fails, try to extract text using a simpler approach
-          text = buffer.toString('utf-8')
-          if (!text.trim()) {
-            throw new Error('Failed to extract text from PDF. Please ensure the file is not corrupted.')
-          }
+          // Extract text from all pages
+          pdfData.Pages.forEach((page: any) => {
+            page.Texts.forEach((text: any) => {
+              // Decode the text (it's encoded in the PDF)
+              const decodedText = decodeURIComponent(text.R[0].T)
+              extractedText += decodedText + ' '
+            })
+          })
+          resolve(extractedText)
+        } catch (error) {
+          reject(error)
         }
-      } else if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
-        console.log('Processing DOC/DOCX file...')
-        const result = await mammoth.extractRawText({ buffer })
-        text = result.value
-        console.log('Document text extracted:', text.substring(0, 100) + '...')
-        if (!text.trim()) {
-          throw new Error('No text could be extracted from the document')
-        }
-      } else {
-        console.log('Unsupported file format:', file.name)
-        return NextResponse.json(
-          { error: 'Unsupported file format. Please upload a PDF or DOCX file.' },
-          { status: 400 }
-        )
-      }
-    } catch (error) {
-      console.error('Error extracting text from file:', error)
-      return NextResponse.json(
-        { error: 'Failed to extract text from file. Please ensure the file is not corrupted and try again.' },
-        { status: 400 }
-      )
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      console.log('OpenAI API key not configured')
-      return NextResponse.json(
-        { error: 'OpenAI API key is not configured' },
-        { status: 500 }
-      )
-    }
-
-    try {
-      console.log('Processing text with OpenAI...')
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4-turbo-preview',
-        messages: [
-          {
-            role: 'system',
-            content: `Extract the following information from the CV in JSON format:
-              {
-                "skills": ["array of technical skills"],
-                "experience": [{
-                  "title": "job title",
-                  "company": "company name",
-                  "description": "job description",
-                  "startDate": "start date",
-                  "endDate": "end date or null if current"
-                }],
-                "education": [{
-                  "degree": "degree name",
-                  "institution": "institution name",
-                  "year": "graduation year"
-                }],
-                "achievements": ["array of notable achievements"]
-              }`
-          },
-          {
-            role: 'user',
-            content: text
-          }
-        ],
-        response_format: { type: 'json_object' }
       })
 
-      console.log('OpenAI response received')
-      const parsedData = JSON.parse(completion.choices[0].message.content || '{}')
-      console.log('Parsed data:', JSON.stringify(parsedData, null, 2))
+      pdfParser.on('pdfParser_dataError', (err) => {
+        reject(err)
+      })
 
-      console.log('Connecting to database...')
-      await connectToDatabase()
-      const developer = await Developer.findOne({ email: session.user.email })
+      // Parse the PDF buffer
+      pdfParser.parseBuffer(buffer)
+    })
 
-      if (!developer) {
-        console.log('Developer not found:', session.user.email)
-        return NextResponse.json({ error: 'Developer not found' }, { status: 404 })
-      }
+    console.log('PDF text extracted successfully')
 
-      console.log('Updating developer profile...')
-      developer.skills = parsedData.skills?.map((skill: string) => ({
-        name: skill,
-        level: 'intermediate'
-      })) || []
-      developer.experience = parsedData.experience || []
-      developer.education = parsedData.education || []
-      developer.achievements = parsedData.achievements || []
+    console.log('Analyzing CV with OpenAI...')
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a CV analyzer. Extract the following information from the CV and return it as JSON:
+            - name (string)
+            - profile-email (string)
+            - skills (array of objects with name and level)
+            - experience (array of objects with title, company, description, startDate, endDate, current)
+            - education (array of objects with degree, institution, year)
+            
+            Format dates as YYYY-MM-DD. If a date is missing, use null.
+            For current positions, set current: true and endDate: null.
+            Return only the JSON object, no additional text.`
+        },
+        {
+          role: 'user',
+          content: text
+        }
+      ],
+      temperature: 0.1,
+      max_tokens: 2000
+    })
 
-      await developer.save()
-      console.log('Developer profile updated successfully')
-
-      return NextResponse.json(developer)
-    } catch (error) {
-      console.error('Error processing CV with OpenAI:', error)
-      return NextResponse.json(
-        { error: 'Failed to process CV with AI. Please try again later.' },
-        { status: 500 }
-      )
+    const response = completion.choices[0].message.content
+    if (!response) {
+      throw new Error('No response from OpenAI')
     }
+
+    console.log('Parsing OpenAI response...')
+    const cvData = extractJSON(response)
+    validateCVData(cvData)
+
+    console.log('Updating developer profile with Prisma...')
+    
+    // Update or create developer profile
+    const developer = await prisma.developer.upsert({
+      where: { email: session.user.email },
+      update: {
+        name: cvData.name,
+        profileEmail: cvData['profile-email'],
+        skills: {
+          deleteMany: {},
+          create: cvData.skills.map((skill: any) => ({
+            name: skill.name,
+            level: skill.level || 'intermediate'
+          }))
+        },
+        experience: {
+          deleteMany: {},
+          create: cvData.experience.map((exp: any) => ({
+            title: exp.title,
+            company: exp.company,
+            description: exp.description,
+            startDate: new Date(exp.startDate),
+            endDate: exp.endDate ? new Date(exp.endDate) : null,
+            current: exp.current || false
+          }))
+        },
+        education: {
+          deleteMany: {},
+          create: cvData.education.map((edu: any) => ({
+            degree: edu.degree,
+            institution: edu.institution,
+            year: edu.year
+          }))
+        }
+      },
+      create: {
+        email: session.user.email,
+        name: cvData.name,
+        profileEmail: cvData['profile-email'] || session.user.email,
+        title: 'Software Developer', // Default title
+        skills: {
+          create: cvData.skills.map((skill: any) => ({
+            name: skill.name,
+            level: skill.level || 'intermediate'
+          }))
+        },
+        experience: {
+          create: cvData.experience.map((exp: any) => ({
+            title: exp.title,
+            company: exp.company,
+            description: exp.description,
+            startDate: new Date(exp.startDate),
+            endDate: exp.endDate ? new Date(exp.endDate) : null,
+            current: exp.current || false
+          }))
+        },
+        education: {
+          create: cvData.education.map((edu: any) => ({
+            degree: edu.degree,
+            institution: edu.institution,
+            year: edu.year
+          }))
+        }
+      },
+      include: {
+        skills: true,
+        experience: true,
+        education: true
+      }
+    })
+
+    console.log('CV processed successfully')
+    return NextResponse.json({
+      success: true,
+      data: developer
+    })
   } catch (error) {
-    console.error('Unexpected error processing CV:', error)
+    console.error('Error processing CV:', error)
     return NextResponse.json(
-      { error: 'An unexpected error occurred while processing your CV' },
+      { error: 'Failed to process CV' },
       { status: 500 }
     )
   }
