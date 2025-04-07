@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, X, Code, BarChart, Bookmark, BookmarkCheck, Send } from "lucide-react"
+import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, X, Code, BarChart, Bookmark, BookmarkCheck, Send, Plus } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useToast } from "@/components/ui/use-toast"
@@ -309,6 +309,16 @@ export default function RolesPage() {
                   Clear Filters ({activeFilters})
                 </Button>
               )}
+
+              {/* Add Custom Role Button */}
+              <Button
+                variant="outline"
+                className="w-full flex items-center gap-2"
+                onClick={() => router.push('/developer/roles/new')}
+              >
+                <Plus className="h-4 w-4" />
+                Add Custom Role
+              </Button>
             </div>
           </div>
         </div>
@@ -316,6 +326,17 @@ export default function RolesPage() {
         {/* Roles Grid */}
         <div className="w-full lg:w-3/4">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {/* Add Custom Role Card */}
+            <Card className="hover:shadow-lg transition-shadow border-dashed border-2 cursor-pointer" onClick={() => router.push('/developer/roles/new')}>
+              <CardHeader>
+                <div className="flex flex-col items-center justify-center h-full py-8">
+                  <Plus className="h-12 w-12 text-muted-foreground mb-2" />
+                  <CardTitle className="text-lg text-center">Add Custom Role</CardTitle>
+                  <CardDescription className="text-center mt-2">Create your own role</CardDescription>
+                </div>
+              </CardHeader>
+            </Card>
+
             {filteredRoles.map((role) => (
               <Card key={role._id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
