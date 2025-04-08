@@ -3,42 +3,39 @@
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { useToast } from "@/components/ui/use-toast"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-interface RoleFormData {
-  title: string
-  companyId: string
-  description: string
-  requirements: string
-  location: string
-  salary: string
-  type: string
-}
+import { useToast } from "@/components/ui/use-toast"
+import { Plus, X } from "lucide-react"
+import { PageHeader } from "@/components/page/page-header"
+import { FormCard } from "@/components/page/form-card"
+import { FormField } from "@/components/page/form-field"
+import { FormActions } from "@/components/page/form-actions"
 
 export default function NewRolePage() {
-  const { data: session, status } = useSession()
   const router = useRouter()
+  const { data: session, status } = useSession()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
-  const [formData, setFormData] = useState<RoleFormData>({
+  const [formData, setFormData] = useState({
     title: "",
-    companyId: "",
     description: "",
-    requirements: "",
+    requirements: [""],
     location: "",
     salary: "",
-    type: ""
+    type: "open"
   })
 
-  if (status === "unauthenticated") {
-    router.push("/auth/signin")
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (status === 'unauthenticated') {
+    router.push('/auth/signin')
     return null
   }
 
@@ -47,38 +44,55 @@ export default function NewRolePage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleRequirementChange = (index: number, value: string) => {
+    const newRequirements = [...formData.requirements]
+    newRequirements[index] = value
+    setFormData(prev => ({ ...prev, requirements: newRequirements }))
+  }
+
+  const addRequirement = () => {
+    setFormData(prev => ({ ...prev, requirements: [...prev.requirements, ""] }))
+  }
+
+  const removeRequirement = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      requirements: prev.requirements.filter((_, i) => i !== index)
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      const response = await fetch("/api/roles", {
-        method: "POST",
+      const response = await fetch('/api/roles', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...formData,
-          requirements: formData.requirements.split(",").map(req => req.trim()).filter(Boolean),
+          requirements: formData.requirements.filter(req => req.trim() !== '')
         }),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to create role")
+        throw new Error('Failed to create role')
       }
 
       toast({
-        title: "Success",
-        description: "Role created successfully",
+        title: 'Success',
+        description: 'Role created successfully',
       })
 
-      router.push("/developer/roles")
+      router.push('/developer/roles')
     } catch (error) {
-      console.error("Error creating role:", error)
+      console.error('Error creating role:', error)
       toast({
-        title: "Error",
-        description: "Failed to create role",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to create role',
+        variant: 'destructive',
       })
     } finally {
       setLoading(false)
@@ -86,117 +100,99 @@ export default function NewRolePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Button
-        variant="ghost"
-        className="mb-6"
-        onClick={() => router.back()}
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Roles
-      </Button>
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <PageHeader 
+        title="Create New Role"
+        description="Fill in the details to create a new role"
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Create New Role</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+      <FormCard title="Role Details" description="Enter the role information below">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <FormField label="Title">
+            <Input
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              placeholder="Enter role title"
+              required
+              className="bg-white/50 dark:bg-gray-800/50"
+            />
+          </FormField>
+
+          <FormField label="Description">
+            <Textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Enter role description"
+              required
+              className="bg-white/50 dark:bg-gray-800/50"
+            />
+          </FormField>
+
+          <FormField label="Requirements">
             <div className="space-y-2">
-              <Label htmlFor="title">Role Title</Label>
-              <Input
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                placeholder="e.g. Senior Frontend Developer"
-                required
-              />
+              {formData.requirements.map((req, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    value={req}
+                    onChange={(e) => handleRequirementChange(index, e.target.value)}
+                    placeholder={`Requirement ${index + 1}`}
+                    className="bg-white/50 dark:bg-gray-800/50"
+                  />
+                  {formData.requirements.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeRequirement(index)}
+                      className="p-2 hover:bg-primary/10 rounded-md"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addRequirement}
+                className="w-full p-2 text-sm text-muted-foreground hover:text-foreground hover:bg-primary/10 rounded-md flex items-center justify-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add Requirement
+              </button>
             </div>
+          </FormField>
 
-            <div className="space-y-2">
-              <Label htmlFor="companyId">Company</Label>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label="Location">
               <Input
-                id="companyId"
-                name="companyId"
-                value={formData.companyId}
-                onChange={handleInputChange}
-                placeholder="Company ID"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="Describe the role and its responsibilities..."
-                required
-                className="min-h-[150px]"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="requirements">Requirements (comma-separated)</Label>
-              <Input
-                id="requirements"
-                name="requirements"
-                value={formData.requirements}
-                onChange={handleInputChange}
-                placeholder="e.g. 5+ years of experience, React, TypeScript"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                placeholder="e.g. Remote, New York, etc."
+                placeholder="Enter location"
+                required
+                className="bg-white/50 dark:bg-gray-800/50"
               />
-            </div>
+            </FormField>
 
-            <div className="space-y-2">
-              <Label htmlFor="salary">Salary</Label>
+            <FormField label="Salary">
               <Input
-                id="salary"
                 name="salary"
                 value={formData.salary}
                 onChange={handleInputChange}
-                placeholder="e.g. $100,000 - $150,000"
+                placeholder="Enter salary range"
+                required
+                className="bg-white/50 dark:bg-gray-800/50"
               />
-            </div>
+            </FormField>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="type">Job Type</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select job type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="full-time">Full-time</SelectItem>
-                  <SelectItem value="part-time">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="internship">Internship</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Saving..." : "Save Role"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          <FormActions
+            isLoading={loading}
+            onCancel={() => router.back()}
+            submitLabel="Create Role"
+          />
+        </form>
+      </FormCard>
     </div>
   )
 } 

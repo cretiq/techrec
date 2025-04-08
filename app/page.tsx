@@ -1,331 +1,102 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import {
-  ArrowRight,
-  Code,
-  Shield,
-  BarChart3,
-  Users,
-  FileText,
-  Layout,
-  FormInput,
-  Layers,
-  Briefcase,
-  GraduationCap,
-} from "lucide-react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ArrowRight, Code, Users, Zap } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen w-full">
-      <main className="flex-1">
-        <section className="py-12 md:py-24 lg:py-32 bg-gradient-to-b from-background to-muted/50">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
-                  Revolutionize Your Technical Hiring
-                </h1>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                  Customizable assessments, secure testing environments, and AI-powered candidate matching in one
-                  platform.
-                </p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/company/dashboard">
-                  <Button size="lg" className="gap-1">
-                    For Companies
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/developer/dashboard">
-                  <Button size="lg" variant="outline" className="gap-1">
-                    For Developers
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section */}
+      <section className="relative flex-1 flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-blue-950 dark:via-gray-950 dark:to-purple-950" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+        
+        <div className="container relative z-10 px-4 py-16 md:py-24">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+              Find Your Next Tech Job
+            </h1>
+            <p className="text-xl text-muted-foreground mb-8">
+              Connect with top tech companies and discover opportunities that match your skills and ambitions.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/developer/signup">
+                <Button size="lg" className="flex items-center">
+                  <span>Get Started</span>
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/company/signup">
+                <Button size="lg" variant="outline" className="flex items-center">
+                  <span>Post a Job</span>
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="flex flex-col items-center gap-2 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <Code className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold">Customizable Assessments</h3>
-                <p className="text-muted-foreground">
-                  Tailor technical tests to match specific role requirements and skill levels.
-                </p>
-              </div>
-              <div className="flex flex-col items-center gap-2 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <Shield className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold">Secure Testing Environment</h3>
-                <p className="text-muted-foreground">
-                  Locked-down browser environment with advanced plagiarism detection.
-                </p>
-              </div>
-              <div className="flex flex-col items-center gap-2 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <BarChart3 className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold">Real-time Analytics</h3>
-                <p className="text-muted-foreground">Immediate feedback and comprehensive performance metrics.</p>
-              </div>
-              <div className="flex flex-col items-center gap-2 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <Users className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold">Automated Matching</h3>
-                <p className="text-muted-foreground">
-                  AI-powered system connects qualified candidates with the right companies.
-                </p>
-              </div>
-            </div>
+      {/* Features Section */}
+      <section className="py-16 md:py-24 bg-white dark:bg-gray-950">
+        <div className="container px-4">
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">Why Choose TechRec?</h2>
+            <p className="text-muted-foreground">
+              We're building the future of tech recruitment, one connection at a time.
+            </p>
           </div>
-        </section>
 
-        <section className="py-12 md:py-16 bg-muted/50">
-          <div className="container px-4 md:px-6">
-            <div className="mb-10 text-center">
-              <h2 className="text-3xl font-bold tracking-tight mb-2">Platform Navigation</h2>
-              <p className="text-muted-foreground max-w-[700px] mx-auto">
-                Explore the different sections of our technical assessment platform.
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="p-6 rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-100 dark:border-blue-800/50">
+              <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center mb-4">
+                <Code className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Developer-First</h3>
+              <p className="text-muted-foreground">
+                Built by developers, for developers. We understand what matters most in your job search.
               </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5 text-primary" />
-                    <CardTitle>Company Dashboard</CardTitle>
-                  </div>
-                  <CardDescription>Manage assessments and review candidates</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Access your company dashboard to create assessments, review candidate submissions, and track hiring
-                    metrics.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/company/dashboard" className="w-full">
-                    <Button className="w-full gap-1">
-                      Go to Company Dashboard
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5 text-primary" />
-                    <CardTitle>Developer Dashboard</CardTitle>
-                  </div>
-                  <CardDescription>Take assessments and track progress</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Access your developer dashboard to take technical assessments, view results, and connect with
-                    potential employers.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/developer/dashboard" className="w-full">
-                    <Button className="w-full gap-1">
-                      Go to Developer Dashboard
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-primary" />
-                    <CardTitle>Assessment Creation</CardTitle>
-                  </div>
-                  <CardDescription>Create custom technical assessments</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Build customized technical assessments with coding challenges, multiple-choice questions, and
-                    project tasks.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/company/assessments/new" className="w-full">
-                    <Button className="w-full gap-1">
-                      Create Assessment
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Code className="h-5 w-5 text-primary" />
-                    <CardTitle>Code Editor</CardTitle>
-                  </div>
-                  <CardDescription>Interactive coding environment</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Experience our powerful code editor with syntax highlighting, test execution, and real-time
-                    feedback.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/developer/assessment/demo" className="w-full">
-                    <Button className="w-full gap-1">
-                      Try Code Editor
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <FormInput className="h-5 w-5 text-primary" />
-                    <CardTitle>Form Components</CardTitle>
-                  </div>
-                  <CardDescription>Explore form UI components</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    View our collection of form components including inputs, selects, textareas, and more.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/form-components" className="w-full">
-                    <Button className="w-full gap-1">
-                      View Form Components
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Layout className="h-5 w-5 text-primary" />
-                    <CardTitle>UI Components</CardTitle>
-                  </div>
-                  <CardDescription>Explore UI component library</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Browse our comprehensive UI component library including cards, tabs, badges, and more.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Link href="/component-showcase" className="w-full">
-                    <Button className="w-full gap-1">
-                      View UI Components
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
+            <div className="p-6 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-100 dark:border-purple-800/50">
+              <div className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center mb-4">
+                <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Quality Matches</h3>
+              <p className="text-muted-foreground">
+                Connect with companies that value your skills and offer the right opportunities.
+              </p>
             </div>
 
-            <div className="mt-10 grid gap-6 sm:grid-cols-2">
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Layers className="h-5 w-5 text-primary" />
-                    <CardTitle>All Components</CardTitle>
-                  </div>
-                  <CardDescription>View all platform components</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Link href="/ui-components">
-                      <Button variant="outline" className="w-full">
-                        Base UI Components
-                      </Button>
-                    </Link>
-                    <Link href="/component-showcase">
-                      <Button variant="outline" className="w-full">
-                        Component Showcase
-                      </Button>
-                    </Link>
-                    <Link href="/form-components">
-                      <Button variant="outline" className="w-full">
-                        Form Components
-                      </Button>
-                    </Link>
-                    <Link href="/button-showcase">
-                      <Button variant="outline" className="w-full">
-                        Button Components
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    <CardTitle>User Dashboards</CardTitle>
-                  </div>
-                  <CardDescription>Access user-specific dashboards</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 gap-4">
-                    <Link href="/company/dashboard">
-                      <Button variant="outline" className="w-full gap-1">
-                        <Briefcase className="h-4 w-4" />
-                        Company Dashboard
-                      </Button>
-                    </Link>
-                    <Link href="/developer/dashboard">
-                      <Button variant="outline" className="w-full gap-1">
-                        <GraduationCap className="h-4 w-4" />
-                        Developer Dashboard
-                      </Button>
-                    </Link>
-                    <Link href="/company/assessments/create">
-                      <Button variant="outline" className="w-full gap-1">
-                        <FileText className="h-4 w-4" />
-                        Create Assessment
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="p-6 rounded-xl bg-gradient-to-br from-pink-50 to-blue-50 dark:from-pink-900/30 dark:to-blue-900/30 border border-pink-100 dark:border-pink-800/50">
+              <div className="w-12 h-12 rounded-lg bg-pink-100 dark:bg-pink-900/50 flex items-center justify-center mb-4">
+                <Zap className="h-6 w-6 text-pink-600 dark:text-pink-400" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Fast & Efficient</h3>
+              <p className="text-muted-foreground">
+                Streamlined application process and quick responses from potential employers.
+              </p>
             </div>
           </div>
-        </section>
-      </main>
-      <footer className="border-t py-6 md:py-8">
-        <div className="container flex flex-col items-center justify-center gap-4 px-4 md:px-6 md:flex-row">
-          <p className="text-sm text-muted-foreground">© 2025 DevAssess. All rights reserved.</p>
-          <nav className="flex gap-4 sm:gap-6">
-            <Link href="/terms" className="text-sm text-muted-foreground hover:underline underline-offset-4">
-              Terms
-            </Link>
-            <Link href="/privacy" className="text-sm text-muted-foreground hover:underline underline-offset-4">
-              Privacy
-            </Link>
-          </nav>
         </div>
-      </footer>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950">
+        <div className="container px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4">Ready to Start Your Journey?</h2>
+            <p className="text-muted-foreground mb-8">
+              Join thousands of developers and companies who have found their perfect match through TechRec.
+            </p>
+            <Link href="/developer/signup">
+              <Button size="lg" className="flex items-center">
+                <span>Get Started Now</span>
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

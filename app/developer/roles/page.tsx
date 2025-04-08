@@ -20,12 +20,14 @@ interface Role {
   _id: string
   title: string
   description: string
-  skills: string[]
+  requirements: string[]
   company: {
     _id: string
     name: string
   }
-  status: string
+  location: string
+  salary: string
+  type: string
 }
 
 interface SavedRole {
@@ -50,9 +52,9 @@ export default function RolesPage() {
   const [activeFilters, setActiveFilters] = useState(0)
 
   // Extract unique locations, job types, and skills for filters
-  const locations = Array.from(new Set(roles.map((role) => role.company.name)))
-  const jobTypes = Array.from(new Set(roles.map((role) => role.status)))
-  const allSkills = Array.from(new Set(roles.flatMap((role) => role.skills)))
+  const locations = Array.from(new Set(roles.map((role) => role.location)))
+  const jobTypes = Array.from(new Set(roles.map((role) => role.type)))
+  const allSkills = Array.from(new Set(roles.flatMap((role) => role.requirements)))
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -118,19 +120,19 @@ export default function RolesPage() {
       searchTerm === "" ||
       role.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       role.company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.skills.some((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+      role.requirements.some((req) => req.toLowerCase().includes(searchTerm.toLowerCase()))
 
     // Location filter
-    const matchesLocation = selectedLocation === "all" || role.company.name.includes(selectedLocation)
+    const matchesLocation = selectedLocation === "all" || role.location.includes(selectedLocation)
 
     // Job type filter
-    const matchesJobType = selectedJobType === "all" || role.status === selectedJobType
+    const matchesJobType = selectedJobType === "all" || role.type === selectedJobType
 
     // Skills filter
-    const matchesSkills = selectedSkills.length === 0 || selectedSkills.every((skill) => role.skills.includes(skill))
+    const matchesSkills = selectedSkills.length === 0 || selectedSkills.every((skill) => role.requirements.includes(skill))
 
     // Match percentage filter
-    const matchesPercentage = role.skills.length >= minMatchPercentage
+    const matchesPercentage = role.requirements.length >= minMatchPercentage
 
     return matchesSearch && matchesLocation && matchesJobType && matchesSkills && matchesPercentage
   })
@@ -215,26 +217,26 @@ export default function RolesPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Section */}
-        <div className="w-full lg:w-1/4 space-y-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up">
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold mb-4">Filters</h2>
             <div className="space-y-4">
               {/* Search Input */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search roles..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white/50 dark:bg-gray-800/50"
                 />
               </div>
 
               {/* Location Filter */}
-              <div>
+              <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
                 <Label>Location</Label>
                 <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
                   <SelectContent>
@@ -249,10 +251,10 @@ export default function RolesPage() {
               </div>
 
               {/* Job Type Filter */}
-              <div>
+              <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                 <Label>Job Type</Label>
                 <Select value={selectedJobType} onValueChange={setSelectedJobType}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
                     <SelectValue placeholder="Select job type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -267,14 +269,14 @@ export default function RolesPage() {
               </div>
 
               {/* Skills Filter */}
-              <div>
+              <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                 <Label>Skills</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {allSkills.map((skill) => (
                     <Badge
                       key={skill}
                       variant={selectedSkills.includes(skill) ? "default" : "outline"}
-                      className="cursor-pointer"
+                      className="cursor-pointer bg-white/50 dark:bg-gray-800/50"
                       onClick={() => toggleSkill(skill)}
                     >
                       {skill}
@@ -284,7 +286,7 @@ export default function RolesPage() {
               </div>
 
               {/* Match Percentage Slider */}
-              <div>
+              <div className="animate-fade-in-up" style={{ animationDelay: '400ms' }}>
                 <Label>Minimum Match Percentage</Label>
                 <Slider
                   value={[minMatchPercentage]}
@@ -304,7 +306,8 @@ export default function RolesPage() {
                 <Button
                   variant="outline"
                   onClick={clearFilters}
-                  className="w-full"
+                  className="w-full hover:bg-primary/10 animate-fade-in-up"
+                  style={{ animationDelay: '500ms' }}
                 >
                   Clear Filters ({activeFilters})
                 </Button>
@@ -313,7 +316,8 @@ export default function RolesPage() {
               {/* Add Custom Role Button */}
               <Button
                 variant="outline"
-                className="w-full flex items-center gap-2"
+                className="w-full flex items-center gap-2 hover:bg-primary/10 animate-fade-in-up"
+                style={{ animationDelay: '600ms' }}
                 onClick={() => router.push('/developer/roles/new')}
               >
                 <Plus className="h-4 w-4" />
@@ -327,7 +331,11 @@ export default function RolesPage() {
         <div className="w-full lg:w-3/4">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {/* Add Custom Role Card */}
-            <Card className="hover:shadow-lg transition-shadow border-dashed border-2 cursor-pointer" onClick={() => router.push('/developer/roles/new')}>
+            <Card 
+              className="hover:shadow-lg transition-shadow border-dashed border-2 cursor-pointer bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up" 
+              style={{ animationDelay: '100ms' }}
+              onClick={() => router.push('/developer/roles/new')}
+            >
               <CardHeader>
                 <div className="flex flex-col items-center justify-center h-full py-8">
                   <Plus className="h-12 w-12 text-muted-foreground mb-2" />
@@ -337,8 +345,12 @@ export default function RolesPage() {
               </CardHeader>
             </Card>
 
-            {filteredRoles.map((role) => (
-              <Card key={role._id} className="hover:shadow-lg transition-shadow">
+            {filteredRoles.map((role, index) => (
+              <Card 
+                key={role._id} 
+                className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up"
+                style={{ animationDelay: `${(index + 2) * 100}ms` }}
+              >
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
@@ -365,20 +377,20 @@ export default function RolesPage() {
                 <CardContent>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{role.description}</p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {role.skills.map((skill) => (
-                      <Badge key={skill} variant="secondary">
+                    {role.requirements.map((skill) => (
+                      <Badge key={skill} variant="secondary" className="bg-white/50 dark:bg-gray-800/50">
                         {skill}
                       </Badge>
                     ))}
                   </div>
                   <div className="flex justify-between items-center">
-                    <Badge variant={role.status === 'open' ? 'default' : 'secondary'}>
-                      {role.status}
+                    <Badge variant={role.type === 'open' ? 'default' : 'secondary'}>
+                      {role.type}
                     </Badge>
                     <Button
                       onClick={() => handleApply(role._id)}
-                      disabled={role.status !== 'open'}
-                      className="flex items-center gap-2"
+                      disabled={role.type !== 'open'}
+                      className="flex items-center gap-2 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
                     >
                       <Send className="h-4 w-4" />
                       Apply
@@ -392,5 +404,29 @@ export default function RolesPage() {
       </div>
     </div>
   )
+}
+
+const styles = `
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.25s ease-out forwards;
+    opacity: 0;
+  }
+`
+
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style')
+  styleSheet.textContent = styles
+  document.head.appendChild(styleSheet)
 }
 

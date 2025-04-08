@@ -19,17 +19,19 @@ model Developer {
   location        String?
   about           String?
   phone           String?
-  skills          Skill[]
+  developerSkills DeveloperSkill[]
   experience      Experience[]
   education       Education[]
+  achievements    Achievement[]
   projects        Project[]
   assessments     Assessment[]
   applications    Application[]
   savedRoles      SavedRole[]
+  customRoles     CustomRole[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  @@map("developers")
+  @@map("Developer")
 }
 
 model Company {
@@ -44,17 +46,45 @@ model Company {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("companies")
+  @@map("Company")
 }
 
 model Skill {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  level       String    @default("intermediate")
-  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
-  developerId String    @db.ObjectId
+  id          String    @id @default(cuid()) @map("_id")
+  name        String    @unique
+  category    String    @default("uncategorized")
+  description String?
+  popularity  Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  developerSkills DeveloperSkill[]
+  roleSkills      RoleSkill[]
+
+  @@index([category])
+  @@index([popularity])
+}
+
+model DeveloperSkill {
+  id                String   @id @default(cuid()) @map("_id")
+  developerId       String
+  skillId           String
+  level             String   // 'beginner' | 'intermediate' | 'advanced' | 'expert'
+  yearsOfExperience Int
+  lastUsed          DateTime
+  confidence        Int      @default(50) // 0-100 scale
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relationships
+  developer Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  skill     Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([developerId, skillId])
+  @@index([developerId])
+  @@index([skillId])
+  @@index([level])
 }
 
 model Experience {
@@ -70,6 +100,8 @@ model Experience {
   developerId String    @db.ObjectId
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@map("Experience")
 }
 
 model Education {
@@ -82,6 +114,8 @@ model Education {
   developerId String    @db.ObjectId
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@map("Education")
 }
 
 model Project {
@@ -92,6 +126,8 @@ model Project {
   url         String?
   developer   Developer @relation(fields: [developerId], references: [id])
   developerId String @db.ObjectId
+
+  @@map("Project")
 }
 
 model Assessment {
@@ -104,11 +140,14 @@ model Assessment {
   maxTime     Int?
   developer   Developer @relation(fields: [developerId], references: [id])
   developerId String @db.ObjectId
+
+  @@map("Assessment")
 }
 
 model Application {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  role        String
+  role        Role      @relation(fields: [roleId], references: [id])
+  roleId      String    @db.ObjectId
   status      String    @default("pending")
   appliedAt   DateTime  @default(now())
   coverLetter String?
@@ -116,23 +155,66 @@ model Application {
   developerId String    @db.ObjectId
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@map("Application")
 }
 
 model Role {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
-  company     Company  @relation(fields: [companyId], references: [id])
+  description String
   companyId   String   @db.ObjectId
-  description String?
+  company     Company  @relation(fields: [companyId], references: [id])
   requirements String[]
-  location    String?
-  salary      String?
-  type        String?
-  savedBy     SavedRole[]
+  location    String
+  salary      String
+  type        String
+  savedRoles  SavedRole[]
+  applications Application[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("roles")
+  // Relationships
+  skills RoleSkill[]
+
+  @@map("Role")
+}
+
+model RoleSkill {
+  id            String   @id @default(cuid()) @map("_id")
+  roleId        String
+  skillId       String
+  requiredLevel String   // 'beginner' | 'intermediate' | 'advanced' | 'expert'
+  importance    String   // 'required' | 'nice-to-have'
+  weight        Int      @default(50) // 0-100 scale
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  role  Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, skillId])
+  @@index([roleId])
+  @@index([skillId])
+  @@index([requiredLevel])
+  @@index([importance])
+}
+
+model CustomRole {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  developerId String   @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id])
+  requirements String[]
+  location    String
+  salary      String
+  type        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("CustomRole")
 }
 
 model SavedRole {
@@ -144,4 +226,18 @@ model SavedRole {
   createdAt   DateTime @default(now())
 
   @@unique([developerId, roleId])
+  @@map("SavedRole")
+}
+
+model Achievement {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  date        DateTime
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("Achievement")
 } 

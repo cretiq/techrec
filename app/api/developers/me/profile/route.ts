@@ -1,7 +1,25 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import clientPromise from '@/lib/mongodb'
+import { ObjectId } from 'mongodb'
+
+interface Developer {
+  _id: ObjectId
+  email: string
+  profileEmail: string
+  name: string
+  title: string
+  skills: any[]
+  experience: any[]
+  education: any[]
+  projects: any[]
+  assessments: any[]
+  applications: any[]
+  savedRoles: any[]
+  createdAt: Date
+  updatedAt: Date
+}
 
 export async function GET() {
   try {
@@ -11,76 +29,89 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    let developer = await prisma.developer.findUnique({
-      where: { email: session.user.email },
-      include: {
-        skills: true,
-        experience: true,
-        education: true,
-        projects: true,
-        assessments: true,
-        applications: true,
-        savedRoles: {
-          include: {
-            role: true
-          }
+    const client = await clientPromise
+    const db = client.db()
+    
+    let developer: Developer | null = await db.collection('developers').findOne(
+      { email: session.user.email },
+      {
+        projection: {
+          _id: 1,
+          skills: 1,
+          experience: 1,
+          education: 1,
+          projects: 1,
+          assessments: 1,
+          applications: 1,
+          savedRoles: 1,
+          email: 1,
+          profileEmail: 1,
+          name: 1,
+          title: 1,
+          createdAt: 1,
+          updatedAt: 1
         }
       }
-    })
+    ) as Developer | null
     
     if (!developer) {
       // Create a default profile for new users
-      developer = await prisma.developer.create({
-        data: {
-          email: session.user.email,
-          profileEmail: session.user.email,
-          name: session.user.name || 'New Developer',
-          title: 'Software Developer', // Default title
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        include: {
-          skills: true,
-          experience: true,
-          education: true,
-          projects: true,
-          assessments: true,
-          applications: true,
-          savedRoles: {
-            include: {
-              role: true
-            }
+      const result = await db.collection('developers').insertOne({
+        email: session.user.email,
+        profileEmail: session.user.email,
+        name: session.user.name || 'New Developer',
+        title: 'Software Developer', // Default title
+        skills: [],
+        experience: [],
+        education: [],
+        projects: [],
+        assessments: [],
+        applications: [],
+        savedRoles: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      
+      const newDeveloper = await db.collection('developers').findOne(
+        { _id: result.insertedId },
+        {
+          projection: {
+            _id: 1,
+            skills: 1,
+            experience: 1,
+            education: 1,
+            projects: 1,
+            assessments: 1,
+            applications: 1,
+            savedRoles: 1,
+            email: 1,
+            profileEmail: 1,
+            name: 1,
+            title: 1,
+            createdAt: 1,
+            updatedAt: 1
           }
         }
-      })
-    } else if (!developer.profileEmail) {
-      // Update existing developer if profileEmail is null
-      developer = await prisma.developer.update({
-        where: { id: developer.id },
-        data: { profileEmail: developer.email },
-        include: {
-          skills: true,
-          experience: true,
-          education: true,
-          projects: true,
-          assessments: true,
-          applications: true,
-          savedRoles: {
-            include: {
-              role: true
-            }
-          }
-        }
-      })
+      ) as Developer | null
+      
+      if (!newDeveloper) {
+        throw new Error('Failed to create new developer profile')
+      }
+      
+      developer = newDeveloper
     }
-
-    return NextResponse.json(developer)
+    
+    // At this point, developer cannot be null
+    const finalDeveloper = developer!
+    
+    // Convert ObjectId to string for the response
+    return NextResponse.json({
+      ...finalDeveloper,
+      _id: finalDeveloper._id.toString()
+    })
   } catch (error) {
-    console.error('Error fetching developer profile:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch developer profile' },
-      { status: 500 }
-    )
+    console.error('Error in GET /api/developers/me/profile:', error)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }
 
@@ -102,34 +133,125 @@ export async function PUT(request: Request) {
       )
     }
 
-    const developer = await prisma.developer.upsert({
-      where: { email: session.user.email },
-      update: {
-        ...data,
-        updatedAt: new Date()
-      },
-      create: {
-        email: session.user.email,
-        ...data,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      include: {
-        skills: true,
-        experience: true,
-        education: true,
-        projects: true,
-        assessments: true,
-        applications: true,
-        savedRoles: {
-          include: {
-            role: true
-          }
+    const client = await clientPromise
+    const db = client.db()
+    
+    // First try to find the developer
+    let developer: Developer | null = await db.collection('developers').findOne(
+      { email: session.user.email },
+      {
+        projection: {
+          _id: 1,
+          skills: 1,
+          experience: 1,
+          education: 1,
+          projects: 1,
+          assessments: 1,
+          applications: 1,
+          savedRoles: 1,
+          email: 1,
+          profileEmail: 1,
+          name: 1,
+          title: 1,
+          createdAt: 1,
+          updatedAt: 1
         }
       }
-    })
+    ) as Developer | null
 
-    return NextResponse.json(developer)
+    if (!developer) {
+      // Create a new developer profile
+      const result = await db.collection('developers').insertOne({
+        email: session.user.email,
+        profileEmail: session.user.email,
+        name: data.name,
+        title: data.title,
+        skills: data.skills || [],
+        experience: data.experience || [],
+        education: data.education || [],
+        projects: data.projects || [],
+        assessments: data.assessments || [],
+        applications: data.applications || [],
+        savedRoles: data.savedRoles || [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      
+      const newDeveloper = await db.collection('developers').findOne(
+        { _id: result.insertedId },
+        {
+          projection: {
+            _id: 1,
+            skills: 1,
+            experience: 1,
+            education: 1,
+            projects: 1,
+            assessments: 1,
+            applications: 1,
+            savedRoles: 1,
+            email: 1,
+            profileEmail: 1,
+            name: 1,
+            title: 1,
+            createdAt: 1,
+            updatedAt: 1
+          }
+        }
+      ) as Developer | null
+      
+      if (!newDeveloper) {
+        throw new Error('Failed to create new developer profile')
+      }
+      
+      developer = newDeveloper
+    } else {
+      // Update existing developer
+      await db.collection('developers').updateOne(
+        { email: session.user.email },
+        {
+          $set: {
+            ...data,
+            updatedAt: new Date()
+          }
+        }
+      )
+      
+      // Fetch the updated developer
+      developer = await db.collection('developers').findOne(
+        { email: session.user.email },
+        {
+          projection: {
+            _id: 1,
+            skills: 1,
+            experience: 1,
+            education: 1,
+            projects: 1,
+            assessments: 1,
+            applications: 1,
+            savedRoles: 1,
+            email: 1,
+            profileEmail: 1,
+            name: 1,
+            title: 1,
+            createdAt: 1,
+            updatedAt: 1
+          }
+        }
+      ) as Developer | null
+      
+      if (!developer) {
+        throw new Error('Failed to update developer profile')
+      }
+    }
+    
+    // At this point, developer cannot be null
+    const finalDeveloper = developer!
+    
+    // Convert ObjectId to string for the response
+    return NextResponse.json({
+      ...finalDeveloper,
+      _id: finalDeveloper._id.toString()
+    })
   } catch (error) {
     console.error('Error updating developer profile:', error)
     return NextResponse.json(

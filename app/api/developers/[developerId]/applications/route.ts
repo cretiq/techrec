@@ -1,32 +1,31 @@
 import { NextResponse } from 'next/server'
-import { connectToDatabase } from '@/lib/db'
-import Developer from '@/lib/models/Developer'
+import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: Request,
   { params }: { params: { developerId: string } }
 ) {
   try {
-    await connectToDatabase()
-    const developer = await Developer.findById(params.developerId)
-      .populate({
-        path: 'applications.role',
-        select: 'title description company status',
-        populate: {
-          path: 'company',
-          select: 'name',
-        },
-      })
-      .sort({ 'applications.appliedAt': -1 })
+    const applications = await prisma.application.findMany({
+      where: { developerId: params.developerId },
+      include: {
+        role: {
+          include: {
+            company: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        appliedAt: 'desc'
+      }
+    })
 
-    if (!developer) {
-      return NextResponse.json(
-        { error: 'Developer not found' },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json(developer.applications)
+    return NextResponse.json(applications)
   } catch (error) {
     console.error('Error fetching applications:', error)
     return NextResponse.json(

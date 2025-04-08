@@ -1,12 +1,23 @@
 import { NextResponse } from 'next/server'
-import clientPromise from '@/lib/db'
-import { Profile } from '@/lib/models/Profile'
+import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
-    const client = await clientPromise
-    const db = client.db('techrec')
-    const profiles = await db.collection('profiles').find({}).toArray()
+    const profiles = await prisma.developer.findMany({
+      include: {
+        skills: true,
+        experience: true,
+        education: true,
+        projects: true,
+        assessments: true,
+        applications: true,
+        savedRoles: {
+          include: {
+            role: true
+          }
+        }
+      }
+    })
     
     return NextResponse.json(profiles)
   } catch (error) {
@@ -21,19 +32,29 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const client = await clientPromise
-    const db = client.db('techrec')
     
-    const result = await db.collection('profiles').insertOne({
-      ...body,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    const profile = await prisma.developer.create({
+      data: {
+        ...body,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      include: {
+        skills: true,
+        experience: true,
+        education: true,
+        projects: true,
+        assessments: true,
+        applications: true,
+        savedRoles: {
+          include: {
+            role: true
+          }
+        }
+      }
     })
     
-    return NextResponse.json({ 
-      _id: result.insertedId,
-      ...body,
-    })
+    return NextResponse.json(profile)
   } catch (error) {
     console.error('Error creating profile:', error)
     return NextResponse.json(

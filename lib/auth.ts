@@ -1,13 +1,13 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-import { connectToDatabase } from './db'
-import Developer from './models/Developer'
+import { prisma } from './prisma'
+import { ObjectId } from 'mongodb'
 
 // Extend the built-in session types
 declare module 'next-auth' {
   interface Session {
     user: {
-      id: string
+      id: string // This will be a MongoDB ObjectID string
       name: string
       email: string
       image: string
@@ -27,36 +27,60 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
         try {
-          await connectToDatabase()
-          
           // Check if developer exists
-          const existingDeveloper = await Developer.findOne({ email: user.email })
+          const existingDeveloper = await prisma.developer.findUnique({
+            where: { email: user.email! }
+          })
           
           if (!existingDeveloper) {
-            // Create new developer
-            await Developer.create({
-              name: user.name,
-              email: user.email,
-              image: user.image,
-              title: 'Developer',
-              skills: [],
-              experience: [],
-              education: [],
-              achievements: [],
-              applications: [],
-              savedRoles: []
-            })
-          } else {
-            // Update existing developer's basic info
-            await Developer.findOneAndUpdate(
-              { email: user.email },
-              {
-                $set: {
-                  name: user.name,
-                  image: user.image,
+            // Create new developer with a proper MongoDB ObjectID
+            const newDeveloper = await prisma.developer.create({
+              data: {
+                id: new ObjectId().toHexString(), // Generate a new MongoDB ObjectID
+                email: user.email!,
+                profileEmail: user.email!,
+                name: user.name!,
+                title: 'Developer',
+                // Initialize empty arrays for related records
+                developerSkills: {
+                  create: []
+                },
+                experience: {
+                  create: []
+                },
+                education: {
+                  create: []
+                },
+                achievements: {
+                  create: []
+                },
+                projects: {
+                  create: []
+                },
+                assessments: {
+                  create: []
+                },
+                applications: {
+                  create: []
+                },
+                savedRoles: {
+                  create: []
+                },
+                customRoles: {
+                  create: []
                 }
               }
-            )
+            })
+            user.id = newDeveloper.id
+          } else {
+            // Update existing developer's basic info
+            await prisma.developer.update({
+              where: { email: user.email! },
+              data: {
+                name: user.name!
+              }
+            })
+            user.id = existingDeveloper.id
           }
           
           return true
@@ -75,12 +99,13 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session?.user) {
-        session.user.id = token.sub!
+        session.user.id = token.id as string
         
         try {
-          await connectToDatabase()
-          // Add developer info to session
-          const developer = await Developer.findOne({ email: session.user.email })
+          // Get developer info using Prisma
+          const developer = await prisma.developer.findUnique({
+            where: { id: session.user.id }
+          })
           if (developer) {
             session.user.title = developer.title
           }

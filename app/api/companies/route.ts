@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import clientPromise from '@/lib/db'
-import { Company } from '@/lib/models/Company'
+import { prisma } from '@/lib/prisma'
 
 // Cache companies for 5 minutes
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes in milliseconds
@@ -15,14 +14,11 @@ export async function GET() {
       return NextResponse.json(cachedCompanies)
     }
 
-    const client = await clientPromise
-    const db = client.db('techrec')
-    
-    // Only fetch necessary fields and limit the query time
-    const companies = await db.collection('companies')
-      .find({}, { projection: { name: 1, description: 1, logo: 1, website: 1 } })
-      .maxTimeMS(10000) // 10 second timeout
-      .toArray()
+    const companies = await prisma.company.findMany({
+      include: {
+        roles: true
+      }
+    })
     
     // Cache the results
     cachedCompanies = companies
@@ -41,19 +37,19 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const client = await clientPromise
-    const db = client.db('techrec')
     
-    const result = await db.collection('companies').insertOne({
-      ...body,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+    const company = await prisma.company.create({
+      data: {
+        ...body,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      include: {
+        roles: true
+      }
     })
     
-    return NextResponse.json({ 
-      _id: result.insertedId,
-      ...body,
-    })
+    return NextResponse.json(company)
   } catch (error) {
     console.error('Error creating company:', error)
     return NextResponse.json(

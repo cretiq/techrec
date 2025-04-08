@@ -28,48 +28,149 @@ import {
   Building,
   ExternalLink,
   FileText,
+  X,
 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { useSession } from "next-auth/react"
 import { SkillsInput } from '@/components/skills-input'
+import Image from "next/image"
+import { toast } from 'react-hot-toast'
+import { Toaster } from 'react-hot-toast'
+import { v4 as uuidv4 } from 'uuid'
 
 interface Profile {
-  name: string
-  title: string
-  email: string
-  profileEmail: string
-  location?: string
-  about?: string
-  phone?: string
-  skills: Array<{
-    name: string
-    level: 'beginner' | 'intermediate' | 'advanced' | 'expert'
-  }>
+  id: string;
+  name: string;
+  title: string;
+  location: string;
+  about: string;
+  phone: string;
+  profileEmail: string;
+  cvUrl: string | null;
+  developerSkills: Array<{ id: string; name: string }>;
   experience: Array<{
-    title: string
-    company: string
-    description: string
-    location?: string
-    startDate?: string
-    endDate?: string
-    current?: boolean
-  }>
-  education?: Array<{
-    degree: string
-    institution: string
-    location: string
-    year: string
-  }>
-  achievements?: string[]
+    id: string;
+    title: string;
+    company: string;
+    startDate: string;
+    endDate: string | null;
+    description: string;
+  }>;
+  education: Array<{
+    id: string;
+    school: string;
+    degree: string;
+    field: string;
+    startDate: string;
+    endDate: string | null;
+    description: string;
+  }>;
   applications: Array<{
-    role: string
-    status: 'pending' | 'reviewed' | 'accepted' | 'rejected'
-    appliedAt: string
-    coverLetter?: string
-  }>
-  cvUrl?: string
+    id: string;
+    role: string;
+    status: 'pending' | 'accepted' | 'rejected';
+    appliedAt: string;
+    coverLetter?: string;
+  }>;
+  achievements: Array<{
+    id: string;
+    title: string;
+    description: string;
+    date: string;
+  }>;
 }
+
+type Skill = {
+  id: string;
+  level: string;
+  yearsOfExperience: number;
+  lastUsed: string;
+  skill: {
+    id: string;
+    name: string;
+  };
+};
+
+const formatDate = (date: Date): string => {
+  return date.toISOString().split('T')[0];
+};
+
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const { name, value } = e.target;
+  if (!profile) return;
+
+  setProfile({
+    ...profile,
+    [name]: value,
+  });
+};
+
+const handleAddSkill = async (skillName: string) => {
+  if (!profile) return;
+  
+  try {
+    const response = await fetch('/api/developer/me/skills', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: skillName }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add skill');
+    }
+
+    const newSkill = await response.json();
+    
+    setProfile({
+      ...profile,
+      developerSkills: [...profile.developerSkills, newSkill],
+    });
+
+    toast.success('Skill added successfully');
+  } catch (error) {
+    console.error('Error adding skill:', error);
+    toast.error('Failed to add skill');
+  }
+};
+
+const handleAddApplication = (application: Omit<Profile['applications'][0], 'id'>) => {
+  if (!profile) return;
+  
+  setProfile({
+    ...profile,
+    applications: [...profile.applications, { ...application, id: uuidv4() }],
+  });
+};
+
+const handleRemoveApplication = (id: string) => {
+  if (!profile) return;
+  
+  setProfile({
+    ...profile,
+    applications: profile.applications.filter(app => app.id !== id),
+  });
+};
+
+const handleAddExperience = (experience: Omit<Profile['experience'][0], 'id'>) => {
+  if (!profile) return;
+  
+  setProfile({
+    ...profile,
+    experience: [...profile.experience, { ...experience, id: uuidv4() }],
+  });
+};
+
+const handleRemoveExperience = (id: string) => {
+  if (!profile) return;
+  
+  setProfile({
+    ...profile,
+    experience: profile.experience.filter(exp => exp.id !== id),
+  });
+};
 
 export default function DeveloperProfilePage() {
   const { toast } = useToast()
@@ -82,45 +183,43 @@ export default function DeveloperProfilePage() {
   const [showUploadSuccess, setShowUploadSuccess] = useState(false)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [newApplication, setNewApplication] = useState({
-    role: "",
-    status: "pending" as const,
+  const [newApplication, setNewApplication] = useState<{
+    role: string
+    status: 'pending'
+    appliedAt: string
+    coverLetter: string
+  }>({
+    role: '',
+    status: 'pending',
     appliedAt: new Date().toISOString(),
-    coverLetter: "",
+    coverLetter: ''
   })
+  const [newSkill, setNewSkill] = useState('')
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('/api/developers/me/profile')
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile')
-        }
-        const data = await response.json()
-        setProfile(data)
+        const response = await fetch('/api/developer/me');
+        if (!response.ok) throw new Error('Failed to fetch profile');
+        const data = await response.json();
+        setProfile(data);
       } catch (error) {
-        console.error('Error fetching profile:', error)
-        toast({
-          title: 'Error',
-          description: 'Failed to load profile',
-          variant: 'destructive',
-        })
+        console.error('Error fetching profile:', error);
+        toast.error('Failed to load profile');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    if (session?.user?.email) {
-      fetchProfile()
-    }
-  }, [session, toast])
+    fetchProfile();
+  }, []);
 
   const handleSaveProfile = async () => {
     if (!profile) return
 
     try {
       setIsSaving(true)
-      const response = await fetch('/api/developers/me/profile', {
+      const response = await fetch('/api/developer/me', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -132,15 +231,17 @@ export default function DeveloperProfilePage() {
         throw new Error('Failed to save profile')
       }
 
+      const updatedProfile = await response.json()
+      setProfile(updatedProfile)
+
       toast({
         title: 'Success',
         description: 'Profile updated successfully',
       })
     } catch (error) {
-      console.error('Error saving profile:', error)
       toast({
         title: 'Error',
-        description: 'Failed to save profile',
+        description: 'Failed to save profile. Please try again.',
         variant: 'destructive',
       })
     } finally {
@@ -190,7 +291,7 @@ export default function DeveloperProfilePage() {
         })
       }, 500)
 
-      const response = await fetch('/api/developer/cv', {
+      const response = await fetch('/api/developer/me/cv', {
         method: 'POST',
         body: formData,
       })
@@ -223,7 +324,6 @@ export default function DeveloperProfilePage() {
         setUploadProgress(0)
       }, 2000)
     } catch (error) {
-      console.error('Error uploading CV:', error)
       setUploadState('error')
       toast({
         title: 'Error',
@@ -233,97 +333,73 @@ export default function DeveloperProfilePage() {
     }
   }
 
-  const handleAddApplication = () => {
-    if (!profile) return
-
-    setProfile((prev) => {
-      if (!prev) return null
-      return {
-        ...prev,
-        applications: [...prev.applications, newApplication],
-      }
-    })
-    setNewApplication({
-      role: "",
-      status: "pending" as const,
-      appliedAt: new Date().toISOString(),
-      coverLetter: "",
-    })
-  }
-
-  const handleDeleteApplication = (index: number) => {
-    if (!profile) return
-
-    setProfile((prev) => {
-      if (!prev) return null
-      return {
-        ...prev,
-        applications: prev.applications.filter((_, i) => i !== index),
-      }
-    })
-  }
-
-  const handleInputChange = (field: keyof Profile, value: string) => {
-    if (!profile) return
-    setProfile((prev) => {
-      if (!prev) return null
-      return { ...prev, [field]: value }
-    })
-  }
-
-  const handleExperienceChange = (index: number, field: keyof Profile['experience'][0], value: string | boolean) => {
-    if (!profile) return
-    setProfile((prev) => {
-      if (!prev) return null
-      const newExperience = [...prev.experience]
-      newExperience[index] = { ...newExperience[index], [field]: value }
-      return { ...prev, experience: newExperience }
-    })
-  }
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Present'
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-    })
-  }
-
-  const handleNewApplicationChange = (field: keyof typeof newApplication, value: string) => {
-    setNewApplication((prev) => ({ ...prev, [field]: value }))
-  }
-
-  const handleAddSkill = async (skill: string) => {
+  const handleRemoveSkill = async (skillId: string) => {
     try {
-      const response = await fetch('/api/developer/skills', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: skill,
-          level: 'intermediate', // Default level, can be changed later
-        }),
-      })
+      const response = await fetch(`/api/developer/me/skills/${skillId}`, {
+        method: 'DELETE'
+      });
 
-      if (!response.ok) {
-        throw new Error('Failed to add skill')
-      }
+      if (!response.ok) throw new Error('Failed to remove skill');
 
-      const updatedSkills = await response.json()
-      setProfile(prev => prev ? { ...prev, skills: updatedSkills } : null)
+      setProfile(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          developerSkills: prev.developerSkills.filter(s => s.id !== skillId)
+        };
+      });
+      
       toast({
-        title: "Success",
-        description: "Skill added successfully",
-      })
+        title: 'Success',
+        description: 'Skill removed successfully',
+        variant: 'default'
+      });
     } catch (error) {
-      console.error('Error adding skill:', error)
       toast({
-        title: "Error",
-        description: "Failed to add skill",
-        variant: "destructive",
-      })
+        title: 'Error',
+        description: 'Failed to remove skill',
+        variant: 'destructive'
+      });
     }
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.includes('image')) {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please upload an image',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: 'File too large',
+        description: 'Please upload a file smaller than 5MB',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    // Handle avatar change
+    // This is a placeholder implementation. You might want to implement the actual logic to update the avatar
+    toast({
+      title: "Profile picture updated",
+      description: "Your profile picture has been updated successfully",
+    })
+  }
+
+  const handleDeleteAchievement = (id: string) => {
+    setProfile(prev => ({
+      ...prev,
+      achievements: prev.achievements.filter(achievement => achievement.id !== id)
+    }));
   }
 
   if (loading) {
@@ -349,15 +425,18 @@ export default function DeveloperProfilePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col animate-fade-in-up">
+      <Toaster position="top-right" />
       <div className="w-full flex justify-center">
         <main className="container max-w-6xl py-6 md:py-10 px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Developer Profile</h1>
-              <p className="text-muted-foreground text-sm md:text-base">Manage your profile and CV to match with the best opportunities</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Developer Profile
+              </h1>
+              <p className="text-muted-foreground">Manage your profile and CV to match with the best opportunities</p>
             </div>
-            <Button onClick={handleSaveProfile} disabled={isSaving} className="w-full md:w-auto gap-1">
+            <Button onClick={handleSaveProfile} disabled={isSaving} className="w-full md:w-auto gap-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -374,9 +453,8 @@ export default function DeveloperProfilePage() {
 
           <div className="grid gap-6 md:grid-cols-3">
             <div className="md:col-span-1 space-y-6">
-              <Card>
+              <Card className="border-0 shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                 <CardHeader className="pb-3">
-                  <CardTitle>Profile Overview</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center text-center">
                   <div
@@ -387,7 +465,7 @@ export default function DeveloperProfilePage() {
                       <AvatarImage src="/placeholder.svg?height=96&width=96" />
                       <AvatarFallback>AJ</AvatarFallback>
                     </Avatar>
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity overflow-hidden w-20 h-20 md:w-24 md:h-24">
                       <Upload className="h-6 w-6 text-white" />
                     </div>
                     <Input
@@ -419,14 +497,14 @@ export default function DeveloperProfilePage() {
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-2">
-                  <Button variant="outline" className="w-full gap-1">
+                  <Button variant="outline" className="w-full gap-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">
                     <User className="h-4 w-4" />
                     View Public Profile
                   </Button>
                 </CardFooter>
               </Card>
 
-              <Card>
+              <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                 <CardHeader className="pb-3">
                   <CardTitle>Upload CV</CardTitle>
                   <CardDescription className="text-xs md:text-sm">
@@ -451,7 +529,7 @@ export default function DeveloperProfilePage() {
                             "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer transition-all duration-200",
                             uploadState === 'uploading' || uploadState === 'analyzing' 
                               ? "bg-indigo-400 cursor-not-allowed"
-                              : "bg-indigo-600 hover:bg-indigo-700"
+                              : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                           )}
                         >
                           {uploadState === 'uploading' && (
@@ -494,7 +572,7 @@ export default function DeveloperProfilePage() {
                               "h-full rounded-full transition-all duration-300 ease-out",
                               uploadState === 'success' 
                                 ? "bg-green-500" 
-                                : "bg-indigo-600",
+                                : "bg-gradient-to-r from-blue-600 to-purple-600",
                               uploadState === 'success' && "animate-pulse"
                             )}
                             style={{ 
@@ -539,31 +617,27 @@ export default function DeveloperProfilePage() {
 
             <div className="md:col-span-2 space-y-6">
               <Tabs defaultValue="profile" className="w-full">
-                <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full">
-                  <TabsTrigger value="profile" className="text-xs md:text-sm">
+                <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0">
+                  <TabsTrigger value="profile" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
                     <User className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                     Profile
                   </TabsTrigger>
-                  <TabsTrigger value="experience" className="text-xs md:text-sm">
+                  <TabsTrigger value="experience" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
                     <Briefcase className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                     Experience
                   </TabsTrigger>
-                  <TabsTrigger value="education" className="text-xs md:text-sm">
+                  <TabsTrigger value="education" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
                     <GraduationCap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                     Education
                   </TabsTrigger>
-                  <TabsTrigger value="achievements" className="text-xs md:text-sm">
+                  <TabsTrigger value="achievements" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
                     <Award className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                     Achievements
-                  </TabsTrigger>
-                  <TabsTrigger value="applications" className="text-xs md:text-sm">
-                    <Building className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                    Applications
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="profile" className="space-y-6 mt-6">
-                  <Card>
+                  <Card className="border-0 shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
                     <CardHeader>
                       <CardTitle className="text-lg md:text-xl">Personal Information</CardTitle>
                     </CardHeader>
@@ -574,8 +648,8 @@ export default function DeveloperProfilePage() {
                           <Input
                             id="name"
                             value={profile?.name || ''}
-                            onChange={(e) => handleInputChange('name', e.target.value)}
-                            className="text-sm md:text-base"
+                            onChange={(e) => handleInputChange(e)}
+                            className="text-sm md:text-base bg-white dark:bg-gray-800 border-0"
                           />
                         </div>
                         <div className="space-y-2">
@@ -583,8 +657,8 @@ export default function DeveloperProfilePage() {
                           <Input
                             id="title"
                             value={profile?.title || ''}
-                            onChange={(e) => handleInputChange('title', e.target.value)}
-                            className="text-sm md:text-base"
+                            onChange={(e) => handleInputChange(e)}
+                            className="text-sm md:text-base bg-white dark:bg-gray-800 border-0"
                           />
                         </div>
                       </div>
@@ -595,8 +669,8 @@ export default function DeveloperProfilePage() {
                             id="profile-email"
                             type="email"
                             value={profile?.profileEmail || ''}
-                            onChange={(e) => handleInputChange('profileEmail', e.target.value)}
-                            className="text-sm md:text-base"
+                            onChange={(e) => handleInputChange(e)}
+                            className="text-sm md:text-base bg-white dark:bg-gray-800 border-0"
                             placeholder="Email shown on your CV"
                           />
                           <p className="text-xs text-muted-foreground">This email will be visible on your CV</p>
@@ -606,8 +680,8 @@ export default function DeveloperProfilePage() {
                           <Input
                             id="phone"
                             value={profile?.phone || ''}
-                            onChange={(e) => handleInputChange('phone', e.target.value)}
-                            className="text-sm md:text-base"
+                            onChange={(e) => handleInputChange(e)}
+                            className="text-sm md:text-base bg-white dark:bg-gray-800 border-0"
                           />
                         </div>
                       </div>
@@ -617,8 +691,8 @@ export default function DeveloperProfilePage() {
                           <Input
                             id="location"
                             value={profile?.location || ''}
-                            onChange={(e) => handleInputChange('location', e.target.value)}
-                            className="text-sm md:text-base"
+                            onChange={(e) => handleInputChange(e)}
+                            className="text-sm md:text-base bg-white dark:bg-gray-800 border-0"
                           />
                         </div>
                       </div>
@@ -628,60 +702,71 @@ export default function DeveloperProfilePage() {
                           id="about"
                           rows={5}
                           value={profile?.about || ''}
-                          onChange={(e) => handleInputChange('about', e.target.value)}
-                          className="text-sm md:text-base"
+                          onChange={(e) => handleInputChange(e)}
+                          className="text-sm md:text-base bg-white dark:bg-gray-800 border-0"
                         />
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Card>
+                  <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up" style={{ animationDelay: '500ms' }}>
                     <CardHeader className="flex flex-row items-center justify-between">
                       <CardTitle className="text-lg md:text-xl">Skills</CardTitle>
-                      <Button variant="outline" size="sm" className="gap-1 text-xs md:text-sm">
+                      <Button variant="outline" size="sm" className="gap-1 text-xs md:text-sm bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">
                         <Plus className="h-3 w-3 md:h-4 md:w-4" />
                         Add Skill
                       </Button>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex flex-wrap gap-2">
-                        {profile?.skills.map((skill, index) => (
-                          <div key={index} className="group relative">
-                            <SkillBadge skill={skill.name} level={skill.level} className="text-xs md:text-sm" />
-                            <button className="absolute -top-1 -right-1 h-3 w-3 md:h-4 md:w-4 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Trash2 className="h-2 w-2 md:h-3 md:w-3" />
-                            </button>
-                          </div>
-                        ))}
+                      <div className="space-y-4">
+                        <div className="flex flex-wrap gap-2">
+                          {(profile.developerSkills || []).map((developerSkill) => (
+                            <Badge
+                              key={developerSkill.id}
+                              variant="secondary"
+                              className="bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-800/30 dark:to-purple-800/30 border-0"
+                            >
+                              {developerSkill.name}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
+                                onClick={() => handleRemoveSkill(developerSkill.id)}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </Badge>
+                          ))}
+                        </div>
+                        <SkillsInput onAddSkill={handleAddSkill} />
                       </div>
-                      <SkillsInput onAddSkill={handleAddSkill} />
                     </CardContent>
                   </Card>
                 </TabsContent>
 
                 <TabsContent value="experience" className="space-y-6 mt-6">
-                  <Card>
+                  <Card className="border-0 shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
                     <CardHeader className="flex flex-row items-center justify-between">
                       <CardTitle>Work Experience</CardTitle>
-                      <Button variant="outline" size="sm" className="gap-1">
+                      <Button variant="outline" size="sm" className="gap-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">
                         <Plus className="h-4 w-4" />
                         Add Experience
                       </Button>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {profile?.experience.map((exp, index) => (
-                        <div key={index} className="border rounded-lg p-4 space-y-4">
+                      {profile?.experience.map((exp) => (
+                        <div key={exp.id} className="border rounded-lg p-4 space-y-4 bg-white dark:bg-gray-800">
                           <div className="flex justify-between">
                             <div>
                               <h3 className="font-medium">{exp.title}</h3>
                               <p className="text-sm text-muted-foreground">
-                                {exp.company} • {exp.location}
+                                {exp.company}
                               </p>
                               <p className="text-sm text-muted-foreground">
-                                {formatDate(exp.startDate)} -
+                                {formatDate(new Date(exp.startDate))} -
                                 {exp.endDate === "Present"
                                   ? " Present"
-                                  : ` ${formatDate(exp.endDate)}`}
+                                  : ` ${formatDate(new Date(exp.endDate))}`}
                               </p>
                             </div>
                             <div className="flex gap-2">
@@ -698,21 +783,21 @@ export default function DeveloperProfilePage() {
                 </TabsContent>
 
                 <TabsContent value="education" className="space-y-6 mt-6">
-                  <Card>
+                  <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
                     <CardHeader className="flex flex-row items-center justify-between">
                       <CardTitle>Education</CardTitle>
-                      <Button variant="outline" size="sm" className="gap-1">
+                      <Button variant="outline" size="sm" className="gap-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">
                         <Plus className="h-4 w-4" />
                         Add Education
                       </Button>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                      {profile?.education?.map((edu, index) => (
-                        <div key={index} className="border rounded-lg p-4 space-y-2">
+                      {profile?.education?.map((edu) => (
+                        <div key={edu.id} className="border rounded-lg p-4 space-y-2 bg-white dark:bg-gray-800">
                           <div className="flex justify-between">
                             <div>
                               <h4 className="font-semibold">{edu.degree}</h4>
-                              <p className="text-sm text-muted-foreground">{edu.institution}</p>
+                              <p className="text-sm text-muted-foreground">{edu.school}</p>
                             </div>
                             <div className="text-right">
                               <p className="text-sm">{edu.year}</p>
@@ -725,166 +810,34 @@ export default function DeveloperProfilePage() {
                   </Card>
                 </TabsContent>
 
-                <TabsContent value="achievements" className="space-y-6 mt-6">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
+                <TabsContent value="achievements" className="space-y-6">
+                  <Card className="border-0 shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+                    <CardHeader>
                       <CardTitle>Achievements</CardTitle>
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <Plus className="h-4 w-4" />
-                        Add Achievement
-                      </Button>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      {profile?.achievements?.map((achievement, index) => (
-                        <div key={index} className="flex items-start gap-2 p-2 border rounded-md group">
-                          <Award className="h-5 w-5 text-primary mt-0.5" />
-                          <p className="text-sm">{achievement}</p>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="applications" className="space-y-6 mt-6">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                      <CardTitle>Job Applications</CardTitle>
-                      <div className="text-sm text-muted-foreground">Track jobs you've applied for</div>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="border rounded-lg p-4 space-y-4">
-                        <h3 className="font-medium">Add New Application</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="company">Company Name*</Label>
-                            <Input
-                              id="company"
-                              placeholder="Company name"
-                              value={newApplication.role}
-                              onChange={(e) => handleNewApplicationChange('role', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="position">Position*</Label>
-                            <Input
-                              id="position"
-                              placeholder="Position"
-                              value={newApplication.role}
-                              onChange={(e) => handleNewApplicationChange('role', e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="location">Location</Label>
-                            <Input
-                              id="location"
-                              placeholder="Location"
-                              value={newApplication.role}
-                              onChange={(e) => handleNewApplicationChange('role', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="appliedDate">Date Applied</Label>
-                            <Input
-                              id="appliedDate"
-                              type="date"
-                              value={newApplication.appliedAt.split('T')[0]}
-                              onChange={(e) => handleNewApplicationChange('appliedAt', e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="status">Status</Label>
-                            <select
-                              id="status"
-                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                              value={newApplication.status}
-                              onChange={(e) => handleNewApplicationChange('status', e.target.value as typeof newApplication.status)}
-                            >
-                              <option value="pending">Pending</option>
-                              <option value="reviewed">Reviewed</option>
-                              <option value="accepted">Accepted</option>
-                              <option value="rejected">Rejected</option>
-                            </select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="url">Job URL</Label>
-                            <Input
-                              id="url"
-                              type="url"
-                              value={newApplication.coverLetter}
-                              onChange={(e) => handleNewApplicationChange('coverLetter', e.target.value)}
-                              placeholder="Cover letter URL"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="notes">Notes</Label>
-                          <Textarea
-                            id="notes"
-                            rows={3}
-                            value={newApplication.coverLetter}
-                            onChange={(e) => handleNewApplicationChange('coverLetter', e.target.value)}
-                            placeholder="Add any notes about the application, interviews, or follow-ups"
-                          />
-                        </div>
-                        <div className="flex justify-end">
-                          <Button onClick={handleAddApplication} className="gap-1">
-                            <Plus className="h-4 w-4" />
-                            Add Application
-                          </Button>
-                        </div>
-                      </div>
-
+                    <CardContent>
                       <div className="space-y-4">
-                        <h3 className="font-medium">Your Applications ({profile?.applications?.length || 0})</h3>
-                        {(!profile?.applications || profile.applications.length === 0) ? (
-                          <div className="text-center py-8 text-muted-foreground">
-                            <Building className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                            <p>No job applications added yet</p>
-                            <p className="text-sm">Track your job search by adding applications above</p>
-                          </div>
-                        ) : (
-                          profile.applications.map((app, index) => (
-                            <div key={index} className="border rounded-lg p-4 space-y-3">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <h3 className="font-medium">{app.role}</h3>
-                                  <p className="text-sm text-muted-foreground">
-                                    Applied: {new Date(app.appliedAt).toLocaleDateString()}
-                                  </p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Badge variant={app.status === 'accepted' ? 'default' : 'secondary'}>
-                                    {app.status}
-                                  </Badge>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 w-8 p-0"
-                                    onClick={() => handleDeleteApplication(index)}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
+                        {(profile.achievements || []).map((achievement) => (
+                          <Card key={achievement.id} className="p-4">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-semibold">{achievement.title}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(achievement.date).toLocaleDateString()}
+                                </p>
                               </div>
-                              {app.coverLetter && (
-                                <div className="text-sm mt-2 bg-muted/50 p-2 rounded-md">
-                                  <a
-                                    href={app.coverLetter}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-primary hover:underline"
-                                  >
-                                    View Cover Letter
-                                  </a>
-                                </div>
-                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                onClick={() => handleDeleteAchievement(achievement.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
-                          ))
-                        )}
+                            <p className="mt-2 text-sm">{achievement.description}</p>
+                          </Card>
+                        ))}
                       </div>
                     </CardContent>
                   </Card>
