@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
+import { formatJobType } from "@/app/utils/format"
 
 // Mock role data
 const roleData = {
@@ -487,7 +488,7 @@ export default function RoleDetailPage({ params }: { params: { id: string } }) {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Job Type</span>
-                    <span>{roleData.type}</span>
+                    <span>{formatJobType(roleData.type)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Salary Range</span>

@@ -14,7 +14,12 @@
     "populate-saved-roles": "tsx scripts/populate-saved-roles.ts",
     "test": "jest",
     "test:watch": "jest --watch",
-    "fix-roles": "tsx scripts/fix-roles-company.ts"
+    "fix-roles": "tsx scripts/fix-roles-company.ts",
+    "delete:roles": "tsx scripts/delete-roles.ts",
+    "create:roles": "tsx scripts/create-roles.ts",
+    "delete:all": "tsx scripts/delete-all.ts",
+    "create:companies-roles": "tsx scripts/create-companies-roles.ts",
+    "delete:collections": "tsx scripts/delete-collections.ts"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.8.0",
@@ -101,7 +106,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8",

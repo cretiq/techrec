@@ -20,10 +20,10 @@ function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       {!isDashboardPage && <Header />}
-      <div className="flex flex-1 w-full">
+      {/* <div className="flex flex-1 w-full">
         {isDashboardPage && <DashboardSidebar />}
         <main className="flex-1 w-full">{children}</main>
-      </div>
+      </div> */}
     </>
   )
 }

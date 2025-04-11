@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 // GET a specific custom role
 export async function GET(
-  request: Request,
+  req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -14,25 +14,12 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const developer = await prisma.developer.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!developer) {
-      return NextResponse.json({ error: "Developer not found" }, { status: 404 });
-    }
-
     const customRole = await prisma.customRole.findUnique({
       where: { id: params.id },
     });
 
     if (!customRole) {
-      return NextResponse.json({ error: "Role not found" }, { status: 404 });
-    }
-
-    // Ensure the developer owns this custom role
-    if (customRole.developerId !== developer.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Custom role not found" }, { status: 404 });
     }
 
     return NextResponse.json(customRole);
@@ -47,7 +34,7 @@ export async function GET(
 
 // PUT update a custom role
 export async function PUT(
-  request: Request,
+  req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -56,51 +43,23 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const developer = await prisma.developer.findUnique({
-      where: { email: session.user.email },
-    });
+    const body = await req.json();
+    const { title, description, requirements, location, salary, type, remote, visaSponsorship } = body;
 
-    if (!developer) {
-      return NextResponse.json({ error: "Developer not found" }, { status: 404 });
-    }
-
-    const existingRole = await prisma.customRole.findUnique({
-      where: { id: params.id },
-    });
-
-    if (!existingRole) {
-      return NextResponse.json({ error: "Role not found" }, { status: 404 });
-    }
-
-    // Ensure the developer owns this custom role
-    if (existingRole.developerId !== developer.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { title, description, requirements, location, salary, type } = body;
-
-    // Validate required fields
-    if (!title || !description || !location || !salary || !type) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    const updatedRole = await prisma.customRole.update({
+    const customRole = await prisma.customRole.update({
       where: { id: params.id },
       data: {
         title,
         description,
-        requirements: requirements || [],
+        requirements,
         location,
         salary,
         type,
+        remote,
       },
     });
 
-    return NextResponse.json(updatedRole);
+    return NextResponse.json(customRole);
   } catch (error) {
     console.error("Error updating custom role:", error);
     return NextResponse.json(
@@ -112,7 +71,7 @@ export async function PUT(
 
 // DELETE a custom role
 export async function DELETE(
-  request: Request,
+  req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -121,32 +80,11 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const developer = await prisma.developer.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!developer) {
-      return NextResponse.json({ error: "Developer not found" }, { status: 404 });
-    }
-
-    const existingRole = await prisma.customRole.findUnique({
-      where: { id: params.id },
-    });
-
-    if (!existingRole) {
-      return NextResponse.json({ error: "Role not found" }, { status: 404 });
-    }
-
-    // Ensure the developer owns this custom role
-    if (existingRole.developerId !== developer.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     await prisma.customRole.delete({
       where: { id: params.id },
     });
 
-    return NextResponse.json({ message: "Role deleted successfully" });
+    return NextResponse.json({ message: "Custom role deleted successfully" });
   } catch (error) {
     console.error("Error deleting custom role:", error);
     return NextResponse.json(

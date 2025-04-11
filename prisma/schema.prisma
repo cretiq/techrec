@@ -10,15 +10,76 @@ datasource db {
   url      = env("MONGODB_URI")
 }
 
+// Base timestamp fields that other models will use
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  INTERVIEWED
+  OFFERED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum RoleType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+}
+
+enum AssessmentType {
+  TECHNICAL
+  BEHAVIORAL
+  LANGUAGE
+  CODING_CHALLENGE
+}
+
+enum ProjectStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum EmployeeRange {
+  LESS_THAN_10
+  FROM_10_TO_50
+  FROM_50_TO_250
+  MORE_THAN_250
+}
+
+enum FundingStage {
+  BOOTSTRAP
+  SEED
+  SERIES_A
+  SERIES_B
+  SERIES_C
+  SERIES_D_PLUS
+  PUBLIC
+}
+
 model Developer {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   email           String    @unique
   profileEmail    String?
   name            String
   title           String
-  location        String?
-  about           String?
-  phone           String?
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
+
+  // Contact Information
+  contactInfo     ContactInfo?
+
+  // Relations
   developerSkills DeveloperSkill[]
   experience      Experience[]
   education       Education[]
@@ -28,63 +89,77 @@ model Developer {
   applications    Application[]
   savedRoles      SavedRole[]
   customRoles     CustomRole[]
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   @@map("Developer")
 }
 
-model Company {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String?
+model ContactInfo {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId String    @db.ObjectId @unique
+  phone       String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  linkedin    String?
+  github      String?
   website     String?
-  location    String?
-  size        String?
-  industry    String?
-  roles       Role[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("Company")
-}
-
-model Skill {
-  id          String    @id @default(cuid()) @map("_id")
-  name        String    @unique
-  category    String    @default("uncategorized")
-  description String?
-  popularity  Int       @default(0)
+  
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@map("ContactInfo")
+}
+
+model SkillCategory {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String   @unique
+  description String?
+  skills      Skill[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("SkillCategory")
+}
+
+model Skill {
+  id              String    @id @default(cuid()) @map("_id")
+  name            String    @unique
+  category        SkillCategory @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  description     String?
+  
   // Relationships
   developerSkills DeveloperSkill[]
   roleSkills      RoleSkill[]
 
-  @@index([category])
-  @@index([popularity])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([categoryId])
 }
 
 model DeveloperSkill {
-  id                String   @id @default(cuid()) @map("_id")
-  developerId       String
-  skillId           String
-  level             String   // 'beginner' | 'intermediate' | 'advanced' | 'expert'
-  yearsOfExperience Int
-  lastUsed          DateTime
-  confidence        Int      @default(50) // 0-100 scale
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
+  id                String     @id @default(cuid()) @map("_id")
+  developerId       String     @db.ObjectId
+  skillId          String
+  level            SkillLevel
+  
   // Relationships
-  developer Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
-  skill     Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  developer        Developer  @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  skill           Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
   @@unique([developerId, skillId])
-  @@index([developerId])
-  @@index([skillId])
   @@index([level])
+  @@map("DeveloperSkill")
 }
 
 model Experience {
@@ -96,11 +171,21 @@ model Experience {
   startDate   DateTime
   endDate     DateTime?
   current     Boolean   @default(false)
+  
+  // Additional fields
+  responsibilities String[]
+  achievements    String[]
+  teamSize        Int?
+  techStack       String[]
+  
   developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
   developerId String    @db.ObjectId
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@index([startDate, endDate])
+  @@index([developerId])
   @@map("Experience")
 }
 
@@ -110,123 +195,214 @@ model Education {
   institution String
   year        String
   location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  gpa         Float?
+  honors      String[]
+  activities  String[]
+  
   developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
   developerId String    @db.ObjectId
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@index([developerId])
   @@map("Education")
 }
 
 model Project {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
   technologies String[]
   url         String?
+  status      ProjectStatus @default(IN_PROGRESS)
+  startDate   DateTime
+  endDate     DateTime?
+  repository  String?
+  liveUrl     String?
+  teamSize    Int?
+  role        String?
+  highlights  String[]
+  
   developer   Developer @relation(fields: [developerId], references: [id])
-  developerId String @db.ObjectId
+  developerId String    @db.ObjectId
 
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([developerId])
+  @@index([status])
   @@map("Project")
 }
 
 model Assessment {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
   title       String
+  type        AssessmentType
   status      String
   score       Int?
   completedAt DateTime?
   timeSpent   Int?
   maxTime     Int?
-  developer   Developer @relation(fields: [developerId], references: [id])
-  developerId String @db.ObjectId
+  validUntil  DateTime?
+  attempts    Int           @default(1)
+  maxAttempts Int           @default(1)
+  metadata    Json?
+  
+  developer   Developer     @relation(fields: [developerId], references: [id])
+  developerId String        @db.ObjectId
 
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([developerId])
+  @@index([type])
   @@map("Assessment")
 }
 
-model Application {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  role        Role      @relation(fields: [roleId], references: [id])
-  roleId      String    @db.ObjectId
-  status      String    @default("pending")
-  appliedAt   DateTime  @default(now())
-  coverLetter String?
-  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
-  developerId String    @db.ObjectId
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+model Company {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  website     String?
+  location    String?
+  size        EmployeeRange?
+  industry    String[]
+  logo        String?
+  founded     Int?
+  employees   EmployeeRange?
+  funding     FundingStage?
+  verified    Boolean       @default(false)
+  
+  roles       Role[]
 
-  @@map("Application")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([name])
+  @@map("Company")
 }
 
 model Role {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  companyId   String   @db.ObjectId
-  company     Company  @relation(fields: [companyId], references: [id])
-  requirements String[]
-  location    String
-  salary      String
-  type        String
-  savedRoles  SavedRole[]
-  applications Application[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String
+  companyId     String      @db.ObjectId
+  company       Company     @relation(fields: [companyId], references: [id])
+  requirements  String[]
+  location      String
+  salary        String
+  type          RoleType
+  remote        Boolean     @default(false)
+  visaSponsorship Boolean   @default(false)
+  
+  savedRoles    SavedRole[]
+  applications  Application[]
+  skills        RoleSkill[]
 
-  // Relationships
-  skills RoleSkill[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
+  @@index([companyId])
+  @@index([type])
   @@map("Role")
 }
 
 model RoleSkill {
-  id            String   @id @default(cuid()) @map("_id")
-  roleId        String
+  id            String     @id @default(cuid()) @map("_id")
+  roleId        String     @db.ObjectId
   skillId       String
-  requiredLevel String   // 'beginner' | 'intermediate' | 'advanced' | 'expert'
-  importance    String   // 'required' | 'nice-to-have'
-  weight        Int      @default(50) // 0-100 scale
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
+  requiredLevel SkillLevel
+  
   // Relationships
-  role  Role  @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  role          Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  skill         Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   @@unique([roleId, skillId])
   @@index([roleId])
   @@index([skillId])
   @@index([requiredLevel])
-  @@index([importance])
+}
+
+model Application {
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  role          Role             @relation(fields: [roleId], references: [id])
+  roleId        String           @db.ObjectId
+  status        ApplicationStatus @default(PENDING)
+  appliedAt     DateTime         @default(now())
+  coverLetter   String?
+  resumeUrl     String?
+  developer     Developer        @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId   String           @db.ObjectId
+
+  // Interview process tracking
+  interviews    Interview[]
+  
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([developerId])
+  @@index([roleId])
+  @@index([status])
+  @@map("Application")
+}
+
+model Interview {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String    @db.ObjectId
+  type          String    // phone, technical, behavioral, final
+  scheduledAt   DateTime
+  duration      Int       // in minutes
+  notes        String?
+  feedback     String?
+  status       String    // scheduled, completed, cancelled
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([applicationId])
+}
+
+model SavedRole {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id])
+  developerId String    @db.ObjectId
+  role        Role      @relation(fields: [roleId], references: [id])
+  roleId      String    @db.ObjectId
+  notes       String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([developerId, roleId])
+  @@index([developerId])
+  @@index([roleId])
+  @@map("SavedRole")
 }
 
 model CustomRole {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
-  developerId String   @db.ObjectId
+  developerId String    @db.ObjectId
   developer   Developer @relation(fields: [developerId], references: [id])
   requirements String[]
   location    String
   salary      String
-  type        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  type        RoleType
+  remote      Boolean   @default(false)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
+  @@index([developerId])
   @@map("CustomRole")
-}
-
-model SavedRole {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  developer   Developer @relation(fields: [developerId], references: [id])
-  developerId String @db.ObjectId
-  role        Role     @relation(fields: [roleId], references: [id])
-  roleId      String @db.ObjectId
-  createdAt   DateTime @default(now())
-
-  @@unique([developerId, roleId])
-  @@map("SavedRole")
 }
 
 model Achievement {
@@ -234,10 +410,15 @@ model Achievement {
   title       String
   description String
   date        DateTime
+  url         String?
+  issuer      String?
+  
   developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
   developerId String    @db.ObjectId
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  @@index([developerId])
   @@map("Achievement")
 } 

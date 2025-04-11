@@ -98,6 +98,11 @@ export function DashboardSidebar() {
       icon: <PenLine className="h-5 w-5" />,
     },
     {
+      title: "Writing Help",
+      href: "/developer/writing-help",
+      icon: <PenLine className="h-5 w-5" />,
+    },
+    {
       title: "Profile",
       href: "/developer/profile",
       icon: <User className="h-5 w-5" />,

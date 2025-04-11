@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/page/page-header"
 import { FormCard } from "@/components/page/form-card"
 import { FormField } from "@/components/page/form-field"
 import { FormActions } from "@/components/page/form-actions"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function NewRolePage() {
   const router = useRouter()
@@ -23,7 +24,9 @@ export default function NewRolePage() {
     requirements: [""],
     location: "",
     salary: "",
-    type: "open"
+    type: "FULL_TIME",
+    remote: false,
+    visaSponsorship: false
   })
 
   if (status === 'loading') {
@@ -42,6 +45,11 @@ export default function NewRolePage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target
+    setFormData(prev => ({ ...prev, [name]: checked }))
   }
 
   const handleRequirementChange = (index: number, value: string) => {
@@ -66,7 +74,7 @@ export default function NewRolePage() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/roles', {
+      const response = await fetch('/api/custom-roles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,20 +86,20 @@ export default function NewRolePage() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create role')
+        throw new Error('Failed to create custom role')
       }
 
       toast({
         title: 'Success',
-        description: 'Role created successfully',
+        description: 'Custom role created successfully',
       })
 
       router.push('/developer/roles')
     } catch (error) {
-      console.error('Error creating role:', error)
+      console.error('Error creating custom role:', error)
       toast({
         title: 'Error',
-        description: 'Failed to create role',
+        description: 'Failed to create custom role',
         variant: 'destructive',
       })
     } finally {
@@ -184,6 +192,56 @@ export default function NewRolePage() {
                 className="bg-white/50 dark:bg-gray-800/50"
               />
             </FormField>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label="Job Type">
+              <Select
+                value={formData.type}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}
+              >
+                <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
+                  <SelectValue placeholder="Select job type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="FULL_TIME">Full Time</SelectItem>
+                  <SelectItem value="PART_TIME">Part Time</SelectItem>
+                  <SelectItem value="CONTRACT">Contract</SelectItem>
+                  <SelectItem value="INTERNSHIP">Internship</SelectItem>
+                  <SelectItem value="FREELANCE">Freelance</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormField>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="remote"
+                name="remote"
+                checked={formData.remote}
+                onChange={handleCheckboxChange}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <label htmlFor="remote" className="text-sm font-medium">
+                Remote Work Available
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="visaSponsorship"
+                name="visaSponsorship"
+                checked={formData.visaSponsorship}
+                onChange={handleCheckboxChange}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <label htmlFor="visaSponsorship" className="text-sm font-medium">
+                Visa Sponsorship Available
+              </label>
+            </div>
           </div>
 
           <FormActions

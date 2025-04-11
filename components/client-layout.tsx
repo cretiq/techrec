@@ -28,7 +28,7 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                     <span className="font-bold text-xl">TechRec</span>
                   </Link>
                   <nav className="hidden md:flex items-center gap-6">
-                    <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
+                    <Link href="/developer/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
                       Home
                     </Link>
                     <Link href="/developer/roles" className="text-sm font-medium hover:text-primary transition-colors">
@@ -41,6 +41,9 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                         </Link>
                         <Link href="/developer/applications" className="text-sm font-medium hover:text-primary transition-colors">
                           Applications
+                        </Link>
+                        <Link href="/developer/writing-help" className="text-sm font-medium hover:text-primary transition-colors">
+                          Writing Help
                         </Link>
                       </>
                     )}
