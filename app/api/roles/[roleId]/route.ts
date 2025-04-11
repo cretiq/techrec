@@ -14,7 +14,7 @@ export async function GET(
     const session = await getServerSession(authOptions)
 
     if (!session) {
-      return new NextResponse("Unauthorized", { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const role = await prisma.role.findUnique({
@@ -40,10 +40,10 @@ export async function GET(
           },
         },
       },
-    })
+    }) as any
 
     if (!role) {
-      return new NextResponse("Role not found", { status: 404 })
+      return NextResponse.json({ error: "Role not found" }, { status: 404 })
     }
 
     // Format the response to match the frontend interface
@@ -51,8 +51,8 @@ export async function GET(
       id: role.id,
       title: role.title,
       description: role.description,
-      requirements: role.skills.map(roleSkill => roleSkill.skill.name),
-      skills: role.skills.map(roleSkill => ({
+      requirements: role.requirements,
+      skills: role.skills.map((roleSkill: { skill: { id: string; name: string; description: string | null } }) => ({
         id: roleSkill.skill.id,
         name: roleSkill.skill.name,
         description: roleSkill.skill.description,
@@ -68,11 +68,9 @@ export async function GET(
       visaSponsorship: role.visaSponsorship,
     }
 
-    console.log('Formatted role:', formattedRole)
-
     return NextResponse.json(formattedRole)
   } catch (error) {
     console.error('Error fetching role:', error)
-    return new NextResponse("Internal error", { status: 500 })
+    return NextResponse.json({ error: "Internal error" }, { status: 500 })
   }
 } 
