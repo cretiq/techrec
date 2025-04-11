@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import GithubProvider from 'next-auth/providers/github'
 import { prisma } from './prisma'
 
 // Extend the built-in session types
@@ -11,6 +12,7 @@ declare module 'next-auth' {
       email: string
       image: string
       title?: string
+      githubAccessToken?: string
     }
   }
 }
@@ -20,6 +22,15 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    GithubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: 'read:user user:email repo',
+        },
+      },
     }),
   ],
   callbacks: {
@@ -57,31 +68,31 @@ export const authOptions: NextAuthOptions = {
           console.error('Error in signIn callback:', error)
           return false
         }
+      } else if (account?.provider === 'github') {
+        try {
+          // Store GitHub access token in the session
+          user.githubAccessToken = account.access_token
+          return true
+        } catch (error) {
+          console.error('Error storing GitHub token:', error)
+          return false
+        }
       }
-      return true
+      return false
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
+        if (account?.provider === 'github') {
+          token.githubAccessToken = account.access_token
+        }
       }
       return token
     },
     async session({ session, token }) {
-      if (session?.user) {
-        try {
-          // Find the developer by email
-          const developer = await prisma.developer.findUnique({
-            where: { email: session.user.email! }
-          })
-          
-          if (developer) {
-            // Set the session user ID and title from the developer record
-            session.user.id = developer.id
-            session.user.title = developer.title
-          }
-        } catch (error) {
-          console.error('Error fetching developer info:', error)
-        }
+      if (session.user) {
+        session.user.id = token.id as string
+        session.user.githubAccessToken = token.githubAccessToken as string
       }
       return session
     },

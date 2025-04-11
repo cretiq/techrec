@@ -45,6 +45,9 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                         <Link href="/developer/writing-help" className="text-sm font-medium hover:text-primary transition-colors">
                           Writing Help
                         </Link>
+                        <Link href="/github-analyzer" className="text-sm font-medium hover:text-primary transition-colors">
+                          GitHub Analyzer
+                        </Link>
                       </>
                     )}
                   </nav>

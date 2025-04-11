@@ -5,29 +5,29 @@ import { prisma } from '@/lib/prisma';
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
 
-    // First verify the skill belongs to the developer
-    const developerSkill = await prisma.developerSkill.findFirst({
-      where: {
-        id,
-        developerId: session.user.id
-      }
+    // Find the developer skill to delete
+    const developerSkill = await prisma.developerSkill.findUnique({
+      where: { id },
+      include: { developer: true }
     });
 
     if (!developerSkill) {
-      return NextResponse.json(
-        { error: 'Skill not found or unauthorized' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Skill not found' }, { status: 404 });
+    }
+
+    // Verify the skill belongs to the current user
+    if (developerSkill.developer.email !== session.user.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Delete the developer skill
@@ -37,9 +37,9 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting developer skill:', error);
+    console.error('Error deleting skill:', error);
     return NextResponse.json(
-      { error: 'Failed to delete developer skill' },
+      { error: 'Failed to delete skill' },
       { status: 500 }
     );
   }

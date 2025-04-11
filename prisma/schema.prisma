@@ -73,6 +73,7 @@ model Developer {
   profileEmail    String?
   name            String
   title           String
+  about           String?
   isDeleted       Boolean   @default(false)
   deletedAt       DateTime?
 
@@ -421,4 +422,129 @@ model Achievement {
 
   @@index([developerId])
   @@map("Achievement")
-} 
+}
+
+// model User {
+//   id              String           @id @default(cuid()) @map("_id")
+//   name            String?
+//   email           String?          @unique
+//   emailVerified   DateTime?
+//   image           String?
+//   accounts        Account[]
+//   sessions        Session[]
+//   githubProfile   GitHubProfile?
+//   createdAt       DateTime         @default(now())
+//   updatedAt       DateTime         @updatedAt
+
+//   @@map("users")
+// }
+
+// model Account {
+//   id                String  @id @default(cuid()) @map("_id")
+//   userId            String
+//   type              String
+//   provider          String
+//   providerAccountId String
+//   refresh_token     String?
+//   access_token      String?
+//   expires_at        Int?
+//   token_type        String?
+//   scope             String?
+//   id_token          String?
+//   session_state     String?
+//   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@unique([provider, providerAccountId])
+//   @@map("accounts")
+// }
+
+// model Session {
+//   id           String   @id @default(cuid()) @map("_id")
+//   sessionToken String   @unique
+//   userId       String
+//   expires      DateTime
+//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@map("sessions")
+// }
+
+// model GitHubProfile {
+//   id                String           @id @default(cuid()) @map("_id")
+//   userId            String           @unique
+//   user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   accessToken       String
+//   refreshToken      String?
+//   tokenExpiresAt    DateTime?
+//   username          String
+//   avatarUrl         String?
+//   profileUrl        String
+//   lastSyncedAt      DateTime         @default(now())
+//   overallScore      Float            @default(0)
+//   repositoryCount   Int              @default(0)
+//   contributionCount Int              @default(0)
+//   languageStats     Json?
+//   createdAt         DateTime         @default(now())
+//   updatedAt         DateTime         @updatedAt
+//   analyses          AnalysisHistory[]
+//   improvementPlans  ImprovementPlan[]
+//   repositories      RepositoryAnalysis[]
+
+//   @@map("github_profiles")
+// }
+
+// model RepositoryAnalysis {
+//   id                String           @id @default(cuid()) @map("_id")
+//   githubProfileId   String
+//   githubProfile     GitHubProfile    @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
+//   repositoryName    String
+//   repositoryUrl     String
+//   description       String?
+//   stars            Int              @default(0)
+//   forks            Int              @default(0)
+//   watchers         Int              @default(0)
+//   language         String?
+//   topics           String[]
+//   readmeScore      Float            @default(0)
+//   codeQualityScore Float            @default(0)
+//   testCoverage     Float            @default(0)
+//   documentationScore Float          @default(0)
+//   lastUpdated      DateTime
+//   createdAt        DateTime         @default(now())
+//   updatedAt        DateTime         @updatedAt
+
+//   @@map("repository_analyses")
+// }
+
+// model AnalysisHistory {
+//   id              String         @id @default(cuid()) @map("_id")
+//   githubProfileId String
+//   githubProfile   GitHubProfile  @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
+//   timestamp       DateTime       @default(now())
+//   overallScore    Float
+//   metrics         Json
+//   recommendations Json
+//   completedTasks  String[]
+//   createdAt       DateTime       @default(now())
+//   updatedAt       DateTime       @updatedAt
+
+//   @@map("analysis_histories")
+// }
+
+// model ImprovementPlan {
+//   id              String         @id @default(cuid()) @map("_id")
+//   githubProfileId String
+//   githubProfile   GitHubProfile  @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
+//   title           String
+//   description     String
+//   priority        Int            @default(0)
+//   difficulty      Int            @default(0)
+//   status          String         @default("pending")
+//   dueDate         DateTime?
+//   completedAt     DateTime?
+//   resources       String[]
+//   targetMetrics   Json
+//   createdAt       DateTime       @default(now())
+//   updatedAt       DateTime       @updatedAt
+
+//   @@map("improvement_plans")
+// } 

@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import ClientLayout from '@/components/client-layout'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -33,6 +34,7 @@ export default async function RootLayout({
             {children}
           </ClientLayout>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   )

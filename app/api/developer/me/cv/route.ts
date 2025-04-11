@@ -2,135 +2,104 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { analyzeCV } from '@/lib/cv-analysis';
+import PDFParser from 'pdf2json';
 
 export async function POST(request: Request) {
   try {
+    console.log('Starting CV parsing process...');
+    console.log('Request headers:', Object.fromEntries(request.headers.entries()));
+    
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    if (!session) {
+      console.log('Authentication failed: No session found');
+      return NextResponse.json(
+        { error: 'You must be signed in to upload a CV' },
+        { status: 401 }
+      );
     }
 
+    if (!session.user?.id) {
+      console.log('Authentication failed: No user ID in session');
+      return NextResponse.json(
+        { error: 'Invalid user session' },
+        { status: 401 }
+      );
+    }
+
+    console.log('Attempting to parse form data...');
     const formData = await request.formData();
+    console.log('Form data keys:', Array.from(formData.keys()));
+    
     const file = formData.get('file') as File;
-
-    if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      );
-    }
-
-    // Validate file type
-    if (!file.type.includes('pdf')) {
-      return NextResponse.json(
-        { error: 'Invalid file type. Please upload a PDF file.' },
-        { status: 400 }
-      );
-    }
-
-    // Validate file size (5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: 'File too large. Please upload a file smaller than 5MB.' },
-        { status: 400 }
-      );
-    }
-
-    // Read the file content
-    const buffer = await file.arrayBuffer();
-    const text = new TextDecoder().decode(buffer);
-
-    // Analyze the CV
-    const analysis = await analyzeCV(text);
-
-    // Update the developer's profile with the extracted information
-    const updatedDeveloper = await prisma.developer.update({
-      where: { id: session.user.id },
-      data: {
-        // Basic profile information
-        name: analysis.name || undefined,
-        title: analysis.title || undefined,
-        location: analysis.location || undefined,
-        about: analysis.summary || undefined,
-        phone: analysis.phone || undefined,
-        profileEmail: analysis.email || undefined,
-
-        // Skills
-        developerSkills: {
-          deleteMany: {}, // Remove existing skills
-          create: analysis.skills.map(skill => ({
-            skill: {
-              connectOrCreate: {
-                where: { name: skill.name },
-                create: { 
-                  name: skill.name,
-                  category: skill.category || 'uncategorized'
-                }
-              }
-            },
-            level: skill.level || 'intermediate',
-            yearsOfExperience: skill.yearsOfExperience || 0,
-            lastUsed: new Date(),
-            confidence: skill.confidence || 50
-          }))
-        },
-
-        // Experience
-        experience: {
-          deleteMany: {}, // Remove existing experience
-          create: analysis.experience.map(exp => ({
-            title: exp.title,
-            company: exp.company,
-            description: exp.description,
-            location: exp.location,
-            startDate: new Date(exp.startDate),
-            endDate: exp.endDate ? new Date(exp.endDate) : null,
-            current: exp.current || false
-          }))
-        },
-
-        // Education
-        education: {
-          deleteMany: {}, // Remove existing education
-          create: analysis.education.map(edu => ({
-            degree: edu.degree,
-            institution: edu.institution,
-            field: edu.field,
-            startDate: new Date(edu.startDate),
-            endDate: edu.endDate ? new Date(edu.endDate) : null,
-            description: edu.description
-          }))
-        },
-
-        // Achievements
-        achievements: {
-          deleteMany: {}, // Remove existing achievements
-          create: analysis.achievements.map(achievement => ({
-            title: achievement.title,
-            description: achievement.description,
-            date: new Date(achievement.date)
-          }))
-        }
-      },
-      include: {
-        developerSkills: {
-          include: {
-            skill: true
-          }
-        },
-        experience: true,
-        education: true,
-        achievements: true
-      }
+    console.log('File details:', {
+      name: file?.name,
+      type: file?.type,
+      size: file?.size,
+      lastModified: file?.lastModified
     });
 
-    return NextResponse.json({
-      success: true,
-      data: updatedDeveloper
+    if (!file) {
+      console.log('Validation failed: No file provided');
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    if (file.type !== 'application/pdf') {
+      console.log(`Validation failed: Invalid file type - ${file.type}`);
+      return NextResponse.json({ error: 'Only PDF files are allowed' }, { status: 400 });
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      console.log(`Validation failed: File too large - ${file.size} bytes`);
+      return NextResponse.json({ error: 'File size must be less than 5MB' }, { status: 400 });
+    }
+
+    console.log(`Processing PDF file: ${file.name} (${file.size} bytes)`);
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    console.log(`Buffer size: ${buffer.length} bytes`);
+
+    const pdfParser = new PDFParser();
+
+    return new Promise((resolve, reject) => {
+      pdfParser.on('pdfParser_dataReady', (pdfData) => {
+        try {
+          console.log(`Processing PDF with ${pdfData.Pages.length} pages`);
+          const text = decodeURIComponent(pdfData.Pages.map(page => 
+            page.Texts.map(text => text.R.map(r => r.T).join(' ')).join(' ')
+          ).join('\n\n'));
+
+          console.log('Successfully parsed PDF content:');
+          console.log('----------------------------------------');
+          console.log(text.substring(0, 500) + (text.length > 500 ? '...' : '')); // Log first 500 chars
+          console.log('----------------------------------------');
+          console.log(`Total content length: ${text.length} characters`);
+          console.log(`Number of pages processed: ${pdfData.Pages.length}`);
+
+          resolve(NextResponse.json({ data: { text } }));
+        } catch (error) {
+          console.error('Error while processing PDF content:', error);
+          reject(error);
+        }
+      });
+
+      pdfParser.on('pdfParser_dataError', (error) => {
+        console.error('PDF parsing error:', error);
+        reject(error);
+      });
+
+      console.log('Starting PDF buffer parsing...');
+      pdfParser.parseBuffer(buffer);
     });
   } catch (error) {
     console.error('Error processing CV:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      });
+    }
     return NextResponse.json(
       { error: 'Failed to process CV' },
       { status: 500 }
