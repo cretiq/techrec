@@ -3,31 +3,39 @@
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, X, Code, BarChart, Bookmark, BookmarkCheck, Send, Plus } from "lucide-react"
+import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, X, Code, BarChart, Bookmark, BookmarkCheck, Send, Plus, PenTool } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
+import { formatJobType } from "@/app/utils/format"
 
 interface Role {
-  _id: string
+  id: string
   title: string
   description: string
   requirements: string[]
+  skills: {
+    id: string
+    name: string
+    description: string
+  }[]
   company: {
-    _id: string
+    id: string
     name: string
   }
   location: string
   salary: string
   type: string
+  remote: boolean
+  visaSponsorship: boolean
 }
 
 interface SavedRole {
@@ -261,7 +269,7 @@ export default function RolesPage() {
                     <SelectItem value="all">All Types</SelectItem>
                     {jobTypes.map((type) => (
                       <SelectItem key={type} value={type}>
-                        {type}
+                        {formatJobType(type)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -347,56 +355,93 @@ export default function RolesPage() {
 
             {filteredRoles.map((role, index) => (
               <Card 
-                key={role._id} 
-                className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up"
+                key={role.id} 
+                className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up flex flex-col h-full"
                 style={{ animationDelay: `${(index + 2) * 100}ms` }}
               >
-                <CardHeader>
+                <CardHeader className="pb-4">
                   <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{role.title}</CardTitle>
-                      <CardDescription className="mt-2">{role.company.name}</CardDescription>
+                    <div className="space-y-1">
+                      <CardTitle className="text-xl line-clamp-2">{role.title}</CardTitle>
+                      <CardDescription className="flex items-center gap-1">
+                        <Building className="h-4 w-4" />
+                        <span className="line-clamp-1">{role.company.name} (ID: {role.id})</span>
+                      </CardDescription>
                     </div>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleSaveRole(role._id)}
-                      className="hover:bg-transparent"
-                      disabled={savedRolesLoading}
+                      onClick={() => handleSaveRole(role.id)}
+                      className="text-muted-foreground hover:text-primary shrink-0"
                     >
-                      {savedRolesLoading ? (
-                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      ) : savedRoles.some(saved => saved.roleId === role._id) ? (
-                        <BookmarkCheck className="h-5 w-5 text-primary" />
+                      {savedRoles.some(r => r.roleId === role.id) ? (
+                        <BookmarkCheck className="h-5 w-5" />
                       ) : (
                         <Bookmark className="h-5 w-5" />
                       )}
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{role.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {role.requirements.map((skill) => (
-                      <Badge key={skill} variant="secondary" className="bg-white/50 dark:bg-gray-800/50">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <Badge variant={role.type === 'open' ? 'default' : 'secondary'}>
-                      {role.type}
+                <CardContent className="flex-1 space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary">
+                      <MapPin className="mr-1 h-3 w-3" />
+                      <span className="line-clamp-1">{role.location}</span>
                     </Badge>
-                    <Button
-                      onClick={() => handleApply(role._id)}
-                      disabled={role.type !== 'open'}
-                      className="flex items-center gap-2 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
-                    >
-                      <Send className="h-4 w-4" />
-                      Apply
-                    </Button>
+                    <Badge variant="secondary">
+                      <Briefcase className="mr-1 h-3 w-3" />
+                      {formatJobType(role.type)}
+                    </Badge>
+                    {role.remote && (
+                      <Badge variant="secondary">
+                        <Clock className="mr-1 h-3 w-3" />
+                        Remote
+                      </Badge>
+                    )}
+                    {role.visaSponsorship && (
+                      <Badge variant="secondary">
+                        <Code className="mr-1 h-3 w-3" />
+                        Visa Sponsorship
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-muted-foreground line-clamp-3">{role.description}</p>
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-sm">Required Skills:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {role.skills.map((skill) => (
+                        <Badge key={skill.id} variant="outline" className="text-xs">
+                          {skill.name}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
+                <CardFooter className="pt-4 mt-auto">
+                  <div className="flex justify-between items-center w-full">
+                    <div className="flex gap-2">
+                      <div className="flex flex-col gap-2 w-full">
+                        <div className="text-md font-semibold">{role.salary}</div>
+                        <div className="flex gap-2">
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/developer/writing-help?roleId=${role.id}`)}
+                            className="gap-1"
+                          >
+                            <PenTool className="h-4 w-4" /> Write to
+                          </Button>
+
+                          <Button size="sm" onClick={() => handleApply(role.id)}>
+                            Apply Now <ArrowRight className="h-4 w-4" />
+                          </Button>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardFooter>
               </Card>
             ))}
           </div>

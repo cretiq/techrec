@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // GET all custom roles for the authenticated developer
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -13,18 +13,16 @@ export async function GET() {
 
     const developer = await prisma.developer.findUnique({
       where: { email: session.user.email },
+      include: {
+        customRoles: true,
+      },
     });
 
     if (!developer) {
       return NextResponse.json({ error: "Developer not found" }, { status: 404 });
     }
 
-    const customRoles = await prisma.customRole.findMany({
-      where: { developerId: developer.id },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return NextResponse.json(customRoles);
+    return NextResponse.json(developer.customRoles);
   } catch (error) {
     console.error("Error fetching custom roles:", error);
     return NextResponse.json(
@@ -35,12 +33,15 @@ export async function GET() {
 }
 
 // POST create a new custom role
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const body = await req.json();
+    const { title, description, requirements, location, salary, type, remote, visaSponsorship } = body;
 
     const developer = await prisma.developer.findUnique({
       where: { email: session.user.email },
@@ -50,30 +51,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Developer not found" }, { status: 404 });
     }
 
-    const body = await request.json();
-    const { title, description, requirements, location, salary, type } = body;
-
-    // Validate required fields
-    if (!title || !description || !location || !salary || !type) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
     const customRole = await prisma.customRole.create({
       data: {
         title,
         description,
-        requirements: requirements || [],
+        requirements,
         location,
         salary,
         type,
+        remote,
         developerId: developer.id,
       },
     });
 
-    return NextResponse.json(customRole, { status: 201 });
+    return NextResponse.json(customRole);
   } catch (error) {
     console.error("Error creating custom role:", error);
     return NextResponse.json(
