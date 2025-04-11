@@ -1,13 +1,12 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { prisma } from './prisma'
-import { ObjectId } from 'mongodb'
 
 // Extend the built-in session types
 declare module 'next-auth' {
   interface Session {
     user: {
-      id: string // This will be a MongoDB ObjectID string
+      id: string
       name: string
       email: string
       image: string
@@ -33,42 +32,13 @@ export const authOptions: NextAuthOptions = {
           })
           
           if (!existingDeveloper) {
-            // Create new developer with a proper MongoDB ObjectID
+            // Create new developer with minimum required fields
             const newDeveloper = await prisma.developer.create({
               data: {
-                id: new ObjectId().toHexString(), // Generate a new MongoDB ObjectID
                 email: user.email!,
-                profileEmail: user.email!,
+                profileEmail: user.email!, // Set profileEmail same as email initially
                 name: user.name!,
-                title: 'Developer',
-                // Initialize empty arrays for related records
-                developerSkills: {
-                  create: []
-                },
-                experience: {
-                  create: []
-                },
-                education: {
-                  create: []
-                },
-                achievements: {
-                  create: []
-                },
-                projects: {
-                  create: []
-                },
-                assessments: {
-                  create: []
-                },
-                applications: {
-                  create: []
-                },
-                savedRoles: {
-                  create: []
-                },
-                customRoles: {
-                  create: []
-                }
+                title: 'Software Developer', // Default title
               }
             })
             user.id = newDeveloper.id
@@ -82,7 +52,6 @@ export const authOptions: NextAuthOptions = {
             })
             user.id = existingDeveloper.id
           }
-          
           return true
         } catch (error) {
           console.error('Error in signIn callback:', error)
@@ -99,14 +68,15 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session?.user) {
-        session.user.id = token.id as string
-        
         try {
-          // Get developer info using Prisma
+          // Find the developer by email
           const developer = await prisma.developer.findUnique({
-            where: { id: session.user.id }
+            where: { email: session.user.email! }
           })
+          
           if (developer) {
+            // Set the session user ID and title from the developer record
+            session.user.id = developer.id
             session.user.title = developer.title
           }
         } catch (error) {
@@ -116,13 +86,13 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
+  pages: {
+    signIn: '/auth/signin',  // Custom sign-in page
+    error: '/auth/error',    // Error page
+  },
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  }
 } 
