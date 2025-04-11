@@ -5,18 +5,22 @@ import { RoleType } from '@prisma/client'
 // Helper function to convert role type to enum value
 const convertRoleType = (type: string): RoleType => {
   const typeMap: { [key: string]: RoleType } = {
-    'Full-time': RoleType.FULL_TIME,
-    'Part-time': RoleType.PART_TIME,
-    'Contract': RoleType.CONTRACT,
-    'Internship': RoleType.INTERNSHIP,
-    'Freelance': RoleType.FREELANCE,
-    'FULL_TIME': RoleType.FULL_TIME,
-    'PART_TIME': RoleType.PART_TIME,
-    'CONTRACT': RoleType.CONTRACT,
-    'INTERNSHIP': RoleType.INTERNSHIP,
-    'FREELANCE': RoleType.FREELANCE
+    'Full-time': 'FULL_TIME',
+    'Part-time': 'PART_TIME',
+    'Contract': 'CONTRACT',
+    'Internship': 'INTERNSHIP',
+    'Freelance': 'FREELANCE',
+    'FULL_TIME': 'FULL_TIME',
+    'PART_TIME': 'PART_TIME',
+    'CONTRACT': 'CONTRACT',
+    'INTERNSHIP': 'INTERNSHIP',
+    'FREELANCE': 'FREELANCE'
   }
-  return typeMap[type] || RoleType.FULL_TIME
+  const convertedType = typeMap[type]
+  if (!convertedType) {
+    throw new Error('Invalid role type')
+  }
+  return convertedType
 }
 
 interface RoleWithRelations {
@@ -110,6 +114,11 @@ export async function POST(request: Request) {
       )
     }
 
+    // Normalize role type
+    const validRoleTypes = ['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP', 'FREELANCE']
+    const upperType = data.type?.toUpperCase()
+    const normalizedType = upperType?.replace(/[^A-Z]/g, '_')
+
     // Create new role
     const role = await prisma.role.create({
       data: {
@@ -118,7 +127,7 @@ export async function POST(request: Request) {
         companyId: data.companyId,
         location: data.location,
         salary: data.salary,
-        type: convertRoleType(data.type),
+        type: normalizedType,
         remote: data.remote || false,
         visaSponsorship: data.visaSponsorship || false,
         skills: {
@@ -150,7 +159,21 @@ export async function POST(request: Request) {
           }
         }
       }
-    }) as RoleWithRelations
+    })
+
+    // Check if the normalized type matches any valid type
+    const isValidType = validRoleTypes.some(type => 
+      type === normalizedType || 
+      type.replace('_', '') === upperType || 
+      type === upperType
+    )
+
+    if (!isValidType) {
+      return NextResponse.json(
+        { error: 'Invalid role type' },
+        { status: 400 }
+      )
+    }
 
     // Format the response to match the frontend interface
     const formattedRole = {

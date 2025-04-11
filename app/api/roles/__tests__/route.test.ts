@@ -308,4 +308,155 @@ describe('POST /api/roles', () => {
       expect(data.type).toBe('PART_TIME')
     }
   })
+
+  it('should handle empty skills array', async () => {
+    const mockCreatedRole = {
+      id: '1',
+      title: 'Software Engineer',
+      description: 'A great role',
+      location: 'Remote',
+      salary: '$100k',
+      type: 'FULL_TIME',
+      remote: true,
+      visaSponsorship: false,
+      company: {
+        id: 'company1',
+        name: 'Tech Corp',
+      },
+      skills: [],
+    }
+
+    ;(prisma.role.create as jest.Mock).mockResolvedValue(mockCreatedRole)
+
+    const requestBody = {
+      title: 'Software Engineer',
+      description: 'A great role',
+      companyId: 'company1',
+      location: 'Remote',
+      salary: '$100k',
+      type: 'Full-time',
+      remote: true,
+      visaSponsorship: false,
+      skills: [],
+    }
+
+    const response = await POST(
+      new Request('http://localhost:3000/api/roles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+    )
+
+    expect(response.status).toBe(201)
+    const data = await response.json()
+    expect(data.skills).toEqual([])
+    expect(data.requirements).toEqual([])
+  })
+
+  it('should handle invalid role type', async () => {
+    const requestBody = {
+      title: 'Software Engineer',
+      description: 'A great role',
+      companyId: 'company1',
+      type: 'INVALID_TYPE',
+    }
+
+    const response = await POST(
+      new Request('http://localhost:3000/api/roles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+    )
+
+    expect(response.status).toBe(400)
+    const data = await response.json()
+    expect(data).toEqual({
+      error: 'Invalid role type',
+    })
+  })
+
+  it('should handle missing company', async () => {
+    const mockCreatedRole = {
+      id: '1',
+      title: 'Software Engineer',
+      description: 'A great role',
+      location: 'Remote',
+      salary: '$100k',
+      type: 'FULL_TIME',
+      remote: true,
+      visaSponsorship: false,
+      company: null,
+      skills: [],
+    }
+
+    ;(prisma.role.create as jest.Mock).mockResolvedValue(mockCreatedRole)
+
+    const requestBody = {
+      title: 'Software Engineer',
+      description: 'A great role',
+      companyId: 'non_existent_company',
+      location: 'Remote',
+      salary: '$100k',
+      type: 'Full-time',
+      remote: true,
+      visaSponsorship: false,
+    }
+
+    const response = await POST(
+      new Request('http://localhost:3000/api/roles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+    )
+
+    expect(response.status).toBe(201)
+    const data = await response.json()
+    expect(data.company).toBeNull()
+  })
+
+  it('should handle GET with empty results', async () => {
+    ;(prisma.role.findMany as jest.Mock).mockResolvedValue([])
+
+    const response = await GET()
+    expect(response.status).toBe(200)
+
+    const data = await response.json()
+    expect(data).toEqual([])
+  })
+
+  it('should handle GET with partial data', async () => {
+    const mockRoles = [
+      {
+        id: '1',
+        title: 'Software Engineer',
+        description: 'A great role',
+        location: 'Remote',
+        salary: null,
+        type: 'FULL_TIME',
+        remote: true,
+        visaSponsorship: false,
+        company: null,
+        skills: [],
+      },
+    ]
+
+    ;(prisma.role.findMany as jest.Mock).mockResolvedValue(mockRoles)
+
+    const response = await GET()
+    expect(response.status).toBe(200)
+
+    const data = await response.json()
+    expect(data[0].salary).toBeNull()
+    expect(data[0].company).toBeNull()
+    expect(data[0].skills).toEqual([])
+  })
 }) 
