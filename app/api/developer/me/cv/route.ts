@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import PDFParser from 'pdf2json';
+import OpenAI from 'openai';
+
+const openai = new OpenAI();
 
 export async function POST(request: Request) {
   try {
@@ -62,7 +65,7 @@ export async function POST(request: Request) {
     const pdfParser = new PDFParser();
 
     return new Promise((resolve, reject) => {
-      pdfParser.on('pdfParser_dataReady', (pdfData) => {
+      pdfParser.on('pdfParser_dataReady', async (pdfData) => {
         try {
           console.log(`Processing PDF with ${pdfData.Pages.length} pages`);
           const text = decodeURIComponent(pdfData.Pages.map(page => 
@@ -78,31 +81,20 @@ export async function POST(request: Request) {
 
           resolve(NextResponse.json({ data: { text } }));
         } catch (error) {
-          console.error('Error while processing PDF content:', error);
+          console.error('Error during PDF parsing:', error);
           reject(error);
         }
       });
 
       pdfParser.on('pdfParser_dataError', (error) => {
-        console.error('PDF parsing error:', error);
+        console.error('Error during PDF parsing:', error);
         reject(error);
       });
 
-      console.log('Starting PDF buffer parsing...');
       pdfParser.parseBuffer(buffer);
     });
   } catch (error) {
-    console.error('Error processing CV:', error);
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      });
-    }
-    return NextResponse.json(
-      { error: 'Failed to process CV' },
-      { status: 500 }
-    );
+    console.error('Error during CV parsing:', error);
+    return NextResponse.json({ error: 'Failed to parse CV' }, { status: 500 });
   }
-} 
+}
