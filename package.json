@@ -22,7 +22,8 @@
     "create:roles": "tsx scripts/create-roles.ts",
     "delete:all": "tsx scripts/delete-all.ts",
     "create:companies-roles": "tsx scripts/create-companies-roles.ts",
-    "delete:collections": "tsx scripts/delete-collections.ts"
+    "delete:collections": "tsx scripts/delete-collections.ts",
+    "migrate:skills": "tsx scripts/migrate-skills.ts"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.8.0",
@@ -124,5 +125,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "^5"
-  }
+  },
+  "type": "module"
 }
