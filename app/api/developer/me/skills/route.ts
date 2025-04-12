@@ -11,18 +11,26 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const skills = await prisma.developer.findUnique({
+    const developer = await prisma.developer.findUnique({
       where: { id: session.user.id },
-      select: {
+      include: {
         developerSkills: {
           include: {
-            skill: true
+            skill: {
+              include: {
+                category: true
+              }
+            }
           }
         }
       }
     });
 
-    return NextResponse.json(skills?.developerSkills || []);
+    if (!developer) {
+      return NextResponse.json({ error: 'Developer not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(developer.developerSkills);
   } catch (error) {
     console.error('Error fetching developer skills:', error);
     return NextResponse.json(
@@ -39,64 +47,106 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { name, level = 'BEGINNER' } = await request.json();
-
-    // Validate and cast the level to SkillLevel enum
-    const skillLevel = level.toUpperCase() as SkillLevel;
-    if (!Object.values(SkillLevel).includes(skillLevel)) {
+    const { skills } = await request.json();
+    
+    if (!skills || !Array.isArray(skills)) {
       return NextResponse.json(
-        { error: 'Invalid skill level' },
+        { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // First, find or create the skill category
-    const category = await prisma.skillCategory.upsert({
-      where: { name: 'uncategorized' },
-      update: {},
-      create: { 
-        name: 'uncategorized',
-        description: 'Skills without a specific category'
-      }
-    });
+    // Process each skill
+    const processedSkills = await Promise.all(
+      skills.map(async ({ name, category, level }) => {
+        // First, ensure the category exists
+        const skillCategory = await prisma.skillCategory.upsert({
+          where: { name: category || 'uncategorized' },
+          update: {},
+          create: { 
+            name: category || 'uncategorized',
+            description: 'Skills without a specific category'
+          }
+        });
 
-    // Then create the skill
-    const skill = await prisma.skill.upsert({
-      where: { name },
-      update: {},
-      create: { 
-        name,
-        categoryId: category.id
-      }
-    });
+        // Then, ensure the skill exists
+        const skill = await prisma.skill.upsert({
+          where: { name },
+          update: {},
+          create: { 
+            name,
+            categoryId: skillCategory.id
+          }
+        });
 
-    // Finally create the developer skill
-    const updatedDeveloper = await prisma.developer.update({
-      where: { id: session.user.id },
-      data: {
-        developerSkills: {
+        // Finally, create or update the developer skill
+        const developerSkill = await prisma.developerSkill.upsert({
+          where: {
+            developerId_skillId: {
+              developerId: session.user.id,
+              skillId: skill.id
+            }
+          },
+          update: {
+            level: level || SkillLevel.INTERMEDIATE
+          },
           create: {
+            developerId: session.user.id,
             skillId: skill.id,
-            level: skillLevel
-          }
-        }
-      },
-      include: {
-        developerSkills: {
+            level: level || SkillLevel.INTERMEDIATE
+          },
           include: {
-            skill: true
+            skill: {
+              include: {
+                category: true
+              }
+            }
           }
+        });
+
+        return developerSkill;
+      })
+    );
+
+    return NextResponse.json(processedSkills);
+  } catch (error) {
+    console.error('Error adding developer skills:', error);
+    return NextResponse.json(
+      { error: 'Failed to add developer skills' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { skillId } = await request.json();
+    if (!skillId) {
+      return NextResponse.json(
+        { error: 'Missing skill ID' },
+        { status: 400 }
+      );
+    }
+
+    const deletedSkill = await prisma.developerSkill.delete({
+      where: {
+        developerId_skillId: {
+          developerId: session.user.id,
+          skillId
         }
       }
     });
 
-    // Return the newly created developer skill
-    const newDeveloperSkill = updatedDeveloper.developerSkills[updatedDeveloper.developerSkills.length - 1];
-    return NextResponse.json(newDeveloperSkill);
+    return NextResponse.json(deletedSkill);
   } catch (error) {
-    console.error('Error adding developer skill:', error);
+    console.error('Error deleting developer skill:', error);
     return NextResponse.json(
-      { error: 'Failed to add developer skill' },
+      { error: 'Failed to delete developer skill' },
       { status: 500 }
     );
   }
