@@ -15,7 +15,11 @@ export async function GET() {
       include: {
         developerSkills: {
           include: {
-            skill: true
+            skill: {
+              include: {
+                category: true
+              }
+            }
           }
         },
         experience: true,
@@ -39,7 +43,13 @@ export async function GET() {
       city: developer.contactInfo?.city || '',
       state: developer.contactInfo?.state || '',
       country: developer.contactInfo?.country || '',
-      about: developer.about || ''
+      about: developer.about || '',
+      skills: developer.developerSkills.map(skill => ({
+        id: skill.id,
+        name: skill.skill.name,
+        category: skill.skill.category?.name || 'Other',
+        level: skill.level
+      }))
     };
 
     return NextResponse.json(mappedDeveloper);
@@ -60,7 +70,7 @@ export async function PUT(request: Request) {
     }
 
     const data = await request.json();
-    console.log("This is the data", data.about);
+    console.log("Updating developer profile with data:", data);
     
     // First update the developer's basic info
     const updatedDeveloper = await prisma.developer.update({
@@ -86,27 +96,97 @@ export async function PUT(request: Request) {
       }
     });
 
-    // Then update or create contact info
+    // Update or create contact info
     await prisma.contactInfo.upsert({
       where: {
         developerId: session.user.id
       },
       create: {
         developerId: session.user.id,
-        phone: data.phone || null,
-        address: data.location || null,
-        city: data.city || null,
-        state: data.state || null,
-        country: data.country || null
+        phone: data.contactInfo?.phone || null,
+        address: data.contactInfo?.address || null,
+        city: data.contactInfo?.city || null,
+        state: data.contactInfo?.state || null,
+        country: data.contactInfo?.country || null
       },
       update: {
-        phone: data.phone || null,
-        address: data.location || null,
-        city: data.city || null,
-        state: data.state || null,
-        country: data.country || null
+        phone: data.contactInfo?.phone || null,
+        address: data.contactInfo?.address || null,
+        city: data.contactInfo?.city || null,
+        state: data.contactInfo?.state || null,
+        country: data.contactInfo?.country || null
       }
     });
+
+    // Handle experience
+    if (data.experience) {
+      // Delete existing experience
+      await prisma.experience.deleteMany({
+        where: { developerId: session.user.id }
+      });
+
+      // Create new experience entries
+      await prisma.experience.createMany({
+        data: data.experience.map((exp: any) => ({
+          developerId: session.user.id,
+          title: exp.title,
+          company: exp.company,
+          description: exp.description,
+          location: exp.location,
+          startDate: exp.startDate,
+          endDate: exp.endDate,
+          current: exp.current,
+          responsibilities: exp.responsibilities,
+          achievements: exp.achievements,
+          teamSize: exp.teamSize,
+          techStack: exp.techStack
+        }))
+      });
+    }
+
+    // Handle education
+    if (data.education) {
+      // Delete existing education
+      await prisma.education.deleteMany({
+        where: { developerId: session.user.id }
+      });
+
+      // Create new education entries
+      await prisma.education.createMany({
+        data: data.education.map((edu: any) => ({
+          developerId: session.user.id,
+          degree: edu.degree,
+          institution: edu.institution,
+          year: edu.year,
+          location: edu.location,
+          startDate: edu.startDate,
+          endDate: edu.endDate,
+          gpa: edu.gpa,
+          honors: edu.honors,
+          activities: edu.activities
+        }))
+      });
+    }
+
+    // Handle achievements
+    if (data.achievements) {
+      // Delete existing achievements
+      await prisma.achievement.deleteMany({
+        where: { developerId: session.user.id }
+      });
+
+      // Create new achievement entries
+      await prisma.achievement.createMany({
+        data: data.achievements.map((achievement: any) => ({
+          developerId: session.user.id,
+          title: achievement.title,
+          description: achievement.description,
+          date: achievement.date,
+          url: achievement.url,
+          issuer: achievement.issuer
+        }))
+      });
+    }
 
     // Fetch the complete updated developer with all relations
     const finalDeveloper = await prisma.developer.findUnique({
@@ -114,7 +194,11 @@ export async function PUT(request: Request) {
       include: {
         developerSkills: {
           include: {
-            skill: true
+            skill: {
+              include: {
+                category: true
+              }
+            }
           }
         },
         experience: true,
