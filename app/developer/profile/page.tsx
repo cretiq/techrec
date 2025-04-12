@@ -897,19 +897,10 @@ export default function DeveloperProfilePage() {
                   <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up" style={{ animationDelay: '500ms' }}>
                     <CardHeader className="flex flex-row items-center justify-between">
                       <CardTitle className="text-lg md:text-xl">Skills</CardTitle>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setIsSkillInputVisible(true)}
-                        className="gap-1 text-xs md:text-sm bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30"
-                      >
-                        <Plus className="h-3 w-3 md:h-4 md:w-4" />
-                        Add Skill
-                      </Button>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex flex-wrap gap-2">
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap gap-1">
                           {tempProfile?.developerSkills?.map((developerSkill) => (
                             <Badge
                               key={developerSkill.id}
@@ -920,7 +911,7 @@ export default function DeveloperProfilePage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
+                                className="h-6 w-6 p-0 ml-1 hover:bg-transparent"
                                 onClick={() => handleRemoveSkill(developerSkill.id)}
                               >
                                 <X className="h-3 w-3" />
