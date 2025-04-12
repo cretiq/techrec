@@ -17,7 +17,13 @@ async function deleteCollections() {
     await client.connect()
     const db = client.db('techrec')
     
-    const collections = ['Skill', 'Project', 'Experience', 'Education', 'SavedRole']
+    const collections = [
+      'Role',
+      'RoleSkill',
+      'Skill',
+      'Company',
+      'SkillCategory'
+    ]
     
     for (const collection of collections) {
       const result = await db.collection(collection).deleteMany({})
