@@ -89,10 +89,10 @@ export function SkillsInput({ onAddSkill }: { onAddSkill: (skill: string) => voi
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="dashdot"
           role="combobox"
           aria-expanded={open}
-          className="h-8 rounded-full px-3 gap-1"
+          className="h-8 rounded-full px-3 gap-1 text-black/60"
         >
           <Plus className="h-4 w-4" />
           Add Skill
