@@ -4,10 +4,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/components/ui/use-toast"
 import {
   Select,
@@ -21,9 +19,6 @@ import { ArrowRight, Download, RefreshCw } from "lucide-react"
 interface CoverLetterOptions {
   tone: string
   length: number
-  focusPoints: string[]
-  achievements: string[]
-  technologies: string[]
 }
 
 interface CoverLetterCreatorProps {
@@ -50,41 +45,31 @@ interface CoverLetterCreatorProps {
 }
 
 export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
-  const [jobDescription, setJobDescription] = useState("")
-  const [companyInfo, setCompanyInfo] = useState("")
   const [options, setOptions] = useState<CoverLetterOptions>({
     tone: "professional",
     length: 350,
-    focusPoints: [],
-    achievements: [],
-    technologies: [],
   })
   const [generatedLetter, setGeneratedLetter] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
   const { toast } = useToast()
 
   const handleGenerate = async () => {
-    if (!jobDescription || !companyInfo) {
-      toast({
-        title: "Missing Information",
-        description: "Please provide both job description and company information.",
-        variant: "destructive",
-      })
-      return
-    }
-
     setIsGenerating(true)
     try {
-      // TODO: Replace with actual API call
       const response = await fetch("/api/generate-cover-letter", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          jobDescription,
-          companyInfo,
-          options,
+          jobDescription: role.description,
+          companyInfo: `${role.company.name} - ${role.location}${role.remote ? ' (Remote)' : ''}`,
+          options: {
+            ...options,
+            technologies: role.skills.map(skill => skill.name),
+            achievements: [], // These can be added later if needed
+            focusPoints: role.requirements,
+          },
         }),
       })
 
@@ -117,36 +102,9 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
     URL.revokeObjectURL(url)
   }
 
-  const addFocusPoint = (point: string) => {
-    if (point && !options.focusPoints.includes(point)) {
-      setOptions((prev) => ({
-        ...prev,
-        focusPoints: [...prev.focusPoints, point],
-      }))
-    }
-  }
-
-  const addAchievement = (achievement: string) => {
-    if (achievement && !options.achievements.includes(achievement)) {
-      setOptions((prev) => ({
-        ...prev,
-        achievements: [...prev.achievements, achievement],
-      }))
-    }
-  }
-
-  const addTechnology = (technology: string) => {
-    if (technology && !options.technologies.includes(technology)) {
-      setOptions((prev) => ({
-        ...prev,
-        technologies: [...prev.technologies, technology],
-      }))
-    }
-  }
-
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card className="md:col-span-1">
+    <div className="grid gap-6">
+      <Card>
         <CardHeader>
           <CardTitle>Cover Letter Settings</CardTitle>
           <CardDescription>
@@ -155,26 +113,6 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <div>
-              <Label>Job Description</Label>
-              <Textarea
-                placeholder="Paste the job description here..."
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                className="mt-2 min-h-[150px]"
-              />
-            </div>
-
-            <div>
-              <Label>Company Information</Label>
-              <Textarea
-                placeholder="Add any specific company information or research..."
-                value={companyInfo}
-                onChange={(e) => setCompanyInfo(e.target.value)}
-                className="mt-2 min-h-[100px]"
-              />
-            </div>
-
             <div>
               <Label>Tone</Label>
               <Select
@@ -214,7 +152,7 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
 
             <Button
               onClick={handleGenerate}
-              disabled={isGenerating || !jobDescription || !companyInfo}
+              disabled={isGenerating}
               className="w-full"
             >
               {isGenerating ? (
@@ -233,7 +171,7 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-1">
+      <Card>
         <CardHeader>
           <CardTitle>Generated Cover Letter</CardTitle>
           <CardDescription>
