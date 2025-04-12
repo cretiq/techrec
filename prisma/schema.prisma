@@ -72,7 +72,7 @@ model Developer {
   email           String    @unique
   profileEmail    String?
   name            String
-  title           String
+  title           String?
   about           String?
   isDeleted       Boolean   @default(false)
   deletedAt       DateTime?
