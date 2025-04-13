@@ -14,7 +14,7 @@ interface ExperienceCardProps {
 
 export function ExperienceCard({ profile, onDeleteExperience }: ExperienceCardProps) {
   return (
-    <Card className="border-0 shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up">
+    <Card className="border shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Work Experience</CardTitle>
         <Button variant="outline" size="sm" className="gap-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">

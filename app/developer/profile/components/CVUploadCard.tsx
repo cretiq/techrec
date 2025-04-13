@@ -21,7 +21,7 @@ export function CVUploadCard({
   const { toast } = useToast()
 
   return (
-    <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up">
+    <Card className="border shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up">
       <CardHeader className="pb-3">
         <CardTitle>Upload CV</CardTitle>
         <CardDescription className="text-xs md:text-sm">
@@ -42,7 +42,7 @@ export function CVUploadCard({
               />
               <span 
                 className={cn(
-                  "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white",
+                  "inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white",
                   "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer transition-all duration-200",
                   uploadState === 'uploading' || uploadState === 'analyzing' 
                     ? "bg-indigo-400 cursor-not-allowed"
