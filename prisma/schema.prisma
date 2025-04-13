@@ -388,20 +388,27 @@ model SavedRole {
 }
 
 model CustomRole {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  developerId String    @db.ObjectId
-  developer   Developer @relation(fields: [developerId], references: [id])
-  requirements String[]
-  location    String
-  salary      String
-  type        RoleType
-  remote      Boolean   @default(false)
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId   String    @db.ObjectId
+  developer     Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
 
+  title         String
+  description   String
+  requirements  String[]
+  skills        String[]
+  location      String
+  salary        String?
+  type          RoleType
+  remote        Boolean   @default(false)
+  visaSponsorship Boolean @default(false)
+  companyName   String?
+  url           String?
+  originalRoleId String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([developerId, originalRoleId])
   @@index([developerId])
   @@map("CustomRole")
 }

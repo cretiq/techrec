@@ -34,6 +34,9 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                     <Link href="/developer/roles" className="text-sm font-medium hover:text-primary transition-colors">
                       Roles
                     </Link>
+                    <Link href="/developer/roles/search" className="text-sm font-medium hover:text-primary transition-colors">
+                      Search Roles
+                    </Link>
                     {session && (
                       <>
                         <Link href="/developer/profile" className="text-sm font-medium hover:text-primary transition-colors">
@@ -45,9 +48,9 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                         <Link href="/developer/writing-help" className="text-sm font-medium hover:text-primary transition-colors">
                           Writing Help
                         </Link>
-                        <Link href="/github-analyzer" className="text-sm font-medium hover:text-primary transition-colors">
+                        {/* <Link href="/github-analyzer" className="text-sm font-medium hover:text-primary transition-colors">
                           GitHub Analyzer
-                        </Link>
+                        </Link> */}
                       </>
                     )}
                   </nav>
