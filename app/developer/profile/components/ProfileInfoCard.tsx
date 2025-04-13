@@ -106,3 +106,4 @@ export function ProfileInfoCard({ profile, modifiedFields, onInputChange }: Prof
     </Card>
   )
 } 
+

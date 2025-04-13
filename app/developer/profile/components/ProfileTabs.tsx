@@ -32,7 +32,7 @@ export function ProfileTabs({
 }: ProfileTabsProps) {
   return (
     <Tabs defaultValue="profile" className="w-full">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0">
+      <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border">
         <TabsTrigger value="profile" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
           <User className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
           Profile
@@ -77,7 +77,7 @@ export function ProfileTabs({
         />
       </TabsContent>
 
-      <TabsContent value="achievements" className="space-y-6">
+      <TabsContent value="achievements" className="space-y-6 mt-6">
         <AchievementsCard
           profile={tempProfile}
           onDeleteAchievement={onDeleteAchievement}

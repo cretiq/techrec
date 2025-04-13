@@ -25,7 +25,7 @@ export function ProfileHeader({ profile, onAvatarChange }: ProfileHeaderProps) {
           className="relative group cursor-pointer"
           onClick={() => document.getElementById("profile-upload")?.click()}
         >
-          <Avatar className="h-20 w-20 md:h-24 md:w-24 mb-4 border-2 border-transparent group-hover:border-primary transition-colors">
+          <Avatar className="h-20 w-20 md:h-24 md:w-24  mt-4 border-2 border-transparent group-hover:border-primary transition-colors">
             <AvatarImage src="/placeholder.svg?height=96&width=96" />
             <AvatarFallback>AJ</AvatarFallback>
           </Avatar>
@@ -53,12 +53,6 @@ export function ProfileHeader({ profile, onAvatarChange }: ProfileHeaderProps) {
           <Progress value={85} className="h-2" />
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-2">
-        <Button variant="outline" className="w-full gap-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">
-          <User className="h-4 w-4" />
-          View Public Profile
-        </Button>
-      </CardFooter>
     </Card>
   )
 } 

@@ -12,7 +12,7 @@ interface AchievementsCardProps {
 
 export function AchievementsCard({ profile, onDeleteAchievement }: AchievementsCardProps) {
   return (
-    <Card className="border-0 shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up">
+    <Card className="border shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up">
       <CardHeader>
         <CardTitle>Achievements</CardTitle>
       </CardHeader>
