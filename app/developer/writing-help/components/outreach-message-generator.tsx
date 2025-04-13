@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { ArrowRight, Copy, RefreshCw, Shuffle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Role } from "@/types"
 
 interface MessageVariation {
   content: string
@@ -23,26 +24,7 @@ interface MessageVariation {
 }
 
 interface OutreachMessageGeneratorProps {
-  role: {
-    id: string
-    title: string
-    description: string
-    requirements: string[]
-    skills: {
-      id: string
-      name: string
-      description: string
-    }[]
-    company: {
-      id: string
-      name: string
-    }
-    location: string
-    salary: string
-    type: string
-    remote: boolean
-    visaSponsorship: boolean
-  }
+  role: Role
 }
 
 export function OutreachMessageGenerator({ role }: OutreachMessageGeneratorProps) {

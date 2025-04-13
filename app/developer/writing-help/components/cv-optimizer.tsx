@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { ArrowRight, FileText, Upload, RefreshCw, Download, Check, X } from "lucide-react"
+import { Role } from "@/types"
 
 interface Suggestion {
   original: string
@@ -17,26 +18,7 @@ interface Suggestion {
 }
 
 interface CVOptimizerProps {
-  role: {
-    id: string
-    title: string
-    description: string
-    requirements: string[]
-    skills: {
-      id: string
-      name: string
-      description: string
-    }[]
-    company: {
-      id: string
-      name: string
-    }
-    location: string
-    salary: string
-    type: string
-    remote: boolean
-    visaSponsorship: boolean
-  }
+  role: Role
 }
 
 export function CVOptimizer({ role }: CVOptimizerProps) {
