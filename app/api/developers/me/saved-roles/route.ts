@@ -41,7 +41,6 @@ export async function GET() {
 
     // Extract role IDs from saved roles
     const savedRoleIds = developer.savedRoles.map(savedRole => savedRole.roleId)
-    console.log('Saved role IDs:', savedRoleIds)
     return NextResponse.json(savedRoleIds)
   } catch (error) {
     console.error('Error fetching saved roles:', error)

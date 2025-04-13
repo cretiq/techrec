@@ -72,30 +72,6 @@ export async function PUT(request: Request) {
     const data = await request.json();
     console.log("Updating developer profile with data:", data);
     
-    // First update the developer's basic info
-    const updatedDeveloper = await prisma.developer.update({
-      where: { id: session.user.id },
-      data: {
-        name: data.name,
-        title: data.title,
-        profileEmail: data.profileEmail,
-        about: data.about
-      },
-      include: {
-        developerSkills: {
-          include: {
-            skill: true
-          }
-        },
-        experience: true,
-        education: true,
-        achievements: true,
-        applications: true,
-        savedRoles: true,
-        contactInfo: true
-      }
-    });
-
     // Update or create contact info
     await prisma.contactInfo.upsert({
       where: {
