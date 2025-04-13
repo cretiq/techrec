@@ -7,28 +7,10 @@ import { MapPin, Briefcase, Clock, Building, ArrowRight, Code, BarChart } from "
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { formatJobType } from "@/app/utils/format"
+import { Role } from "@/types"
 
 interface RoleContextCardProps {
-  role: {
-    id: string
-    title: string
-    description: string
-    requirements: string[]
-    skills: {
-      id: string
-      name: string
-      description: string
-    }[]
-    company: {
-      id: string
-      name: string
-    }
-    location: string
-    salary: string
-    type: string
-    remote: boolean
-    visaSponsorship: boolean
-  }
+  role: Role
   activeDocument: "cv" | "cover-letter" | "outreach"
 }
 

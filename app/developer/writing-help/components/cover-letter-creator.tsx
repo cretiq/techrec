@@ -10,28 +10,10 @@ import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
 import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Role } from "@/types"
 
 interface CoverLetterCreatorProps {
-  role: {
-    id: string
-    title: string
-    description: string
-    requirements: string[]
-    skills: {
-      id: string
-      name: string
-      description: string
-    }[]
-    company: {
-      id: string
-      name: string
-    }
-    location: string
-    salary: string
-    type: string
-    remote: boolean
-    visaSponsorship: boolean
-  }
+  role: Role
 }
 
 interface UserInfo {
@@ -42,8 +24,16 @@ interface UserInfo {
   linkedin?: string
   github?: string
   portfolio?: string
-  achievements: string[]
+  achievements: {
+    id: string
+    title: string
+    description: string
+    date: string
+    url?: string
+    issuer?: string
+  }[]
   totalExperience?: string
+  skills: string[]
 }
 
 export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
@@ -92,7 +82,14 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
     if (userInfo) {
       setUserInfo({
         ...userInfo,
-        achievements: [...userInfo.achievements, newAchievement]
+        achievements: [...userInfo.achievements, {
+          id: Date.now().toString(),
+          title: newAchievement,
+          description: '',
+          date: '',
+          url: '',
+          issuer: ''
+        }]
       })
       setNewAchievement('')
     }
@@ -153,7 +150,8 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
         jobSourceInfo: {
           source: jobSource || undefined
         },
-        relevantSkills: role.skills.map(skill => skill.name)
+        roleSkills: role.skills.map(skill => skill.name),
+        developerSkills: userInfo?.achievements.map(achievement => achievement.title) || [],
       }
 
       const response = await fetch("/api/generate-cover-letter", {
@@ -226,8 +224,8 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
               <Label>Your Key Achievements</Label>
               <ScrollArea className="h-32 rounded-md border p-2">
                 {userInfo?.achievements.map((achievement, index) => (
-                  <div key={index} className="flex items-center justify-between mb-2">
-                    <p className="text-sm flex-1 pr-2">{achievement}</p>
+                  <div key={achievement.id} className="flex items-center justify-between mb-2">
+                    <p className="text-sm flex-1 pr-2">{achievement.title}</p>
                     <Button 
                       variant="ghost" 
                       size="icon" 

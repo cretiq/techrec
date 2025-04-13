@@ -12,27 +12,8 @@ import { CoverLetterCreator } from "./components/cover-letter-creator"
 import { OutreachMessageGenerator } from "./components/outreach-message-generator"
 import { RoleContextCard } from "./components/role-context-card"
 import { useToast } from "@/components/ui/use-toast"
-
-interface Role {
-  id: string
-  title: string
-  description: string
-  requirements: string[]
-  skills: {
-    id: string
-    name: string
-    description: string
-  }[]
-  company: {
-    id: string
-    name: string
-  }
-  location: string
-  salary: string
-  type: string
-  remote: boolean
-  visaSponsorship: boolean
-}
+import { Role } from "@/types"
+import { useSession } from 'next-auth/react'
 
 export default function WritingHelpPage() {
   const [activeTab, setActiveTab] = useState<"cv" | "cover-letter" | "outreach">("cv")
@@ -41,43 +22,75 @@ export default function WritingHelpPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const roleId = searchParams.get("roleId")
+  const passedRoleData = searchParams.get("roleData")
   const { toast } = useToast()
+  const { data: session, status } = useSession()
 
   useEffect(() => {
-    const fetchRole = async () => {
+    const processRole = async () => {
+      setLoading(true)
+      if (status === 'unauthenticated') {
+        router.push('/auth/signin?callbackUrl=/developer/writing-help' + (roleId ? `?roleId=${roleId}` : ''))
+        return
+      }
+
+      if (passedRoleData) {
+        try {
+          const decodedRole = JSON.parse(decodeURIComponent(passedRoleData))
+          console.log("Using passed role data:", decodedRole)
+          setRole(decodedRole as Role)
+          setLoading(false)
+        } catch (error) {
+          console.error("Error parsing passed role data:", error)
+          toast({ title: "Error", description: "Could not load role data. Please try again.", variant: "destructive" })
+          router.push("/developer/roles/search")
+          setLoading(false)
+        }
+        return
+      }
+
       if (!roleId) {
         toast({
-          title: "No role selected",
-          description: "Please select a role to create application materials for.",
+          title: "No role specified",
+          description: "Please select a role first or provide role data.",
           variant: "destructive",
         })
-        router.push("/developer/roles")
+        router.push("/developer/roles/search")
+        setLoading(false)
         return
       }
 
       try {
         const response = await fetch(`/api/roles/${roleId}`)
         if (!response.ok) {
-          throw new Error("Failed to fetch role")
+          const customResponse = await fetch(`/api/custom-roles/${roleId}`)
+          if (!customResponse.ok) {
+            throw new Error(`Failed to fetch role (Standard: ${response.status}, Custom: ${customResponse.status})`)
+          }
+          const data = await customResponse.json()
+          console.log("Fetched custom role data:", data)
+          setRole(data)
+        } else {
+          const data = await response.json()
+          console.log("Fetched standard role data:", data)
+          setRole(data)
         }
-        const data = await response.json()
-        console.log("Fetched role data:", data)
-        setRole(data)
       } catch (error) {
         console.error("Error fetching role:", error)
         toast({
           title: "Error",
-          description: "Failed to load role details. Please try again.",
+          description: "Failed to load role details. Please try again or go back.",
           variant: "destructive",
         })
-        router.push("/developer/roles")
       } finally {
         setLoading(false)
       }
     }
 
-    fetchRole()
-  }, [roleId, router, toast])
+    if (status !== 'loading') {
+      processRole()
+    }
+  }, [roleId, passedRoleData, router, toast, status])
 
   if (loading) {
     return (
