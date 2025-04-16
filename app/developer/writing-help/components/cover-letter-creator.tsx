@@ -10,7 +10,8 @@ import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
 import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Role } from "@/types"
+import { Role } from "@/types/role"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface CoverLetterCreatorProps {
   role: Role
@@ -66,6 +67,7 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
           github: data.github || '',
           portfolio: data.portfolio || '',
           achievements: data.achievements || [],
+          skills: data.skills || [],
         })
       } catch (error) {
         console.error('Error fetching profile:', error)

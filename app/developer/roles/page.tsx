@@ -15,32 +15,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
-import { formatJobType } from "@/app/utils/format"
-
-interface Role {
-  id: string
-  title: string
-  description: string
-  requirements: string[]
-  skills: {
-    id: string
-    name: string
-    description: string
-  }[]
-  company: {
-    id: string
-    name: string
-  }
-  location: string
-  salary: string
-  type: string
-  remote: boolean
-  visaSponsorship: boolean
-}
+import { Role } from "@/types/role"
+import { formatJobType } from "@/utils/mappers"
+import ReactMarkdown from 'react-markdown'
 
 interface SavedRole {
   roleId: string
   savedAt: Date
+  role?: Role
 }
 
 export default function RolesPage() {
@@ -54,129 +36,182 @@ export default function RolesPage() {
   const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedLocation, setSelectedLocation] = useState("all")
-  const [selectedJobType, setSelectedJobType] = useState("all")
+  const [selectedJobType, setSelectedJobType] = useState<string>("all")
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
-  const [minMatchPercentage, setMinMatchPercentage] = useState(0)
   const [activeFilters, setActiveFilters] = useState(0)
 
-  // Extract unique locations, job types, and skills for filters
-  const locations = Array.from(new Set(roles.map((role) => role.location)))
-  const jobTypes = Array.from(new Set(roles.map((role) => role.type)))
-  const allSkills = Array.from(new Set(roles.flatMap((role) => role.requirements)))
+  const locations = Array.from(new Set(roles.map((role) => role?.location).filter(Boolean)))
+  const jobTypes = Array.from(new Set(roles.map((role) => role?.type).filter(Boolean)))
+  const allSkills = Array.from(new Set(roles.flatMap((role) => [
+    ...(role?.requirements || []),
+    ...(role?.skills?.map(s => s?.name) || [])
+  ]).filter(Boolean))) as string[]
 
   useEffect(() => {
+    console.log("[RolesPage] useEffect triggered")
+    console.log("[RolesPage] Session status:", status)
+
     if (status === 'unauthenticated') {
-      router.push('/auth/signin')
+      console.log("[RolesPage] User not authenticated, redirecting to signin")
+      router.push('/auth/signin?callbackUrl=/developer/roles')
       return
     }
 
     const fetchRoles = async () => {
+      console.log("[RolesPage] Starting to fetch roles")
+      setLoading(true)
       try {
+        console.log("[RolesPage] Fetching from /api/roles")
         const response = await fetch('/api/roles')
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch roles: ${response.status}`)
+        }
+
         const data = await response.json()
-        setRoles(data)
-      } catch (error) {
-        console.error('Error fetching roles:', error)
+        console.log("[RolesPage] Fetched roles data:", data)
+        
+        if (!Array.isArray(data)) {
+          console.error("[RolesPage] Received non-array data:", data)
+          throw new Error("Invalid roles data format")
+        }
+
+        const validRoles = data.filter(role => {
+          const isValid = role && typeof role === 'object' && role.id
+          if (!isValid) {
+            console.warn("[RolesPage] Invalid role found:", role)
+          }
+          return isValid
+        })
+
+        console.log("[RolesPage] Setting valid roles:", validRoles)
+        setRoles(validRoles)
+      } catch (error: any) {
+        console.error('[RolesPage] Error fetching roles:', error)
         toast({
-          title: 'Error',
-          description: 'Failed to load roles',
+          title: 'Error Loading Roles',
+          description: error.message || 'Failed to load roles data.',
           variant: 'destructive',
         })
       } finally {
+        console.log("[RolesPage] Finished fetching roles")
         setLoading(false)
       }
     }
 
     const fetchSavedRoles = async () => {
+      console.log("[RolesPage] Starting to fetch saved roles")
+      setSavedRolesLoading(true)
       try {
-        setSavedRolesLoading(true)
         setSavedRolesError(null)
+        console.log("[RolesPage] Fetching from /api/developers/me/saved-roles")
         const response = await fetch('/api/developers/me/saved-roles')
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch saved roles')
+          if (response.status === 404) {
+            console.log("[RolesPage] Saved roles endpoint not found or no saved roles")
+            setSavedRoles([])
+          } else {
+            throw new Error(`Failed to fetch saved roles: ${response.status}`)
+          }
+        } else {
+          const data = await response.json()
+          console.log("[RolesPage] Fetched saved roles data:", data)
+          
+          let savedRolesData: SavedRole[]
+          if (data.length > 0 && typeof data[0] === 'object' && data[0].roleId) {
+            savedRolesData = data.map((item: any) => ({
+              ...item,
+              savedAt: new Date(item.savedAt)
+            }))
+          } else if (data.length > 0 && typeof data[0] === 'string') {
+            savedRolesData = data.map((roleId: string) => ({
+              roleId,
+              savedAt: new Date()
+            }))
+          } else {
+            savedRolesData = []
+          }
+          
+          console.log("[RolesPage] Setting saved roles:", savedRolesData)
+          setSavedRoles(savedRolesData)
         }
-        const data = await response.json()
-        // Convert the array of role IDs to SavedRole objects
-        const savedRolesData = data.map((roleId: string) => ({
-          roleId,
-          savedAt: new Date()
-        }))
-        setSavedRoles(savedRolesData)
-      } catch (error) {
-        console.error('Error fetching saved roles:', error)
-        setSavedRolesError('Failed to load saved roles')
-        toast({
-          title: 'Error',
-          description: 'Failed to load saved roles',
-          variant: 'destructive',
-        })
+      } catch (error: any) {
+        console.error('[RolesPage] Error fetching saved roles:', error)
+        setSavedRolesError(error.message || 'Failed to load saved roles')
       } finally {
+        console.log("[RolesPage] Finished fetching saved roles")
         setSavedRolesLoading(false)
       }
     }
 
     if (status === 'authenticated') {
+      console.log("[RolesPage] User authenticated, fetching roles and saved roles")
       fetchRoles()
       fetchSavedRoles()
     }
   }, [status, router, toast])
 
-  // Filter roles based on search and filters
   const filteredRoles = roles.filter((role) => {
-    // Search term filter
+    if (!role) {
+      console.warn("[RolesPage] Found undefined role in filter")
+      return false
+    }
+
+    const searchTermLower = searchTerm.toLowerCase()
     const matchesSearch =
       searchTerm === "" ||
-      role.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.requirements.some((req) => req.toLowerCase().includes(searchTerm.toLowerCase()))
+      role.title?.toLowerCase().includes(searchTermLower) ||
+      role.company?.name?.toLowerCase().includes(searchTermLower) ||
+      role.location?.toLowerCase().includes(searchTermLower) ||
+      role.requirements?.some((req) => req?.toLowerCase().includes(searchTermLower)) ||
+      role.skills?.some((skill) => skill?.name?.toLowerCase().includes(searchTermLower))
 
-    // Location filter
-    const matchesLocation = selectedLocation === "all" || role.location.includes(selectedLocation)
+    const matchesLocation = selectedLocation === "all" || role.location === selectedLocation
+    const matchesJobType = selectedJobType === "all" || String(role.type) === selectedJobType
 
-    // Job type filter
-    const matchesJobType = selectedJobType === "all" || role.type === selectedJobType
+    const roleSkillNames = role.skills?.map(s => s?.name).filter(Boolean) as string[] || []
+    const combinedSkills = [...(role.requirements || []), ...roleSkillNames]
+    const matchesSkills = selectedSkills.length === 0 || selectedSkills.every((skill) => combinedSkills.some(rs => rs?.toLowerCase() === skill?.toLowerCase()))
 
-    // Skills filter
-    const matchesSkills = selectedSkills.length === 0 || selectedSkills.every((skill) => role.requirements.includes(skill))
-
-    // Match percentage filter
-    const matchesPercentage = role.requirements.length >= minMatchPercentage
-
-    return matchesSearch && matchesLocation && matchesJobType && matchesSkills && matchesPercentage
+    return matchesSearch && matchesLocation && matchesJobType && matchesSkills
   })
 
-  // Update active filters count
   React.useEffect(() => {
     let count = 0
+    if (searchTerm) count++
     if (selectedLocation !== "all") count++
     if (selectedJobType !== "all") count++
     if (selectedSkills.length > 0) count++
-    if (minMatchPercentage > 0) count++
     setActiveFilters(count)
-  }, [selectedLocation, selectedJobType, selectedSkills, minMatchPercentage])
+  }, [searchTerm, selectedLocation, selectedJobType, selectedSkills])
 
-  // Clear all filters
   const clearFilters = () => {
+    setSearchTerm("")
     setSelectedLocation("all")
     setSelectedJobType("all")
     setSelectedSkills([])
-    setMinMatchPercentage(0)
   }
 
-  // Toggle skill selection
   const toggleSkill = (skill: string) => {
     setSelectedSkills((prev) => (prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]))
   }
 
-  const handleSaveRole = async (roleId: string) => {
+  const handleSaveToggleRole = async (roleId: string) => {
     if (!session?.user) {
-      router.push('/auth/signin')
+      router.push('/auth/signin?callbackUrl=/developer/roles')
       return
     }
 
+    const isSaved = savedRoles.some(role => role.roleId === roleId)
+    const optimisticSavedRoles = isSaved
+      ? savedRoles.filter(role => role.roleId !== roleId)
+      : [...savedRoles, { roleId, savedAt: new Date() }]
+
+    setSavedRoles(optimisticSavedRoles)
+
     try {
-      const isSaved = savedRoles.some(role => role.roleId === roleId)
-      const response = await fetch(`/api/roles/${roleId}/save`, {
+      const response = await fetch(`/api/developers/me/saved-roles`, {
         method: isSaved ? 'DELETE' : 'POST',
       })
 
@@ -226,8 +261,20 @@ export default function RolesPage() {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Section */}
         <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up">
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold mb-4">Filters</h2>
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg shadow p-6 sticky top-8">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Filters</h2>
+              {activeFilters > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-xs text-primary hover:bg-primary/10 h-auto p-1"
+                >
+                  Clear ({activeFilters})
+                </Button>
+              )}
+            </div>
             <div className="space-y-4">
               {/* Search Input */}
               <div className="relative">
@@ -277,54 +324,30 @@ export default function RolesPage() {
               </div>
 
               {/* Skills Filter */}
-              <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-                <Label>Skills</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {allSkills.map((skill) => (
-                    <Badge
-                      key={skill}
-                      variant={selectedSkills.includes(skill) ? "default" : "outline"}
-                      className="cursor-pointer bg-white/50 dark:bg-gray-800/50"
-                      onClick={() => toggleSkill(skill)}
-                    >
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Match Percentage Slider */}
-              <div className="animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-                <Label>Minimum Match Percentage</Label>
-                <Slider
-                  value={[minMatchPercentage]}
-                  onValueChange={([value]) => setMinMatchPercentage(value)}
-                  min={0}
-                  max={100}
-                  step={10}
-                  className="mt-2"
-                />
-                <p className="text-sm text-muted-foreground mt-2">
-                  {minMatchPercentage}% match
-                </p>
-              </div>
-
-              {/* Clear Filters Button */}
-              {activeFilters > 0 && (
-                <Button
-                  variant="outline"
-                  onClick={clearFilters}
-                  className="w-full hover:bg-primary/10 animate-fade-in-up"
-                  style={{ animationDelay: '500ms' }}
-                >
-                  Clear Filters ({activeFilters})
-                </Button>
-              )}
+              <Accordion type="single" collapsible className="w-full animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+                <AccordionItem value="skills">
+                  <AccordionTrigger className="text-sm font-medium">Skills ({selectedSkills.length})</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto pr-2">
+                      {allSkills.map((skill) => (
+                        <Badge
+                          key={skill}
+                          variant={selectedSkills.includes(skill) ? "default" : "outline"}
+                          className="cursor-pointer bg-white/50 dark:bg-gray-800/50 hover:bg-primary/10 dark:hover:bg-primary/30"
+                          onClick={() => toggleSkill(skill)}
+                        >
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
 
               {/* Add Custom Role Button */}
               <Button
                 variant="outline"
-                className="w-full flex items-center gap-2 hover:bg-primary/10 animate-fade-in-up"
+                className="w-full flex items-center gap-2 hover:bg-primary/10 animate-fade-in-up mt-4"
                 style={{ animationDelay: '600ms' }}
                 onClick={() => router.push('/developer/roles/new')}
               >
@@ -368,18 +391,21 @@ export default function RolesPage() {
                         <span className="line-clamp-1">{role.company.name} (ID: {role.id})</span>
                       </CardDescription>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleSaveRole(role.id)}
-                      className="text-muted-foreground hover:text-primary shrink-0"
-                    >
-                      {savedRoles.some(r => r.roleId === role.id) ? (
-                        <BookmarkCheck className="h-5 w-5" />
-                      ) : (
-                        <Bookmark className="h-5 w-5" />
-                      )}
-                    </Button>
+                    {session && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleSaveToggleRole(role.id)}
+                        className="text-muted-foreground hover:text-primary shrink-0 ml-1"
+                        title={savedRoles.some(r => r.roleId === role.id) ? "Unsave Role" : "Save Role"}
+                      >
+                        {savedRoles.some(r => r.roleId === role.id) ? (
+                          <BookmarkCheck className="h-5 w-5" />
+                        ) : (
+                          <Bookmark className="h-5 w-5" />
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent className="flex-1 space-y-4">

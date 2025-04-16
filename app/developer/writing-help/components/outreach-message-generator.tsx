@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/select"
 import { ArrowRight, Copy, RefreshCw, Shuffle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Role } from "@/types"
+import { Role } from "@/types/role"
+import { Slider } from "@/components/ui/slider"
 
 interface MessageVariation {
   content: string

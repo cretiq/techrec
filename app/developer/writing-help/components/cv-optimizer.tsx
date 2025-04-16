@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { ArrowRight, FileText, Upload, RefreshCw, Download, Check, X } from "lucide-react"
-import { Role } from "@/types"
+import { Role } from "@/types/role"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 
 interface Suggestion {
   original: string

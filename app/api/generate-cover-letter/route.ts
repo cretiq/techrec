@@ -20,6 +20,7 @@ interface UserInfo {
     issuer?: string
   }[]
   totalExperience?: string
+  skills: string[]
 }
 
 interface JobInfo {
