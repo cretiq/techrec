@@ -24,6 +24,7 @@ export interface CompanySummary {
   name: string;
 }
 
+/*
 export interface Role {
   id: string; // This might be the external ID from TheirStack or internal DB ID
   title: string;
@@ -39,6 +40,7 @@ export interface Role {
   url?: string; // Optional URL to the job posting
   // Add any other relevant fields that are common across sources
 }
+*/
 
 // For Comboboxes and data sources
 export interface Country {
@@ -64,4 +66,10 @@ export interface ComboboxOption {
   value: string;
   label: string;
   icon?: React.ReactNode; // Keep flexible for flags or icons
-} 
+}
+
+// --- Exports from new files ---
+export type { Role } from './role';
+
+// For Comboboxes and data sources
+// ... existing code ... 

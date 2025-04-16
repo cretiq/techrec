@@ -12,8 +12,11 @@ import { CoverLetterCreator } from "./components/cover-letter-creator"
 import { OutreachMessageGenerator } from "./components/outreach-message-generator"
 import { RoleContextCard } from "./components/role-context-card"
 import { useToast } from "@/components/ui/use-toast"
-import { Role } from "@/types"
-import { useSession } from 'next-auth/react'
+import { useSession } from "next-auth/react"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Role } from "@/types/role"
 
 export default function WritingHelpPage() {
   const [activeTab, setActiveTab] = useState<"cv" | "cover-letter" | "outreach">("cv")

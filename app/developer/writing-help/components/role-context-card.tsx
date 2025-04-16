@@ -7,7 +7,10 @@ import { MapPin, Briefcase, Clock, Building, ArrowRight, Code, BarChart } from "
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { formatJobType } from "@/app/utils/format"
-import { Role } from "@/types"
+import { Role } from "@/types/role"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useToast } from "@/components/ui/use-toast"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 interface RoleContextCardProps {
   role: Role
