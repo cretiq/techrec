@@ -1,0 +1,557 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+// Base timestamp fields that other models will use
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  INTERVIEWED
+  OFFERED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum RoleType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+}
+
+enum AssessmentType {
+  TECHNICAL
+  BEHAVIORAL
+  LANGUAGE
+  CODING_CHALLENGE
+}
+
+enum ProjectStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum EmployeeRange {
+  LESS_THAN_10
+  FROM_10_TO_50
+  FROM_50_TO_250
+  MORE_THAN_250
+}
+
+enum FundingStage {
+  BOOTSTRAP
+  SEED
+  SERIES_A
+  SERIES_B
+  SERIES_C
+  SERIES_D_PLUS
+  PUBLIC
+}
+
+model Developer {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  email           String    @unique
+  profileEmail    String?
+  name            String
+  title           String?
+  about           String
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
+
+  // Contact Information
+  contactInfo     ContactInfo?
+
+  // Relations
+  developerSkills DeveloperSkill[]
+  experience      Experience[]
+  education       Education[]
+  achievements    Achievement[]
+  projects        Project[]
+  assessments     Assessment[]
+  applications    Application[]
+  savedRoles      SavedRole[]
+  customRoles     CustomRole[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("Developer")
+}
+
+model ContactInfo {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId String    @db.ObjectId @unique
+  phone       String?
+  address     String?
+  city        String?
+  state       String?
+  country     String?
+  linkedin    String?
+  github      String?
+  website     String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("ContactInfo")
+}
+
+model SkillCategory {
+  id          String   @id @default(cuid()) @map("_id")
+  name        String   @unique
+  description String?
+  skills      Skill[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("SkillCategory")
+}
+
+model Skill {
+  id              String    @id @default(cuid()) @map("_id")
+  name            String    @unique
+  category        SkillCategory @relation(fields: [categoryId], references: [id])
+  categoryId      String
+  description     String?
+  
+  // Relationships
+  developerSkills DeveloperSkill[]
+  roleSkills      RoleSkill[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([categoryId])
+}
+
+model DeveloperSkill {
+  id                String     @id @default(cuid()) @map("_id")
+  developerId       String     @db.ObjectId
+  skillId          String
+  level            SkillLevel
+  
+  // Relationships
+  developer        Developer  @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  skill           Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@unique([developerId, skillId])
+  @@index([level])
+  @@map("DeveloperSkill")
+}
+
+model Experience {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  company     String
+  description String
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  current     Boolean   @default(false)
+  
+  // Additional fields
+  responsibilities String[]
+  achievements    String[]
+  teamSize        Int?
+  techStack       String[]
+  
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId String    @db.ObjectId
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([startDate, endDate])
+  @@index([developerId])
+  @@map("Experience")
+}
+
+model Education {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  degree      String?
+  institution String
+  year        String
+  location    String?
+  startDate   DateTime
+  endDate     DateTime?
+  gpa         Float?
+  honors      String[]
+  activities  String[]
+  
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId String    @db.ObjectId
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([developerId])
+  @@map("Education")
+}
+
+model Project {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  technologies String[]
+  url         String?
+  status      ProjectStatus @default(IN_PROGRESS)
+  startDate   DateTime
+  endDate     DateTime?
+  repository  String?
+  liveUrl     String?
+  teamSize    Int?
+  role        String?
+  highlights  String[]
+  
+  developer   Developer @relation(fields: [developerId], references: [id])
+  developerId String    @db.ObjectId
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([developerId])
+  @@index([status])
+  @@map("Project")
+}
+
+model Assessment {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  type        AssessmentType
+  status      String
+  score       Int?
+  completedAt DateTime?
+  timeSpent   Int?
+  maxTime     Int?
+  validUntil  DateTime?
+  attempts    Int           @default(1)
+  maxAttempts Int           @default(1)
+  metadata    Json?
+  
+  developer   Developer     @relation(fields: [developerId], references: [id])
+  developerId String        @db.ObjectId
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([developerId])
+  @@index([type])
+  @@map("Assessment")
+}
+
+model Company {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  website     String?
+  location    String?
+  size        EmployeeRange?
+  industry    String[]
+  logo        String?
+  founded     Int?
+  employees   EmployeeRange?
+  funding     FundingStage?
+  verified    Boolean       @default(false)
+  
+  roles       Role[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([name])
+  @@map("Company")
+}
+
+model Role {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String
+  companyId     String      @db.ObjectId
+  company       Company     @relation(fields: [companyId], references: [id])
+  requirements  String[]
+  location      String
+  salary        String
+  type          RoleType
+  remote        Boolean     @default(false)
+  visaSponsorship Boolean   @default(false)
+  
+  savedRoles    SavedRole[]
+  applications  Application[]
+  skills        RoleSkill[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([companyId])
+  @@index([type])
+  @@map("Role")
+}
+
+model RoleSkill {
+  id            String     @id @default(cuid()) @map("_id")
+  roleId        String     @db.ObjectId
+  skillId       String
+  requiredLevel SkillLevel
+  
+  // Relationships
+  role          Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  skill         Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@unique([roleId, skillId])
+  @@index([roleId])
+  @@index([skillId])
+  @@index([requiredLevel])
+}
+
+model Application {
+  id            String           @id @default(auto()) @map("_id") @db.ObjectId
+  role          Role             @relation(fields: [roleId], references: [id])
+  roleId        String           @db.ObjectId
+  status        ApplicationStatus @default(PENDING)
+  appliedAt     DateTime         @default(now())
+  coverLetter   String?
+  resumeUrl     String?
+  developer     Developer        @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId   String           @db.ObjectId
+
+  // Interview process tracking
+  interviews    Interview[]
+  
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([developerId])
+  @@index([roleId])
+  @@index([status])
+  @@map("Application")
+}
+
+model Interview {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String    @db.ObjectId
+  type          String    // phone, technical, behavioral, final
+  scheduledAt   DateTime
+  duration      Int       // in minutes
+  notes        String?
+  feedback     String?
+  status       String    // scheduled, completed, cancelled
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([applicationId])
+}
+
+model SavedRole {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id])
+  developerId String    @db.ObjectId
+  role        Role      @relation(fields: [roleId], references: [id])
+  roleId      String    @db.ObjectId
+  notes       String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([developerId, roleId])
+  @@index([developerId])
+  @@index([roleId])
+  @@map("SavedRole")
+}
+
+model CustomRole {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId   String    @db.ObjectId
+  developer     Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  title         String
+  description   String
+  requirements  String[]
+  skills        String[]
+  location      String
+  salary        String?
+  type          RoleType
+  remote        Boolean   @default(false)
+  visaSponsorship Boolean @default(false)
+  companyName   String?
+  url           String?
+  originalRoleId String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([developerId, originalRoleId])
+  @@index([developerId])
+  @@map("CustomRole")
+}
+
+model Achievement {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  date        DateTime
+  url         String?
+  issuer      String?
+  
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId String    @db.ObjectId
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([developerId])
+  @@map("Achievement")
+}
+
+// model User {
+//   id              String           @id @default(cuid()) @map("_id")
+//   name            String?
+//   email           String?          @unique
+//   emailVerified   DateTime?
+//   image           String?
+//   accounts        Account[]
+//   sessions        Session[]
+//   githubProfile   GitHubProfile?
+//   createdAt       DateTime         @default(now())
+//   updatedAt       DateTime         @updatedAt
+
+//   @@map("users")
+// }
+
+// model Account {
+//   id                String  @id @default(cuid()) @map("_id")
+//   userId            String
+//   type              String
+//   provider          String
+//   providerAccountId String
+//   refresh_token     String?
+//   access_token      String?
+//   expires_at        Int?
+//   token_type        String?
+//   scope             String?
+//   id_token          String?
+//   session_state     String?
+//   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@unique([provider, providerAccountId])
+//   @@map("accounts")
+// }
+
+// model Session {
+//   id           String   @id @default(cuid()) @map("_id")
+//   sessionToken String   @unique
+//   userId       String
+//   expires      DateTime
+//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@map("sessions")
+// }
+
+// model GitHubProfile {
+//   id                String           @id @default(cuid()) @map("_id")
+//   userId            String           @unique
+//   user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   accessToken       String
+//   refreshToken      String?
+//   tokenExpiresAt    DateTime?
+//   username          String
+//   avatarUrl         String?
+//   profileUrl        String
+//   lastSyncedAt      DateTime         @default(now())
+//   overallScore      Float            @default(0)
+//   repositoryCount   Int              @default(0)
+//   contributionCount Int              @default(0)
+//   languageStats     Json?
+//   createdAt         DateTime         @default(now())
+//   updatedAt         DateTime         @updatedAt
+//   analyses          AnalysisHistory[]
+//   improvementPlans  ImprovementPlan[]
+//   repositories      RepositoryAnalysis[]
+
+//   @@map("github_profiles")
+// }
+
+// model RepositoryAnalysis {
+//   id                String           @id @default(cuid()) @map("_id")
+//   githubProfileId   String
+//   githubProfile     GitHubProfile    @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
+//   repositoryName    String
+//   repositoryUrl     String
+//   description       String?
+//   stars            Int              @default(0)
+//   forks            Int              @default(0)
+//   watchers         Int              @default(0)
+//   language         String?
+//   topics           String[]
+//   readmeScore      Float            @default(0)
+//   codeQualityScore Float            @default(0)
+//   testCoverage     Float            @default(0)
+//   documentationScore Float          @default(0)
+//   lastUpdated      DateTime
+//   createdAt        DateTime         @default(now())
+//   updatedAt        DateTime         @updatedAt
+
+//   @@map("repository_analyses")
+// }
+
+// model AnalysisHistory {
+//   id              String         @id @default(cuid()) @map("_id")
+//   githubProfileId String
+//   githubProfile   GitHubProfile  @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
+//   timestamp       DateTime       @default(now())
+//   overallScore    Float
+//   metrics         Json
+//   recommendations Json
+//   completedTasks  String[]
+//   createdAt       DateTime       @default(now())
+//   updatedAt       DateTime       @updatedAt
+
+//   @@map("analysis_histories")
+// }
+
+// model ImprovementPlan {
+//   id              String         @id @default(cuid()) @map("_id")
+//   githubProfileId String
+//   githubProfile   GitHubProfile  @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
+//   title           String
+//   description     String
+//   priority        Int            @default(0)
+//   difficulty      Int            @default(0)
+//   status          String         @default("pending")
+//   dueDate         DateTime?
+//   completedAt     DateTime?
+//   resources       String[]
+//   targetMetrics   Json
+//   createdAt       DateTime       @default(now())
+//   updatedAt       DateTime       @updatedAt
+
+//   @@map("improvement_plans")
+// } 

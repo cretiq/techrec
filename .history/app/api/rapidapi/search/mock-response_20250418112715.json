@@ -1,0 +1,90 @@
+[
+    {
+      "id": "1085628554",
+      "date_posted": "2024-11-17T13:38:44",
+      "date_created": "2024-11-17T13:56:19.601391",
+      "title": "Accounts Receivable Specialist",
+      "organization": "The Kinsley Group",
+      "organization_url": "https://www.linkedin.com/company/kinsley-power-systems",
+      "date_validthrough": "2024-12-17T13:35:30",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "East Granby",
+            "addressRegion": "CT",
+            "streetAddress": null
+          },
+          "latitude": 41.946735,
+          "longitude": -72.72798
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/accounts-receivable-specialist-at-the-kinsley-group-4078781594",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQExN5biwsyljg/company-logo_200_200/company-logo_200_200/0/1630591197659/kinsley_power_systems_logo?e=2147483647&amp;v=beta&amp;t=6sLqwy1n_UdQGl5ovm0IhB-9VmVkYhVDPjW7W1WRARQ",
+      "cities_derived": [
+        "East Granby"
+      ],
+      "regions_derived": [
+        "Connecticut"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "East Granby, Connecticut, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        41.9424
+      ],
+      "lngs_derived": [
+        -72.741
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 153,
+      "linkedin_org_url": "http://www.kinsley-group.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Onsite Energy Solutions & Service",
+      "linkedin_org_industry": "Oil and Gas",
+      "linkedin_org_followers": 4844,
+      "linkedin_org_headquarters": "East Granby, CT",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "1964",
+      "linkedin_org_specialties": [
+        "Emergency Standby Generators",
+        "Emergency Generator Rentals",
+        "Service & Parts - All Generator Makes and Models",
+        "Transfer Switches",
+        "Switchgear",
+        "Co-generation Maintenance & Service",
+        "Emergency Repair of all Brands of Power Generation Equipment",
+        "and Preventative Maintenance"
+      ],
+      "linkedin_org_locations": [
+        "14 Connecticut South Dr, East Granby, CT 06026, US",
+        "Albany, NY 12204, US",
+        "Syracuse, NY 13208, US",
+        "Tonawanda, NY 14207, US",
+        "Brewster, NY 10509, US",
+        "47 Runway Rd Suite i, Levittown, PA 19057, US"
+      ],
+      "linkedin_org_description": "In 1964, Kenneth N. Kinsley laid the foundation of Kinsley Power Systems, marking the beginning of a remarkable journey. Over the years, our company has steadily grown and evolved into a trusted provider of emergency backup generators and prime power systems. Today, we proudly serve customers throughout the northeast as The Kinsley Group and are renowned for our integrity and professionalism.\n\nAt Kinsley, our mission is simple: to set the standard for power systems performance and service. We achieve this by focusing on two key pillars: delivering quality products and assembling a team of exceptional professionals. For over 50 years, we have exclusively distributed Kohler Power Systems, a highly respected name in emergency power systems. This partnership allows us to offer the best products and ensure customer satisfaction.\nOur associates are the backbone of our success. They are knowledgeable and dedicated to excellence in their respective fields. Whether it is finding innovative solutions to engineering problems or providing outstanding customer service, our team takes pride in their work and approaches every task with care.\n\nWhen it comes to emergency power products, we are the preferred choice in the Northeast US. From single-phase residential 8.5kW generators to three-phase units up to 4MW with paralleling switchgear, we offer a wide range of high-quality Kohler products and reliable service.\n\nIn addition to Kinsley Power Systems, The Kinsley Group also includes Kinsley Energy Systems. KES specializes in combined heat and power applications across the Northeast. As a U.S. distributor of Tedom CHP systems, KES brings advanced power generation solutions to the market.\nThe Kinsley Group is a company built on expertise, integrity, and commitment. We are here to power success and provide dependable solutions for critical power applications.\n",
+      "linkedin_org_recruitment_agency_derived": false
+    }
+] 
