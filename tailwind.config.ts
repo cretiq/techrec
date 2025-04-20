@@ -6,10 +6,37 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "*.{js,ts,jsx,tsx,mdx}"
+    "*.{js,ts,jsx,tsx,mdx}",
+    './src/**/*.{ts,tsx}',
   ],
   theme: {
+  	container: {
+  		center: true,
+  		padding: "2rem",
+  		screens: {
+  			"2xl": "1400px",
+  		},
+  	},
   	extend: {
+  		fontFamily: {
+  			sans: ['var(--font-sans)'],
+  			inter: ['var(--font-inter)', 'var(--font-sans)'],
+  			outfit: ['var(--font-outfit)', 'var(--font-sans)'],
+  			'plus-jakarta': ['var(--font-plus-jakarta-sans)', 'var(--font-sans)'],
+  			'dm-sans': ['var(--font-dm-sans)', 'var(--font-sans)'],
+  			manrope: ['var(--font-manrope)', 'var(--font-sans)'],
+  			roboto: ['var(--font-roboto)', 'var(--font-sans)'],
+  			'open-sans': ['var(--font-open-sans)', 'var(--font-sans)'],
+  			lato: ['var(--font-lato)', 'var(--font-sans)'],
+  			montserrat: ['var(--font-montserrat)', 'var(--font-sans)'],
+  			'playfair-display': ['var(--font-playfair-display)', 'var(--font-sans)'],
+  			merriweather: ['var(--font-merriweather)', 'var(--font-sans)'],
+  			raleway: ['var(--font-raleway)', 'var(--font-sans)'],
+  			poppins: ['var(--font-poppins)', 'var(--font-sans)'],
+  			'source-sans': ['var(--font-source-sans-pro)', 'var(--font-sans)'],
+  			ubuntu: ['var(--font-ubuntu)', 'var(--font-sans)'],
+  			nunito: ['var(--font-nunito)', 'var(--font-sans)'],
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
