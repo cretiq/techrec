@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
-import { DeveloperProfile } from "@/types/developer"
+// import { DeveloperProfile } from "@/types/developer" // Removed old import
+import { InternalProfile, InternalSkill, InternalAchievement } from "@/types/types"; // Relative path attempt
 const openai = new OpenAI()
 
 interface RoleInfo {
@@ -12,7 +13,7 @@ interface RoleInfo {
 
 interface CompanyInfo {
   name: string
-  location: string
+  location: string // Location still needed?
   remote: boolean
   attractionPoints: string[]
 }
@@ -21,8 +22,9 @@ interface JobSourceInfo {
   source?: string
 }
 
+// Update to use InternalProfile
 interface CoverLetterRequestData {
-  developerProfile: DeveloperProfile
+  developerProfile: InternalProfile 
   roleInfo: RoleInfo
   companyInfo: CompanyInfo
   jobSourceInfo: JobSourceInfo
@@ -47,49 +49,79 @@ export async function POST(req: Request) {
       )
     }
 
+    // Construct contact info string safely
+    const contactString = [
+        developerProfile.contactInfo?.phone,
+        developerProfile.profileEmail || developerProfile.email // Use profileEmail first, fallback to main email
+    ].filter(Boolean).join(' | ');
+    
+    // Construct optional links string
+    const links = [
+        developerProfile.contactInfo?.linkedin,
+        developerProfile.contactInfo?.github,
+        developerProfile.contactInfo?.website // Use website from contactInfo
+    ].filter(Boolean);
+    const optionalLinksString = links.length > 0 ? `Optional Links: ${links.join(' | ')}` : '';
+
     const prompt = `
 Generate a professional and compelling cover letter for a software developer applying for a specific role. The goal is to capture the hiring manager's attention and secure an interview.
 
 The letter is for the position of ${roleInfo.title} at ${companyInfo.name}.
 
+Here is information about the company:
 ${companyInfo.name ? `Address the letter to ${companyInfo.name}.` : ''}
+${companyInfo.location ? `The company is located in ${companyInfo.location}.` : ''}
+${companyInfo.remote ? `The company is a remote position.` : ''}
+${companyInfo.attractionPoints ? `The company is known for ${companyInfo.attractionPoints.join(', ')}.` : ''}
 
-Applicant Information:
-Name: ${developerProfile.name}
-Contact: ${developerProfile.phone} | ${developerProfile.email}
-${developerProfile.linkedin || developerProfile.github || developerProfile.portfolio ? `Optional Links: ${developerProfile.linkedin || ''} ${developerProfile.github ? `| ${developerProfile.github}` : ''} ${developerProfile.portfolio ? `| ${developerProfile.portfolio}` : '' }` : ''}
+Here is information about the job:
+${roleInfo.title ? `The job is for a ${roleInfo.title}.` : ''}
+${roleInfo.description ? `The job description is: ${roleInfo.description}.` : ''}
+${roleInfo.requirements ? `The requirements for the job are: ${roleInfo.requirements.join(', ')}.` : ''}
+${roleInfo.skills ? `The skills required for the job are: ${roleInfo.skills.join(', ')}.` : ''}
+
+Here is information about the applicant:
+${developerProfile.name ? `Name: ${developerProfile.name}` : ''}
+${developerProfile.profileEmail ? `Email: ${developerProfile.profileEmail}` : ''}
+${developerProfile.contactInfo?.phone ? `Phone: ${developerProfile.contactInfo?.phone}` : ''}
+${developerProfile.contactInfo?.linkedin ? `LinkedIn: ${developerProfile.contactInfo?.linkedin}` : ''}
+${developerProfile.contactInfo?.github ? `GitHub: ${developerProfile.contactInfo?.github}` : ''}
+${developerProfile.contactInfo?.website ? `Website: ${developerProfile.contactInfo?.website}` : ''}
+
+${developerProfile.name}'s Skills:
+${developerProfile.skills.map((skill: InternalSkill) => `- ${skill.name} (${skill.level})`).join('\n')} {/* Added explicit type and level */}
 
 ${jobSourceInfo.source ? `Mention where you saw the job posting: ${jobSourceInfo.source}.` : ''}
 
-These are ${developerProfile.name}'s skills:
-${developerProfile.skills.map(skill => `- ${skill.name}`).join('\n')}
-Highlight the skills that are most relevant to the role (look at the job description).
+  ---
+Please follow these guidelines when drafting the cover letter:
 
-Briefly showcase key ${developerProfile.name}'s experiences or projects that directly relate to the requirements of the ${roleInfo.title} role. Quantify achievements where possible.
-${developerProfile.achievements.map((achievement, index) => `Example ${index + 1}: ${achievement.title}${achievement.description ? ` - ${achievement.description}` : ''}${achievement.date ? ` (${achievement.date})` : ''}`).join('\n')}
-${developerProfile.totalExperience ? `Mention total relevant experience: ${developerProfile.totalExperience}` : ''}
+1. Start with a personalized greeting addressed to a specific individual or team (e.g., “Dear [Hiring Manager Name]”).
+2. In the opening paragraph, mention the role title and express genuine enthusiasm for this position at [Company Name].
+3. Tailor the letter by referencing one or two specific company details (e.g., mission, recent project, or value) to demonstrate your research and alignment.
+4. Highlight 2–3 key achievements or experiences, using concrete metrics (e.g., “increased API performance by 40%”).
+5. Integrate 3–4 important keywords or requirements from the job posting to pass automated screening.
+6. Weave a concise story that shows how your skills directly solved a problem or added value, avoiding jargon and clichés.
+7. Maintain an authentic, first‑person voice throughout; let your personality shine in a professional tone.
+8. Keep the total length between 200–300 words (approximately one page) to ensure readability.
+9. Use clear, logical structure—short paragraphs, one‑inch margins, and a header with your contact info.
+10. Close with a strong call to action, thanking the reader and expressing your eagerness to discuss how you can contribute.
 
-Express genuine interest in ${companyInfo.name}. Mention specific attractions:
-${companyInfo.attractionPoints.map((point, index) => `Reason ${index + 1}: ${point}`).join('\n')}
-${roleInfo.title} Reason: The specific challenges outlined in the job description for the ${roleInfo.title} role.
+Important notes:
+    - Do not lie
+    - Do not make up skills
+    - Do not make up experience
+    - Do not make up metrics
+    - Always use information that you can find and make out of information that is provided in the request
 
-Explain why you believe ${developerProfile.name}'s skills and experience make you a strong candidate for this specific role (${roleInfo.title}) and how you can contribute to ${companyInfo.name}'s goals.
-
-Tone: Maintain a professional, confident, and enthusiastic tone. Avoid generic statements.
-
-Structure:
-- Introduction: State the ${roleInfo.title} position you're applying for and ${jobSourceInfo.source} where you saw it (if applicable). Briefly express enthusiasm.
-- Body Paragraph(s): Connect ${developerProfile.name} key skills and specific experiences directly to the ${roleInfo.title} requirements. Explain your interest in the ${companyInfo.name} company. Show, don't just tell.
-- Conclusion: Reiterate your strong interest and suitability. Include a clear call to action, expressing your desire for an interview.
-
-Format: Use standard professional letter formatting. Ensure it is concise, ideally fitting on one page.
+Please generate only the final cover letter text without restating these instructions.
 `
 
-    console.log(prompt)
+    console.log("Generated Prompt:", prompt) // Log the final prompt for debugging
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4o-mini-2024-07-18",
+      model: "gpt-4.1-2025-04-14",
       temperature: 0.5,
     })
 
@@ -98,9 +130,11 @@ Format: Use standard professional letter formatting. Ensure it is concise, ideal
     })
   } catch (error) {
     console.error("Cover letter generation error:", error)
+    // Provide more detail in the error response if possible
+    const errorMessage = error instanceof Error ? error.message : "Failed to generate cover letter";
     return NextResponse.json(
-      { error: "Failed to generate cover letter" },
+      { error: errorMessage },
       { status: 500 }
     )
   }
-} 
+}

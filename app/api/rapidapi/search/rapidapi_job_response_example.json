@@ -1,847 +1,892 @@
 [
-  {
-    "id": "1085628554",
-    "date_posted": "2024-11-17T13:38:44",
-    "date_created": "2024-11-17T13:56:19.601391",
-    "title": "Accounts Receivable Specialist",
-    "organization": "The Kinsley Group",
-    "organization_url": "https://www.linkedin.com/company/kinsley-power-systems",
-    "date_validthrough": "2024-12-17T13:35:30",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "East Granby",
-          "addressRegion": "CT",
-          "streetAddress": null
-        },
-        "latitude": 41.946735,
-        "longitude": -72.72798
-      }
-    ],
-    "location_type": null,
-    "location_requirements_raw": null,
-    "salary_raw": null,
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/accounts-receivable-specialist-at-the-kinsley-group-4078781594",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQExN5biwsyljg/company-logo_200_200/company-logo_200_200/0/1630591197659/kinsley_power_systems_logo?e=2147483647&amp;v=beta&amp;t=6sLqwy1n_UdQGl5ovm0IhB-9VmVkYhVDPjW7W1WRARQ",
-    "cities_derived": [
-      "East Granby"
-    ],
-    "regions_derived": [
-      "Connecticut"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "East Granby, Connecticut, United States"
-    ],
-    "timezones_derived": [
-      "America/New_York"
-    ],
-    "lats_derived": [
-      41.9424
-    ],
-    "lngs_derived": [
-      -72.741
-    ],
-    "remote_derived": false,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": 153,
-    "linkedin_org_url": "http://www.kinsley-group.com",
-    "linkedin_org_size": "51-200 employees",
-    "linkedin_org_slogan": "Onsite Energy Solutions & Service",
-    "linkedin_org_industry": "Oil and Gas",
-    "linkedin_org_followers": 4844,
-    "linkedin_org_headquarters": "East Granby, CT",
-    "linkedin_org_type": "Privately Held",
-    "linkedin_org_foundeddate": "1964",
-    "linkedin_org_specialties": [
-      "Emergency Standby Generators",
-      "Emergency Generator Rentals",
-      "Service & Parts - All Generator Makes and Models",
-      "Transfer Switches",
-      "Switchgear",
-      "Co-generation Maintenance & Service",
-      "Emergency Repair of all Brands of Power Generation Equipment",
-      "and Preventative Maintenance"
-    ],
-    "linkedin_org_locations": [
-      "14 Connecticut South Dr, East Granby, CT 06026, US",
-      "Albany, NY 12204, US",
-      "Syracuse, NY 13208, US",
-      "Tonawanda, NY 14207, US",
-      "Brewster, NY 10509, US",
-      "47 Runway Rd Suite i, Levittown, PA 19057, US"
-    ],
-    "linkedin_org_description": "In 1964, Kenneth N. Kinsley laid the foundation of Kinsley Power Systems, marking the beginning of a remarkable journey. Over the years, our company has steadily grown and evolved into a trusted provider of emergency backup generators and prime power systems. Today, we proudly serve customers throughout the northeast as The Kinsley Group and are renowned for our integrity and professionalism.\n\nAt Kinsley, our mission is simple: to set the standard for power systems performance and service. We achieve this by focusing on two key pillars: delivering quality products and assembling a team of exceptional professionals. For over 50 years, we have exclusively distributed Kohler Power Systems, a highly respected name in emergency power systems. This partnership allows us to offer the best products and ensure customer satisfaction.\nOur associates are the backbone of our success. They are knowledgeable and dedicated to excellence in their respective fields. Whether it is finding innovative solutions to engineering problems or providing outstanding customer service, our team takes pride in their work and approaches every task with care.\n\nWhen it comes to emergency power products, we are the preferred choice in the Northeast US. From single-phase residential 8.5kW generators to three-phase units up to 4MW with paralleling switchgear, we offer a wide range of high-quality Kohler products and reliable service.\n\nIn addition to Kinsley Power Systems, The Kinsley Group also includes Kinsley Energy Systems. KES specializes in combined heat and power applications across the Northeast. As a U.S. distributor of Tedom CHP systems, KES brings advanced power generation solutions to the market.\nThe Kinsley Group is a company built on expertise, integrity, and commitment. We are here to power success and provide dependable solutions for critical power applications.\n",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085624887",
-    "date_posted": "2024-11-17T13:36:42",
-    "date_created": "2024-11-17T13:54:25.588657",
-    "title": "Security Officer - OPEN INTERVIEWS",
-    "organization": "J8 Security, LLC",
-    "organization_url": "https://www.linkedin.com/company/j8-security-llc",
-    "date_validthrough": "2024-12-17T13:36:09",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "Richfield",
-          "addressRegion": "OH",
-          "streetAddress": null
-        },
-        "latitude": 41.239666,
-        "longitude": -81.65462
-      }
-    ],
-    "location_type": null,
-    "location_requirements_raw": null,
-    "salary_raw": null,
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/security-officer-open-interviews-at-j8-security-llc-4078782414",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQFyXEyhZ66TuA/company-logo_200_200/company-logo_200_200/0/1662662660788?e=2147483647&amp;v=beta&amp;t=2kdhuapPpgSWgs9a5ekXxAX3GRAhmKUdyA2JDs4TVwc",
-    "cities_derived": [
-      "Richfield"
-    ],
-    "regions_derived": [
-      "Ohio"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "Richfield, Ohio, United States"
-    ],
-    "timezones_derived": [
-      "America/New_York"
-    ],
-    "lats_derived": [
-      41.2354
-    ],
-    "lngs_derived": [
-      -81.6421
-    ],
-    "remote_derived": false,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": 20,
-    "linkedin_org_url": "J8security.com",
-    "linkedin_org_size": "201-500 employees",
-    "linkedin_org_slogan": "We live here, we work here, our reputation is made here.",
-    "linkedin_org_industry": "Security and Investigations",
-    "linkedin_org_followers": null,
-    "linkedin_org_headquarters": "",
-    "linkedin_org_type": "Privately Held",
-    "linkedin_org_foundeddate": "2020",
-    "linkedin_org_specialties": [
-      ""
-    ],
-    "linkedin_org_locations": [],
-    "linkedin_org_description": "The J8 team recognizes the importance of providing quality responsive services, due to this, our products and services are unmatched by competitors.  J8 Security and its’ sister company, J8 Black & White Services can provide a vast array of experience in security management services, loss prevention, investigations, covert camera surveillance, risk assessments, vulnerability assessment, due diligence, emergency response planning, special security deployments, and much more.  This experience proves extremely useful with our clients and is demonstrated by Kevin’s decades long history with many of our clients. ",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085632801",
-    "date_posted": "2024-11-17T13:36:25",
-    "date_created": "2024-11-17T13:58:44.143128",
-    "title": "Licensed Property Manager - Austin, TX",
-    "organization": "PURE Property Management",
-    "organization_url": "https://www.linkedin.com/company/purepropertymanagement",
-    "date_validthrough": "2024-12-17T13:35:49",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "Round Rock",
-          "addressRegion": "TX",
-          "streetAddress": null
-        },
-        "latitude": 30.508787,
-        "longitude": -97.67996
-      }
-    ],
-    "location_type": null,
-    "location_requirements_raw": null,
-    "salary_raw": {
-      "@type": "MonetaryAmount",
-      "currency": "USD",
-      "value": {
-        "@type": "QuantitativeValue",
-        "minValue": 60000,
-        "maxValue": 64000,
-        "unitText": "YEAR"
-      }
+    {
+      "id": "DEVROLE1000",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "Frontend Developer",
+      "organization": "CodeNest",
+      "organization_url": "https://www.linkedin.com/company/codenest",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "San Diego",
+            "addressRegion": "CA",
+            "streetAddress": "123 Tech Blvd"
+          },
+          "latitude": 32.7157,
+          "longitude": -117.1611
+        }
+      ],
+      "location_type": "hybrid",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 90000,
+          "maxValue": 115000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/frontend-developer-at-codenest-1000",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_codenest.png",
+      "cities_derived": [
+        "San Diego"
+      ],
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "San Diego, California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        32.7157
+      ],
+      "lngs_derived": [
+        -117.1611
+      ],
+      "remote_derived": true,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 85,
+      "linkedin_org_url": "https://codenest.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Nesting code to perfection",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 4200,
+      "linkedin_org_headquarters": "San Diego, CA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2012",
+      "linkedin_org_specialties": [
+        "Web Development",
+        "Frontend",
+        "React",
+        "UI/UX",
+        "Accessibility"
+      ],
+      "linkedin_org_locations": [
+        "123 Tech Blvd, San Diego, CA, US"
+      ],
+      "linkedin_org_description": "CodeNest builds customer-centric web applications. We're seeking a Frontend Developer to design responsive interfaces using React, TypeScript, and Tailwind CSS. Responsibilities include collaborating with designers, optimizing performance, and ensuring accessibility. Candidates should have 3+ years of experience and proficiency with Figma and REST APIs.",
+      "linkedin_org_recruitment_agency_derived": false
     },
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/licensed-property-manager-austin-tx-at-pure-property-management-4078780780",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQGBzX52Vsszqg/company-logo_200_200/company-logo_200_200/0/1706908857814/purepropertymanagement_logo?e=2147483647&amp;v=beta&amp;t=UUAGUTIMD2c_v8pYTn_XErARvoxPz0mcXKch1uv4B1o",
-    "cities_derived": [
-      "Round Rock"
-    ],
-    "regions_derived": [
-      "Texas"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "Round Rock, Texas, United States"
-    ],
-    "timezones_derived": [
-      "America/Chicago"
-    ],
-    "lats_derived": [
-      30.527
-    ],
-    "lngs_derived": [
-      -97.6642
-    ],
-    "remote_derived": false,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": 233,
-    "linkedin_org_url": "https://purepm.co",
-    "linkedin_org_size": "501-1,000 employees",
-    "linkedin_org_slogan": "Property management. PURE and simple.\n",
-    "linkedin_org_industry": "Real Estate",
-    "linkedin_org_followers": 3250,
-    "linkedin_org_headquarters": "Los Gatos, CA",
-    "linkedin_org_type": "Privately Held",
-    "linkedin_org_foundeddate": "2020",
-    "linkedin_org_specialties": [
-      "property management and proptech"
-    ],
-    "linkedin_org_locations": [
-      "Los Gatos, CA 95032, US"
-    ],
-    "linkedin_org_description": "PURE Property Management is the fastest growing profitable residential property management and technology company in the U.S.\n\nLed by a team of experienced industry professionals and seasoned technology innovators, PURE acquires single-family residential property management companies and invests in their people and processes. \n\nBy deploying technology and providing operational efficiencies, PURE enhances resident and investor experiences.",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085602273",
-    "date_posted": "2024-11-17T13:36:09",
-    "date_created": "2024-11-17T13:44:25.176771",
-    "title": "Crane Service Technician",
-    "organization": "American Equipment",
-    "organization_url": "https://www.linkedin.com/company/american-equipment-holdings",
-    "date_validthrough": "2024-12-17T13:35:27",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "Suwanee",
-          "addressRegion": "GA",
-          "streetAddress": null
-        },
-        "latitude": 34.057514,
-        "longitude": -84.0666
-      }
-    ],
-    "location_type": null,
-    "location_requirements_raw": null,
-    "salary_raw": null,
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/crane-service-technician-at-american-equipment-4078786131",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQESrtWaXTUr0Q/company-logo_200_200/company-logo_200_200/0/1719344250248/american_equipment_holdings_logo?e=2147483647&amp;v=beta&amp;t=lp_HTNLHDIiZrWOG8HewhPzKCECxq_V8wgQ9wu39T6g",
-    "cities_derived": [
-      "Suwanee"
-    ],
-    "regions_derived": [
-      "Georgia"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "Suwanee, Georgia, United States"
-    ],
-    "timezones_derived": [
-      "America/New_York"
-    ],
-    "lats_derived": [
-      34.0508
-    ],
-    "lngs_derived": [
-      -84.0686
-    ],
-    "remote_derived": false,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": 102,
-    "linkedin_org_url": "https://amquipinc.com/",
-    "linkedin_org_size": "501-1,000 employees",
-    "linkedin_org_slogan": "Helping to lift America",
-    "linkedin_org_industry": "Industrial Machinery Manufacturing",
-    "linkedin_org_followers": 1544,
-    "linkedin_org_headquarters": "South Salt Lake, Utah",
-    "linkedin_org_type": "Privately Held",
-    "linkedin_org_foundeddate": "1969",
-    "linkedin_org_specialties": [
-      ""
-    ],
-    "linkedin_org_locations": [
-      "451 W 3440 S, South Salt Lake, Utah 84115, US"
-    ],
-    "linkedin_org_description": "Full-service overhead crane and industrial crane supplier, builder and servicing company",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085634048",
-    "date_posted": "2024-11-17T13:35:59",
-    "date_created": "2024-11-17T13:59:30.304679",
-    "title": "Employee Success Coach",
-    "organization": "Southeast Michigan Community Alliance",
-    "organization_url": "https://www.linkedin.com/company/southeast-michigan-community-alliance",
-    "date_validthrough": "2024-12-17T13:35:26",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "Taylor",
-          "addressRegion": "MI",
-          "streetAddress": null
-        },
-        "latitude": 42.226578,
-        "longitude": -83.262634
-      }
-    ],
-    "location_type": null,
-    "location_requirements_raw": null,
-    "salary_raw": null,
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/employee-success-coach-at-southeast-michigan-community-alliance-4078786119",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQF4kc2Dm7YkTg/company-logo_200_200/company-logo_200_200/0/1630600491186/southeast_michigan_community_alliance_logo?e=2147483647&amp;v=beta&amp;t=FAMzYFvBbL8O83858JS8CCo35UALa2YV9dXVHq03BIA",
-    "cities_derived": [
-      "Taylor"
-    ],
-    "regions_derived": [
-      "Michigan"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "Taylor, Michigan, United States"
-    ],
-    "timezones_derived": [
-      "America/Detroit"
-    ],
-    "lats_derived": [
-      42.226
-    ],
-    "lngs_derived": [
-      -83.2688
-    ],
-    "remote_derived": false,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": 47,
-    "linkedin_org_url": "http://www.semca.org",
-    "linkedin_org_size": "51-200 employees",
-    "linkedin_org_slogan": null,
-    "linkedin_org_industry": "Government Administration",
-    "linkedin_org_followers": 934,
-    "linkedin_org_headquarters": "Taylor, MI",
-    "linkedin_org_type": "Nonprofit",
-    "linkedin_org_foundeddate": "1996",
-    "linkedin_org_specialties": [
-      "Workforce Development",
-      "Wayne County Head Start",
-      "Workforce Training",
-      "Economic Development",
-      "and Workforce Intelligence Network"
-    ],
-    "linkedin_org_locations": [
-      "25363 Eureka Rd., Taylor, MI 48180, US"
-    ],
-    "linkedin_org_description": "Since 1996, the Southeast Michigan Community Alliance (SEMCA) has been a leader in workforce development programs, serving residents and employers in Wayne and Monroe counties (excluding the city of Detroit). SEMCA is the region's Michigan Works! Agency (MWA), with seven Michigan Works Service Centers located in Dearborn, Grosse Pointe, Highland Park, Livonia, Monroe, Southgate, and Wayne. SEMCA is accredited by the Council on Accreditation (COA). To learn more about COA, please visit\nwww.COAnet.org.\n",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085558140",
-    "date_posted": "2024-11-17T13:23:32",
-    "date_created": "2024-11-17T13:27:26.249316",
-    "title": "Analytical Chemist - LCMS Analyst",
-    "organization": "Enthalpy Analytical",
-    "organization_url": "https://www.linkedin.com/company/enthalpy-analytical",
-    "date_validthrough": "2024-12-17T13:23:32",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "El Dorado Hills",
-          "addressRegion": "CA",
-          "streetAddress": null
-        },
-        "latitude": 38.702484,
-        "longitude": -121.08237
-      }
-    ],
-    "location_type": null,
-    "location_requirements_raw": null,
-    "salary_raw": null,
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/analytical-chemist-lcms-analyst-at-enthalpy-analytical-4076506024",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQH3cdFwu-mwZw/company-logo_200_200/company-logo_200_200/0/1683031050419/enthalpy_analytical_logo?e=2147483647&amp;v=beta&amp;t=6LNAuyEJkq7t2YGjaxWKxpAt0jUAJq6Yk0KxDt9bQxM",
-    "cities_derived": [
-      "El Dorado Hills"
-    ],
-    "regions_derived": [
-      "California"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "El Dorado Hills, California, United States"
-    ],
-    "timezones_derived": [
-      "America/Los_Angeles"
-    ],
-    "lats_derived": [
-      38.675
-    ],
-    "lngs_derived": [
-      -121.049
-    ],
-    "remote_derived": false,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": 282,
-    "linkedin_org_url": "http://www.enthalpy.com",
-    "linkedin_org_size": "201-500 employees",
-    "linkedin_org_slogan": "Accredited Environmental Laboratories offering Air, Water, Soil, Sediment, Ultratrace, and PFAS Testing. ",
-    "linkedin_org_industry": "Environmental Services",
-    "linkedin_org_followers": 3078,
-    "linkedin_org_headquarters": "North Little Rock, Arkansas",
-    "linkedin_org_type": "Public Company",
-    "linkedin_org_foundeddate": "",
-    "linkedin_org_specialties": [
-      "Environmental Toxicology",
-      "PFAS",
-      "Ultratrace",
-      "Analytical Chemistry",
-      "Soil",
-      "Water & Sediment",
-      "Drinking Water",
-      "Nicotine Containing Products Analysis",
-      "Air Testing",
-      "and Indoor Air"
-    ],
-    "linkedin_org_locations": [
-      "5120 Northshore Drive, North Little Rock, Arkansas 72118, US",
-      "800 Capitola Drive, Suite 1, Durham, North Carolina 27713, US",
-      "2323 5th St, Berkeley, California 94710, US",
-      "929 W Barkley Ave, Orange, California 92868, US",
-      "4340 Vandever Ave, San Diego, California 92120, US",
-      "2714 Exchange Dr, Wilmington, North Carolina 28405, US",
-      "1 Lafayette Rd, Hampton, New Hampshire 03842, US",
-      "1470 E Parham Rd, Richmond, Virginia 23227, US",
-      "931 Seaco Ct, Deer Park, Texas 77536, US",
-      "2625 Denison Drive, Mt. Pleasant, MI 48858, US",
-      "1941 Reymet Rd., Richmond, VA 23237, US",
-      "1104 Windfield Way, El Dorado Hills, California 95762, US",
-      "2525 W Bellfort St, Houston, Texas 77054, US"
-    ],
-    "linkedin_org_description": "Enthalpy Analytical (Enthalpy) is a national network of accredited environmental laboratories designed to provide our clients with responsive turnaround, best-in-class testing support, innovative science, regulatory expertise, and high-quality data. Enthalpy is your single source for comprehensive environmental laboratory testing services. Our team of scientists, industry specialists, project managers, and analysts have decades of experience in supporting the testing needs of the public sector, private industry, and governmental agencies.  We specialize in air quality testing, analytical chemistry, environmental toxicology, ultratrace analysis, and emerging contaminants such as Per- and Polyfluoroalkyl Substances (PFAS).  Enthalpy Analytical is the only laboratory partner you need because we get it right from the start.",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085615229",
-    "date_posted": "2024-11-17T13:21:52",
-    "date_created": "2024-11-17T13:48:32.890716",
-    "title": "Sales Leadership Roles",
-    "organization": "People 1st ",
-    "organization_url": "https://www.linkedin.com/company/people1stagency",
-    "date_validthrough": "2024-12-17T13:21:51",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "Portland",
-          "addressRegion": "OR",
-          "streetAddress": null
-        },
-        "latitude": 45.512924,
-        "longitude": -122.68592
-      }
-    ],
-    "location_type": "TELECOMMUTE",
-    "location_requirements_raw": [
-      {
-        "@type": "Country",
-        "name": "Portland, Oregon, United States"
-      }
-    ],
-    "salary_raw": null,
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/sales-leadership-roles-at-people-1st-4078776987",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQEaBapeo3B-vw/company-logo_200_200/company-logo_200_200/0/1678146265090/people1stagency_logo?e=2147483647&amp;v=beta&amp;t=oNyWzU98XvySJ0SJL0ZuIIFBC3PFv1hk58mo9pK1wgM",
-    "cities_derived": [
-      "Portland"
-    ],
-    "regions_derived": [
-      "Oregon"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "Portland, Oregon, United States"
-    ],
-    "timezones_derived": [
-      "America/Los_Angeles"
-    ],
-    "lats_derived": [
-      45.5371
-    ],
-    "lngs_derived": [
-      -122.65
-    ],
-    "remote_derived": true,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": 26,
-    "linkedin_org_url": "https://ourpeople1st.com/",
-    "linkedin_org_size": "201-500 employees",
-    "linkedin_org_slogan": "We stand for Integrity, Passion, Respect, Selflessness, Humility, Purpose, and Love in all areas of life and business",
-    "linkedin_org_industry": "Financial Services",
-    "linkedin_org_followers": null,
-    "linkedin_org_headquarters": "",
-    "linkedin_org_type": "Partnership",
-    "linkedin_org_foundeddate": "",
-    "linkedin_org_specialties": [
-      ""
-    ],
-    "linkedin_org_locations": [],
-    "linkedin_org_description": "Our primary mission at People First Agency is to protect families. Our industry is unique, because our success as a business is a direct result of helping people.\n- Forbes List #25 Happiest Workplaces 2018\n- AIL Agency Of The Year 2017\n- Globe Life Owned\n- People First Since 1951",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085631956",
-    "date_posted": "2024-11-17T13:17:21",
-    "date_created": "2024-11-17T13:58:15.605704",
-    "title": "Remote Sales Agent Needed: Earn From Anywhere",
-    "organization": "Joseph and Young",
-    "organization_url": "https://www.linkedin.com/company/joseph-and-young",
-    "date_validthrough": "2024-12-17T13:17:20",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "North Las Vegas",
-          "addressRegion": "NV",
-          "streetAddress": null
-        },
-        "latitude": 36.205765,
-        "longitude": -115.119514
-      }
-    ],
-    "location_type": "TELECOMMUTE",
-    "location_requirements_raw": [
-      {
-        "@type": "Country",
-        "name": "North Las Vegas, Nevada, United States"
-      }
-    ],
-    "salary_raw": {
-      "@type": "MonetaryAmount",
-      "currency": "USD",
-      "value": {
-        "@type": "QuantitativeValue",
-        "minValue": 120000,
-        "maxValue": 250000,
-        "unitText": "YEAR"
-      }
+    {
+      "id": "DEVROLE1001",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "Backend Developer",
+      "organization": "ByteTrail",
+      "organization_url": "https://www.linkedin.com/company/bytetrail",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Portland",
+            "addressRegion": "OR",
+            "streetAddress": "456 Data Lane"
+          },
+          "latitude": 45.5051,
+          "longitude": -122.675
+        }
+      ],
+      "location_type": "onsite",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 95000,
+          "maxValue": 130000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/backend-developer-at-bytetrail-1001",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_bytetrail.png",
+      "cities_derived": [
+        "Portland"
+      ],
+      "regions_derived": [
+        "Oregon"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Portland, Oregon, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        45.5051
+      ],
+      "lngs_derived": [
+        -122.675
+      ],
+      "remote_derived": false,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 65,
+      "linkedin_org_url": "https://bytetrail.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Trailblazing data journeys",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 3200,
+      "linkedin_org_headquarters": "Portland, OR",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Data Engineering",
+        "Microservices",
+        "Node.js",
+        "GraphQL",
+        "ETL"
+      ],
+      "linkedin_org_locations": [
+        "456 Data Lane, Portland, OR, US"
+      ],
+      "linkedin_org_description": "ByteTrail is a fast-paced startup powering data pipelines. We're seeking a Backend Developer to build scalable microservices in Node.js and GraphQL. Responsibilities include designing REST/GraphQL APIs, optimizing PostgreSQL queries, and deploying Docker containers on AWS ECS. Required skills: Node.js (4+ years), Docker, Terraform, Jest, and CI/CD pipelines.",
+      "linkedin_org_recruitment_agency_derived": false
     },
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/remote-sales-agent-needed-earn-from-anywhere-at-joseph-and-young-4078783148",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQG0TIsMBFSwaA/company-logo_200_200/company-logo_200_200/0/1699832977682?e=2147483647&amp;v=beta&amp;t=21MsnEcTVUaCAKZ5d4QqTJn3ecBU-MH1fxE8LTNiqQE",
-    "cities_derived": [
-      "North Las Vegas"
-    ],
-    "regions_derived": [
-      "Nevada"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "North Las Vegas, Nevada, United States"
-    ],
-    "timezones_derived": [
-      "America/Los_Angeles"
-    ],
-    "lats_derived": [
-      36.2883
-    ],
-    "lngs_derived": [
-      -115.0888
-    ],
-    "remote_derived": true,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": 1,
-    "linkedin_org_url": "https://www.josephandyoung.com",
-    "linkedin_org_size": "11-50 employees",
-    "linkedin_org_slogan": "Passionate about helping people? Join Joseph and Young! Remote sales reps transforming lives daily.",
-    "linkedin_org_industry": "Insurance",
-    "linkedin_org_followers": 1588,
-    "linkedin_org_headquarters": "Swannanoa, North Carolina",
-    "linkedin_org_type": "Privately Held",
-    "linkedin_org_foundeddate": "2023",
-    "linkedin_org_specialties": [
-      ""
-    ],
-    "linkedin_org_locations": [
-      "204 Whitson Ave, Swannanoa, North Carolina 28778, US"
-    ],
-    "linkedin_org_description": "\"Welcome to Joseph and Young Financial Services!\n\nAt Joseph and Young, our unwavering commitment is to empower individuals and businesses to navigate the intricate world of financial services and insurance. With extensive industry experience, our expert team specializes in crafting tailored solutions to safeguard your financial future and protect your most valued assets.\n\nOur core mission is to arm clients with the knowledge and tools necessary for making well-informed financial decisions. Whether your needs encompass insurance coverage, retirement planning, investment strategies, or wealth management, our dedicated professionals are here to provide comprehensive guidance throughout your financial journey.\n\nDistinguished by a reputation for transparency, integrity, and an unwavering client-centric ethos, Joseph and Young places your financial objectives at the forefront. We tirelessly customize strategies to harmonize with your unique goals and aspirations.\n\nEmbark on the path to financial triumph and tranquility with us. Stay connected to access industry insights, invaluable financial advice, and the latest developments in insurance and finance.\n\nLet us collaborate in shaping a brighter financial future. Reach out to us for a consultation, and commence the discussion on realizing your financial aspirations today. 🚀 #JosephAndYoungFinancial #FinancialServices #Insurance #WealthManagement #ExpertAdvisors\"",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085618797",
-    "date_posted": "2024-11-17T13:16:35",
-    "date_created": "2024-11-17T13:49:57.582532",
-    "title": "Remote Sales Career Opportunity: Work Smarter, Not Harder",
-    "organization": "Kenneth Brown Agency",
-    "organization_url": "https://www.linkedin.com/company/kenneth-brown-agency",
-    "date_validthrough": "2024-12-17T13:16:35",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "US",
-          "addressLocality": "Milpitas",
-          "addressRegion": "CA",
-          "streetAddress": null
-        },
-        "latitude": 37.43148,
-        "longitude": -121.89144
-      }
-    ],
-    "location_type": "TELECOMMUTE",
-    "location_requirements_raw": [
-      {
-        "@type": "Country",
-        "name": "Milpitas, California, United States"
-      }
-    ],
-    "salary_raw": null,
-    "employment_type": [
-      "FULL_TIME"
-    ],
-    "url": "https://www.linkedin.com/jobs/view/remote-sales-career-opportunity-work-smarter-not-harder-at-kenneth-brown-agency-4078781320",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQEe7AS2F9LS4A/company-logo_200_200/company-logo_200_200/0/1704993269639/kenneth_brown_agency_logo?e=2147483647&amp;v=beta&amp;t=beXPnyCFr-uIcoZhMYg8yEU_yChe4DQ0I2MrnzVkprY",
-    "cities_derived": [
-      "Milpitas"
-    ],
-    "regions_derived": [
-      "California"
-    ],
-    "countries_derived": [
-      "United States"
-    ],
-    "locations_derived": [
-      "Milpitas, California, United States"
-    ],
-    "timezones_derived": [
-      "America/Los_Angeles"
-    ],
-    "lats_derived": [
-      37.4336
-    ],
-    "lngs_derived": [
-      -121.8921
-    ],
-    "remote_derived": true,
-    "recruiter_name": null,
-    "recruiter_title": null,
-    "recruiter_url": null,
-    "linkedin_org_employees": null,
-    "linkedin_org_url": "https://kennethbrownagency.com/",
-    "linkedin_org_size": "2-10 employees",
-    "linkedin_org_slogan": "Empowering Tomorrow's Triumphs – Your Sales Partner of Choice",
-    "linkedin_org_industry": "Financial Services",
-    "linkedin_org_followers": 950,
-    "linkedin_org_headquarters": "Phoenix, Arizona",
-    "linkedin_org_type": "Privately Held",
-    "linkedin_org_foundeddate": "2024",
-    "linkedin_org_specialties": [
-      ""
-    ],
-    "linkedin_org_locations": [
-      "101 E Washington St, 7th Floor, Phoenix, Arizona 85004, US"
-    ],
-    "linkedin_org_description": "At Kenneth Brown Agency, we revolutionize the craft of sales by skillfully combining innovation, expertise, and unwavering dedication to support businesses in their pursuit of success. Through an unwavering dedication to our clients and a fervent drive for achieving outcomes, we proudly serve as your reliable ally in the realm of sales. Acknowledging that success hinges on robust relationships, our approach revolves around putting clients at the forefront. We prioritize open communication, transparency, and collaboration as we consider our clients essential partners in the journey. Together, we tackle challenges, commemorate triumphs, and strive towards attaining enduring success.",
-    "linkedin_org_recruitment_agency_derived": false
-  },
-  {
-    "id": "1085569416",
-    "date_posted": "2024-11-17T13:16:27",
-    "date_created": "2024-11-17T13:29:43.312051",
-    "title": "Data Scientist",
-    "organization": "Talentvis",
-    "organization_url": "https://sg.linkedin.com/company/talentvis",
-    "date_validthrough": "2025-02-12T10:09:22",
-    "locations_raw": [
-      {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "SG",
-          "addressLocality": "Singapore",
-          "addressRegion": null,
-          "streetAddress": null
-        },
-        "latitude": 1.2894365,
-        "longitude": 103.84998
-      }
-    ],
-    "location_type": null,
-    "location_requirements_raw": null,
-    "salary_raw": null,
-    "employment_type": [
-      "CONTRACTOR"
-    ],
-    "url": "https://sg.linkedin.com/jobs/view/data-scientist-at-talentvis-4076482143",
-    "source_type": "jobboard",
-    "source": "linkedin",
-    "source_domain": "sg.linkedin.com",
-    "organization_logo": "https://media.licdn.com/dms/image/v2/C4D0BAQGxW--1NqkATg/company-logo_200_200/company-logo_200_200/0/1631341120631?e=2147483647&amp;v=beta&amp;t=l5PR-K9FTn0fmTrjtzl0jeCrbkJTyHYMX26hbdeVYUU",
-    "cities_derived": null,
-    "regions_derived": null,
-    "countries_derived": [
-      "Singapore"
-    ],
-    "locations_derived": [
-      "Singapore"
-    ],
-    "timezones_derived": [
-      "Asia/Singapore"
-    ],
-    "lats_derived": [
-      1.3
-    ],
-    "lngs_derived": [
-      103.8
-    ],
-    "remote_derived": false,
-    "recruiter_name": "Treasa Wong",
-    "recruiter_title": "",
-    "recruiter_url": "https://sg.linkedin.com/in/treasa-wong",
-    "linkedin_org_employees": 390,
-    "linkedin_org_url": "http://www.talentvis.com",
-    "linkedin_org_size": "51-200 employees",
-    "linkedin_org_slogan": "Your Partner for Growth.",
-    "linkedin_org_industry": "Staffing and Recruiting",
-    "linkedin_org_followers": 48600,
-    "linkedin_org_headquarters": "Singapore, Singapore",
-    "linkedin_org_type": "Privately Held",
-    "linkedin_org_foundeddate": "2000",
-    "linkedin_org_specialties": [
-      "Staffing & Recruiting",
-      "Recruitment ",
-      "Logistics & Supply Chain",
-      "Retail and Hospitality",
-      "Information Technology ",
-      "Media & Publishing ",
-      "Banking and Finance",
-      "Healthcare & Life Science",
-      "Oil",
-      "Gas and Chemical",
-      "Property and Construction",
-      "Rail",
-      "Executive Search",
-      "Temporary/ Contract Placement",
-      "Project Manpower Management",
-      "HR Outsourcing Solutions",
-      "Call Centre",
-      "Government ",
-      "Tech/ Startups",
-      "and Engineering"
-    ],
-    "linkedin_org_locations": [
-      "218 Orchard Road, #09-01/02, Orchard Gateway@Emerald, Singapore, Singapore 238851, SG",
-      "Jalan Stesen Sentral, Q Sentral, #29-06, Malaysia, Kuala Lumpur 50470, MY",
-      "Level 23 Penthouse Plaza Marein JL. Jendral Sudirman Kav.76-78, Jakarta , Jakarta 12910, ID",
-      "Units A-C, 25/F., Seabright Plaza,, Hong Kong, No. 9-23 Shell Street North Point, HK",
-      "Level 33, Interchange 21, 399 Sukhumvit Road, North Klongtoey, Wattana, Bangkok, Bangkok, Bangkok 10110, TH"
-    ],
-    "linkedin_org_description": "Talentvis is a leading Recruitment & Executive Search Group with offices growing across Asia Pacific. With our expertise recruiting in over ten industries, Talentvis is a platform that connects you to opportunities that further your career. \r\n\r\nPartnering your Growth \r\n\r\nAt Talentvis, you will find partners rather than mere recruiters. We understand there is no one-size-fits-all approach when it comes to finding success in our careers. That’s why we take a meticulous and consultative approach that matches you with the right opportunities and connections. Being your trusted partner is a responsibility that we take seriously.   \r\n\r\nAdapting for the Future\r\n\r\nAs global and local disruptions create obstacles and conditions for growth, we remain abreast of the latest trends and adapt so that we are always well-placed to advise your going forward. Our key insights, industry analysis and manpower management strategies are services that we are pleased to support you with. \r\n\r\nGrowing Together\r\n\r\nGrowth is an inclusive process and it’s better done together. While our consultants are partnering companies in across Asia Pacific, we are committed to investing in the next generation with our corporate social responsibility programmes. We also strongly believe in developing our people and providing the support they need to reach their potential. We are proud to become a nexus for the people around us.",
-    "linkedin_org_recruitment_agency_derived": true
-  }
-]
+    {
+      "id": "DEVROLE1002",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "Full Stack Engineer",
+      "organization": "Skyloft Systems",
+      "organization_url": "https://www.linkedin.com/company/skyloft-systems",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Chicago",
+            "addressRegion": "IL",
+            "streetAddress": "789 Enterprise Rd"
+          },
+          "latitude": 41.8781,
+          "longitude": -87.6298
+        }
+      ],
+      "location_type": "hybrid",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 105000,
+          "maxValue": 145000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/full-stack-engineer-at-skyloft-systems-1002",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_skyloftsystems.png",
+      "cities_derived": [
+        "Chicago"
+      ],
+      "regions_derived": [
+        "Illinois"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Chicago, Illinois, United States"
+      ],  
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        41.8781
+      ],
+      "lngs_derived": [
+        -87.6298
+      ],
+      "remote_derived": true,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 150,
+      "linkedin_org_url": "https://skyloftsystems.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Sky-high enterprise solutions",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 7850,
+      "linkedin_org_headquarters": "Chicago, IL",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2009",
+      "linkedin_org_specialties": [
+        "Angular",
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Azure"
+      ],
+      "linkedin_org_locations": [
+        "789 Enterprise Rd, Chicago, IL, US"
+      ],
+      "linkedin_org_description": "Skyloft Systems delivers enterprise solutions for logistics. As a Full Stack Engineer, you will work on Angular front-end and Java/Spring Boot back-end, implement end-to-end features, and collaborate with cross-functional teams. Experience with RESTful APIs, MySQL, and Azure DevOps is required.",
+      "linkedin_org_recruitment_agency_derived": false
+    },
+    {
+      "id": "DEVROLE1003",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "Mobile App Developer",
+      "organization": "NeonFrost",
+      "organization_url": "https://www.linkedin.com/company/neonfrost",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Austin",
+            "addressRegion": "TX",
+            "streetAddress": "321 App St"
+          },
+          "latitude": 30.2672,
+          "longitude": -97.7431
+        }
+      ],
+      "location_type": "remote",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 90000,
+          "maxValue": 125000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/mobile-app-developer-at-neonfrost-1003",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_neonfrost.png",
+      "cities_derived": [
+        "Austin"
+      ],
+      "regions_derived": [
+        "Texas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Austin, Texas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        30.2672
+      ],
+      "lngs_derived": [
+        -97.7431
+      ],
+      "remote_derived": true,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 90,
+      "linkedin_org_url": "https://neonfrost.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Chill meets code",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 2100,
+      "linkedin_org_headquarters": "Austin, TX",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2018",
+      "linkedin_org_specialties": [
+        "React Native",
+        "iOS",
+        "Android",
+        "Redux",
+        "GraphQL"
+      ],
+      "linkedin_org_locations": [
+        "321 App St, Austin, TX, US"
+      ],
+      "linkedin_org_description": "NeonFrost creates immersive mobile experiences for e‑commerce. We’re seeking a Mobile App Developer proficient in React Native to build cross‑platform applications, integrate with GraphQL APIs, and optimize performance. Experience with Redux, native module bridging, and automated testing is essential.",
+      "linkedin_org_recruitment_agency_derived": false
+    },
+    {
+      "id": "DEVROLE1004",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "Cloud Solutions Engineer",
+      "organization": "VortexWare",
+      "organization_url": "https://www.linkedin.com/company/vortexware",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Seattle",
+            "addressRegion": "WA",
+            "streetAddress": "555 Cloud Way"
+          },
+          "latitude": 47.6062,
+          "longitude": -122.3321
+        }
+      ],
+      "location_type": "onsite",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 115000,
+          "maxValue": 150000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/cloud-solutions-engineer-at-vortexware-1004",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_vortexware.png",
+      "cities_derived": [
+        "Seattle"
+      ],
+      "regions_derived": [
+        "Washington"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Seattle, Washington, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        47.6062
+      ],
+      "lngs_derived": [
+        -122.3321
+      ],
+      "remote_derived": false,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 120,
+      "linkedin_org_url": "https://vortexware.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Whirlwind cloud services",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 5400,
+      "linkedin_org_headquarters": "Seattle, WA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2011",
+      "linkedin_org_specialties": [
+        "Kubernetes",
+        "Terraform",
+        "AWS",
+        "GCP",
+        "CI/CD"
+      ],
+      "linkedin_org_locations": [
+        "555 Cloud Way, Seattle, WA, US"
+      ],
+      "linkedin_org_description": "VortexWare delivers cloud-native platforms for fintech. We’re hiring a Cloud Solutions Engineer to design and manage Kubernetes clusters, automate infrastructure with Terraform, and deploy services on AWS and GCP. Expertise in Helm, Prometheus, and security best practices is required.",
+      "linkedin_org_recruitment_agency_derived": false
+    },
+    {
+      "id": "DEVROLE1005",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "DevOps Specialist",
+      "organization": "StackFusion",
+      "organization_url": "https://www.linkedin.com/company/stackfusion",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Denver",
+            "addressRegion": "CO",
+            "streetAddress": "101 DevOps Ave"
+          },
+          "latitude": 39.7392,
+          "longitude": -104.9903
+        }
+      ],
+      "location_type": "hybrid",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 100000,
+          "maxValue": 140000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/devops-specialist-at-stackfusion-1005",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_stackfusion.png",
+      "cities_derived": [
+        "Denver"
+      ],
+      "regions_derived": [
+        "Colorado"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Denver, Colorado, United States"
+      ],
+      "timezones_derived": [
+        "America/Denver"
+      ],
+      "lats_derived": [
+        39.7392
+      ],
+      "lngs_derived": [
+        -104.9903
+      ],
+      "remote_derived": true,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 75,
+      "linkedin_org_url": "https://stackfusion.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Fusing stacks seamlessly",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 6000,
+      "linkedin_org_headquarters": "Denver, CO",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2016",
+      "linkedin_org_specialties": [
+        "Jenkins",
+        "Ansible",
+        "Docker",
+        "ELK Stack",
+        "Python"
+      ],
+      "linkedin_org_locations": [
+        "101 DevOps Ave, Denver, CO, US"
+      ],
+      "linkedin_org_description": "StackFusion is redefining DevOps workflows. As a DevOps Specialist, you’ll automate build and deployment pipelines with Jenkins and Ansible, containerize services using Docker, and implement centralized logging with ELK Stack. Strong Python scripting and AWS monitoring experience required.",
+      "linkedin_org_recruitment_agency_derived": false
+    },
+    {
+      "id": "DEVROLE1006",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "Game Developer",
+      "organization": "GridPixel",
+      "organization_url": "https://www.linkedin.com/company/gridpixel",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Boston",
+            "addressRegion": "MA",
+            "streetAddress": "202 Game Rd"
+          },
+          "latitude": 42.3601,
+          "longitude": -71.0589
+        }
+      ],
+      "location_type": "onsite",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 80000,
+          "maxValue": 120000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/game-developer-at-gridpixel-1006",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_gridpixel.png",
+      "cities_derived": [
+        "Boston"
+      ],
+      "regions_derived": [
+        "Massachusetts"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Boston, Massachusetts, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        42.3601
+      ],
+      "lngs_derived": [
+        -71.0589
+      ],
+      "remote_derived": false,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 50,
+      "linkedin_org_url": "https://gridpixel.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Pixel-perfect gameplay",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 4500,
+      "linkedin_org_headquarters": "Boston, MA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2014",
+      "linkedin_org_specialties": [
+        "Unity",
+        "C#",
+        "3D Modeling",
+        "Shader Programming",
+        "VR Integration"
+      ],
+      "linkedin_org_locations": [
+        "202 Game Rd, Boston, MA, US"
+      ],
+      "linkedin_org_description": "GridPixel is an indie game studio crafting narrative-driven experiences. We need a Game Developer experienced in Unity and C# to implement gameplay mechanics, optimize performance, and collaborate with artists. Experience with Blender, shader programming, and VR integration is a plus.",
+      "linkedin_org_recruitment_agency_derived": false
+    },
+    {
+      "id": "DEVROLE1007",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "AI/ML Engineer",
+      "organization": "Synthbit",
+      "organization_url": "https://www.linkedin.com/company/synthbit",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Miami",
+            "addressRegion": "FL",
+            "streetAddress": "321 AI Blvd"
+          },
+          "latitude": 25.7617,
+          "longitude": -80.1918
+        }
+      ],
+      "location_type": "remote",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 115000,
+          "maxValue": 165000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/ai-ml-engineer-at-synthbit-1007",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_synthbit.png",
+      "cities_derived": [
+        "Miami"
+      ],
+      "regions_derived": [
+        "Florida"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Miami, Florida, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        25.7617
+      ],
+      "lngs_derived": [
+        -80.1918
+      ],
+      "remote_derived": true,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 60,
+      "linkedin_org_url": "https://synthbit.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Bit by bit, we synthesize",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 3800,
+      "linkedin_org_headquarters": "Miami, FL",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2019",
+      "linkedin_org_specialties": [
+        "Python",
+        "TensorFlow",
+        "PyTorch",
+        "NLP",
+        "Docker"
+      ],
+      "linkedin_org_locations": [
+        "321 AI Blvd, Miami, FL, US"
+      ],
+      "linkedin_org_description": "Synthbit is advancing AI-driven content generation. We’re hiring an AI/ML Engineer to develop NLP and computer vision models using TensorFlow and PyTorch, build data pipelines, and deploy in Docker containers. Strong statistics background and AWS SageMaker experience required.",
+      "linkedin_org_recruitment_agency_derived": false
+    },
+    {
+      "id": "DEVROLE1008",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "Embedded Software Engineer",
+      "organization": "NovaCore",
+      "organization_url": "https://www.linkedin.com/company/novacore",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Los Angeles",
+            "addressRegion": "CA",
+            "streetAddress": "789 Embedded St"
+          },
+          "latitude": 34.0522,
+          "longitude": -118.2437
+        }
+      ],
+      "location_type": "onsite",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 105000,
+          "maxValue": 140000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/embedded-software-engineer-at-novacore-1008",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_novacore.png",
+      "cities_derived": [
+        "Los Angeles"
+      ],
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Los Angeles, California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        34.0522
+      ],
+      "lngs_derived": [
+        -118.2437
+      ],
+      "remote_derived": false,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 55,
+      "linkedin_org_url": "https://novacore.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Core innovations",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 2700,
+      "linkedin_org_headquarters": "Los Angeles, CA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2008",
+      "linkedin_org_specialties": [
+        "C",
+        "C++",
+        "RTOS",
+        "Embedded Linux",
+        "Hardware Debugging"
+      ],
+      "linkedin_org_locations": [
+        "789 Embedded St, Los Angeles, CA, US"
+      ],
+      "linkedin_org_description": "NovaCore develops IoT devices for smart homes. We’re seeking an Embedded Software Engineer to write firmware in C/C++ on RTOS and Embedded Linux, collaborate with hardware teams, and optimize power consumption. Experience with JTAG debugging and hardware schematics required.",
+      "linkedin_org_recruitment_agency_derived": false
+    },
+    {
+      "id": "DEVROLE1009",
+      "date_posted": "2025-04-20T08:00:00",
+      "date_created": "2025-04-20T08:05:00",
+      "title": "AR/VR Developer",
+      "organization": "EchoVolt",
+      "organization_url": "https://www.linkedin.com/company/echovolt",
+      "date_validthrough": "2025-05-20T08:00:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "streetAddress": "456 VR Park"
+          },
+          "latitude": 40.7128,
+          "longitude": -74.006
+        }
+      ],
+      "location_type": "hybrid",
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 120000,
+          "maxValue": 180000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/ar-vr-developer-at-echovolt-1009",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://example.com/logo_echovolt.png",
+      "cities_derived": [
+        "New York"
+      ],
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.7128
+      ],
+      "lngs_derived": [
+        -74.006
+      ],
+      "remote_derived": true,
+      "recruiter_name": "Sam Taylor",
+      "recruiter_title": "Talent Acquisition Lead",
+      "recruiter_url": "https://www.linkedin.com/in/samtaylor",
+      "linkedin_org_employees": 70,
+      "linkedin_org_url": "https://echovolt.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Powering immersive experiences",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 5000,
+      "linkedin_org_headquarters": "New York, NY",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2013",
+      "linkedin_org_specialties": [
+        "Unity",
+        "Unreal Engine",
+        "C++",
+        "3D UX Design",
+        "OpenXR"
+      ],
+      "linkedin_org_locations": [
+        "456 VR Park, New York, NY, US"
+      ],
+      "linkedin_org_description": "EchoVolt is exploring immersive training simulations. We’re looking for an AR/VR Developer skilled in Unity or Unreal Engine to design interactive experiences, implement 3D UIs, optimize performance for headsets, and integrate spatial audio. Expertise in OpenXR and shader development required.",
+      "linkedin_org_recruitment_agency_derived": false
+    }
+  ]

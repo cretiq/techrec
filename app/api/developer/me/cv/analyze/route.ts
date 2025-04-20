@@ -94,6 +94,7 @@ async function extractDataFromCV(cvText: string) {
 
     {
       "name": "Full name of the person",
+      "about": "If there is a summary section, extract it here. If not, create a summary based on the information provided.",
       "title": "Current professional title",
       "location": "City, Country",
       "summary": "Brief professional summary",

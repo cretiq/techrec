@@ -61,6 +61,7 @@ export async function GET() {
         profileEmail: session.user.email,
         name: session.user.name || 'New Developer',
         title: 'Software Developer', // Default title
+        about: '',
         skills: [],
         experience: [],
         education: [],
@@ -166,6 +167,7 @@ export async function PUT(request: Request) {
         profileEmail: session.user.email,
         name: data.name,
         title: data.title,
+        about: data.about,
         skills: data.skills || [],
         experience: data.experience || [],
         education: data.education || [],

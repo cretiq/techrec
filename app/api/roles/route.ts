@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/prisma/prisma'
 import { RoleType } from '@prisma/client'
 
 // Helper function to convert role type to enum value

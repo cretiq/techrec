@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { prisma } from "@/lib/prisma"
+import { prisma } from "@/prisma/prisma"
 import { GitHubClient } from "@/lib/github"
 
 export async function POST(req: Request) {

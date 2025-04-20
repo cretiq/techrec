@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/prisma/prisma'
 
 // Cache companies for 5 minutes
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes in milliseconds
