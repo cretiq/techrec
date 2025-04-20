@@ -1,13 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import ClientLayout from '@/components/client-layout'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from 'sonner'
-
-const inter = Inter({ subsets: ['latin'] })
+import { fontVariables, sourceSansPro } from '@/app/utils/fonts'
 
 export const metadata: Metadata = {
   title: 'TechRec - Developer Platform',
@@ -22,13 +20,16 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions)
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={fontVariables}>
+      <body className={sourceSansPro.className} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
+          disableTransitionOnChange={false}
+          storageKey="techrec-theme"
+          enableColorScheme
+          themes={['light', 'dark']}
         >
           <ClientLayout session={session}>
             {children}

@@ -8,17 +8,18 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw } from "lucide-react"
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
-import { DeveloperProfile } from "@/types/developer"
+
 interface CoverLetterCreatorProps {
   role: Role
 }
 
 export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
   const { data: session } = useSession()
-  const [developerProfile, setDeveloperProfile] = useState<DeveloperProfile | null>(null)
+  const [developerProfile, setDeveloperProfile] = useState<InternalProfile | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedLetter, setGeneratedLetter] = useState("")
   const [jobSource, setJobSource] = useState<string>("")
@@ -26,53 +27,52 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
     "Innovative products in the tech space",
     "Strong company culture and values"
   ])
-  const [newAchievement, setNewAchievement] = useState<string>("")
+  const [newAchievementTitle, setNewAchievementTitle] = useState<string>("")
   const [newAttractionPoint, setNewAttractionPoint] = useState<string>("")
-  const [totalExperience, setTotalExperience] = useState<string>("")
   const { toast } = useToast()
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('/api/developer/me')
+        const response = await fetch('/api/developer/me/profile')
         if (!response.ok) throw new Error('Failed to fetch profile')
-        const data: DeveloperProfile = await response.json()
+        const data: InternalProfile = await response.json()
         setDeveloperProfile(data)
       } catch (error) {
         console.error('Error fetching profile:', error)
+        toast({ title: "Error Loading Profile", description: "Could not load your profile data.", variant: "destructive" });
       }
     }
 
     if (session?.user) {
       fetchProfile()
     }
-  }, [session])
+  }, [session, toast])
 
   const handleAddAchievement = () => {
-    if (newAchievement.trim() === '') return
+    if (newAchievementTitle.trim() === '') return
     if (developerProfile) {
+      const newAch: InternalAchievement = {
+        id: `temp_ach_${Date.now()}`,
+        title: newAchievementTitle,
+        description: '',
+        date: new Date().toISOString(),
+        url: null,
+        issuer: null
+      };
       setDeveloperProfile({
         ...developerProfile,
-        achievements: [...developerProfile.achievements, {
-          id: Date.now().toString(),
-          title: newAchievement,
-          description: '',
-          date: '',
-          url: '',
-          issuer: ''
-        }]
+        achievements: [...developerProfile.achievements, newAch]
       })
-      setNewAchievement('')
+      setNewAchievementTitle('')
     }
   }
 
-  const handleRemoveAchievement = (index: number) => {
+  const handleRemoveAchievement = (idToRemove: string) => {
     if (developerProfile) {
-      const updatedAchievements = [...developerProfile.achievements]
-      updatedAchievements.splice(index, 1)
       setDeveloperProfile({
         ...developerProfile,
-        achievements: updatedAchievements
+        achievements: developerProfile.achievements.filter((ach: InternalAchievement) => ach.id !== idToRemove)
       })
     }
   }
@@ -93,7 +93,7 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
     if (!developerProfile) {
       toast({
         title: "Error",
-        description: "Please wait while we load your profile information",
+        description: "Profile data not loaded yet. Please wait.",
         variant: "destructive",
       })
       return
@@ -101,17 +101,13 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
 
     setIsGenerating(true)
     try {
-      // Updated to match the API route's new interface
       const requestData = {
-        developerProfile: {
-          ...developerProfile,
-          totalExperience
-        },
+        developerProfile: developerProfile,
         roleInfo: {
           title: role.title,
           description: role.description,
           requirements: role.requirements,
-          skills: role.skills.map(skill => skill.name),
+          skills: role.skills.map(skill => typeof skill === 'string' ? skill : skill.name),
         },
         companyInfo: {
           name: role.company.name,
@@ -124,7 +120,7 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
         },
       }
 
-      console.log(JSON.stringify(requestData, null, 2))
+      console.log("Sending request data:", JSON.stringify(requestData, null, 2))
 
       const response = await fetch("/api/generate-cover-letter", {
         method: "POST",
@@ -135,15 +131,19 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to generate cover letter")
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Generation API Error:", errorData);
+        throw new Error(errorData.error || "Failed to generate cover letter");
       }
 
       const data = await response.json()
       setGeneratedLetter(data.letter)
+      toast({ title: "Success!", description: "Cover letter generated." });
     } catch (error) {
+      console.error("Generate Cover Letter Error:", error);
       toast({
         title: "Generation Failed",
-        description: "There was an error generating your cover letter. Please try again.",
+        description: error instanceof Error ? error.message : "An unknown error occurred.",
         variant: "destructive",
       })
     } finally {
@@ -164,115 +164,110 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Professional Summary</CardTitle>
-            <CardDescription>
-              Your professional information for the cover letter
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-4">
+        <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-lg">Customize & Generate</CardTitle>
+            <CardDescription className="text-sm">
+              Provide additional context for your cover letter.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 p-4">
             <div>
-              <Label>Total Years of Experience</Label>
+              <Label htmlFor="jobSource" className="text-sm">How did you find this job? (Optional)</Label>
               <Input
-                placeholder="e.g., 5+ years in full-stack development"
-                value={totalExperience}
-                onChange={(e) => setTotalExperience(e.target.value)}
-              />
-            </div>
-            
-            <div>
-              <Label>How did you find this job?</Label>
-              <Input
+                id="jobSource"
                 placeholder="e.g., LinkedIn, Company Website, Referral"
                 value={jobSource}
                 onChange={(e) => setJobSource(e.target.value)}
+                className="mt-1.5 h-8 text-sm"
               />
             </div>
             
-            <div className="space-y-2">
-              <Label>Your Key Achievements</Label>
-              <ScrollArea className="h-32 rounded-md border p-2">
-                {developerProfile?.achievements.map((achievement, index) => (
-                  <div key={achievement.id} className="flex items-center justify-between mb-2">
-                    <p className="text-sm flex-1 pr-2">{achievement.title}</p>
+            <div className="space-y-1.5">
+              <Label className="text-sm">Your Key Achievements</Label>
+              <ScrollArea className="h-32 rounded-md border p-2 bg-white dark:bg-gray-800">
+                {(developerProfile?.achievements || []).map((achievement: InternalAchievement) => (
+                  <div key={achievement.id} className="flex items-center justify-between mb-1.5 gap-2">
+                    <p className="text-sm flex-1 pr-2 truncate" title={achievement.title}>{achievement.title}</p>
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      onClick={() => handleRemoveAchievement(index)}
+                      className="h-6 w-6 p-0 flex-shrink-0"
+                      onClick={() => handleRemoveAchievement(achievement.id)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 ))}
               </ScrollArea>
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2 mt-1.5">
                 <Input
-                  placeholder="Add a quantifiable achievement"
-                  value={newAchievement}
-                  onChange={(e) => setNewAchievement(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddAchievement()}
+                  placeholder="Add a key achievement..."
+                  value={newAchievementTitle}
+                  onChange={(e) => setNewAchievementTitle(e.target.value)}
+                  className="text-sm h-8"
                 />
-                <Button onClick={handleAddAchievement} variant="outline">
-                  <PlusCircle className="h-4 w-4" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddAchievement}
+                  className="h-8 px-2"
+                >
+                  <PlusCircle className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Company Interest</CardTitle>
-            <CardDescription>
-              Why you're interested in this company
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Company Attraction Points</Label>
-              <ScrollArea className="h-32 rounded-md border p-2">
+            <div className="space-y-1.5">
+              <Label className="text-sm">Why This Company?</Label>
+              <ScrollArea className="h-32 rounded-md border p-2 bg-white dark:bg-gray-800">
                 {companyAttractionPoints.map((point, index) => (
-                  <div key={index} className="flex items-center justify-between mb-2">
+                  <div key={index} className="flex items-center justify-between mb-1.5 gap-2">
                     <p className="text-sm flex-1 pr-2">{point}</p>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 p-0 flex-shrink-0"
                       onClick={() => handleRemoveAttractionPoint(index)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 ))}
               </ScrollArea>
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2 mt-1.5">
                 <Input
-                  placeholder="Add a reason you're attracted to this company"
+                  placeholder="Add what attracts you..."
                   value={newAttractionPoint}
                   onChange={(e) => setNewAttractionPoint(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddAttractionPoint()}
+                  className="text-sm h-8"
                 />
-                <Button onClick={handleAddAttractionPoint} variant="outline">
-                  <PlusCircle className="h-4 w-4" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddAttractionPoint}
+                  className="h-8 px-2"
+                >
+                  <PlusCircle className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
-            
+
             <Button
               onClick={handleGenerate}
-              disabled={isGenerating || !developerProfile}
-              className="w-full mt-4"
+              disabled={isGenerating}
+              className="w-full h-8 text-sm"
             >
               {isGenerating ? (
                 <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className="mr-1.5 h-3.5 w-3.5 animate-spin" />
                   Generating...
                 </>
               ) : (
                 <>
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <ArrowRight className="mr-1.5 h-3.5 w-3.5" />
                   Generate Cover Letter
                 </>
               )}
@@ -281,35 +276,33 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
         </Card>
       </div>
 
-      <Card className="h-full flex flex-col">
-        <CardHeader>
-          <CardTitle>Generated Cover Letter</CardTitle>
-          <CardDescription>
-            Review and edit your generated cover letter
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex-grow flex flex-col space-y-4">
-          {generatedLetter ? (
-            <>
-              <Textarea
-                value={generatedLetter}
-                onChange={(e) => setGeneratedLetter(e.target.value)}
-                className="min-h-[500px] flex-grow"
-              />
-              <Button onClick={handleExport} className="w-full">
-                <Download className="mr-2 h-4 w-4" />
+      <div className="space-y-4">
+        <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-lg">Generated Cover Letter</CardTitle>
+            <CardDescription className="text-sm">
+              Review and export your generated cover letter.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-4 space-y-3">
+            <Textarea
+              value={generatedLetter}
+              readOnly
+              placeholder="Your generated cover letter will appear here..."
+              className="min-h-[400px] text-sm bg-white dark:bg-gray-800"
+            />
+            {generatedLetter && (
+              <Button
+                onClick={handleExport}
+                className="w-full h-8 text-sm"
+              >
+                <Download className="mr-1.5 h-3.5 w-3.5" />
                 Export Cover Letter
               </Button>
-            </>
-          ) : (
-            <div className="flex items-center justify-center flex-grow border rounded-lg border-dashed">
-              <p className="text-muted-foreground">
-                Your generated cover letter will appear here
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 } 

@@ -87,47 +87,47 @@ export function OutreachMessageGenerator({ role }: OutreachMessageGeneratorProps
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
-      <Card className="md:col-span-1">
-        <CardHeader>
-          <CardTitle>Outreach Message Generator</CardTitle>
-          <CardDescription>
+    <div className="grid gap-4 md:grid-cols-2">
+      <Card className="md:col-span-1 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-lg">Outreach Message Generator</CardTitle>
+          <CardDescription className="text-sm">
             Create personalized outreach messages for different platforms
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
+        <CardContent className="space-y-4 p-4">
+          <div className="space-y-3">
             <div>
-              <Label>Recipient Information</Label>
+              <Label className="text-sm">Recipient Information</Label>
               <Textarea
                 placeholder="Add details about the person you're reaching out to..."
                 value={recipientInfo}
                 onChange={(e) => setRecipientInfo(e.target.value)}
-                className="mt-2 min-h-[100px]"
+                className="mt-1.5 min-h-[100px] text-sm bg-white dark:bg-gray-800"
               />
             </div>
 
             <div>
-              <Label>Context</Label>
+              <Label className="text-sm">Context</Label>
               <Textarea
                 placeholder="What's the purpose of your outreach? Add any specific points you'd like to mention..."
                 value={context}
                 onChange={(e) => setContext(e.target.value)}
-                className="mt-2 min-h-[100px]"
+                className="mt-1.5 min-h-[100px] text-sm bg-white dark:bg-gray-800"
               />
             </div>
 
             <div>
-              <Label>Platform</Label>
+              <Label className="text-sm">Platform</Label>
               <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger>
+                <SelectTrigger className="h-8 text-sm mt-1.5">
                   <SelectValue placeholder="Select platform" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="linkedin">LinkedIn</SelectItem>
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="twitter">Twitter</SelectItem>
-                  <SelectItem value="github">GitHub</SelectItem>
+                  <SelectItem value="linkedin" className="text-sm">LinkedIn</SelectItem>
+                  <SelectItem value="email" className="text-sm">Email</SelectItem>
+                  <SelectItem value="twitter" className="text-sm">Twitter</SelectItem>
+                  <SelectItem value="github" className="text-sm">GitHub</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -135,16 +135,16 @@ export function OutreachMessageGenerator({ role }: OutreachMessageGeneratorProps
             <Button
               onClick={handleGenerate}
               disabled={isGenerating || !recipientInfo || !context}
-              className="w-full"
+              className="w-full h-8 text-sm"
             >
               {isGenerating ? (
                 <>
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className="mr-1.5 h-3.5 w-3.5 animate-spin" />
                   Generating...
                 </>
               ) : (
                 <>
-                  <Shuffle className="mr-2 h-4 w-4" />
+                  <Shuffle className="mr-1.5 h-3.5 w-3.5" />
                   Generate Variations
                 </>
               )}
@@ -153,28 +153,29 @@ export function OutreachMessageGenerator({ role }: OutreachMessageGeneratorProps
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-1">
-        <CardHeader>
-          <CardTitle>Message Variations</CardTitle>
-          <CardDescription>
+      <Card className="md:col-span-1 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-lg">Message Variations</CardTitle>
+          <CardDescription className="text-sm">
             Choose from different message variations and copy to clipboard
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 p-4">
           {variations.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {variations.map((variation, index) => (
-                <Card key={index}>
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
+                <Card key={index} className="bg-white dark:bg-gray-800">
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <Badge variant="outline">{variation.platform}</Badge>
+                        <Badge variant="outline" className="text-xs h-5">{variation.platform}</Badge>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => copyToClipboard(variation.content)}
+                          className="h-7"
                         >
-                          <Copy className="h-4 w-4" />
+                          <Copy className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                       <p className="text-sm whitespace-pre-wrap">
@@ -186,8 +187,8 @@ export function OutreachMessageGenerator({ role }: OutreachMessageGeneratorProps
               ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[400px] border rounded-lg border-dashed">
-              <p className="text-muted-foreground">
+            <div className="flex items-center justify-center h-[400px] border rounded-lg border-dashed bg-white/50 dark:bg-gray-800/50">
+              <p className="text-muted-foreground text-sm">
                 Your message variations will appear here
               </p>
             </div>

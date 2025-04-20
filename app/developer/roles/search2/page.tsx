@@ -342,7 +342,7 @@ export default function RolesSearch2Page() {
             </Card>
           )}
           {!loading && filteredRoles.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredRoles.map((role, index) => (
                 <Card 
                   key={role.id} 
@@ -351,11 +351,11 @@ export default function RolesSearch2Page() {
                 >
                   <CardHeader className="pb-4">
                     <div className="flex justify-between items-start">
-                      <div className="space-y-1">
-                        <CardTitle className="text-xl line-clamp-2">{role.title}</CardTitle>
+                      <div className="space-y-2">
+                        <CardTitle className="text-lg line-clamp-2">{role.title}</CardTitle>
                         <CardDescription className="flex items-center gap-1">
                           <Building className="h-4 w-4" />
-                          <span className="line-clamp-1">{role.company?.name || 'Unknown Company'} (ID: {role.id})</span>
+                          <span className="line-clamp-1 text-xs">{role.company?.name || 'Unknown Company'}</span>
                         </CardDescription>
                       </div>
                       {session && (
@@ -377,24 +377,24 @@ export default function RolesSearch2Page() {
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4">
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary">
+                      <Badge variant="muted">
                         <MapPin className="mr-1 h-3 w-3" />
                         <span className="line-clamp-1">{role.location || 'N/A'}</span>
                       </Badge>
-                      <Badge variant="secondary">
+                      <Badge variant="muted">
                         <Briefcase className="mr-1 h-3 w-3" />
                         {formatJobType(role.type)}
                       </Badge>
                       {role.remote && (
-                        <Badge variant="secondary">
+                        <Badge variant="muted">
                           <Clock className="mr-1 h-3 w-3" />
                           Remote
                         </Badge>
                       )}
                     </div>
-                    <p className="text-muted-foreground line-clamp-3">{role.description || 'No description available.'}</p>
+                    <p className="text-muted-foreground text-sm line-clamp-3">{role.description || 'No description available.'}</p>
                     <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Skills/Requirements:</h4>
+                      {/* <h4 className="font-medium text-sm">Requirements:</h4> */}
                       <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
                         {(role.requirements && role.requirements.length > 0) ? (
                           role.requirements.map((req, idx) => (
