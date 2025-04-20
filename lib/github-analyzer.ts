@@ -1,5 +1,5 @@
 import { GitHubClient } from "./github"
-import { prisma } from "./prisma"
+import { prisma } from "../prisma/prisma"
 
 export class GitHubAnalyzer {
   private client: GitHubClient
