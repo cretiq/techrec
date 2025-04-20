@@ -41,3 +41,19 @@ dev-debug.log
 *.sw?
 # OS specific
 .DS_Store
+
+# Added by Claude Task Master
+# Dependency directories
+node_modules/
+# Environment variables
+.env
+# Task files
+tasks.json
+tasks/
+
+# Exclude .history and .cursor directories
+.history/
+.cursor/
+
+# Exclude .env.example files
+!.env.example 
