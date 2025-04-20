@@ -9,6 +9,7 @@ import { SessionProvider } from 'next-auth/react'
 import { Session } from 'next-auth'
 import { ModeToggle } from '@/components/mode-toggle'
 import { ThemeColorToggle } from '@/components/theme-color-toggle'
+import { FontSwitcher } from "@/components/font-switcher"
 
 interface ClientLayoutProps {
   children: React.ReactNode
@@ -34,7 +35,7 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                     <Link href="/developer/roles" className="text-sm font-medium hover:text-primary transition-colors">
                       Roles
                     </Link>
-                    <Link href="/developer/roles/search" className="text-sm font-medium hover:text-primary transition-colors">
+                    <Link href="/developer/roles/search2" className="text-sm font-medium hover:text-primary transition-colors">
                       Search Roles
                     </Link>
                     {session && (
@@ -42,12 +43,12 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                         <Link href="/developer/profile" className="text-sm font-medium hover:text-primary transition-colors">
                           Profile
                         </Link>
-                        <Link href="/developer/applications" className="text-sm font-medium hover:text-primary transition-colors">
+                        {/* <Link href="/developer/applications" className="text-sm font-medium hover:text-primary transition-colors">
                           Applications
-                        </Link>
-                        <Link href="/developer/writing-help" className="text-sm font-medium hover:text-primary transition-colors">
+                        </Link> */}
+                        {/* <Link href="/developer/writing-help" className="text-sm font-medium hover:text-primary transition-colors">
                           Writing Help
-                        </Link>
+                        </Link> */}
                         {/* <Link href="/github-analyzer" className="text-sm font-medium hover:text-primary transition-colors">
                           GitHub Analyzer
                         </Link> */}
@@ -56,8 +57,9 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                   </nav>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ThemeColorToggle />
+                  {/* <ThemeColorToggle /> */}
                   <ModeToggle />
+                  {/* <FontSwitcher /> */}
                   <UserNav />
                 </div>
               </div>
