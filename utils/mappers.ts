@@ -1,7 +1,5 @@
 import { Role, RoleType, Skill, CompanySummary } from '@/types'; // Adjust path as necessary
-import { DeveloperProfile } from '@/types/developer';
 import { RapidApiJob } from '@/types/rapidapi'; // Adjust path as necessary
-import { ContactInfo, Developer } from '@prisma/client';
 
 // Formats the job type enum/string into a user-friendly string
 export const formatJobType = (type: RoleType | string | undefined): string => {
@@ -43,14 +41,13 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     if (!apiJob.salary_raw) return 'Not Specified';
     
     const { minValue, maxValue, unitText } = apiJob.salary_raw.value;
-    const currency = apiJob.salary_raw.currency;
     
     if (minValue && maxValue) {
-      return `$${minValue.toLocaleString()} - $${maxValue.toLocaleString()} ${currency} ${unitText}`.trim();
+      return `$${minValue.toLocaleString()} - $${maxValue.toLocaleString()} / ${unitText.toLowerCase()}`.trim();
     } else if (minValue) {
-      return `From $${minValue.toLocaleString()} ${currency} ${unitText}`.trim();
+      return `From $${minValue.toLocaleString()} / ${unitText.toLowerCase()}`.trim();
     } else if (maxValue) {
-      return `Up to $${maxValue.toLocaleString()} ${currency} ${unitText}`.trim();
+      return `Up to $${maxValue.toLocaleString()} / ${unitText.toLowerCase()}`.trim();
     }
     return 'Not Specified';
   };

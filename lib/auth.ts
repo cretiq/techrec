@@ -1,7 +1,7 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
-import { prisma } from './prisma'
+import { prisma } from '../prisma/prisma'
 
 // Extend the built-in session types
 declare module 'next-auth' {
