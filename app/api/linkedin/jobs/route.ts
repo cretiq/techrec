@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { linkedInClient } from '@/lib/linkedin';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/prisma/prisma';
 import { RoleType } from '@prisma/client';
 import { cookies } from 'next/headers';
 

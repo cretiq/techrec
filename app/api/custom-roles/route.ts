@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/prisma/prisma";
 import { RoleType } from '@prisma/client';
 
 // GET all custom roles for the authenticated developer

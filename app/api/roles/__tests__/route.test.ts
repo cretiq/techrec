@@ -1,5 +1,5 @@
 import { GET, POST } from '../route'
-import { prisma } from '@/lib/prisma'
+import { prisma } from '@/prisma/prisma'
 
 // Mock the dependencies
 jest.mock('@/lib/prisma', () => ({
