@@ -13,7 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export function ModeToggle() {
-  const { setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
+
+  React.useEffect(() => {
+    const root = document.documentElement
+    root.style.setProperty('--initial-color-scheme', resolvedTheme || 'light')
+  }, [resolvedTheme])
 
   return (
     <DropdownMenu>
