@@ -105,54 +105,49 @@ export default function WritingHelpPage() {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto p-6">
+    <div className="container max-w-7xl mx-auto p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex flex-col space-y-2 mb-8"
+        className="flex flex-col space-y-1 mb-6"
       >
-        <h1 className="text-3xl font-bold tracking-tight">Writing Help</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl font-bold tracking-tight">Writing Help</h1>
+        <p className="text-sm text-muted-foreground">
           Create compelling application materials with AI-powered assistance
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
           className="lg:col-span-2"
         >
-          <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="text-xl">Application Materials</CardTitle>
-              <CardDescription>Choose the type of document you want to create</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-2">
               <Tabs
                 value={activeTab}
                 onValueChange={(value) => setActiveTab(value as "cv" | "cover-letter" | "outreach")}
                 className="w-full"
                 defaultValue="cv"
               >
-                <TabsList className="grid grid-cols-3 w-full max-w-2xl mx-auto">
-                  <TabsTrigger value="cv" className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
+                <TabsList className="grid grid-cols-3 w-full max-w-2xl mx-auto h-9">
+                  <TabsTrigger value="cv" className="flex items-center gap-1.5 text-xs">
+                    <FileText className="h-3.5 w-3.5" />
                     CV Optimization
                   </TabsTrigger>
-                  <TabsTrigger value="cover-letter" className="flex items-center gap-2">
-                    <PenTool className="h-4 w-4" />
+                  <TabsTrigger value="cover-letter" className="flex items-center gap-1.5 text-xs">
+                    <PenTool className="h-3.5 w-3.5" />
                     Cover Letter
                   </TabsTrigger>
-                  <TabsTrigger value="outreach" className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
+                  <TabsTrigger value="outreach" className="flex items-center gap-1.5 text-xs">
+                    <Mail className="h-3.5 w-3.5" />
                     Outreach Message
                   </TabsTrigger>
                 </TabsList>
 
-                <div className="mt-6">
+                <div className="mt-4">
                   <TabsContent value="cv" className="m-0">
                     <CVOptimizer role={role} />
                   </TabsContent>
@@ -167,24 +162,24 @@ export default function WritingHelpPage() {
                 </div>
               </Tabs>
 
-              {/* Progress Indicator */}
-              <div className="flex justify-center items-center gap-2 pt-4">
+              {/* Progress Indicator - Smaller */}
+              <div className="flex justify-center items-center gap-1.5 pt-3">
                 <div
-                  className={`h-2 w-2 rounded-full transition-colors ${
+                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
                     activeTab === "cv"
                       ? "bg-primary"
                       : "bg-muted"
                   }`}
                 />
                 <div
-                  className={`h-2 w-2 rounded-full transition-colors ${
+                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
                     activeTab === "cover-letter"
                       ? "bg-primary"
                       : "bg-muted"
                   }`}
                 />
                 <div
-                  className={`h-2 w-2 rounded-full transition-colors ${
+                  className={`h-1.5 w-1.5 rounded-full transition-colors ${
                     activeTab === "outreach"
                       ? "bg-primary"
                       : "bg-muted"
@@ -192,7 +187,6 @@ export default function WritingHelpPage() {
                 />
               </div>
             </CardContent>
-          </Card>
         </motion.div>
 
         <motion.div
@@ -209,13 +203,14 @@ export default function WritingHelpPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.3 }}
-        className="flex justify-end mt-6"
+        className="flex justify-end mt-4"
       >
         <Button
-          onClick={() => router.push("/developer/roles")}
-          className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+          size="sm"
+          onClick={() => router.push("/developer/roles/search2")}
+          className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-xs"
         >
-          Back to Roles <ArrowRight className="ml-2 h-4 w-4" />
+          Back to Roles <ArrowRight className="ml-1 h-3.5 w-3.5" />
         </Button>
       </motion.div>
     </div>

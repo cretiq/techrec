@@ -12,16 +12,6 @@ import { ProfileTabs } from "@/components/profile/ProfileTabs"
 import { v4 as uuidv4 } from 'uuid'
 import _ from 'lodash'; // Import lodash for deep comparison
 
-// Helper type for the fields we expect to update via simple input change
-type EditableProfileFields = Pick<InternalProfile, 'name' | 'title' | 'about' | 'profileEmail'> & {
-  phone: string | null; // from contactInfo
-  city: string | null; // from contactInfo
-  country: string | null; // from contactInfo
-  linkedin: string | null; // from contactInfo
-  github: string | null; // from contactInfo
-  portfolio: string | null; // from contactInfo (website)
-};
-
 export default function DeveloperProfilePage() {
   const { toast } = useToast()
   const [isUploading, setIsUploading] = useState(false)
@@ -609,13 +599,13 @@ export default function DeveloperProfilePage() {
   return (
     <div className="flex min-h-screen flex-col animate-fade-in-up">
       <div className="w-full flex justify-center">
-        <main className="container max-w-6xl py-6 md:py-10 px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+        <main className="container max-w-5xl py-4 md:py-6 px-3 md:px-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Developer Profile
               </h1>
-              <p className="text-muted-foreground">Manage your profile and CV to match with the best opportunities</p>
+              <p className="text-sm text-muted-foreground">Manage your profile and CV to match with the best opportunities</p>
             </div>
             <Button
               onClick={() => {
@@ -628,49 +618,79 @@ export default function DeveloperProfilePage() {
               }}
               disabled={isSaving || !hasUnsavedChanges}
               className={cn(
-                "w-full md:w-auto gap-1 transition-all duration-300",
+                "w-full md:w-auto gap-1 transition-all duration-300 text-sm py-2 h-9",
                 hasUnsavedChanges
                   ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg"
                   : "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
               )}
             >
               {isSaving ? (
-                <><Loader2 className="h-4 w-4 animate-spin mr-2" />Saving...</>
+                <><Loader2 className="h-3 w-3 animate-spin mr-1" />Saving...</>
               ) : (
-                <><Save className="h-4 w-4 mr-2" />{hasUnsavedChanges ? 'Save Changes' : 'No Changes'}</>
+                <><Save className="h-3 w-3 mr-1" />{hasUnsavedChanges ? 'Save Changes' : 'No Changes'}</>
               )}
             </Button>
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
-            <div className="md:col-span-1 space-y-6">
-              <ProfileHeader
-                profile={currentProfile}
-                onAvatarChange={handleAvatarChange}
-              />
-              <CVUploadCard
-                onUpload={handleCVUpload}
-                uploadState={uploadState}
-                uploadProgress={uploadProgress}
-                isUploading={isUploading}
-              />
+            <div className="md:col-span-1 space-y-4 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+              <div className="rounded-lg hover:shadow transition-all duration-300">
+                <ProfileHeader
+                  profile={currentProfile}
+                  onAvatarChange={handleAvatarChange}
+                />
+              </div>
+              <div className="rounded-lg hover:shadow transition-all duration-300">
+                <CVUploadCard
+                  onUpload={handleCVUpload}
+                  uploadState={uploadState}
+                  uploadProgress={uploadProgress}
+                  isUploading={isUploading}
+                />
+              </div>
             </div>
 
-            <div className="md:col-span-2 space-y-6">
-              <ProfileTabs
-                currentProfile={currentProfile}
-                modifiedFields={modifiedFields}
-                onInputChange={handleInputChange}
-                onDeleteSkill={handleDeleteSkill}
-                onDeleteExperience={handleDeleteExperience}
-                onDeleteEducation={handleDeleteEducation}
-                onDeleteAchievement={handleDeleteAchievement}
-                errors={errors}
-              />
+            <div className="md:col-span-2 space-y-4 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+              <div className="rounded-lg hover:shadow transition-all duration-300">
+                <ProfileTabs
+                  currentProfile={currentProfile}
+                  modifiedFields={modifiedFields}
+                  onInputChange={handleInputChange}
+                  onDeleteSkill={handleDeleteSkill}
+                  onDeleteExperience={handleDeleteExperience}
+                  onDeleteEducation={handleDeleteEducation}
+                  onDeleteAchievement={handleDeleteAchievement}
+                  errors={errors}
+                />
+              </div>
             </div>
           </div>
         </main>
       </div>
     </div>
   )
+}
+
+const styles = `
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.25s ease-out forwards;
+    opacity: 0;
+  }
+`
+
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style')
+  styleSheet.textContent = styles
+  document.head.appendChild(styleSheet)
 } 
