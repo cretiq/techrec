@@ -30,7 +30,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
     if (!analysisId) {
        throw new Error("Could not extract analysis ID from URL");
     }
-
+    
     console.log(`Received GET request for Analysis ID: ${analysisId}`);
     
     if (!session?.user?.id) {
@@ -118,7 +118,7 @@ export async function PUT(request: Request, { params }: { params: Params }) {
     if (!analysisId) {
        throw new Error("Could not extract analysis ID from URL");
     }
-    
+
     console.log(`Received PUT request to update Analysis ID: ${analysisId}`);
 
     if (!session?.user?.id) {

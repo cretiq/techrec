@@ -3,6 +3,8 @@ import OpenAI from "openai"
 
 const openai = new OpenAI()
 
+const gptModel = process.env.GPT_MODEL || "gpt-4o-mini-2024-07-18";
+
 export async function POST(req: Request) {
   try {
     const { cv, jobDescription } = await req.json()
@@ -43,7 +45,7 @@ export async function POST(req: Request) {
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4o-mini-2024-07-18",
+      model: gptModel,
       response_format: { type: "json_object" },
     })
 
