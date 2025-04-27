@@ -67,6 +67,48 @@ enum FundingStage {
   PUBLIC
 }
 
+// Add the new CV model
+enum CvStatus {
+  UPLOADING
+  PROCESSING
+  AVAILABLE
+  ERROR
+}
+
+// Add the AnalysisStatus enum here
+enum AnalysisStatus {
+  PENDING     // File uploaded, awaiting analysis
+  ANALYZING   // Analysis in progress
+  COMPLETED   // Analysis finished successfully
+  FAILED      // Analysis failed
+}
+
+// Add the CvAnalysis model here
+model CvAnalysis {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId  String    @db.ObjectId
+  developer    Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  
+  originalName String    // Original filename from upload
+  fileHash     String    // SHA-256 hash of the file content for deduplication
+  s3Key        String?   // Key for the file in S3 (might be temporary storage)
+  mimeType     String
+  size         Int
+
+  status       AnalysisStatus @default(PENDING)
+  analysisResult Json?     // Store the structured analysis result from GPT/parser
+  errorMessage String?   // Store error message if analysis failed
+
+  requestedAt  DateTime  @default(now())
+  analyzedAt   DateTime? // Timestamp when analysis completed/failed
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([developerId, status])
+  @@map("CvAnalyses")
+}
+
 model Developer {
   id              String    @id @default(auto()) @map("_id") @db.ObjectId
   email           String    @unique
@@ -90,6 +132,12 @@ model Developer {
   applications    Application[]
   savedRoles      SavedRole[]
   customRoles     CustomRole[]
+
+  // Add relation to CVs
+  cvs             CV[]
+
+  // Add relation to CvAnalyses
+  cvAnalyses      CvAnalysis[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -429,6 +477,30 @@ model Achievement {
 
   @@index([developerId])
   @@map("Achievement")
+}
+
+// Add the new CV model
+model CV {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId  String    @db.ObjectId
+  developer    Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  filename     String    // Unique name/key used in S3 storage (e.g., user-id/uuid.pdf)
+  originalName String    // Original filename provided by the user
+  mimeType     String    // e.g., 'application/pdf'
+  size         Int       // File size in bytes
+  s3Key        String    @unique // The key used for the object in S3
+  status       CvStatus  @default(UPLOADING)
+  uploadDate   DateTime  @default(now())
+  extractedText String?   // Store extracted text if needed
+  metadata     Json?     // Store any other extracted metadata
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([developerId])
+  @@index([status])
+  @@map("CVs") // Use plural for collection name
 }
 
 // model User {
