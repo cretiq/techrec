@@ -55,7 +55,6 @@ export function ExperienceCard({ profile, onDeleteExperience }: ExperienceCardPr
                 </Button>
               </div>
             </div>
-            <p className="text-sm whitespace-pre-wrap">{exp.description}</p>
             
             {/* Display responsibilities */}
             {exp.responsibilities && exp.responsibilities.length > 0 && (
