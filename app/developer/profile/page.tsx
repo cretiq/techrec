@@ -375,48 +375,192 @@ export default function DeveloperProfilePage() {
     const file = event instanceof File ? event : event.target.files?.[0];
     if (!file) return;
 
+    // --- File Validation ---
     if (!file.type.includes('pdf') && !file.type.includes('document')) {
       toast({ title: 'Invalid file type', description: 'Please upload a PDF or DOCX file', variant: 'destructive' });
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
       toast({ title: 'File too large', description: 'Please upload a file smaller than 5MB', variant: 'destructive' });
       return;
     }
+    // --- End File Validation ---
 
     setUploadState('uploading');
-    setUploadProgress(0);
+    setUploadProgress(0); // Start progress
     setIsUploading(true);
 
     try {
+      // --- Calculate File Hash ---
+      const buffer = await file.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const fileHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      const cacheKey = `cvAnalysis_${fileHash}`;
+      console.log(`Calculated file hash: ${fileHash}, Cache key: ${cacheKey}`);
+      // --- End Calculate File Hash ---
+
+      // --- Check Cache ---
+      const cachedAnalysis = sessionStorage.getItem(cacheKey);
+      if (cachedAnalysis) {
+        console.log("Found cached analysis data.");
+        const analysis = JSON.parse(cachedAnalysis);
+        
+        // Directly use cached data to update profile state (similar logic as below)
+        setCurrentProfile((prev: InternalProfile | null) => {
+           if (!prev) return null;
+           // ... (Mapping logic copied from below - omitted for brevity here but included in full edit)
+           const analysisData = analysis as any;
+           const newFields = new Set<string>();
+           const updatedData = _.cloneDeep(prev);
+
+           const updateField = (fieldPath: string, newValue: any) => {
+             const existingValue = _.get(updatedData, fieldPath);
+             const topLevelField = fieldPath.includes('.') ? fieldPath.split('.')[0] : fieldPath;
+             if (!_.isEqual(newValue, existingValue)) {
+               _.set(updatedData, fieldPath, newValue);
+               newFields.add(String(topLevelField));
+             }
+           };
+
+           updateField('name', analysisData.name || updatedData.name);
+           updateField('profileEmail', analysisData.email || updatedData.profileEmail);
+           updateField('about', analysisData.about || updatedData.about);
+           
+           const contactUpdates: Partial<Exclude<InternalProfile['contactInfo'], null>> = {};
+           if (analysisData.phone) contactUpdates.phone = analysisData.phone;
+           if (analysisData.location) contactUpdates.address = analysisData.location;
+           if (analysisData.linkedin) contactUpdates.linkedin = analysisData.linkedin;
+           if (analysisData.github) contactUpdates.github = analysisData.github;
+           if (analysisData.website) contactUpdates.website = analysisData.website;
+           
+           if (Object.keys(contactUpdates).length > 0) {
+                if (!updatedData.contactInfo) updatedData.contactInfo = { id: undefined, phone: null, address: null, city: null, country: null, linkedin: null, github: null, website: null };
+                updatedData.contactInfo = { ...updatedData.contactInfo, ...contactUpdates };
+                newFields.add('contactInfo');
+           }
+
+           if (analysisData.skills?.length) {
+             const mappedSkills: InternalSkill[] = analysisData.skills.map((skillItem: any) => ({
+               id: `temp_skill_${uuidv4()}`,
+               name: skillItem.name,
+               category: skillItem.category || 'Uncategorized',
+               level: skillItem.level?.toUpperCase() || "INTERMEDIATE"
+             }));
+             updateField('skills', mappedSkills);
+           }
+
+           if (analysisData.experience?.length) {
+             const mappedExperience: InternalExperience[] = analysisData.experience.map((expItem: any) => ({
+               id: `temp_exp_${uuidv4()}`,
+               title: expItem.title || 'Untitled Experience',
+               company: expItem.company || 'Unknown Company',
+               description: expItem.description || '',
+               location: expItem.location || null,
+               startDate: expItem.startDate ? new Date(expItem.startDate).toISOString() : new Date().toISOString(),
+               endDate: expItem.endDate ? new Date(expItem.endDate).toISOString() : null,
+               current: !expItem.endDate,
+               responsibilities: expItem.responsibilities || [],
+               achievements: expItem.achievements || [],
+               teamSize: expItem.teamSize || null,
+               techStack: expItem.techStack || []
+             }));
+             updateField('experience', mappedExperience);
+           }
+
+            if (analysisData.education?.length) {
+             const mappedEducation: InternalEducation[] = analysisData.education.map((eduItem: any) => ({
+               id: `temp_edu_${uuidv4()}`,
+               degree: eduItem.degree || null,
+               institution: eduItem.institution || 'Unknown Institution',
+               year: eduItem.year?.toString() || (eduItem.startDate ? new Date(eduItem.startDate).getFullYear().toString() : ''),
+               location: eduItem.location || null,
+               startDate: eduItem.startDate ? new Date(eduItem.startDate).toISOString() : new Date().toISOString(),
+               endDate: eduItem.endDate ? new Date(eduItem.endDate).toISOString() : null,
+               gpa: eduItem.gpa || null,
+               honors: eduItem.honors || [],
+               activities: eduItem.activities || []
+             }));
+             updateField('education', mappedEducation);
+           }
+
+            if (analysisData.achievements?.length) {
+             const mappedAchievements: InternalAchievement[] = analysisData.achievements.map((achItem: any) => ({
+               id: `temp_ach_${uuidv4()}`,
+               title: achItem.title || 'Untitled Achievement',
+               description: achItem.description || '',
+               date: achItem.date ? new Date(achItem.date).toISOString() : new Date().toISOString(),
+               url: achItem.url || null,
+               issuer: achItem.issuer || null
+             }));
+             updateField('achievements', mappedAchievements);
+           }
+
+           setModifiedFields(prevFields => new Set([...prevFields, ...newFields]));
+           return updatedData;
+        });
+
+        setUploadState('success'); // Go straight to success
+        setUploadProgress(100);
+        toast({ title: 'Success', description: 'Used cached CV analysis. Review and save changes.' });
+        setTimeout(() => { setUploadState('idle'); setUploadProgress(0); }, 3000);
+        setIsUploading(false); // Important: Set loading state off
+         if ('target' in event && event.target instanceof HTMLInputElement) { // Reset file input
+             event.target.value = '';
+         }
+        return; // Skip API calls
+      }
+      // --- End Check Cache ---
+
+      console.log("No cached data found, proceeding with upload and analysis.");
+      // --- Upload CV ---
       const formData = new FormData();
       formData.append('file', file);
+      setUploadProgress(10); // Progress after hashing
 
       const response = await fetch('/api/developer/me/cv', { method: 'POST', body: formData });
+       setUploadProgress(30); // Progress after upload call initiated
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
         throw new Error(error.error || 'Failed to upload CV');
       }
       const { data: uploadData } = await response.json();
+      console.log("CV Upload successful, text extracted.");
+      setUploadProgress(50); // Progress after upload success
+      // --- End Upload CV ---
 
       setUploadState('analyzing');
-      setUploadProgress(50);
-
+      // --- Analyze CV ---
       const analyzeResponse = await fetch('/api/developer/me/cv/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: uploadData.text }),
+        body: JSON.stringify({ text: uploadData.text }), // Assuming text is needed
       });
+      setUploadProgress(75); // Progress after analysis call initiated
       if (!analyzeResponse.ok) {
         const error = await analyzeResponse.json().catch(() => ({}));
         throw new Error(error.message || 'Failed to analyze CV');
       }
       const { analysis } = await analyzeResponse.json();
+      console.log("CV Analysis successful.");
+       setUploadProgress(90); // Progress after analysis success
+      // --- End Analyze CV ---
 
+      // --- Store in Cache ---
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify(analysis));
+        console.log("Analysis result stored in sessionStorage.");
+      } catch (cacheError) {
+        console.error("Failed to store analysis in sessionStorage:", cacheError);
+        // Decide if this is critical - maybe just log it
+      }
+      // --- End Store in Cache ---
+
+      // --- Update Profile State ---
       setCurrentProfile((prev: InternalProfile | null) => {
         if (!prev) return null;
         
-        const analysisData = analysis as any;
+        const analysisData = analysis as any; // Use the fresh analysis data
         const newFields = new Set<string>();
         const updatedData = _.cloneDeep(prev);
 
@@ -505,9 +649,10 @@ export default function DeveloperProfilePage() {
         setModifiedFields(prevFields => new Set([...prevFields, ...newFields]));
         return updatedData;
       });
+       // --- End Update Profile State ---
       
       setUploadState('success');
-      setUploadProgress(100);
+      setUploadProgress(100); // Final progress
       toast({ title: 'Success', description: 'CV analyzed. Review and save changes.' });
       setTimeout(() => { setUploadState('idle'); setUploadProgress(0); }, 3000);
 
@@ -518,7 +663,7 @@ export default function DeveloperProfilePage() {
     } finally {
       setIsUploading(false);
       if ('target' in event && event.target instanceof HTMLInputElement) {
-        event.target.value = '';
+        event.target.value = ''; // Reset file input
       }
     }
   };

@@ -26,7 +26,7 @@ import {
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
-import { formatJobType } from "@/app/utils/format"
+import { formatJobType } from "@/utils/format"
 
 // Mock role data
 const roleData = {

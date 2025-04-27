@@ -1,13 +1,13 @@
 // Placeholder for profile feature service layer 
 
-import { prisma } from '@/prisma/prisma'; // Adjust path if needed
-import { Prisma, SkillLevel } from '@prisma/client'; // Import SkillLevel
+import { prisma } from '@/prisma/prisma';
+import { Prisma, SkillLevel } from '@prisma/client';
 import {
     mapPrismaProfileToInternalProfile,
     mapUpdatePayloadToPrismaArgs
-} from '../lib/mappers';
-import { InternalProfile } from '../src/app/(features)/profile/_lib/types';
-import { UpdateProfilePayload } from '../prisma/schemas';
+} from '@/lib/mappers';
+import { InternalProfile } from '@/types/types';
+import { UpdateProfilePayload } from '@/prisma/schemas';
 
 // Define the Prisma include object needed for fetching the full profile
 const profileInclude = {
@@ -149,7 +149,6 @@ export async function updateProfile(userId: string, payload: UpdateProfilePayloa
                         developerId: userId,
                         title: exp.title,
                         company: exp.company,
-                        description: exp.description,
                         location: exp.location,
                         startDate: new Date(exp.startDate),
                         endDate: exp.endDate ? new Date(exp.endDate) : null,

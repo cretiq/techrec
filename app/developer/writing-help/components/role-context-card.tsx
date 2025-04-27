@@ -3,14 +3,11 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MapPin, Briefcase, Clock, Building, ArrowRight, Code, BarChart } from "lucide-react"
+import { MapPin, Briefcase, Clock, Building, Code, BarChart } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { formatJobType } from "@/app/utils/format"
+import { formatJobType } from "@/utils/format"
 import { Role } from "@/types/role"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/components/ui/use-toast"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 interface RoleContextCardProps {
   role: Role
