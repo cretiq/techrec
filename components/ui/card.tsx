@@ -11,7 +11,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "bg-gradient-to-b from-white to-gray-50 rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200",
+      "bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200",
       hoverable && "hover:shadow-lg hover:-translate-y-0.5",
       "animate-scale-in",
       className
