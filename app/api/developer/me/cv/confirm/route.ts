@@ -51,7 +51,6 @@ export async function POST(request: Request) {
           create: analysis.experience.map(exp => ({
             title: exp.title,
             company: exp.company,
-            description: exp.description,
             location: exp.location,
             startDate: new Date(exp.startDate),
             endDate: exp.endDate ? new Date(exp.endDate) : null,

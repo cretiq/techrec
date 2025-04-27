@@ -4,6 +4,8 @@ import OpenAI from "openai"
 import { InternalProfile, InternalSkill, InternalAchievement } from "@/types/types"; // Relative path attempt
 const openai = new OpenAI()
 
+const gptModel = process.env.GPT_MODEL || "gpt-4o-mini-2024-07-18";
+
 interface RoleInfo {
   title: string
   description: string
@@ -121,7 +123,7 @@ Please generate only the final cover letter text without restating these instruc
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4.1-2025-04-14",
+      model: gptModel,
       temperature: 0.5,
     })
 
