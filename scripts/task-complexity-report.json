@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "generatedAt": "2025-04-21T21:24:18.704Z",
+    "tasksAnalyzed": 4,
+    "thresholdScore": 7,
+    "projectName": "Your Project Name",
+    "usedResearch": false
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 18,
+      "taskTitle": "Implement Priority Legend and Documentation",
+      "complexityScore": 6,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the implementation of a priority visualization system in AnalysisResultDisplay.tsx into specific subtasks covering: type definition updates, UI component development for the legend, styling implementation, documentation creation, and accessibility features.",
+      "reasoning": "This task involves both frontend development and documentation creation with moderate complexity. It requires updating types, implementing visual components, adding interactive features, and creating comprehensive documentation. The task is well-defined but involves multiple components and considerations including accessibility and responsive design."
+    },
+    {
+      "taskId": 19,
+      "taskTitle": "Implement Comprehensive CV Analysis Engine with Best Practice Recommendations",
+      "complexityScore": 9,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Break down the implementation of a comprehensive CV analysis engine into specific subtasks covering: document parsing infrastructure, analysis modules for each dimension (ATS optimization, job tailoring, achievement quantification, formatting, length analysis, content organization), and API integration.",
+      "reasoning": "This is a highly complex task involving multiple analysis dimensions, document processing capabilities, and sophisticated recommendation logic. It requires building a complete analysis engine with various specialized modules, each requiring domain expertise. The system needs to handle different document formats and generate detailed, actionable feedback across multiple dimensions."
+    },
+    {
+      "taskId": 20,
+      "taskTitle": "Create Comprehensive CV Analysis AI Documentation",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the creation of comprehensive CV analysis AI documentation into specific subtasks covering: request/response schema documentation, processing logic documentation with diagrams, API integration guidelines, implementation guides with examples, and documentation formatting/organization.",
+      "reasoning": "This task requires deep understanding of the CV analysis system to create detailed technical documentation. It involves documenting complex schemas, processing logic, integration patterns, and implementation guidelines. Creating clear diagrams, examples, and comprehensive error handling documentation adds to the complexity. The task requires both technical knowledge and documentation expertise."
+    },
+    {
+      "taskId": 21,
+      "taskTitle": "Enhance CV Analysis Frontend Experience",
+      "complexityScore": 8,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down the enhancement of the CV analysis frontend experience into specific subtasks covering: core UI component development, analysis display features implementation, suggestion interface creation, analytics dashboard development, responsive design implementation, and state management architecture.",
+      "reasoning": "This task involves building a sophisticated frontend system with multiple interactive components, complex state management, and data visualization features. It requires implementing responsive UI components, interactive navigation, comparison views, analytics dashboards, and ensuring accessibility compliance. The dependencies on other complex tasks (19 and 20) and the need for a cohesive user experience add to the complexity."
+    }
+  ]
+}

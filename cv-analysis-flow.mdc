@@ -1,0 +1,69 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# CV Analysis Pipeline
+
+## Overview
+The CV analysis system follows a structured pipeline from input to final response, integrating rule-based analysis with AI-powered insights.
+
+## Redux State Management
+
+### Analysis Status Flow
+The CV analysis process is tracked through a Redux state machine with the following statuses:
+
+1. **idle**
+   - Initial state
+   - No analysis has been started
+   - UI shows default state
+
+2. **loading**
+   - Analysis data is being fetched
+   - Shows loading indicators
+   - Disables interactive elements
+
+3. **analyzing**
+   - CV content is being processed
+   - Shows analysis progress
+   - Disables interactive elements
+
+4. **suggesting**
+   - AI is generating improvement suggestions
+   - Shows suggestion generation progress
+   - Temporarily disables suggestion requests
+
+5. **succeeded**
+   - Analysis completed successfully
+   - Data is available for display
+   - Enables editing and suggestion features
+
+6. **failed**
+   - Analysis encountered an error
+   - Shows error messages
+   - Allows retry options
+
+### Status-based UI Behavior
+
+- Loading states show appropriate progress indicators
+- Error states display user-friendly messages
+- Success states enable full interaction
+- Suggestion states show AI processing status
+- Button states are controlled by current status
+- Form interactions are gated by status checks
+
+### Redux Integration
+
+```typescript
+// Define the possible status values
+type AnalysisStatus = 'idle' | 'loading' | 'succeeded' | 'failed' | 'suggesting' | 'analyzing';
+
+interface AnalysisState {
+  currentAnalysisId: string | null;
+  analysisData: CvAnalysisData | null;
+  originalData: CvAnalysisData | null;
+  suggestions: CvImprovementSuggestion[];
+  status: AnalysisStatus;
+  error: string | null;
+}
+```
