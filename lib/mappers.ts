@@ -51,7 +51,6 @@ export function mapPrismaProfileToInternalProfile(developer: PrismaDeveloperWith
         id: exp.id,
         title: exp.title,
         company: exp.company,
-        description: exp.description,
         location: exp.location,
         startDate: exp.startDate.toISOString(),
         endDate: exp.endDate?.toISOString() ?? null,
