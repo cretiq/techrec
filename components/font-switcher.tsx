@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { createContext, useContext, useEffect, useState } from "react"
-import { fontObjects } from "@/app/utils/fonts"
+import { fontObjects } from "@/utils/fonts"
 
 const FONT_STORAGE_KEY = 'selected-font'
 

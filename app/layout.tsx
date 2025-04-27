@@ -5,7 +5,7 @@ import { authOptions } from '@/lib/auth'
 import ClientLayout from '@/components/client-layout'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from 'sonner'
-import { fontVariables, sourceSansPro } from '@/app/utils/fonts'
+import { fontVariables, sourceSansPro } from '@/utils/fonts'
 
 export const metadata: Metadata = {
   title: 'TechRec - Developer Platform',
