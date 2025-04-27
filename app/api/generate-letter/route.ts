@@ -5,6 +5,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+const gptModel = process.env.GPT_MODEL || "gpt-4o-mini-2024-07-18";
+
 export const runtime = 'edge'
 
 export async function POST(request: Request) {
@@ -35,7 +37,7 @@ Generate the letter:`
     const writer = stream.writable.getWriter()
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini-2024-07-18",
+      model: gptModel,
       messages: [
         {
           role: "system",

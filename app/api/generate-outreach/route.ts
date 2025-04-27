@@ -3,6 +3,8 @@ import OpenAI from "openai"
 
 const openai = new OpenAI()
 
+const gptModel = process.env.GPT_MODEL || "gpt-4o-mini-2024-07-18";
+
 const PLATFORM_CONSTRAINTS = {
   linkedin: {
     maxLength: 300,
@@ -68,7 +70,7 @@ export async function POST(req: Request) {
 
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4o-mini-2024-07-18",
+      model: gptModel,
       temperature: 0.7,
       response_format: { type: "json_object" },
     })

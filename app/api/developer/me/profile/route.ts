@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { getProfileByUserId, updateProfile } from '@/utils/profile';
+import { getProfileByUserId } from '@/utils/profile';
 import { prisma } from '@/prisma/prisma';
 import { ProfileUpdateSchema } from '@/types/types';
 import { SkillLevel } from '@prisma/client';

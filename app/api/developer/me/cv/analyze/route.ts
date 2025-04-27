@@ -7,6 +7,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const gptModel = process.env.GPT_MODEL || "gpt-4o-mini-2024-07-18";
+
 // Define the expected response structure
 interface CVAnalysis {
   name: string;
@@ -166,7 +168,7 @@ async function extractDataFromCV(cvText: string) {
     // Call OpenAI to analyze the CV
     const completion = await openai.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "gpt-4o-mini-2024-07-18",
+      model: gptModel,
       temperature: 0.3,
       max_tokens: 4000,
       response_format: { type: "json_object" }
