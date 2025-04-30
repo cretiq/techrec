@@ -96,9 +96,10 @@ export async function PUT(request: Request, { params }: { params: Params }) {
 
 // DELETE /api/cv/[id]
 export async function DELETE(request: Request, { params }: { params: Params }) {
-  const { id } = params;
+  // const { id } = params; // Don't access params here yet
+  let cvIdToDelete: string = 'unknown'; // Initialize here
   try {
-    console.log(`Received DELETE request for CV ID: ${id}`);
+    // Await session check first
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       console.log('Authentication failed.');
@@ -106,7 +107,16 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     }
     const developerId = session.user.id;
 
-    const existingCv = await getCV(id);
+    // Now safely extract the ID from URL
+    const url = new URL(request.url);
+    const pathSegments = url.pathname.split('/');
+    cvIdToDelete = pathSegments[pathSegments.length - 1]; // Get last segment
+    if (!cvIdToDelete) {
+      throw new Error("Could not extract CV ID from URL");
+    }
+    console.log(`Received DELETE request for CV ID: ${cvIdToDelete}`);
+
+    const existingCv = await getCV(cvIdToDelete);
     if (!existingCv) {
       console.log('CV not found for deletion.');
       // Return 204 even if not found, as DELETE should be idempotent
@@ -117,12 +127,12 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    await deleteCV(id);
+    await deleteCV(cvIdToDelete);
     console.log('CV deleted successfully (DB record and S3 object).');
     return new NextResponse(null, { status: 204 }); // No content on successful delete
 
   } catch (error) {
-    console.error(`Error handling DELETE request for CV ID ${id}:`, error);
+    console.error(`Error handling DELETE request for CV ID ${cvIdToDelete ?? 'unknown'}:`, error);
     return NextResponse.json({ error: 'Failed to delete CV' }, { status: 500 });
   }
 } 
