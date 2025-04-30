@@ -58,6 +58,7 @@ const createPath = (base: string, index: number, field?: string, subIndex?: numb
 };
 
 export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggestion, onRejectSuggestion }: ExperienceProps) {
+  console.log('[ExperienceDisplay] Rendering with data (count):', data?.length);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<CvExperienceItem[]>(data || []);
 
