@@ -13,7 +13,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 // Import Redux hooks and items
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '@/lib/store';
-import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus } from '@/lib/features/analysisSlice';
+import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
+import { Play } from 'lucide-react';
 
 export default function CVManagementPage() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -37,6 +38,7 @@ export default function CVManagementPage() {
   // Select state from Redux
   const analysisIdFromStore = useSelector(selectCurrentAnalysisId);
   const analysisStatus = useSelector(selectAnalysisStatus);
+  const analysisData = useSelector(selectCurrentAnalysisData);
 
   // Function to update URL and local state when tab changes
   const handleTabChange = useCallback((newTab: string) => {
@@ -44,9 +46,22 @@ export default function CVManagementPage() {
       setActiveTab(newTab);
       const params = new URLSearchParams(searchParams.toString());
       params.set('tab', newTab);
+      // If switching away from analyze, remove the analysisId
+      if (newTab !== 'analyze') {
+        params.delete('analysisId');
+        // Optionally clear Redux state immediately, though the effect should handle it
+        // dispatch(clearAnalysis()); 
+      } else {
+        // If switching TO analyze, ensure analysisId (if present in store) is in URL
+        // This case might be redundant if selection always adds ID to URL
+        const currentStoreId = analysisIdFromStore; // Read directly
+        if (currentStoreId && !params.has('analysisId')) {
+             params.set('analysisId', currentStoreId);
+        }
+      }
       router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
     }
-  }, [activeTab, router, searchParams]);
+  }, [activeTab, router, searchParams, dispatch, analysisIdFromStore]); // Add dependencies
 
   // Effect to sync activeTab state if URL changes externally
   useEffect(() => {
@@ -106,42 +121,27 @@ export default function CVManagementPage() {
   // Refactored Effect: Dispatch Redux actions based on URL
   useEffect(() => {
     const analysisIdFromUrl = searchParams.get('analysisId');
-    // Read current state directly here instead of relying on dependencies for these
     const currentStoreId = analysisIdFromStore; 
     const currentStatus = analysisStatus;
+    console.log(`[page.tsx useEffect] Running effect. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}`); // LOG
 
     if (analysisIdFromUrl) {
-      // Only fetch if the ID is different from the one currently in store
-      // or if the status is idle/failed (to allow refetch)
-      // Use the directly read currentStatus here
       if (analysisIdFromUrl !== currentStoreId || 
           (currentStatus !== 'loading' && currentStatus !== 'succeeded' && currentStatus !== 'suggesting')) {
-        console.log(`URL has analysisId ${analysisIdFromUrl}, dispatching fetchAnalysisById...`);
+        console.log(`[page.tsx useEffect] Dispatching fetchAnalysisById(${analysisIdFromUrl})...`); // LOG
         dispatch(fetchAnalysisById(analysisIdFromUrl));
       } else {
-        // Use the directly read values in the log message
-        console.log(`URL analysisId ${analysisIdFromUrl} matches store (${currentStoreId}) or status is ${currentStatus}. Skipping fetch.`);
+        console.log(`[page.tsx useEffect] Skipping fetch. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}.`); // LOG
       }
     } else {
-      // If no analysisId in URL, clear the analysis state in Redux
-      // Use the directly read currentStoreId here
       if (currentStoreId !== null) {
-        console.log('URL has no analysisId, dispatching clearAnalysis...');
+        console.log(`[page.tsx useEffect] Dispatching clearAnalysis... Current store ID was: ${currentStoreId}`); // LOG
         dispatch(clearAnalysis());
+      } else {
+        console.log(`[page.tsx useEffect] Skipping clearAnalysis. No ID in URL or store.`); // LOG
       }
     }
-    // Dependency: Run ONLY when searchParams (URL) or dispatch function changes.
-    // DO NOT include analysisIdFromStore or analysisStatus here.
-  }, [searchParams, dispatch]); 
-
-  // Separate effect for switching tab (remains the same)
-  useEffect(() => {
-      const analysisIdFromUrl = searchParams.get('analysisId');
-      if (analysisIdFromUrl && activeTab !== 'analyze') {
-          console.log('Analysis ID present, ensuring analyze tab is active.');
-          handleTabChange('analyze');
-      }
-  }, [searchParams, activeTab, handleTabChange]);
+  }, [searchParams, dispatch, analysisIdFromStore, analysisStatus]); // Add analysisIdFromStore and analysisStatus back as dependencies 
 
   useEffect(() => {
     const styles = `
@@ -173,9 +173,13 @@ export default function CVManagementPage() {
   const isLoadingAnalysis = analysisStatus === 'loading';
   
   // Log state just before returning JSX
-  console.log('[CVManagementPage] Rendering. States:', {
+  console.log('[CVManagementPage] PRE-RENDER LOG:', { // LOG
+    activeTab,
+    analysisIdFromUrl: searchParams.get('analysisId'),
     isLoadingAnalysis,
+    analysisStatus,
     analysisIdFromStore,
+    hasAnalysisData: !!analysisData // Log if data object exists
   });
 
   return (
@@ -198,7 +202,7 @@ export default function CVManagementPage() {
              <Card>
                 <CardHeader>
                 <CardTitle>Upload New CV</CardTitle>
-                <CardDescription>Upload a new CV document (PDF, DOCX, TXT).</CardDescription>
+                <CardDescription>Upload a new CV document (PDF, DOCX, TXT). Analysis will start automatically.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <UploadForm onUploadComplete={handleUploadComplete} />
@@ -207,7 +211,7 @@ export default function CVManagementPage() {
             <Card>
                 <CardHeader>
                 <CardTitle>My CVs</CardTitle>
-                <CardDescription>Manage your uploaded CV documents.</CardDescription>
+                <CardDescription>Manage your uploaded CVs. Click 'Improve' to view analysis.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <CVList refreshKey={refreshKey} />
@@ -215,36 +219,60 @@ export default function CVManagementPage() {
             </Card>
         </TabsContent>
         <TabsContent value="analyze" className="mt-4 space-y-6">
-            <Card>
-                 <CardHeader>
-                    <CardTitle>Analyze New CV</CardTitle>
-                    <CardDescription>Upload a CV document to analyze its content and structure. Results appear below.</CardDescription>
-                </CardHeader>
-                 <CardContent>
-                    <AnalysisUploadForm onAnalysisComplete={handleAnalysisComplete} />
-                 </CardContent>
-            </Card>
-            
-            {/* Conditional rendering based on Redux state - check directly */}
-            {(analysisIdFromStore || isLoadingAnalysis) && (
-                 <Card>
-                     <CardHeader>
-                         <CardTitle>Analysis Result</CardTitle>
-                         <CardDescription>
-                             {isLoadingAnalysis ? "Loading analysis..." : "View and edit the results of the CV analysis"}
-                         </CardDescription>
-                     </CardHeader>
-                     <CardContent>
-                         {isLoadingAnalysis ? (
-                             <div className="flex justify-center items-center h-40">Loading...</div>
-                         ) : (
-                             <AnalysisResultDisplay 
-                                originalMimeType={originalMimeType} 
-                             />
-                         )}
-                     </CardContent>
-                 </Card>
-            )}
+            {/* --- Conditional Rendering Logic --- */}
+            {(() => { // Use IIFE for clearer conditional logic
+              const analysisIdFromUrl = searchParams.get('analysisId');
+              const shouldShowAnalysis = !!analysisIdFromUrl; // Base decision on URL for initial render
+              const isLoading = analysisStatus === 'loading';
+
+              // Condition 1: Loading state (regardless of ID presence)
+              if (isLoading) {
+                return (
+                  <Card>
+                    <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>Loading analysis...</CardDescription></CardHeader>
+                    <CardContent><div className="flex justify-center items-center h-40">Loading...</div></CardContent>
+                  </Card>
+                );
+              }
+              
+              // Condition 2: Analysis ID exists in URL (and not loading)
+              if (shouldShowAnalysis) {
+                 // Verify data exists in store before rendering display, otherwise show loading state
+                 if (analysisIdFromStore === analysisIdFromUrl && analysisData) {
+                   return (
+                     <Card>
+                       <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>View and edit the results of the CV analysis</CardDescription></CardHeader>
+                       <CardContent>
+                         <AnalysisResultDisplay originalMimeType={originalMimeType} />
+                       </CardContent>
+                     </Card>
+                   );
+                 } else {
+                     // Data isn't ready yet, even though ID is in URL (e.g., still fetching)
+                     // Render a loading state consistent with the isLoading condition above
+                     return (
+                      <Card>
+                        <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>Loading analysis...</CardDescription></CardHeader>
+                        <CardContent><div className="flex justify-center items-center h-40">Loading...</div></CardContent>
+                      </Card>
+                    );
+                 }
+              }
+
+              // Condition 3: No Analysis ID in URL and not loading
+              // Show the placeholder/prompt to select a CV
+              return (
+              <Card className="mt-4">
+                  <CardHeader><CardTitle>Select a CV</CardTitle></CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Please select a CV from the 'Manage CVs' tab by clicking the 'Improve' <Play className="inline h-4 w-4 mx-1"/> button to view its analysis and suggestions.
+                  </p>
+                </CardContent>
+              </Card>
+              );
+            })()}
+            {/* --- End Conditional Rendering Logic --- */}
         </TabsContent>
       </Tabs>
     </div>
