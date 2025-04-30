@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CvStatus, AnalysisStatus } from '@prisma/client'; // Import enums from Prisma
+import { AnalysisStatus } from '@prisma/client'; // Import only AnalysisStatus
 
 // New type for validation warnings
 export interface ValidationWarning {
@@ -54,6 +54,7 @@ export const ExperienceItemSchema = z.object({
   id: z.string().optional(),
   title: z.string().optional(),
   company: z.string().optional(),
+  description: z.string().nullable().optional(),
   location: z.string().nullable().optional(),
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
@@ -188,6 +189,11 @@ export const CvAnalysisDataSchema = z.object({
   experience: z.array(ExperienceItemSchema).nullable().optional(),
   education: z.array(EducationItemSchema).nullable().optional(),
   achievements: z.array(AchievementSchema).nullable().optional(),
+  
+  // Add the nested CV relation for extracted text
+  cv: z.object({
+    extractedText: z.string().nullable().optional()
+  }).nullable().optional()
 });
 
 // Schema for the request body of PUT /api/cv-analysis/[id]
@@ -219,7 +225,7 @@ export const CvExportRequestSchema = z.object({
 // Schema for query parameters of GET /api/cv
 export const CvListFilterSchema = z.object({
     search: z.string().optional(),
-    status: z.nativeEnum(CvStatus).optional(),
+    status: z.nativeEnum(AnalysisStatus).optional(),
 });
 
 // --- TypeScript Interfaces/Types derived from Zod Schemas ---

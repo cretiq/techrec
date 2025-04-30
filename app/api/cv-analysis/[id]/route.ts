@@ -39,32 +39,21 @@ export async function GET(request: Request, { params }: { params: Params }) {
     const developerId = session.user.id;
 
     // --- Fetch record from DB for ownership check and fileHash --- 
+    console.log(`[GET /cv-analysis] Attempting DB fetch for ID: ${analysisId}`); // LOG
     const analysisRecord = await prisma.cvAnalysis.findUnique({
       where: { id: analysisId },
-      // Select necessary fields including fileHash for cache key
-      select: { 
-        id: true,
-        developerId: true, 
-        fileHash: true, 
-        originalName: true,
-        mimeType: true,
-        size: true,
-        status: true,
-        analysisResult: true,
-        errorMessage: true,
-        requestedAt: true,
-        analyzedAt: true,
-        createdAt: true,
-        updatedAt: true,
+      include: { 
+        cv: { select: { extractedText: true } }
       } 
     });
+    console.log(`[GET /cv-analysis] DB fetch result:`, analysisRecord ? `Record found (Hash: ${analysisRecord.fileHash})` : 'Record not found'); // LOG
 
     if (!analysisRecord) {
       console.warn(`GET request: Analysis record ${analysisId} not found.`);
       return NextResponse.json({ error: 'Analysis record not found' }, { status: 404 });
     }
 
-    // Verify ownership
+    // Verify ownership (keep logs)
     if (analysisRecord.developerId !== developerId) {
       console.warn(`GET request: User ${developerId} attempted to access analysis ${analysisId} owned by ${analysisRecord.developerId}.`);
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -72,27 +61,40 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
     // --- Attempt to fetch from Cache --- 
     let cacheHit = false;
-    if (analysisRecord.fileHash) {
+    // const bypassCache = true; // Ensure this is removed or false
+
+    if (analysisRecord.fileHash) { // Check if hash exists
       const cacheKey = `${ANALYSIS_CACHE_PREFIX}${analysisRecord.fileHash}`;
+      console.log(`[GET /cv-analysis] Checking cache with key: ${cacheKey}`); // LOG
       try {
         const cachedData = await getCache(cacheKey);
         if (cachedData) {
-          console.log(`GET request: Cache HIT for analysis ${analysisId} (key: ${cacheKey})`);
-          // Assuming getCache returns the parsed object or stringified JSON
+          console.log(`[GET /cv-analysis] Cache HIT for analysis ${analysisId} (key: ${cacheKey})`); // LOG
           const parsedData = typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData;
           cacheHit = true;
+          console.log(`[GET /cv-analysis] Returning CACHED data for ${analysisId}`); // LOG
           return NextResponse.json(parsedData, { headers: { 'X-Cache-Status': 'hit' } });
         } else {
-          console.log(`GET request: Cache MISS for analysis ${analysisId} (key: ${cacheKey})`);
+          console.log(`[GET /cv-analysis] Cache MISS for analysis ${analysisId} (key: ${cacheKey})`); // LOG
+          // ---> WRITE TO CACHE ON MISS <--- 
+          try {
+             await setCache(cacheKey, analysisRecord); // Cache the record fetched from DB
+             console.log(`[GET /cv-analysis] Wrote DB data to cache for key: ${cacheKey}`); // LOG
+          } catch (setCacheError) {
+             console.error(`[GET /cv-analysis] FAILED to write to cache for key ${cacheKey}:`, setCacheError); // LOG
+          }
+          // Proceed to return DB data below
         }
       } catch (cacheError) {
-        console.error(`GET request: Redis cache error for key ${cacheKey}:`, cacheError);
+        console.error(`[GET /cv-analysis] Redis cache read error for key ${cacheKey}:`, cacheError); // LOG
         // Proceed to return DB data if cache fails
       }
+    } else {
+       console.log(`[GET /cv-analysis] Skipping cache check because fileHash is missing for ${analysisId}`); // LOG
     }
 
     // --- Return DB data if cache miss or no fileHash --- 
-    console.log(`GET request: Returning DB data for analysis ${analysisId} for user ${developerId}.`);
+    console.log(`[GET /cv-analysis] Returning DB data for ${analysisId}`); // LOG
     return NextResponse.json(analysisRecord, { headers: { 'X-Cache-Status': 'miss' } });
 
   } catch (error) {
@@ -159,7 +161,7 @@ export async function PUT(request: Request, { params }: { params: Params }) {
     console.log(`Validated update data for ID: ${analysisId}`);
 
     // --- Update Database --- 
-    const updatedRecord = await prisma.cvAnalysis.update({
+    const updatedRecordPartial = await prisma.cvAnalysis.update({ // Renamed temp var
       where: { id: analysisId },
       data: {
         analysisResult: updatedAnalysisData, 
@@ -170,17 +172,21 @@ export async function PUT(request: Request, { params }: { params: Params }) {
     });
     console.log("Analysis record updated in DB.");
 
-    // --- Update Cache --- 
-    if (existingRecord.fileHash) {
-      const cacheKey = `${ANALYSIS_CACHE_PREFIX}${existingRecord.fileHash}`;
-      await setCache(cacheKey, updatedRecord); 
-      console.log("Analysis cache updated.");
-    }
+    // --- Remove Cache Update Logic --- 
+    // Caching should primarily happen on GET requests after validation.
+    // Avoids potential inconsistencies if PUT updates parts not in GET response.
+    // if (existingRecord.fileHash && fullUpdatedRecord) { 
+    //   const cacheKey = `${ANALYSIS_CACHE_PREFIX}${existingRecord.fileHash}`;
+    //   await setCache(cacheKey, fullUpdatedRecord); // Cache the full record
+    //   console.log("Analysis cache updated with full record.");
+    // } else if (!fullUpdatedRecord) {
+    //   console.warn(`Skipping cache update for ${analysisId} because re-fetch failed.`);
+    // }
 
     return NextResponse.json({
       message: 'Analysis updated successfully',
-      analysisId: updatedRecord.id,
-      status: updatedRecord.status,
+      analysisId: updatedRecordPartial.id, // Return the basic ID/status
+      status: updatedRecordPartial.status,
     });
 
   } catch (error) {
