@@ -41,6 +41,7 @@ const findSuggestionsForField = (
 };
 
 export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSuggestion, onRejectSuggestion }: ContactInfoProps) {
+  console.log('[ContactInfoDisplay] Rendering with data:', data); // LOG
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ContactInfoData>(data);
 

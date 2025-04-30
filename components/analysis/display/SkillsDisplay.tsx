@@ -51,6 +51,7 @@ export function SkillsDisplay({
   onAcceptSuggestion,
   onRejectSuggestion
 }: SkillsProps) {
+  console.log('[SkillsDisplay] Rendering with data (count):', data?.length); // LOG
   const [isEditing, setIsEditing] = useState(false);
   // Use the imported type for state as well
   const [editData, setEditData] = useState<CvSkillType[]>(data || []);

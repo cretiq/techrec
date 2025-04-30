@@ -37,6 +37,7 @@ export function AboutDisplay({
   onAcceptSuggestion,
   onRejectSuggestion
 }: AboutProps) {
+  console.log('[AboutDisplay] Rendering with data (length):', data?.length);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<string>(data || '');
 
