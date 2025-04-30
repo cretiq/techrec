@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Download, Eye } from 'lucide-react'; // Icons
+import { Trash2, Download, Eye, Play } from 'lucide-react'; // Icons
 import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns'; // For date formatting
 import { SearchFilters } from './SearchFilters'; // Import the new component
-import { CvStatus } from '@prisma/client';
+import { AnalysisStatus } from '@prisma/client';
+import { Badge } from "@/components/ui/badge";
+import { useRouter } from 'next/navigation';
 
 // Define the expected structure of a CV object from the API
 interface CV {
@@ -16,15 +18,16 @@ interface CV {
   mimeType: string;
   size: number;
   uploadDate: string; // Assuming ISO string format
-  status: CvStatus;
+  status: AnalysisStatus;
   s3Key: string;
-  // Add other relevant fields if needed
+  analysisId?: string | null;
+  improvementScore?: number | null;
 }
 
 // Define filter state type
 interface CurrentFilters {
   search?: string;
-  status?: CvStatus;
+  status?: AnalysisStatus;
 }
 
 // Add refreshKey prop
@@ -32,12 +35,21 @@ interface CVListProps {
   refreshKey: number;
 }
 
+// Map status to badge variants
+const statusBadgeVariant: { [key in AnalysisStatus]: "default" | "secondary" | "destructive" | "outline" } = {
+  [AnalysisStatus.PENDING]: "secondary",
+  [AnalysisStatus.ANALYZING]: "outline",
+  [AnalysisStatus.COMPLETED]: "default", // Default is often green/primary
+  [AnalysisStatus.FAILED]: "destructive",
+};
+
 export function CVList({ refreshKey }: CVListProps) {
   const [cvs, setCvs] = useState<CV[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<CurrentFilters>({}); // State to hold current filters
   const { toast } = useToast();
+  const router = useRouter();
 
   // Wrap fetchCVs in useCallback to stabilize its reference
   const fetchCVs = useCallback(async (currentFilters: CurrentFilters) => {
@@ -148,6 +160,14 @@ export function CVList({ refreshKey }: CVListProps) {
     }
   };
 
+  const handleImprove = (analysisId: string | null | undefined) => {
+    if (analysisId) {
+      router.push(`/developer/cv-management?tab=analyze&analysisId=${analysisId}`);
+    } else {
+      toast({ title: "Analysis Not Ready", description: "Analysis is not yet complete for this CV.", variant: "destructive" });
+    }
+  };
+
   // Render logic remains largely the same, but includes SearchFilters
   return (
     <div className="w-full space-y-4">
@@ -162,10 +182,9 @@ export function CVList({ refreshKey }: CVListProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Filename</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Size</TableHead>
                 <TableHead>Uploaded</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Score</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -180,13 +199,26 @@ export function CVList({ refreshKey }: CVListProps) {
                 cvs.map((cv) => (
                   <TableRow key={cv.id}>
                     <TableCell className="font-medium">{cv.originalName}</TableCell>
-                    <TableCell>{cv.mimeType}</TableCell>
-                    <TableCell>{(cv.size / 1024 / 1024).toFixed(2)} MB</TableCell>
                     <TableCell>{format(new Date(cv.uploadDate), 'PPpp')}</TableCell>
-                    <TableCell>{cv.status}</TableCell>
+                    <TableCell>
+                      <Badge variant={statusBadgeVariant[cv.status] || 'secondary'}>
+                        {cv.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {cv.status === AnalysisStatus.COMPLETED && typeof cv.improvementScore === 'number' 
+                        ? `${cv.improvementScore.toFixed(0)}%` 
+                        : '-'}
+                    </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => alert('Preview not implemented yet')} title="Preview">
-                        <Eye className="h-4 w-4" />
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleImprove(cv.analysisId)} 
+                        disabled={cv.status !== AnalysisStatus.COMPLETED || !cv.analysisId}
+                        title="View Analysis & Improve"
+                      >
+                        <Play className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="icon" onClick={() => handleDownload(cv.id, cv.originalName)} title="Download">
                         <Download className="h-4 w-4" />

@@ -67,14 +67,6 @@ enum FundingStage {
   PUBLIC
 }
 
-// Add the new CV model
-enum CvStatus {
-  UPLOADING
-  PROCESSING
-  AVAILABLE
-  ERROR
-}
-
 // Add the AnalysisStatus enum here
 enum AnalysisStatus {
   PENDING     // File uploaded, awaiting analysis
@@ -89,9 +81,13 @@ model CvAnalysis {
   developerId  String    @db.ObjectId
   developer    Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
   
+  // Add relation back to the specific CV record
+  cvId         String?   @db.ObjectId @unique
+  cv           CV?       @relation(fields: [cvId], references: [id], onDelete:SetNull)
+
   originalName String    // Original filename from upload
-  fileHash     String    // SHA-256 hash of the file content for deduplication
-  s3Key        String?   // Key for the file in S3 (might be temporary storage)
+  fileHash     String?   // SHA-256 hash of the file content for deduplication
+  s3Key        String    @unique // The key used for the object in S3
   mimeType     String
   size         Int
 
@@ -106,6 +102,7 @@ model CvAnalysis {
   updatedAt    DateTime  @updatedAt
 
   @@index([developerId, status])
+  // @@index([cvId]) // Temporarily remove index
   @@map("CvAnalyses")
 }
 
@@ -490,16 +487,24 @@ model CV {
   mimeType     String    // e.g., 'application/pdf'
   size         Int       // File size in bytes
   s3Key        String    @unique // The key used for the object in S3
-  status       CvStatus  @default(UPLOADING)
+  
+  // Use AnalysisStatus enum and default to PENDING
+  status       AnalysisStatus @default(PENDING)
   uploadDate   DateTime  @default(now())
   extractedText String?   // Store extracted text if needed
   metadata     Json?     // Store any other extracted metadata
+
+  // Add fields for linking analysis result and score
+  analysisId      String?       @unique
+  analysis        CvAnalysis?   
+  improvementScore Float?       
 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
   @@index([developerId])
   @@index([status])
+  // No separate index needed for analysisId, @unique provides one.
   @@map("CVs") // Use plural for collection name
 }
 

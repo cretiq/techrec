@@ -278,5 +278,14 @@ export const fetchAnalysisById = createAsyncThunk(
 );
 ```
 
+## 13. Background Jobs (New Section)
+
+*   **Consideration:** For long-running tasks initiated by API requests (like complex analysis or external API calls), consider offloading the work to a background job queue (e.g., BullMQ with Redis, Quirrel, Vercel Serverless Functions with longer timeouts) instead of processing synchronously within the API route handler.
+*   **Benefits:** Improves API response time, enhances reliability (retries), allows for scaling workers independently.
+*   **Implementation:** 
+    - API route enqueues the job with necessary parameters (e.g., `cvId`).
+    - A separate worker process dequeues jobs, executes the logic (parsing, analysis, DB updates), and handles completion/failure status updates.
+    - Frontend polls for status updates or uses real-time updates (e.g., WebSockets) if needed.
+
 ---
 *Apply these standards contextually. This document defines the expected architecture and structure for this specific project.*
