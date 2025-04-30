@@ -172,8 +172,6 @@ export const analyzeCvWithGPT = async (cvText: string): Promise<z.infer<typeof C
       };
 
       // *** Log the Full Request Payload ***
-      console.log('[GPT Request] Sending payload:', JSON.stringify(requestPayload, null, 2));
-
       // *** Make the API Call ***
       const completion = await openai.chat.completions.create(requestPayload);
 

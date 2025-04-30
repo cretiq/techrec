@@ -90,7 +90,6 @@ export function CVAnalysisModal({ analysis, isOpen, onClose, onConfirm }: CVAnal
                   <p className="text-sm text-gray-500">
                     {new Date(exp.startDate).toLocaleDateString()} - {exp.current ? 'Present' : exp.endDate ? new Date(exp.endDate).toLocaleDateString() : 'Not specified'}
                   </p>
-                  <p className="text-sm mt-2">{exp.description}</p>
                 </div>
               ))}
             </div>

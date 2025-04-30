@@ -1,4 +1,4 @@
-import { PrismaClient, CV, CvStatus } from '@prisma/client';
+import { PrismaClient, CV, AnalysisStatus } from '@prisma/client';
 import { deleteFileFromS3 } from './s3Storage'; // Import S3 delete function
 
 const prisma = new PrismaClient();
@@ -10,16 +10,18 @@ export interface CvCreateData {
   mimeType: string;
   size: number;
   s3Key: string;
-  status?: CvStatus;
+  status?: AnalysisStatus;
   extractedText?: string;
   metadata?: any; // Adjust type as needed
 }
 
 export interface CvUpdateData {
   originalName?: string;
-  status?: CvStatus;
+  status?: AnalysisStatus;
   extractedText?: string;
   metadata?: any; // Adjust type as needed
+  analysisId?: string | null;
+  improvementScore?: number | null;
 }
 
 /**
@@ -31,7 +33,7 @@ export const createCV = async (data: CvCreateData): Promise<CV> => {
     const newCV = await prisma.cV.create({
       data: {
         ...data,
-        status: data.status ?? CvStatus.UPLOADING, // Default status if not provided
+        status: data.status ?? AnalysisStatus.PENDING,
       },
     });
     console.log('Successfully created CV record with ID:', newCV.id);
@@ -113,7 +115,7 @@ export const deleteCV = async (id: string): Promise<CV> => {
  */
 export interface CvListFilters {
   originalName?: string; // For text search
-  status?: CvStatus;
+  status?: AnalysisStatus;
   // Add other potential filters: date range, mimeType, etc.
 }
 

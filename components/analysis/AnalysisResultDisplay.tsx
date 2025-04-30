@@ -268,7 +268,18 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   // Determine button disabled states based on Redux status
   const isSuggesting = status === 'suggesting';
   const isProcessing = ['loading', 'suggesting', 'analyzing'].includes(status);
-  console.log('[AnalysisResultDisplay] Rendering MAIN content.'); // Log main content render
+  
+  // Consolidated log before rendering
+  console.log('[AnalysisResultDisplay] PRE-RENDER LOG:', {
+    status,
+    analysisId,
+    contactInfo: analysisData?.contactInfo,
+    about: analysisData?.about,
+    skills: analysisData?.skills,
+    experience: analysisData?.experience,
+    education: analysisData?.education,
+    extractedText: analysisData?.cv?.extractedText,
+  });
 
   return (
     <motion.div
@@ -335,6 +346,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                     whileHover={scaleOnHover} // Use shared hover variant
                   >
                       <h3 className="text-2xl font-semibold text-foreground mb-3 border-b pb-1">Contact Info</h3>
+                      {/* Log before rendering ContactInfoDisplay */} 
                       <ContactInfoDisplay 
                           data={analysisData.contactInfo}
                           onChange={(newData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: newData }))} 
@@ -473,7 +485,10 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
               </Accordion>
               
-              <CvViewer pdfUrl={undefined /* TODO: Pass actual PDF URL if available */} />
+              <CvViewer 
+                  pdfUrl={undefined /* TODO: Pass actual PDF URL if available */} 
+                  extractedText={analysisData?.cv?.extractedText} // Pass extracted text
+              />
           </main>
        </div>
 

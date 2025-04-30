@@ -3,21 +3,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CvStatus } from '@prisma/client'; // Import enum for dropdown values
+import { AnalysisStatus } from '@prisma/client'; // Import enum for dropdown values
 import { debounce } from 'lodash'; // For debouncing search input
 
 interface SearchFiltersProps {
-  onFilterChange: (filters: { search?: string; status?: CvStatus }) => void;
+  onFilterChange: (filters: { search?: string; status?: AnalysisStatus }) => void;
 }
 
 export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<CvStatus | 'all'>('all');
+  const [selectedStatus, setSelectedStatus] = useState<AnalysisStatus | 'all'>('all');
 
   // Debounced function to call onFilterChange
   const debouncedFilterChange = useCallback(
-    debounce((currentSearchTerm: string, currentStatus: CvStatus | 'all') => {
-      const filters: { search?: string; status?: CvStatus } = {};
+    debounce((currentSearchTerm: string, currentStatus: AnalysisStatus | 'all') => {
+      const filters: { search?: string; status?: AnalysisStatus } = {};
       if (currentSearchTerm.trim()) {
         filters.search = currentSearchTerm.trim();
       }
@@ -43,8 +43,8 @@ export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
   };
 
   const handleStatusChange = (value: string) => {
-     // The value from Select will be a string, potentially "all" or a CvStatus enum key
-    setSelectedStatus(value as CvStatus | 'all');
+     // The value from Select will be a string, potentially "all" or a AnalysisStatus enum key
+    setSelectedStatus(value as AnalysisStatus | 'all');
   };
 
   return (
@@ -64,7 +64,7 @@ export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
-            {Object.values(CvStatus).map((status) => (
+            {Object.values(AnalysisStatus).map((status) => (
               <SelectItem key={status} value={status}>
                 {status} {/* Display enum key as label */}
               </SelectItem>
