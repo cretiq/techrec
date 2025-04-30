@@ -38,15 +38,11 @@ export const fetchAnalysisById = createAsyncThunk(
         console.error(`[fetchAnalysisById] Fetch failed with status ${response.status}:`, errorData.error);
         return rejectWithValue(errorData.error || `Failed to fetch analysis (${response.status})`);
       }
-      const data = await response.json(); // This is likely just CvAnalysisData from cache
+      const data = await response.json(); // Data is now { id, ..., cv: { extractedText: ... } }
       console.log('[fetchAnalysisById] Fetch successful, received data:', data); 
-      // Construct the expected payload structure including the ID we already have
-      const constructedPayload = { 
-        id: analysisId, 
-        analysisResult: data as CvAnalysisData 
-      };
-      console.log('[fetchAnalysisById] Returning constructed payload:', constructedPayload);
-      return constructedPayload;
+      // Return the fetched data directly as it now matches the expected structure 
+      // (after CvAnalysisData type was updated)
+      return data; 
     } catch (error: any) {
       console.error('[fetchAnalysisById] Exception during fetch:', error);
       return rejectWithValue(error.message || 'An unknown error occurred');
@@ -123,7 +119,6 @@ export const analysisSlice = createSlice({
     builder
       // Fetch Analysis By ID handlers
       .addCase(fetchAnalysisById.pending, (state) => {
-        // console.log('[analysisSlice] fetchAnalysisById.pending'); // Removed log
         state.status = 'loading';
         state.error = null;
         state.analysisData = null; // Clear previous data while loading
@@ -132,25 +127,29 @@ export const analysisSlice = createSlice({
         state.currentAnalysisId = null;
       })
       .addCase(fetchAnalysisById.fulfilled, (state, action) => {
-        console.log('[analysisSlice] fetchAnalysisById.fulfilled - Received Constructed Payload:', action.payload);
+        // Payload is the full fetched object: { id, ..., analysisResult: {...}, cv: { extractedText: ... } }
+        console.log('[analysisSlice] fetchAnalysisById.fulfilled - Received Payload:', action.payload);
         
-        // Assign state based on the { id, analysisResult } structure
-        state.status = 'succeeded';
-        state.currentAnalysisId = action.payload.id; // Should exist now
-        state.analysisData = action.payload.analysisResult as CvAnalysisData; // Should exist now
-        state.originalData = action.payload.analysisResult ? JSON.parse(JSON.stringify(action.payload.analysisResult)) : null;
+        // Combine analysisResult and cv into the state.analysisData
+        const analysisResultData = action.payload.analysisResult || {};
+        const cvData = action.payload.cv || {};
 
-        // Log final state
-        console.log('[analysisSlice] State AFTER simplified fulfilled update:', {
-            status: state.status,
-            currentAnalysisId: state.currentAnalysisId,
-            hasAnalysisData: !!state.analysisData,
-            hasOriginalData: !!state.originalData,
-            error: state.error
-        });
+        const combinedData = {
+          ...analysisResultData,
+          cv: cvData
+        } as CvAnalysisData; // Assert the combined type
+        console.log('[analysisSlice] Combined data before setting state:', combinedData);
+
+        state.status = 'succeeded';
+        state.currentAnalysisId = action.payload.id;
+        state.analysisData = combinedData;
+        state.originalData = combinedData ? JSON.parse(JSON.stringify(combinedData)) : null;
+        
+        // Clone state for logging to avoid potential mutation issues with console.log
+        const stateToLog = JSON.parse(JSON.stringify(state));
+        console.log('[analysisSlice] State AFTER fulfilled update:', stateToLog);
       })
       .addCase(fetchAnalysisById.rejected, (state, action) => {
-        // console.error('[analysisSlice] fetchAnalysisById.rejected - Error:', action.payload); // Removed log
         state.status = 'failed';
         state.error = action.payload as string;
       })
