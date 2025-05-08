@@ -65,42 +65,48 @@ export async function GET(request: Request, { params }: { params: Params }) {
 
     if (analysisRecord.fileHash) { // Check if hash exists
       const cacheKey = `${ANALYSIS_CACHE_PREFIX}${analysisRecord.fileHash}`;
-      console.log(`[GET /cv-analysis] Checking cache with key: ${cacheKey}`); // LOG
+      console.log(`[GET /cv-analysis/${analysisId}] Attempting to retrieve from cache. Key: ${cacheKey}`); // LOG
       try {
         const cachedData = await getCache(cacheKey);
         if (cachedData) {
-          console.log(`[GET /cv-analysis] Cache HIT for analysis ${analysisId} (key: ${cacheKey})`); // LOG
+          console.log(`[GET /cv-analysis/${analysisId}] Cache HIT. Key: ${cacheKey}. Data (first 100 chars): ${String(JSON.stringify(cachedData)).substring(0,100)}...`); // LOG
           const parsedData = typeof cachedData === 'string' ? JSON.parse(cachedData) : cachedData;
           cacheHit = true;
-          console.log(`[GET /cv-analysis] Returning CACHED data for ${analysisId}`); // LOG
+          console.log(`[GET /cv-analysis/${analysisId}] Returning CACHED data.`); // LOG
           return NextResponse.json(parsedData, { headers: { 'X-Cache-Status': 'hit' } });
         } else {
-          console.log(`[GET /cv-analysis] Cache MISS for analysis ${analysisId} (key: ${cacheKey})`); // LOG
+          console.log(`[GET /cv-analysis/${analysisId}] Cache MISS. Key: ${cacheKey}. Will attempt to fetch from DB and write to cache.`); // LOG
           // ---> WRITE TO CACHE ON MISS <--- 
           try {
+             console.log(`[GET /cv-analysis/${analysisId}] Attempting to write DB data to cache. Key: ${cacheKey}. Data (first 100 chars): ${String(JSON.stringify(analysisRecord)).substring(0,100)}...`); // LOG
              await setCache(cacheKey, analysisRecord); // Cache the record fetched from DB
-             console.log(`[GET /cv-analysis] Wrote DB data to cache for key: ${cacheKey}`); // LOG
+             console.log(`[GET /cv-analysis/${analysisId}] Successfully wrote DB data to cache. Key: ${cacheKey}`); // LOG
           } catch (setCacheError) {
-             console.error(`[GET /cv-analysis] FAILED to write to cache for key ${cacheKey}:`, setCacheError); // LOG
+             const errorDetails = setCacheError instanceof Error ? JSON.stringify(setCacheError, Object.getOwnPropertyNames(setCacheError)) : String(setCacheError);
+             console.error(`[GET /cv-analysis/${analysisId}] FAILED to write to cache for key ${cacheKey}. Error:`, errorDetails); // LOG
           }
           // Proceed to return DB data below
         }
       } catch (cacheError) {
-        console.error(`[GET /cv-analysis] Redis cache read error for key ${cacheKey}:`, cacheError); // LOG
+        const errorDetails = cacheError instanceof Error ? JSON.stringify(cacheError, Object.getOwnPropertyNames(cacheError)) : String(cacheError);
+        console.error(`[GET /cv-analysis/${analysisId}] Redis cache operation error for key ${cacheKey}. Error:`, errorDetails); // LOG
         // Proceed to return DB data if cache fails
       }
     } else {
-       console.log(`[GET /cv-analysis] Skipping cache check because fileHash is missing for ${analysisId}`); // LOG
+       console.log(`[GET /cv-analysis/${analysisId}] Skipping cache check: fileHash is missing.`); // LOG
     }
 
     // --- Return DB data if cache miss or no fileHash --- 
-    console.log(`[GET /cv-analysis] Returning DB data for ${analysisId}`); // LOG
+    console.log(`[GET /cv-analysis/${analysisId}] Returning DB data (cache miss or no fileHash). Data (first 100 chars): ${String(JSON.stringify(analysisRecord)).substring(0,100)}...`); // LOG
     return NextResponse.json(analysisRecord, { headers: { 'X-Cache-Status': 'miss' } });
 
   } catch (error) {
-    // Ensure analysisId might be undefined here, handle appropriately
-    console.error(`Error handling GET request for Analysis ID ${analysisId ?? 'unknown'}:`, error);
-    return NextResponse.json({ error: 'Failed to fetch analysis details' }, { status: 500 });
+    const errorDetails = error instanceof Error ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : String(error);
+    console.error(`[GET /cv-analysis/${analysisId ?? 'unknown'}] Overall route error:`, errorDetails); // LOG for overall route error
+    // Ensure analysisId is defined before logging
+    // const finalAnalysisId = analysisId || 'unknown'; // Ensure analysisId is defined for logging
+    // console.error(`[GET /cv-analysis/${finalAnalysisId}] Overall route error:`, error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -121,9 +127,10 @@ export async function PUT(request: Request, { params }: { params: Params }) {
        throw new Error("Could not extract analysis ID from URL");
     }
 
-    console.log(`Received PUT request to update Analysis ID: ${analysisId}`);
+    console.log(`[PUT /cv-analysis/${analysisId}] Received request.`);
 
     if (!session?.user?.id) {
+      console.warn(`[PUT /cv-analysis/${analysisId}] Unauthorized: No session user ID.`);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const developerId = session.user.id;

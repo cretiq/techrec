@@ -1,18 +1,22 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
-import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, X, Code, BarChart, Bookmark, BookmarkCheck, Send, Plus, PenTool } from "lucide-react"
+import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, X, Code, BarChart, Bookmark, BookmarkCheck, Send, Plus, PenTool, Check } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
 import { Role } from "@/types/role"
 import { formatJobType, mapRapidApiJobToRole } from "@/utils/mappers"
+import { useSelector, useDispatch } from 'react-redux'
+import { toggleRoleSelection, selectIsRoleSelected, selectSelectedRolesCount, setSelectedRoles, clearRoleSelection, selectSelectedRoles } from '@/lib/features/selectedRolesSlice'
+import { RootState, AppDispatch } from '@/lib/store'
+import { cn } from "@/lib/utils"
 
 interface SavedRole {
   roleId: string
@@ -33,6 +37,9 @@ export default function RolesSearch2Page() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
   const [activeFilters, setActiveFilters] = useState(0)
   const [searchLimit, setSearchLimit] = useState([10]) // Default limit of 10 results
+  const dispatch = useDispatch<AppDispatch>()
+  const selectedRoles = useSelector(selectSelectedRoles)
+  const selectedCount = useSelector(selectSelectedRolesCount)
 
   useEffect(() => {
     console.log("[RolesSearch2Page] useEffect triggered")
@@ -237,6 +244,32 @@ export default function RolesSearch2Page() {
     router.push(`/developer/writing-help?roleData=${roleData}`)
   }
 
+  const handleWriteToSelected = () => {
+    if (selectedCount > 0) {
+      router.push('/developer/writing-help?tab=cover-letter')
+    }
+  }
+
+  const allVisibleSelected = useMemo(() => {
+    const visibleRoleIds = filteredRoles.map(role => role.id).filter(Boolean);
+    const currentSelectedIds = new Set(selectedRoles.map(r => r.id));
+    return visibleRoleIds.length > 0 && visibleRoleIds.every(id => currentSelectedIds.has(id));
+  }, [filteredRoles, selectedRoles]);
+
+  const handleSelectAllVisible = () => {
+    const currentSelectedMap = new Map(selectedRoles.map(r => [r.id, r]));
+    filteredRoles.forEach(role => {
+        if (role && role.id) {
+            currentSelectedMap.set(role.id, role);
+        }
+    });
+    dispatch(setSelectedRoles(Array.from(currentSelectedMap.values())));
+  };
+
+  const handleDeselectAll = () => {
+    dispatch(clearRoleSelection())
+  }
+
   if (status === 'loading') {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -328,6 +361,44 @@ export default function RolesSearch2Page() {
 
         {/* Roles Grid */}
         <div className="w-full lg:w-3/4">
+          {/* Action Buttons Bar */}
+          <div className="mb-4 flex flex-wrap justify-between items-center gap-2">
+            {/* Bulk Selection Buttons */}
+            {!loading && filteredRoles.length > 0 && (
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSelectAllVisible}
+                  disabled={allVisibleSelected || filteredRoles.length === 0}
+                  variant="outline"
+                  size="sm"
+                  title={allVisibleSelected ? "All visible roles already selected" : "Select all roles currently visible"}
+                >
+                  Select Visible ({filteredRoles.length})
+                </Button>
+                <Button
+                  onClick={handleDeselectAll}
+                  disabled={selectedCount === 0}
+                  variant="outline"
+                  size="sm"
+                  title="Deselect all roles"
+                >
+                  Deselect All ({selectedCount})
+                </Button>
+              </div>
+            )}
+            {/* Write Button */}
+            {!loading && filteredRoles.length > 0 && (
+              <Button
+                onClick={handleWriteToSelected}
+                disabled={selectedCount === 0}
+                size="sm"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <PenTool className="mr-2 h-4 w-4" />
+                Write to {selectedCount} role{selectedCount !== 1 ? 's' : ''}
+              </Button>
+            )}
+          </div>
           {loading && (
             <div className="flex items-center justify-center min-h-[300px]">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -344,12 +415,105 @@ export default function RolesSearch2Page() {
           {!loading && filteredRoles.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {filteredRoles.map((role, index) => (
+                <RoleCardWrapper
+                  key={role.id}
+                  role={role}
+                  index={index}
+                  savedRoles={savedRoles}
+                  session={session}
+                  handleSaveToggleRole={handleSaveToggleRole}
+                  handleWriteTo={handleWriteTo}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+interface RoleCardWrapperProps {
+  role: Role;
+  index: number;
+  savedRoles: SavedRole[];
+  session: ReturnType<typeof useSession>['data'];
+  handleSaveToggleRole: (roleId: string) => void;
+  handleWriteTo: (role: Role) => void;
+}
+
+const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
+  role,
+  index,
+  savedRoles,
+  session,
+  handleSaveToggleRole,
+  handleWriteTo,
+}) => {
+  const dispatch = useDispatch<AppDispatch>()
+  const isSelected = useSelector((state: RootState) => selectIsRoleSelected(state, role.id))
+  const isRoleSaved = savedRoles.some(r => r.roleId === role.id)
+
+  const handleCardClick = () => {
+    if (role) {
+        dispatch(toggleRoleSelection(role))
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleCardClick()
+    }
+  }
+
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    handleSaveToggleRole(role.id)
+  }
+
+  const handleWriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    handleWriteTo(role)
+  }
+
+  if (!role) return null
+
+  return (
                 <Card 
-                  key={role.id} 
-                  className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up flex flex-col h-full"
-                  style={{ animationDelay: `${(index) * 100}ms` }}
+      tabIndex={0}
+      role="checkbox"
+      aria-checked={isSelected}
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      className={cn(
+        "hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up flex flex-col h-full relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+        isSelected && "border-2 border-primary bg-primary/10 dark:bg-primary/20"
+      )}
+      style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <CardHeader className="pb-4">
+      {session && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleSaveClick}
+          className="absolute top-2 right-10 text-muted-foreground hover:text-primary shrink-0 z-10"
+          aria-label={isRoleSaved ? "Unsave role" : "Save role"}
+          title={isRoleSaved ? "Unsave Role" : "Save Role"}
+        >
+          {isRoleSaved ? (
+            <BookmarkCheck className="h-5 w-5 text-primary" />
+          ) : (
+            <Bookmark className="h-5 w-5" />
+          )}
+        </Button>
+      )}
+      {isSelected && (
+        <div className="absolute top-2 right-2 text-primary z-10 p-1 bg-background/50 rounded-full">
+          <Check className="h-4 w-4" />
+        </div>
+      )}
+      <CardHeader className="pb-4 pr-16">
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <CardTitle className="text-lg line-clamp-2">{role.title}</CardTitle>
@@ -358,21 +522,6 @@ export default function RolesSearch2Page() {
                           <span className="line-clamp-1 text-xs">{role.company?.name || 'Unknown Company'}</span>
                         </CardDescription>
                       </div>
-                      {session && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleSaveToggleRole(role.id)}
-                          className="text-muted-foreground hover:text-primary shrink-0 ml-1"
-                          title={savedRoles.some(r => r.roleId === role.id) ? "Unsave Role" : "Save Role"}
-                        >
-                          {savedRoles.some(r => r.roleId === role.id) ? (
-                            <BookmarkCheck className="h-5 w-5" />
-                          ) : (
-                            <Bookmark className="h-5 w-5" />
-                          )}
-                        </Button>
-                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4">
@@ -394,7 +543,6 @@ export default function RolesSearch2Page() {
                     </div>
                     <p className="text-muted-foreground text-sm line-clamp-3">{role.description || 'No description available.'}</p>
                     <div className="space-y-2">
-                      {/* <h4 className="font-medium text-sm">Requirements:</h4> */}
                       <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
                         {(role.requirements && role.requirements.length > 0) ? (
                           role.requirements.map((req, idx) => (
@@ -426,6 +574,7 @@ export default function RolesSearch2Page() {
                                 target="_blank" 
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center"
+                    onClick={(e) => e.stopPropagation()}
                               >
                                 <Button size="sm">
                                   <span className="flex items-center">
@@ -439,7 +588,7 @@ export default function RolesSearch2Page() {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleWriteTo(role)}
+                  onClick={handleWriteClick}
                               disabled={!session?.user}
                               className="gap-1"
                               title={!session?.user ? "Login to use Writing Help" : "Get writing assistance"}
@@ -452,12 +601,6 @@ export default function RolesSearch2Page() {
                     </div>
                   </CardFooter>
                 </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
   )
 }
 
