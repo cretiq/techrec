@@ -14016,6 +14016,11 @@ zod@^3.22.3, zod@^3.22.4, zod@^3.23.8, zod@^3.24.2, zod@^3.24.3:
   resolved "https://registry.npmjs.org/zod/-/zod-3.24.3.tgz"
   integrity sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==
 
+zustand@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.npmjs.org/zustand/-/zustand-5.0.3.tgz"
+  integrity sha512-14fwWQtU3pH4dE0dOpdMiWjddcH+QzKIgk1cl8epwSE7yag43k/AD/m4L6+K7DytAOr9gGBe3/EXj9g7cdostg==
+
 zwitch@^2.0.0:
   version "2.0.4"
   resolved "https://registry.npmjs.org/zwitch/-/zwitch-2.0.4.tgz"
