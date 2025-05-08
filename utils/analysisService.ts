@@ -42,7 +42,7 @@ export const processCvAnalysis = async (analysisRecordId: string): Promise<void>
   let currentStep = 'initialization';
   let recordToProcess: CvAnalysis | null = null;
 
-  console.log(`[Analysis ${analysisRecordId}] Starting process...`, {
+  console.log(`[processCvAnalysis] Starting process for Analysis ID: ${analysisRecordId}...`, {
     timestamp: new Date().toISOString(),
     memory: getMemoryUsage()
   });

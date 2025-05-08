@@ -30,8 +30,8 @@ const initialState: AnalysisState = {
 export const fetchAnalysisById = createAsyncThunk(
   'analysis/fetchById',
   async (analysisId: string, { rejectWithValue }) => {
+    console.log(`[fetchAnalysisById Thunk] Fetching data for ID: ${analysisId}`);
     try {
-      console.log(`[fetchAnalysisById] Fetching data for ID: ${analysisId}`);
       const response = await fetch(`/api/cv-analysis/${analysisId}`);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -39,7 +39,7 @@ export const fetchAnalysisById = createAsyncThunk(
         return rejectWithValue(errorData.error || `Failed to fetch analysis (${response.status})`);
       }
       const data = await response.json(); // Data is now { id, ..., cv: { extractedText: ... } }
-      console.log('[fetchAnalysisById] Fetch successful, received data:', data); 
+      console.log('[fetchAnalysisById Thunk] Fetch successful, received data:', data); 
       // Return the fetched data directly as it now matches the expected structure 
       // (after CvAnalysisData type was updated)
       return data; 
@@ -112,13 +112,16 @@ export const analysisSlice = createSlice({
     },
     // Action to clear the current analysis state
     clearAnalysis: (state) => {
-      return initialState; // Reset to initial state
+      console.log('[analysisSlice Reducer] clearAnalysis - Resetting state.');
+      // Return initialState instead of modifying state directly for a full reset
+      return initialState;
     },
   },
   extraReducers: (builder) => {
     builder
       // Fetch Analysis By ID handlers
-      .addCase(fetchAnalysisById.pending, (state) => {
+      .addCase(fetchAnalysisById.pending, (state, action) => {
+        console.log('[analysisSlice Reducer] fetchAnalysisById.pending - Setting status to loading for ID:', action.meta.arg);
         state.status = 'loading';
         state.error = null;
         state.analysisData = null; // Clear previous data while loading
@@ -127,44 +130,49 @@ export const analysisSlice = createSlice({
         state.currentAnalysisId = null;
       })
       .addCase(fetchAnalysisById.fulfilled, (state, action) => {
-        // Payload is the full fetched object: { id, ..., analysisResult: {...}, cv: { extractedText: ... } }
-        console.log('[analysisSlice] fetchAnalysisById.fulfilled - Received Payload:', action.payload);
-        
-        // Combine analysisResult and cv into the state.analysisData
-        const analysisResultData = action.payload.analysisResult || {};
-        const cvData = action.payload.cv || {};
+        console.log('[analysisSlice Reducer] fetchAnalysisById.fulfilled - Received Payload:', action.payload);
+        const payload = action.payload;
+        if (payload && payload.id) {
+          // Combine analysisResult and cv into the state.analysisData
+          const analysisResultData = payload.analysisResult || {};
+          const cvData = payload.cv || {};
 
-        const combinedData = {
-          ...analysisResultData,
-          cv: cvData
-        } as CvAnalysisData; // Assert the combined type
-        console.log('[analysisSlice] Combined data before setting state:', combinedData);
+          const combinedData = {
+            ...analysisResultData,
+            cv: cvData
+          } as CvAnalysisData; // Assert the combined type
+          console.log('[analysisSlice Reducer] Combined data before setting state:', combinedData);
 
-        state.status = 'succeeded';
-        state.currentAnalysisId = action.payload.id;
-        state.analysisData = combinedData;
-        state.originalData = combinedData ? JSON.parse(JSON.stringify(combinedData)) : null;
-        
-        // Clone state for logging to avoid potential mutation issues with console.log
-        const stateToLog = JSON.parse(JSON.stringify(state));
-        console.log('[analysisSlice] State AFTER fulfilled update:', stateToLog);
+          state.status = 'succeeded';
+          state.currentAnalysisId = payload.id;
+          state.analysisData = combinedData;
+          state.originalData = combinedData ? JSON.parse(JSON.stringify(combinedData)) : null;
+          
+          // Log state AFTER update for debugging
+          const stateToLog = { ...state };
+          console.log('[analysisSlice Reducer] State AFTER fulfilled update:', stateToLog);
+        }
       })
       .addCase(fetchAnalysisById.rejected, (state, action) => {
+        console.log('[analysisSlice Reducer] fetchAnalysisById.rejected - Setting status to failed.');
         state.status = 'failed';
-        state.error = action.payload as string;
+        state.error = action.payload as string ?? action.error.message ?? 'Failed to fetch analysis';
       })
       // Fetch Suggestions handlers
       .addCase(fetchSuggestions.pending, (state) => {
+        console.log('[analysisSlice Reducer] fetchSuggestions.pending - Setting status to suggesting.');
         state.status = 'suggesting';
         state.error = null; // Clear previous errors
       })
       .addCase(fetchSuggestions.fulfilled, (state, action) => {
+        console.log('[analysisSlice Reducer] fetchSuggestions.fulfilled - Suggestions received.');
         state.status = 'succeeded'; // Back to succeeded after suggestions load
         state.suggestions = action.payload;
       })
       .addCase(fetchSuggestions.rejected, (state, action) => {
-        state.status = 'failed'; // Or keep 'succeeded' but show error?
-        state.error = action.payload as string;
+        console.log('[analysisSlice Reducer] fetchSuggestions.rejected - Failed to get suggestions.');
+        state.status = 'failed'; // Or back to 'succeeded' if suggestions are optional?
+        state.error = action.payload as string ?? action.error.message ?? 'Failed to fetch suggestions';
         state.suggestions = []; // Clear suggestions on error
       });
   },
