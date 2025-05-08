@@ -44,13 +44,14 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
   const { toast } = useToast();
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pollingStartTimeRef = useRef<number | null>(null);
+  const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Function to clear polling interval
   const clearPollingInterval = () => {
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
       pollingIntervalRef.current = null;
-      console.log('Polling interval cleared for analysis ID:', analysisId);
+      console.log('[AnalysisUploadForm] Polling interval cleared for analysis ID:', analysisId);
     }
     pollingStartTimeRef.current = null;
   };
@@ -93,7 +94,7 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
     if (acceptedFiles && acceptedFiles.length > 0) {
       setSelectedFile(acceptedFiles[0]);
       setUploadProgress(0);
-      console.log('Analysis file accepted:', acceptedFiles[0].name);
+      console.log('[AnalysisUploadForm] Analysis file accepted:', acceptedFiles[0].name);
     }
   }, [toast]);
 
@@ -115,7 +116,7 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
     if (pollingStartTimeRef.current) {
       const pollingDuration = (Date.now() - pollingStartTimeRef.current) / (1000 * 60);
       if (pollingDuration > MAX_POLLING_MINUTES) {
-        console.log(`Polling timeout after ${pollingDuration.toFixed(1)} minutes`);
+        console.log(`[AnalysisUploadForm] Polling timeout after ${pollingDuration.toFixed(1)} minutes`);
         clearPollingInterval();
         setUploadState('error');
         setErrorMessage('Analysis timed out. Please try uploading again.');
@@ -128,7 +129,7 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
       }
     }
 
-    console.log(`Polling status for Analysis ID: ${id}`);
+    console.log(`[AnalysisUploadForm] Polling status for Analysis ID: ${id}`);
     try {
       const response = await fetch(`/api/cv-analysis/${id}/status`);
       if (!response.ok) {
@@ -144,14 +145,14 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
       const data: AnalysisResponse = await response.json();
 
       if (data.status === 'COMPLETED') {
-        console.log('Polling: Analysis completed.', data.analysis);
+        console.log('[AnalysisUploadForm] Polling: Analysis completed.', data.analysis);
         clearPollingInterval();
         setUploadState('success');
         toast({ title: "Analysis Successful", description: "CV analysis finished." });
         onAnalysisComplete(data.analysis, false, id);
         resetState(3000);
       } else if (data.status === 'FAILED') {
-        console.log('Polling: Analysis failed.', data.error);
+        console.log('[AnalysisUploadForm] Polling: Analysis failed.', data.error);
         clearPollingInterval();
         setUploadState('error');
         setErrorMessage(data.error || 'Analysis failed.');
@@ -161,7 +162,7 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
           variant: "destructive" 
         });
       } else {
-        console.log(`Polling: Status is still ${data.status}`);
+        console.log(`[AnalysisUploadForm] Polling: Status is still ${data.status}`);
       }
     } catch (error) {
       console.error(`Polling fetch error for ${id}:`, error);
@@ -249,7 +250,7 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
               // Start polling with timeout tracking
               clearPollingInterval();
               pollingStartTimeRef.current = Date.now();
-              console.log('Starting polling for analysis ID:', currentAnalysisId);
+              console.log('[AnalysisUploadForm] Starting polling for analysis ID:', currentAnalysisId);
               pollingIntervalRef.current = setInterval(
                 () => pollAnalysisStatus(currentAnalysisId),
                 POLLING_INTERVAL_MS

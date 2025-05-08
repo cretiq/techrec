@@ -1,48 +1,52 @@
-const { PrismaClient } = require('@prisma/client')
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('=== Cleaning Up Orphaned RoleSkills ===')
+  console.log('[Script: CleanupOrphanedRoleSkills] === Cleaning Up Orphaned RoleSkills ===')
   
-  // Get all RoleSkills
-  const roleSkills = await prisma.roleSkill.findMany()
-  console.log(`Found ${roleSkills.length} total RoleSkills`)
+  // 1. Get all existing RoleSkills
+  const roleSkills = await prisma.roleSkill.findMany({})
+  console.log(`[Script: CleanupOrphanedRoleSkills] Found ${roleSkills.length} total RoleSkills`)
 
-  // Get all Role IDs
+  // 2. Get all existing Role IDs
   const roles = await prisma.role.findMany({
     select: { id: true }
   })
   const roleIds = new Set(roles.map(r => r.id))
-  console.log(`Found ${roleIds.size} roles`)
+  console.log(`[Script: CleanupOrphanedRoleSkills] Found ${roleIds.size} roles`)
 
-  // Get all Skill IDs
+  // 3. Get all existing Skill IDs
   const skills = await prisma.skill.findMany({
     select: { id: true }
   })
   const skillIds = new Set(skills.map(s => s.id))
-  console.log(`Found ${skillIds.size} skills`)
+  console.log(`[Script: CleanupOrphanedRoleSkills] Found ${skillIds.size} skills`)
 
-  // Find orphaned RoleSkills
+  // 4. Find RoleSkills where either roleId or skillId doesn't exist
   const orphanedRoleSkills = roleSkills.filter(rs => {
     return !roleIds.has(rs.roleId) || !skillIds.has(rs.skillId)
   })
 
-  console.log(`\nFound ${orphanedRoleSkills.length} orphaned RoleSkills to delete`)
+  console.log(`[Script: CleanupOrphanedRoleSkills] \nFound ${orphanedRoleSkills.length} orphaned RoleSkills to delete`)
 
-  // Delete orphaned RoleSkills
   if (orphanedRoleSkills.length > 0) {
+    const orphanedIds = orphanedRoleSkills.map(rs => rs.id)
+    const orphanedRoleIds = new Set(orphanedRoleSkills.filter(rs => !roleIds.has(rs.roleId)).map(rs => rs.roleId))
+    const orphanedSkillIds = new Set(orphanedRoleSkills.filter(rs => !skillIds.has(rs.skillId)).map(rs => rs.skillId))
+
+    console.log('[Script: CleanupOrphanedRoleSkills] Orphaned Role IDs:', Array.from(orphanedRoleIds))
+    console.log('[Script: CleanupOrphanedRoleSkills] Orphaned Skill IDs:', Array.from(orphanedSkillIds))
+    
+    // 5. Delete the orphaned RoleSkills
     const result = await prisma.roleSkill.deleteMany({
       where: {
-        OR: [
-          { roleId: { in: orphanedRoleSkills.map(rs => rs.roleId) } },
-          { skillId: { in: orphanedRoleSkills.map(rs => rs.skillId) } }
-        ]
+        id: { in: orphanedIds }
       }
     })
-    console.log(`Deleted ${result.count} orphaned RoleSkills`)
+    console.log(`[Script: CleanupOrphanedRoleSkills] Deleted ${result.count} orphaned RoleSkills`)
   } else {
-    console.log('No orphaned RoleSkills to delete')
+    console.log('[Script: CleanupOrphanedRoleSkills] No orphaned RoleSkills to delete')
   }
 }
 

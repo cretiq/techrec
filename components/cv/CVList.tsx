@@ -67,7 +67,7 @@ export function CVList({ refreshKey }: CVListProps) {
       // Add pagination params here if needed
 
       const apiUrl = `/api/cv?${params.toString()}`;
-      console.log('Fetching CVs from:', apiUrl);
+      console.log('[CVList] Fetching CVs from:', apiUrl);
 
       const response = await fetch(apiUrl);
       if (!response.ok) {
@@ -90,7 +90,7 @@ export function CVList({ refreshKey }: CVListProps) {
 
   // useEffect to fetch data when filters or refreshKey change
   useEffect(() => {
-    console.log('CVList: Fetching data due to filter/key change. Key:', refreshKey);
+    console.log('[CVList] Fetching data due to filter/key change. Key:', refreshKey);
     fetchCVs(filters);
   }, [filters, refreshKey, fetchCVs]); // Add refreshKey to dependency array
 
@@ -122,7 +122,7 @@ export function CVList({ refreshKey }: CVListProps) {
       // Refresh the list after deletion, using current filters
       fetchCVs(filters); 
     } catch (err: any) {
-      console.error('Error deleting CV:', err);
+      console.error('[CVList] Error deleting CV:', err);
       toast({
         title: "Delete Error",
         description: err.message || 'Could not delete the CV.',
