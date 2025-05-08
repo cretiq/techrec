@@ -28,7 +28,7 @@ export interface CvUpdateData {
  * Creates a new CV record in the database.
  */
 export const createCV = async (data: CvCreateData): Promise<CV> => {
-  console.log('Creating CV record for:', data.originalName);
+  console.log('[createCV] Creating CV record for:', data.originalName);
   try {
     const newCV = await prisma.cV.create({
       data: {
@@ -36,7 +36,7 @@ export const createCV = async (data: CvCreateData): Promise<CV> => {
         status: data.status ?? AnalysisStatus.PENDING,
       },
     });
-    console.log('Successfully created CV record with ID:', newCV.id);
+    console.log('[createCV] Successfully created CV record with ID:', newCV.id);
     return newCV;
   } catch (error) {
     console.error('Error creating CV record:', error);
@@ -48,12 +48,12 @@ export const createCV = async (data: CvCreateData): Promise<CV> => {
  * Retrieves a CV record by its ID.
  */
 export const getCV = async (id: string): Promise<CV | null> => {
-  console.log('Retrieving CV record with ID:', id);
+  console.log('[getCV] Retrieving CV record with ID:', id);
   try {
     const cv = await prisma.cV.findUnique({
       where: { id },
     });
-    console.log(cv ? 'Found CV record.' : 'CV record not found.');
+    console.log(cv ? '[getCV] Found CV record.' : '[getCV] CV record not found.');
     return cv;
   } catch (error) {
     console.error('Error retrieving CV record:', error);
@@ -65,13 +65,13 @@ export const getCV = async (id: string): Promise<CV | null> => {
  * Updates a CV record.
  */
 export const updateCV = async (id: string, data: CvUpdateData): Promise<CV> => {
-  console.log('Updating CV record with ID:', id);
+  console.log('[updateCV] Updating CV record with ID:', id);
   try {
     const updatedCV = await prisma.cV.update({
       where: { id },
       data,
     });
-    console.log('Successfully updated CV record.');
+    console.log('[updateCV] Successfully updated CV record.');
     return updatedCV;
   } catch (error) {
     console.error('Error updating CV record:', error);
@@ -84,7 +84,7 @@ export const updateCV = async (id: string, data: CvUpdateData): Promise<CV> => {
  * Deletes a CV record from the database and its corresponding file from S3.
  */
 export const deleteCV = async (id: string): Promise<CV> => {
-  console.log('Deleting CV record with ID:', id);
+  console.log('[deleteCV] Deleting CV record with ID:', id);
   try {
     // First, retrieve the CV to get the S3 key
     const cvToDelete = await prisma.cV.findUnique({ where: { id } });
@@ -92,21 +92,32 @@ export const deleteCV = async (id: string): Promise<CV> => {
       throw new Error(`CV record with ID ${id} not found.`);
     }
 
-    // Delete the file from S3
-    console.log('Deleting file from S3 with key:', cvToDelete.s3Key);
-    await deleteFileFromS3(cvToDelete.s3Key);
-    console.log('Successfully deleted file from S3.');
+    // Use a transaction to ensure atomicity
+    const result = await prisma.$transaction(async (tx) => {
+      // Delete the file from S3
+      console.log('[deleteCV] Deleting file from S3 with key:', cvToDelete.s3Key);
+      await deleteFileFromS3(cvToDelete.s3Key);
+      console.log('[deleteCV] Successfully deleted file from S3.');
 
-    // Then, delete the database record
-    const deletedCV = await prisma.cV.delete({
-      where: { id },
+      // Delete associated CvAnalysis records
+      const deletedAnalyses = await tx.cvAnalysis.deleteMany({
+        where: { cvId: id },
+      });
+      console.log(`[deleteCV] Successfully deleted ${deletedAnalyses.count} associated CV analysis records.`);
+
+      // Then, delete the CV database record
+      const deletedCVRecord = await tx.cV.delete({
+        where: { id },
+      });
+      console.log('[deleteCV] Successfully deleted CV record from database.');
+      return deletedCVRecord;
     });
-    console.log('Successfully deleted CV record from database.');
-    return deletedCV;
+
+    return result;
   } catch (error) {
-    console.error('Error deleting CV:', error);
+    console.error('Error deleting CV and associated analyses:', error);
     // Rethrow or handle specific errors (S3 deletion failure, DB deletion failure)
-    throw new Error('Failed to delete CV');
+    throw new Error('Failed to delete CV and associated analyses');
   }
 };
 
@@ -128,7 +139,7 @@ export const listCVs = async (
   // Add pagination options if needed later
   // pagination: { skip?: number; take?: number } = {}
 ): Promise<CV[]> => {
-  console.log('Listing CVs for developer ID:', developerId, 'with filters:', filters);
+  console.log('[listCVs] Listing CVs for developer ID:', developerId, 'with filters:', filters);
   
   const whereCondition: any = { developerId };
 
@@ -153,7 +164,7 @@ export const listCVs = async (
         uploadDate: 'desc', // Default sort order
       },
     });
-    console.log(`Found ${cvs.length} CVs matching criteria.`);
+    console.log(`[listCVs] Found ${cvs.length} CVs matching criteria.`);
     return cvs;
   } catch (error) {
     console.error('Error listing CVs:', error);
