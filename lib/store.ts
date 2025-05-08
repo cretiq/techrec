@@ -9,6 +9,8 @@ import analysisReducer from './features/analysisSlice';
 import uiReducer from './features/uiSlice';
 // Import the analytics reducer
 import analyticsReducer from './features/analyticsSlice';
+// Import the new selected roles reducer
+import selectedRolesReducer from './features/selectedRolesSlice';
 // Import reducers here when they are created
 // import rootReducer from './rootReducer'; // Example
 
@@ -31,10 +33,19 @@ const uiPersistConfig = {
   whitelist: ['isSidebarOpen'] // Only persist UI preferences
 };
 
+// Persist config for selected roles
+const selectedRolesPersistConfig = {
+    key: 'selectedRoles',
+    storage,
+    whitelist: ['selectedRoleIds'] // Persist the selected role IDs
+};
+
 // Create persisted reducers
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedAnalysisReducer = persistReducer(analysisPersistConfig, analysisReducer);
 const persistedUiReducer = persistReducer(uiPersistConfig, uiReducer);
+// Create persisted reducer for selected roles
+const persistedSelectedRolesReducer = persistReducer(selectedRolesPersistConfig, selectedRolesReducer);
 
 export const store = configureStore({
   reducer: {
@@ -42,6 +53,8 @@ export const store = configureStore({
     user: persistedUserReducer,
     analysis: persistedAnalysisReducer,
     ui: persistedUiReducer,
+    // Add the new selected roles reducer
+    selectedRoles: persistedSelectedRolesReducer,
     // Analytics doesn't need persistence
     analytics: analyticsReducer,
   },
