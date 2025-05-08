@@ -9,142 +9,140 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
+import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
-// Import Redux hooks and items
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '@/lib/store';
 import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
 import { Play } from 'lucide-react';
 
 export default function CVManagementPage() {
-  const [refreshKey, setRefreshKey] = useState(0);
-  // Remove local state for analysis ID and result
-  // const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
-  // const [analysisResult, setAnalysisResult] = useState<any>(null);
-  const [originalMimeType, setOriginalMimeType] = useState<string>('application/pdf'); // Keep this for now
-  const [analyses, setAnalyses] = useState<any[]>([]);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [originalMimeType, setOriginalMimeType] = useState<string>('application/pdf'); // Keep this for now
+    const [analyses, setAnalyses] = useState<any[]>([]);
+    const [redisTestMessage, setRedisTestMessage] = useState<string | null>(null);
 
-  // Get Redux dispatch
-  const dispatch: AppDispatch = useDispatch();
+    // Get Redux dispatch
+    const dispatch: AppDispatch = useDispatch();
 
-  // --- URL State Handling --- 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const initialTab = searchParams.get('tab') === 'analyze' ? 'analyze' : 'manage';
-  const [activeTab, setActiveTab] = useState(initialTab);
-  // Remove isRestoringAnalysis state, use Redux status instead
-  // const [isRestoringAnalysis, setIsRestoringAnalysis] = useState(false);
+    // --- URL State Handling --- 
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const initialTab = searchParams.get('tab') === 'analyze' ? 'analyze' : 'manage';
+    const [activeTab, setActiveTab] = useState(initialTab);
 
-  // Select state from Redux
-  const analysisIdFromStore = useSelector(selectCurrentAnalysisId);
-  const analysisStatus = useSelector(selectAnalysisStatus);
-  const analysisData = useSelector(selectCurrentAnalysisData);
 
-  // Function to update URL and local state when tab changes
-  const handleTabChange = useCallback((newTab: string) => {
-    if (newTab !== activeTab) {
-      setActiveTab(newTab);
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('tab', newTab);
-      // If switching away from analyze, remove the analysisId
-      if (newTab !== 'analyze') {
-        params.delete('analysisId');
-        // Optionally clear Redux state immediately, though the effect should handle it
-        // dispatch(clearAnalysis()); 
-      } else {
-        // If switching TO analyze, ensure analysisId (if present in store) is in URL
-        // This case might be redundant if selection always adds ID to URL
-        const currentStoreId = analysisIdFromStore; // Read directly
-        if (currentStoreId && !params.has('analysisId')) {
-             params.set('analysisId', currentStoreId);
+    // Select state from Redux
+    const analysisIdFromStore = useSelector(selectCurrentAnalysisId);
+    const analysisStatus = useSelector(selectAnalysisStatus);
+    const analysisData = useSelector(selectCurrentAnalysisData);
+
+    // Function to update URL and local state when tab changes
+    const handleTabChange = useCallback((newTab: string) => {
+        if (newTab !== activeTab) {
+            setActiveTab(newTab);
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('tab', newTab);
+            // If switching away from analyze, remove the analysisId
+            if (newTab !== 'analyze') {
+                params.delete('analysisId');
+                // Optionally clear Redux state immediately, though the effect should handle it
+                // dispatch(clearAnalysis()); 
+            } else {
+                // If switching TO analyze, ensure analysisId (if present in store) is in URL
+                // This case might be redundant if selection always adds ID to URL
+                const currentStoreId = analysisIdFromStore; // Read directly
+                if (currentStoreId && !params.has('analysisId')) {
+                    params.set('analysisId', currentStoreId);
+                }
+            }
+            router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
         }
-      }
-      router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
-    }
-  }, [activeTab, router, searchParams, dispatch, analysisIdFromStore]); // Add dependencies
+    }, [activeTab, router, searchParams, dispatch, analysisIdFromStore]); // Add dependencies
 
-  // Effect to sync activeTab state if URL changes externally
-  useEffect(() => {
-    const tabFromUrl = searchParams.get('tab') === 'analyze' ? 'analyze' : 'manage';
-    if (tabFromUrl !== activeTab) {
-        setActiveTab(tabFromUrl);
-    }
-  }, [searchParams, activeTab]);
+    // Effect to sync activeTab state if URL changes externally
+    useEffect(() => {
+        const tabFromUrl = searchParams.get('tab') === 'analyze' ? 'analyze' : 'manage';
+        if (tabFromUrl !== activeTab) {
+            setActiveTab(tabFromUrl);
+        }
+    }, [searchParams, activeTab]);
 
-  // --- Fetch CV List (unrelated to analysis display) ---
-  const fetchAnalyses = async () => {
-    try {
-      const response = await fetch('/api/cv-analysis');
-      if (!response.ok) {
-        throw new Error(`Failed to fetch analyses: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setAnalyses(data);
-    } catch (error) {
-      console.error('Error fetching analyses:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch analyses",
-        variant: "destructive",
-      });
-    }
-  };
+    // --- Fetch CV List (unrelated to analysis display) ---
+    const fetchAnalyses = async () => {
+        try {
+            const response = await fetch('/api/cv-analysis');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch analyses: ${response.statusText}`);
+            }
+            const data = await response.json();
+            setAnalyses(data);
+        } catch (error) {
+            console.error('Error fetching analyses:', error);
+            toast({
+                title: "Error",
+                description: "Failed to fetch analyses",
+                variant: "destructive",
+            });
+        }
+    };
 
-  useEffect(() => {
-    fetchAnalyses();
-  }, []);
+    useEffect(() => {
+        fetchAnalyses();
+    }, []);
 
-  const handleUploadComplete = () => {
-    console.log('Standard upload complete, incrementing refresh key...');
-    setRefreshKey(prevKey => prevKey + 1);
-  };
+    const handleUploadComplete = () => {
+        console.log('[CVManagementPage] Standard upload complete, incrementing refresh key...');
+        setRefreshKey(prevKey => prevKey + 1);
+    };
 
-  // Refactored handler: Only update URL, let useEffect trigger fetch
-  const handleAnalysisComplete = (result: any, fromCache: boolean, analysisId: string) => {
-    // Store the original mime type when analysis completes
-    setOriginalMimeType(result?.mimeType || 'application/pdf'); 
+    // Refactored handler: Only update URL, let useEffect trigger fetch
+    const handleAnalysisComplete = (result: any, fromCache: boolean, analysisId: string) => {
+        // Store the original mime type when analysis completes
+        setOriginalMimeType(result?.mimeType || 'application/pdf');
+        console.log(`[CVManagementPage] Handling analysis complete. Analysis ID: ${analysisId}, From Cache: ${fromCache}`); // Added log
 
-    // Update URL which will trigger the useEffect hook below
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('analysisId', analysisId);
-    // Ensure we switch to the analyze tab
-    if (activeTab !== 'analyze') {
-        setActiveTab('analyze');
-        params.set('tab', 'analyze');
-    }
-    router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
+        // Update URL which will trigger the useEffect hook below
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('analysisId', analysisId);
+        // Ensure we switch to the analyze tab
+        if (activeTab !== 'analyze') {
+            setActiveTab('analyze');
+            params.set('tab', 'analyze');
+        }
+        router.replace(`${window.location.pathname}?${params.toString()}`, { scroll: false });
 
-    // Removed PUT request here - saving is handled within AnalysisResultDisplay now
-    // if (!fromCache && analysisId) { ... }
-  };
+        // Removed PUT request here - saving is handled within AnalysisResultDisplay now
+        // if (!fromCache && analysisId) { ... }
+    };
 
-  // Refactored Effect: Dispatch Redux actions based on URL
-  useEffect(() => {
-    const analysisIdFromUrl = searchParams.get('analysisId');
-    const currentStoreId = analysisIdFromStore; 
-    const currentStatus = analysisStatus;
-    console.log(`[page.tsx useEffect] Running effect. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}`); // LOG
+    // Refactored Effect: Dispatch Redux actions based on URL
+    useEffect(() => {
+        const analysisIdFromUrl = searchParams.get('analysisId');
+        const currentStoreId = analysisIdFromStore;
+        const currentStatus = analysisStatus;
+        console.log(`[CVManagementPage useEffect] Running effect. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}`); // LOG
 
-    if (analysisIdFromUrl) {
-      if (analysisIdFromUrl !== currentStoreId || 
-          (currentStatus !== 'loading' && currentStatus !== 'succeeded' && currentStatus !== 'suggesting')) {
-        console.log(`[page.tsx useEffect] Dispatching fetchAnalysisById(${analysisIdFromUrl})...`); // LOG
-        dispatch(fetchAnalysisById(analysisIdFromUrl));
-      } else {
-        console.log(`[page.tsx useEffect] Skipping fetch. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}.`); // LOG
-      }
-    } else {
-      if (currentStoreId !== null) {
-        console.log(`[page.tsx useEffect] Dispatching clearAnalysis... Current store ID was: ${currentStoreId}`); // LOG
-        dispatch(clearAnalysis());
-      } else {
-        console.log(`[page.tsx useEffect] Skipping clearAnalysis. No ID in URL or store.`); // LOG
-      }
-    }
-  }, [searchParams, dispatch, analysisIdFromStore, analysisStatus]); // Add analysisIdFromStore and analysisStatus back as dependencies 
+        if (analysisIdFromUrl) {
+            if (analysisIdFromUrl !== currentStoreId ||
+                (currentStatus !== 'loading' && currentStatus !== 'succeeded' && currentStatus !== 'suggesting')) {
+                console.log(`[CVManagementPage useEffect] Dispatching fetchAnalysisById(${analysisIdFromUrl})...`); // LOG
+                dispatch(fetchAnalysisById(analysisIdFromUrl));
+            } else {
+                console.log(`[CVManagementPage useEffect] Skipping fetch. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}.`); // LOG
+            }
+        } else {
+            if (currentStoreId !== null) {
+                console.log(`[CVManagementPage useEffect] Dispatching clearAnalysis... Current store ID was: ${currentStoreId}`); // LOG
+                dispatch(clearAnalysis());
+            } else {
+                console.log(`[CVManagementPage useEffect] Skipping clearAnalysis. No ID in URL or store.`); // LOG
+            }
+        }
+    }, [searchParams, dispatch, analysisIdFromStore, analysisStatus]); // Add analysisIdFromStore and analysisStatus back as dependencies 
 
-  useEffect(() => {
-    const styles = `
+    useEffect(() => {
+        const styles = `
       @keyframes fadeInUp {
         from {
           opacity: 0;
@@ -161,120 +159,208 @@ export default function CVManagementPage() {
         opacity: 0;
       }
     `;
-    const styleSheet = document.createElement('style');
-    styleSheet.textContent = styles;
-    document.head.appendChild(styleSheet);
-    return () => {
-      document.head.removeChild(styleSheet);
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = styles;
+        document.head.appendChild(styleSheet);
+        return () => {
+            document.head.removeChild(styleSheet);
+        };
+    }, []);
+
+    // Determine loading state from Redux status
+    const isLoadingAnalysis = analysisStatus === 'loading';
+
+    // Log state just before returning JSX
+    console.log('[CVManagementPage PRE-RENDER] State:', { // LOG
+        activeTab,
+        analysisIdFromUrl: searchParams.get('analysisId'),
+        isLoadingAnalysis,
+        analysisStatus,
+        analysisIdFromStore,
+        hasAnalysisData: !!analysisData // Log if data object exists
+    });
+
+    // --- Redis Test Handlers ---
+    const handleTestRedisSet = async () => {
+        setRedisTestMessage('Setting test value in Redis...');
+        console.log('[CVManagementPage] handleTestRedisSet triggered'); // Added log
+        try {
+            const response = await fetch('/api/redis-test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    key: 'my_temporary_test_key',
+                    value: `Hello from CV Management Page @ ${new Date().toLocaleTimeString()}`,
+                    ttl: 120 // 2 minutes TTL
+                }),
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to set Redis test value');
+            }
+            setRedisTestMessage(`Set successful: ${JSON.stringify(result)}`);
+            toast({
+                title: "Redis Test: Set OK",
+                description: `Key: ${result.key}, Value: ${result.value}`,
+            });
+        } catch (error: any) {
+            console.error('Error testing Redis set:', error);
+            setRedisTestMessage(`Set error: ${error.message}`);
+            toast({
+                title: "Redis Test: Set FAILED",
+                description: error.message,
+                variant: "destructive",
+            });
+        }
     };
-  }, []);
 
-  // Determine loading state from Redux status
-  const isLoadingAnalysis = analysisStatus === 'loading';
-  
-  // Log state just before returning JSX
-  console.log('[CVManagementPage] PRE-RENDER LOG:', { // LOG
-    activeTab,
-    analysisIdFromUrl: searchParams.get('analysisId'),
-    isLoadingAnalysis,
-    analysisStatus,
-    analysisIdFromStore,
-    hasAnalysisData: !!analysisData // Log if data object exists
-  });
+    const handleTestRedisGet = async () => {
+        setRedisTestMessage('Getting test value from Redis...');
+        const testKey = 'my_temporary_test_key';
+        console.log('[CVManagementPage] handleTestRedisGet triggered'); // Added log
+        try {
+            const response = await fetch(`/api/redis-test?key=${testKey}`);
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to get Redis test value');
+            }
+            setRedisTestMessage(`Get result: ${JSON.stringify(result)}`);
+            toast({
+                title: result.fromCache ? "Redis Test: Get HIT" : "Redis Test: Get MISS",
+                description: result.fromCache ? `Value: ${JSON.stringify(result.value)}` : `Key ${testKey} not found.`,
+            });
+        } catch (error: any) {
+            console.error('Error testing Redis get:', error);
+            setRedisTestMessage(`Get error: ${error.message}`);
+            toast({
+                title: "Redis Test: Get FAILED",
+                description: error.message,
+                variant: "destructive",
+            });
+        }
+    };
+    // --- End Redis Test Handlers ---
 
-  return (
-    <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-      <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-        <h1 className="text-2xl font-bold">CV Management & Analysis</h1>
-        <p className="text-sm text-muted-foreground mt-1">Upload, manage, analyze, and edit your CV documents.</p>
-      </div>
-      <Tabs 
-        value={activeTab} 
-        onValueChange={handleTabChange} 
-        className="w-full animate-fade-in-up" 
-        style={{ animationDelay: '300ms' }}
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="manage">Manage CVs</TabsTrigger>
-          <TabsTrigger value="analyze">Analyze & Edit</TabsTrigger>
-        </TabsList>
-        <TabsContent value="manage" className="mt-4 space-y-6">
-             <Card>
+    return (
+        <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+                <h1 className="text-2xl font-bold">CV Management & Analysis</h1>
+                <p className="text-sm text-muted-foreground mt-1">Upload, manage, analyze, and edit your CV documents.</p>
+            </div>
+            <Tabs
+                value={activeTab}
+                onValueChange={handleTabChange}
+                className="w-full animate-fade-in-up"
+                style={{ animationDelay: '300ms' }}
+            >
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="manage">Manage CVs</TabsTrigger>
+                    <TabsTrigger value="analyze">Analyze & Edit</TabsTrigger>
+                </TabsList>
+                <TabsContent value="manage" className="mt-4 space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Upload New CV</CardTitle>
+                            <CardDescription>Upload a new CV document (PDF, DOCX, TXT). Analysis will start automatically.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <UploadForm onUploadComplete={handleUploadComplete} />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>My CVs</CardTitle>
+                            <CardDescription>Manage your uploaded CVs. Click 'Improve' to view analysis.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <CVList refreshKey={refreshKey} />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="analyze" className="mt-4 space-y-6">
+                    {/* --- Conditional Rendering Logic --- */}
+                    {(() => { // Use IIFE for clearer conditional logic
+                        const analysisIdFromUrl = searchParams.get('analysisId');
+                        const shouldShowAnalysis = !!analysisIdFromUrl; // Base decision on URL for initial render
+                        const isLoading = analysisStatus === 'loading';
+
+                        // Condition 1: Loading state (regardless of ID presence)
+                        if (isLoading) {
+                            return (
+                                <Card>
+                                    <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>Loading analysis...</CardDescription></CardHeader>
+                                    <CardContent><div className="flex justify-center items-center h-40">Loading...</div></CardContent>
+                                </Card>
+                            );
+                        }
+
+                        // Condition 2: Analysis ID exists in URL (and not loading)
+                        if (shouldShowAnalysis) {
+                            // Verify data exists in store before rendering display, otherwise show loading state
+                            if (analysisIdFromStore === analysisIdFromUrl && analysisData) {
+                                return (
+                                    <Card>
+                                        <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>View and edit the results of the CV analysis</CardDescription></CardHeader>
+                                        <CardContent>
+                                            <AnalysisResultDisplay originalMimeType={originalMimeType} />
+                                        </CardContent>
+                                    </Card>
+                                );
+                            } else {
+                                // Data isn't ready yet, even though ID is in URL (e.g., still fetching)
+                                // Render a loading state consistent with the isLoading condition above
+                                return (
+                                    <Card>
+                                        <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>Loading analysis...</CardDescription></CardHeader>
+                                        <CardContent><div className="flex justify-center items-center h-40">Loading...</div></CardContent>
+                                    </Card>
+                                );
+                            }
+                        }
+
+                        // Condition 3: No Analysis ID in URL and not loading
+                        // Show the placeholder/prompt to select a CV
+                        return (
+                            <Card className="mt-4">
+                                <CardHeader><CardTitle>Select a CV</CardTitle></CardHeader>
+                                <CardContent>
+                                    <p className="text-muted-foreground">
+                                        Please select a CV from the 'Manage CVs' tab by clicking the 'Improve' <Play className="inline h-4 w-4 mx-1" /> button to view its analysis and suggestions.
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        );
+                    })()}
+                    {/* --- End Conditional Rendering Logic --- */}
+                </TabsContent>
+            </Tabs>
+
+            {/* --- Temporary Redis Test Card --- */}
+            <Card className="mt-6 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
                 <CardHeader>
-                <CardTitle>Upload New CV</CardTitle>
-                <CardDescription>Upload a new CV document (PDF, DOCX, TXT). Analysis will start automatically.</CardDescription>
+                    <CardTitle>Redis Cache Test (Temporary)</CardTitle>
+                    <CardDescription>
+                        Use these buttons to test basic set and get operations with Redis.
+                        Check server logs for detailed Redis client interactions.
+                    </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <UploadForm onUploadComplete={handleUploadComplete} />
+                <CardContent className="space-y-4">
+                    <div className="flex space-x-4">
+                        <Button onClick={handleTestRedisSet}>Test Redis Set</Button>
+                        <Button onClick={handleTestRedisGet} variant="outline">Test Redis Get</Button>
+                    </div>
+                    {redisTestMessage && (
+                        <div className="mt-4 p-3 bg-muted rounded-md text-sm">
+                            <p className="font-semibold">Test Log:</p>
+                            <pre className="whitespace-pre-wrap break-all">{redisTestMessage}</pre>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
-            <Card>
-                <CardHeader>
-                <CardTitle>My CVs</CardTitle>
-                <CardDescription>Manage your uploaded CVs. Click 'Improve' to view analysis.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <CVList refreshKey={refreshKey} />
-                </CardContent>
-            </Card>
-        </TabsContent>
-        <TabsContent value="analyze" className="mt-4 space-y-6">
-            {/* --- Conditional Rendering Logic --- */}
-            {(() => { // Use IIFE for clearer conditional logic
-              const analysisIdFromUrl = searchParams.get('analysisId');
-              const shouldShowAnalysis = !!analysisIdFromUrl; // Base decision on URL for initial render
-              const isLoading = analysisStatus === 'loading';
+            {/* --- End Temporary Redis Test Card --- */}
 
-              // Condition 1: Loading state (regardless of ID presence)
-              if (isLoading) {
-                return (
-                  <Card>
-                    <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>Loading analysis...</CardDescription></CardHeader>
-                    <CardContent><div className="flex justify-center items-center h-40">Loading...</div></CardContent>
-                  </Card>
-                );
-              }
-              
-              // Condition 2: Analysis ID exists in URL (and not loading)
-              if (shouldShowAnalysis) {
-                 // Verify data exists in store before rendering display, otherwise show loading state
-                 if (analysisIdFromStore === analysisIdFromUrl && analysisData) {
-                   return (
-                     <Card>
-                       <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>View and edit the results of the CV analysis</CardDescription></CardHeader>
-                       <CardContent>
-                         <AnalysisResultDisplay originalMimeType={originalMimeType} />
-                       </CardContent>
-                     </Card>
-                   );
-                 } else {
-                     // Data isn't ready yet, even though ID is in URL (e.g., still fetching)
-                     // Render a loading state consistent with the isLoading condition above
-                     return (
-                      <Card>
-                        <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>Loading analysis...</CardDescription></CardHeader>
-                        <CardContent><div className="flex justify-center items-center h-40">Loading...</div></CardContent>
-                      </Card>
-                    );
-                 }
-              }
-
-              // Condition 3: No Analysis ID in URL and not loading
-              // Show the placeholder/prompt to select a CV
-              return (
-              <Card className="mt-4">
-                  <CardHeader><CardTitle>Select a CV</CardTitle></CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Please select a CV from the 'Manage CVs' tab by clicking the 'Improve' <Play className="inline h-4 w-4 mx-1"/> button to view its analysis and suggestions.
-                  </p>
-                </CardContent>
-              </Card>
-              );
-            })()}
-            {/* --- End Conditional Rendering Logic --- */}
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
+        </div>
+    );
 } 
