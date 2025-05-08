@@ -81,8 +81,12 @@ This project uses the **Next.js App Router** conventions directly within the roo
 
 *   **Local State:** Use `useState` and `useReducer` for component-level state.
 *   **Shared State (Client):**
-    *   **Context API:** Suitable for low-frequency updates (e.g., theme, user session).
-    *   **External Libraries (Zustand Recommended):** For more complex or frequently updated global client state, **Zustand is generally preferred** due to its simplicity and performance. Redux Toolkit is an alternative if needed.
+    *   **Redux Toolkit (Primary):** Used as the main state management solution with Redux Persist for persisted state. Existing slices:
+        - `uiSlice.ts`: UI-related state
+        - `analyticsSlice.ts`: Analytics data
+        - `userSlice.ts`: User-related state
+        - `analysisSlice.ts`: Analysis-related state
+    *   **Context API:** Only for simple, low-frequency updates (e.g., theme).
     *   **Redux Persist Configuration:** When using Redux with persistence:
         * Configure persistence per reducer using `redux-persist`
         * Use `whitelist` to explicitly specify which state fields to persist
@@ -286,6 +290,26 @@ export const fetchAnalysisById = createAsyncThunk(
     - API route enqueues the job with necessary parameters (e.g., `cvId`).
     - A separate worker process dequeues jobs, executes the logic (parsing, analysis, DB updates), and handles completion/failure status updates.
     - Frontend polls for status updates or uses real-time updates (e.g., WebSockets) if needed.
+*   **Standard:** **Redis is used in this project** and can be leveraged for building a queuing system if needed. Evaluate the best implementation approach (e.g., basic Redis lists, dedicated Redis queue library, Vercel Functions) based on complexity.
+
+## 14. Redis Client (`lib/redis.ts`)
+
+*   **Centralized Initialization:** The project uses a centralized Redis client initialized in `lib/redis.ts`. This module manages a singleton `ioredis` client instance.
+*   **Configuration:** Connection is configured via environment variables:
+    *   `REDIS_URL` (e.g., `redis://:[password]@[host]:[port]`) - Preferred.
+    *   Or, `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` (optional).
+*   **Connection Management:**
+    *   The client uses `ioredis` default retry strategies, which are robust for handling temporary network issues.
+    *   Includes a `connectTimeout` (e.g., 10 seconds) for initial connection attempts.
+    *   `maxRetriesPerRequest` is configured for individual commands.
+*   **Usage:** Import `getReadyRedisClient`, `setCache`, `getCache` from `lib/redis.ts` for interacting with Redis.
+*   **Troubleshooting:**
+    *   Persistent `ECONNRESET` errors or connection timeouts usually indicate issues external to the application, such as:
+        *   Redis server-side timeouts (e.g., `timeout` config in `redis.conf`).
+        *   Network instability or firewalls between the application and Redis server.
+        *   Resource limits on the Redis server (memory, connections).
+        *   Incorrect `REDIS_URL` or other connection parameters.
+    *   Check application logs for `[Redis]` tagged messages and also consult Redis server logs.
 
 ---
 *Apply these standards contextually. This document defines the expected architecture and structure for this specific project.*
