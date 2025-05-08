@@ -8,16 +8,18 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2 } from "lucide-react"
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
 
 interface CoverLetterCreatorProps {
   role: Role
+  generationTrigger?: number
+  onGenerationComplete?: (roleId: string, success: boolean) => void
 }
 
-export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
+export function CoverLetterCreator({ role, generationTrigger, onGenerationComplete }: CoverLetterCreatorProps) {
   const { data: session } = useSession()
   const [developerProfile, setDeveloperProfile] = useState<InternalProfile | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
@@ -48,6 +50,15 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
       fetchProfile()
     }
   }, [session, toast])
+
+  useEffect(() => {
+    if (generationTrigger && generationTrigger > 0 && developerProfile && !isGenerating) {
+      console.log(`[CoverLetterCreator] External trigger detected for role ${role.id}, trigger: ${generationTrigger}. Profile loaded: ${!!developerProfile}. Triggering generation.`);
+      handleGenerate();
+    } else if (generationTrigger && generationTrigger > 0 && !developerProfile) {
+        console.log(`[CoverLetterCreator] External trigger detected for role ${role.id}, trigger: ${generationTrigger}. Profile NOT loaded yet. Generation deferred.`);
+    }
+  }, [generationTrigger]);
 
   const handleAddAchievement = () => {
     if (newAchievementTitle.trim() === '') return
@@ -96,10 +107,12 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
         description: "Profile data not loaded yet. Please wait.",
         variant: "destructive",
       })
+      onGenerationComplete?.(role.id, false);
       return
     }
 
     setIsGenerating(true)
+    let success = false
     try {
       const requestData = {
         developerProfile: developerProfile,
@@ -138,7 +151,8 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
 
       const data = await response.json()
       setGeneratedLetter(data.letter)
-      toast({ title: "Success!", description: "Cover letter generated." });
+      toast({ title: "Success!", description: `Cover letter for "${role.title}" generated.` });
+      success = true;
     } catch (error) {
       console.error("Generate Cover Letter Error:", error);
       toast({
@@ -148,6 +162,7 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
       })
     } finally {
       setIsGenerating(false)
+      onGenerationComplete?.(role.id, success)
     }
   }
 
@@ -161,6 +176,22 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+  }
+
+  // --- Copy Handler ---
+  const handleCopy = () => {
+    if (!generatedLetter) {
+      toast({ title: "Nothing to Copy", description: "Generate a letter first.", variant: "destructive" });
+      return;
+    }
+    navigator.clipboard.writeText(generatedLetter)
+      .then(() => {
+        toast({ title: "Copied!", description: "Cover letter copied to clipboard." });
+      })
+      .catch(err => {
+        console.error('Failed to copy text: ', err);
+        toast({ title: "Copy Failed", description: "Could not copy text to clipboard.", variant: "destructive" });
+      });
   }
 
   return (
@@ -257,7 +288,7 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
 
             <Button
               onClick={handleGenerate}
-              disabled={isGenerating}
+              disabled={isGenerating || !developerProfile}
               className="w-full h-8 text-sm"
             >
               {isGenerating ? (
@@ -268,7 +299,7 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
               ) : (
                 <>
                   <ArrowRight className="mr-1.5 h-3.5 w-3.5" />
-                  Generate Cover Letter
+                  {generatedLetter ? 'Re-generate' : 'Generate Cover Letter'}
                 </>
               )}
             </Button>
@@ -292,13 +323,23 @@ export function CoverLetterCreator({ role }: CoverLetterCreatorProps) {
               className="min-h-[400px] text-sm bg-white dark:bg-gray-800"
             />
             {generatedLetter && (
-              <Button
-                onClick={handleExport}
-                className="w-full h-8 text-sm"
-              >
-                <Download className="mr-1.5 h-3.5 w-3.5" />
-                Export Cover Letter
-              </Button>
+              <div className="flex gap-2 mt-1.5">
+                <Button
+                  onClick={handleExport}
+                  className="flex-1 h-8 text-sm"
+                >
+                  <Download className="mr-1.5 h-3.5 w-3.5" />
+                  Export Cover Letter
+                </Button>
+                <Button
+                  onClick={handleCopy}
+                  variant="outline"
+                  className="flex-1 h-8 text-sm"
+                >
+                  <Copy className="mr-1.5 h-3.5 w-3.5" />
+                  Copy Text
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>
