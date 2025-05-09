@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy } from "lucide-react"
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
@@ -31,6 +31,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
   ])
   const [newAchievementTitle, setNewAchievementTitle] = useState<string>("")
   const [newAttractionPoint, setNewAttractionPoint] = useState<string>("")
+  const [isCopied, setIsCopied] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -187,6 +188,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
     navigator.clipboard.writeText(generatedLetter)
       .then(() => {
         toast({ title: "Copied!", description: "Cover letter copied to clipboard." });
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
       })
       .catch(err => {
         console.error('Failed to copy text: ', err);
@@ -336,8 +339,17 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   variant="outline"
                   className="flex-1 h-8 text-sm"
                 >
-                  <Copy className="mr-1.5 h-3.5 w-3.5" />
-                  Copy Text
+                  {isCopied ? (
+                    <>
+                      <Check className="mr-1.5 h-3.5 w-3.5" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="mr-1.5 h-3.5 w-3.5" />
+                      Copy Text
+                    </>
+                  )}
                 </Button>
               </div>
             )}
