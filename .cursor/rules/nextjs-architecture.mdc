@@ -176,6 +176,66 @@ useEffect(() => {
 // ... existing code example for URL sync ...
 ```
 
+### 5.2. `useEffect` Deep Dive: Advanced Scenarios & Pitfalls
+
+While Section 5.1 covers fundamental `useEffect` dependency management, this section delves into more complex scenarios and common pitfalls encountered in larger Next.js applications.
+
+*   **Interactions with Redux Thunks & Status:**
+    *   **Problem:** A common pattern is to fetch data using a Redux thunk in `useEffect` and include the thunk's status (e.g., `loading`, `succeeded`, `failed`) and the fetched data itself in the dependency array. If the thunk updates this status/data, it can re-trigger the `useEffect`, leading to infinite loops or multiple unnecessary fetches.
+    *   **Solution:**
+        1.  **Primary Trigger:** The `useEffect` should primarily depend on external triggers (e.g., component props like `userId`, or `useSearchParams` values).
+        2.  **Dispatch Once Logic:** Implement logic to ensure the thunk is dispatched only when necessary (e.g., when the primary trigger changes or on initial mount if appropriate).
+        3.  **Avoid Thunk-Managed State in Dependencies:** Do *not* include Redux state variables (like `status` or the data array) that are managed *by the thunk itself* in the `useEffect` dependency array. Read these values directly from the Redux store within the effect's body if needed for conditional logic.
+        4.  **Selector Stability:** Ensure Redux selectors are stable (e.g., using `reselect` or memoizing selector results) if their results are used in effects, though it's often better to pass primitive values as props.
+
+    ```typescript
+    // ❌ DON'T: Common pitfall with Redux thunks and status in dependencies
+    const dispatch = useDispatch();
+    const { items, status, error } = useSelector((state) => state.myFeature);
+    const { categoryId } = props;
+
+    useEffect(() => {
+      // If categoryId changes, or if status changes (e.g., to 'idle' after 'loading'),
+      // this effect might run multiple times or in loops.
+      if (categoryId && status !== 'loading') { // status check might be insufficient
+        dispatch(fetchItemsThunk({ categoryId }));
+      }
+    // Problem: `status` and `items` are updated by the thunk, causing re-runs.
+    }, [dispatch, categoryId, items, status]);
+
+
+    // ✅ DO: Focus on external triggers and manage dispatch logic carefully
+    const dispatch = useDispatch();
+    const { categoryId } = props; // External trigger
+    // const items = useSelector((state) => state.myFeature.items); // Read directly if needed
+    // const status = useSelector((state) => state.myFeature.status); // Read directly if needed for conditional rendering
+
+    useEffect(() => {
+      if (categoryId) {
+        console.log(`Fetching items for category: ${categoryId}`);
+        // The thunk itself should handle not re-fetching if data is already fresh or loading.
+        // Or, add more component-level logic here if the thunk isn't idempotent.
+        dispatch(fetchItemsThunk({ categoryId }));
+      }
+      // 'dispatch' and 'categoryId' are stable dependencies.
+      // The thunk's internal state changes won't cause this effect to re-loop.
+    }, [dispatch, categoryId]);
+    ```
+
+*   **Managing Multiple Asynchronous Operations:**
+    *   When an effect needs to perform several async operations, ensure proper cleanup and state management for each. Use separate `isActive` flags or AbortControllers if operations can be cancelled independently.
+
+*   **Dependencies on Functions from Props:**
+    *   If an effect depends on a function passed via props (e.g., `onDataLoaded`), ensure that function is memoized (e.g., with `useCallback`) in the parent component. Otherwise, the function will have a new identity on every parent render, causing the child's effect to re-run.
+
+*   **Complex Object/Array Dependencies:**
+    *   If an effect depends on an object or array, it will re-run if the object/array identity changes, even if the contents are the same.
+    *   **Solutions:**
+        *   Depend on primitive values derived from the object/array if possible.
+        *   Memoize the object/array dependency using `useMemo` if its creation is controlled by the component.
+        *   For objects/arrays from props, the parent should memoize them.
+        *   Perform a deep comparison within the effect (use with caution, can be costly) or use a custom hook like `useDeepCompareEffect`.
+
 ## 6. Styling
 
 *   **Primary Method: Tailwind CSS:** This project primarily uses **Tailwind CSS** for styling, configured via `tailwind.config.ts` in the root. Leverage utility classes for consistency and rapid development.
@@ -247,7 +307,7 @@ export async function GET(request: Request, { params }: { params: Params }) {
 *   **Database:** Ensure the production database (e.g., PostgreSQL, MySQL managed service) is configured correctly via the `DATABASE_URL` environment variable.
 *   **Caching:** Leverage platform caching (CDN, ISR) and Next.js data caching strategies effectively.
 
-## 12. Data Consistency & Normalization (New Section)
+## 12. Data Consistency & Normalization
 
 *   **Rule: Ensure API Response Structure Consistency:** Be mindful that API responses, especially when influenced by caching layers, might have different structures (e.g., cached data might omit wrapper objects or metadata present in direct DB responses).
 *   **Rule: Normalize Data Early:** Frontend data fetching logic (e.g., Redux thunks, React Query fetch functions) should anticipate potential structural differences in API responses. **Normalize the data structure as early as possible**, ideally within the fetching function/thunk itself, before passing it to reducers or state setters. This ensures that subsequent logic (reducers, components) always operates on a consistent and predictable data format.
@@ -282,6 +342,55 @@ export const fetchAnalysisById = createAsyncThunk(
 );
 ```
 
+### 12.1. Advanced Data Normalization Strategies
+
+While the previous example shows basic normalization, consider these advanced strategies for complex scenarios:
+
+*   **Schema-Based Normalization:**
+    *   For complex nested data or data with relationships (e.g., users, posts, comments), use a library like `normalizr` to flatten the data into a structured, relational format.
+    *   This makes it easier to manage updates, reduce data duplication in the store, and select specific pieces of data efficiently.
+    *   **Example with `normalizr`:**
+        ```typescript
+        import { normalize, schema } from 'normalizr';
+
+        // Define schemas
+        const userSchema = new schema.Entity('users');
+        const commentSchema = new schema.Entity('comments', {
+          commenter: userSchema,
+        });
+        const articleSchema = new schema.Entity('articles', {
+          author: userSchema,
+          comments: [commentSchema],
+        });
+
+        // Assuming rawApiData is something like:
+        // { id: '1', title: 'My Article', author: { id: 'u1', name: 'Author' }, comments: [{ id: 'c1', text: 'Nice!', commenter: { id: 'u2', name: 'Commenter' }}] }
+        
+        // In your thunk or fetching function:
+        // const normalizedData = normalize(rawApiData, articleSchema);
+        /*
+        normalizedData would look like:
+        {
+          result: "1", // ID of the main entity
+          entities: {
+            articles: { "1": { id: "1", title: "My Article", author: "u1", comments: ["c1"] } },
+            users: {
+              "u1": { id: "u1", name: "Author" },
+              "u2": { id: "u2", name: "Commenter" }
+            },
+            comments: { "c1": { id: "c1", text: "Nice!", commenter: "u2" } }
+          }
+        }
+        */
+        // This structure can then be merged into your Redux store or React Query cache.
+        ```
+
+*   **Handling Polymorphic Data:** If API responses can return different types of entities for the same field, use `schema.Union` with `normalizr` or implement custom logic to differentiate and normalize these types.
+
+*   **Client-Side Data Transformation:** Sometimes, data needs to be transformed or augmented on the client (e.g., adding computed properties, formatting dates) after fetching and normalization. Perform these transformations consistently, perhaps in selectors or utility functions, before the data reaches components.
+
+*   **Idempotent Normalization:** Ensure your normalization logic is idempotent – applying it multiple times to the same raw data (or already normalized data) should produce the same result or handle it gracefully without errors.
+
 ## 13. Background Jobs (New Section)
 
 *   **Consideration:** For long-running tasks initiated by API requests (like complex analysis or external API calls), consider offloading the work to a background job queue (e.g., BullMQ with Redis, Quirrel, Vercel Serverless Functions with longer timeouts) instead of processing synchronously within the API route handler.
@@ -310,6 +419,144 @@ export const fetchAnalysisById = createAsyncThunk(
         *   Resource limits on the Redis server (memory, connections).
         *   Incorrect `REDIS_URL` or other connection parameters.
     *   Check application logs for `[Redis]` tagged messages and also consult Redis server logs.
+
+## 15. Comprehensive Error Handling (New Section)
+
+Robust error handling is crucial for application stability, user experience, and debugging. This section outlines strategies for client-side and server-side error management.
+
+### 15.1. Client-Side Error Handling (React Components)
+
+*   **Error Boundaries:**
+    *   **Purpose:** React components that catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback UI instead of the component tree that crashed.
+    *   **Usage:** Wrap logical sections of your application (e.g., routes, sidebars, complex widgets) with Error Boundaries.
+    *   **Implementation:**
+        ```tsx
+        // components/ErrorBoundary.tsx
+        import React, { Component, ErrorInfo, ReactNode } from 'react';
+
+        interface Props {
+          children: ReactNode;
+          fallbackUI?: ReactNode; // Optional custom fallback
+        }
+
+        interface State {
+          hasError: boolean;
+          error?: Error;
+        }
+
+        class ErrorBoundary extends Component<Props, State> {
+          public state: State = {
+            hasError: false,
+          };
+
+          public static getDerivedStateFromError(error: Error): State {
+            return { hasError: true, error };
+          }
+
+          public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+            // Log the error to an error reporting service
+            console.error("Uncaught error:", error, errorInfo);
+            // Example: Sentry.captureException(error, { extra: errorInfo });
+          }
+
+          public render() {
+            if (this.state.hasError) {
+              return this.props.fallbackUI || <h1>Something went wrong. Please try again later.</h1>;
+            }
+            return this.props.children;
+          }
+        }
+        export default ErrorBoundary;
+
+        // Usage in a page or layout
+        // <ErrorBoundary fallbackUI={<CustomErrorFallback />}>
+        //   <MyPotentiallyCrashingComponent />
+        // </ErrorBoundary>
+        ```
+    *   **Note:** Error Boundaries do *not* catch errors in:
+        *   Event handlers (use regular `try/catch` inside them).
+        *   Asynchronous code (e.g., `setTimeout` or `requestAnimationFrame` callbacks).
+        *   Server-side rendering.
+        *   Errors thrown in the Error Boundary component itself.
+
+*   **`try/catch` in Event Handlers & Async Code:**
+    *   Use standard `try/catch` blocks within event handlers, `useEffect` async operations, and other asynchronous callbacks to handle errors gracefully.
+    *   Update component state to display user-friendly error messages.
+    *   Log errors to a reporting service.
+
+*   **User-Friendly Error Messages:**
+    *   Avoid displaying raw error messages or stack traces to users.
+    *   Provide clear, concise, and actionable error messages (e.g., "Could not save your changes. Please check your internet connection and try again.").
+    *   Consider using a notification system (e.g., toasts) for non-critical errors.
+
+*   **State Management for Errors:**
+    *   For errors related to data fetching or global state operations, manage error states within your state management solution (e.g., Redux, Zustand, React Query/SWR).
+    *   Components can then select this error state and render appropriate UI.
+
+### 15.2. Server-Side Error Handling (API Routes / Route Handlers)
+
+*   **Centralized Error Handling Middleware/Utilities (Optional but Recommended):**
+    *   Consider creating a utility function or middleware to standardize error responses from your API routes.
+    *   This can handle logging, formatting error objects, and setting appropriate HTTP status codes.
+    *   Refer to [api-contracts.mdc](mdc:.cursor/rules/api-contracts.mdc) for API response structure.
+
+*   **`try/catch` in Route Handlers:**
+    *   Wrap the logic in your `route.ts` files with `try/catch` blocks.
+    *   Catch specific errors if possible (e.g., Prisma errors, Zod validation errors) and respond with appropriate status codes and messages.
+    *   For unexpected errors, respond with a generic 500 Internal Server Error.
+
+    ```typescript
+    // app/api/items/route.ts
+    import { NextResponse } from 'next/server';
+    import { z } from 'zod';
+    // import { prisma } from '@/lib/prisma'; // Assuming prisma client
+
+    const itemSchema = z.object({ name: z.string().min(1) });
+
+    export async function POST(request: Request) {
+      try {
+        const body = await request.json();
+        const validation = itemSchema.safeParse(body);
+
+        if (!validation.success) {
+          return NextResponse.json({ error: "Invalid input", details: validation.error.flatten() }, { status: 400 });
+        }
+
+        // const newItem = await prisma.item.create({ data: validation.data });
+        // return NextResponse.json(newItem, { status: 201 });
+        return NextResponse.json({ message: "Item created (mock)"}, { status: 201}); // Mocked example
+
+      } catch (error: any) {
+        console.error("[API POST /api/items] Error:", error);
+        // if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        //   // Handle specific Prisma errors
+        //   return NextResponse.json({ error: "Database error" }, { status: 500 });
+        // }
+        if (error.name === 'JsonWebTokenError') {
+             return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+        }
+        // Generic error
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+      }
+    }
+    ```
+
+*   **Consistent Error Response Format:**
+    *   Return errors in a consistent JSON format (e.g., `{ "error": "Error message", "details": { ... } }`). This helps the client-side handle errors uniformly.
+
+*   **Logging:**
+    *   Log all server-side errors with sufficient context (timestamp, request ID, error details, stack trace) to aid debugging. Use a structured logging format if possible.
+    *   Refer to [general.mdc](mdc:.cursor/rules/general.mdc) for logging guidelines (once updated).
+
+*   **Next.js Error Pages (`error.tsx`):**
+    *   Utilize the `error.tsx` file convention in the App Router to handle unexpected errors during server-rendering or in Server Components. This file can display a custom error page.
+    *   It receives an `error` object and a `reset` function to attempt to re-render the segment.
+    *   Ensure sensitive error details are not exposed on these pages in production.
+
+### 15.3. Error Reporting Services
+
+*   Integrate a third-party error reporting service (e.g., Sentry, Bugsnag, Rollbar) for both client-side and server-side errors.
+*   These services provide aggregation, alerting, and detailed context for errors, making debugging much easier.
 
 ---
 *Apply these standards contextually. This document defines the expected architecture and structure for this specific project.*
