@@ -152,51 +152,199 @@ export default function WritingHelpPage() {
   // Simple vertical stack for now
   return (
     <div className="container max-w-7xl mx-auto p-4">
+
+      {/* Enhanced Tabs Section */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex flex-col md:flex-row md:items-center md:justify-between space-y-1 md:space-y-0 mb-6"
+        className="mb-6"
       >
-         {/* Generate All Button - Disable while polling or generating */}
-         {activeTab === 'cover-letter' && selectedRoles.length > 0 && (
-             <Button
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as "cv" | "cover-letter" | "outreach")}
+          className="w-full"
+        >
+          <TabsList className="relative grid grid-cols-3 w-full max-w-2xl mx-auto h-12 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-1.5 shadow-xl">
+            <TabsTrigger 
+              value="cv" 
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white z-20"
+            >
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline font-semibold">CV Optimization</span>
+              <span className="sm:hidden font-semibold">CV</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="cover-letter" 
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white z-20"
+            >
+              <PenTool className="h-4 w-4" />
+              <span className="hidden sm:inline font-semibold">Cover Letter</span>
+              <span className="sm:hidden font-semibold">Letter</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="outreach" 
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white z-20"
+            >
+              <Mail className="h-4 w-4" />
+              <span className="hidden sm:inline font-semibold">Outreach Message</span>
+              <span className="sm:hidden font-semibold">Outreach</span>
+            </TabsTrigger>
+            
+            {/* Active Tab Background */}
+            <motion.div
+              layoutId="activeTabBackground"
+              className="absolute top-1.5 bottom-1.5 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg shadow-lg z-10"
+              style={{
+                width: `calc(33.333% - 4px)`,
+                left: activeTab === "cv" ? "6px" : 
+                      activeTab === "cover-letter" ? `calc(33.333% + 2px)` : 
+                      `calc(66.666% - 2px)`
+              }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 400, 
+                damping: 35,
+                duration: 0.25
+              }}
+            />
+            
+            {/* Active Tab Text Overlay */}
+            <motion.div
+              className="absolute inset-1.5 grid grid-cols-3 pointer-events-none z-30"
+              initial={false}
+            >
+              {["cv", "cover-letter", "outreach"].map((tab, index) => (
+                <div 
+                  key={tab}
+                  className="flex items-center justify-center gap-2"
+                >
+                  {activeTab === tab && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2, delay: 0.1 }}
+                      className="flex items-center justify-center gap-2 text-sm font-semibold text-white"
+                    >
+                      {tab === "cv" && <FileText className="h-4 w-4" />}
+                      {tab === "cover-letter" && <PenTool className="h-4 w-4" />}
+                      {tab === "outreach" && <Mail className="h-4 w-4" />}
+                      <span className="hidden sm:inline">
+                        {tab === "cv" && "CV Optimization"}
+                        {tab === "cover-letter" && "Cover Letter"}
+                        {tab === "outreach" && "Outreach Message"}
+                      </span>
+                      <span className="sm:hidden">
+                        {tab === "cv" && "CV"}
+                        {tab === "cover-letter" && "Letter"}
+                        {tab === "outreach" && "Outreach"}
+                      </span>
+                    </motion.div>
+                  )}
+                </div>
+              ))}
+            </motion.div>
+          </TabsList>
+        </Tabs>
+        
+        {/* Action Buttons Row - Only show in cover-letter tab */}
+        {activeTab === 'cover-letter' && selectedRoles.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.4, type: "spring", stiffness: 300 }}
+            className="flex justify-between items-center mt-6"
+          >
+            {/* Back to Roles Button */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                onClick={() => router.push("/developer/roles/search")}
+                variant="outline"
+                size="lg"
+                className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800 px-6 py-3 font-semibold shadow-lg transition-all duration-300"
+              >
+                <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
+                Back to Roles
+              </Button>
+            </motion.div>
+
+            {/* Generate All Button */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative"
+            >
+              <Button
                 onClick={handleGenerateAll}
                 disabled={isGeneratingAll || isAnyPaneGenerating}
                 size="lg"
-                className="mt-2 md:mt-0"
-             >
-                {(isGeneratingAll || isAnyPaneGenerating) ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <Rocket className="mr-2 h-4 w-4" />
-                )}
-                 {(isGeneratingAll || isAnyPaneGenerating) ? 'Generating All...' : `Generate All (${selectedRoles.length})`}
-             </Button>
-         )}
-      </motion.div>
-
-      {/* Tabs - Remains at top level */} 
-              <Tabs
-                value={activeTab}
-                onValueChange={(value) => setActiveTab(value as "cv" | "cover-letter" | "outreach")}
-            className="w-full mb-6"
+                className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-700 hover:via-purple-700 hover:to-pink-700 text-white border-0 shadow-xl px-8 py-3 font-semibold text-lg transition-all duration-300"
               >
-                <TabsList className="grid grid-cols-3 w-full max-w-2xl mx-auto h-9">
-                  <TabsTrigger value="cv" className="flex items-center gap-1.5 text-xs">
-                    <FileText className="h-3.5 w-3.5" />
-                    CV Optimization
-                  </TabsTrigger>
-                  <TabsTrigger value="cover-letter" className="flex items-center gap-1.5 text-xs">
-                    <PenTool className="h-3.5 w-3.5" />
-                    Cover Letter
-                  </TabsTrigger>
-                  <TabsTrigger value="outreach" className="flex items-center gap-1.5 text-xs">
-                    <Mail className="h-3.5 w-3.5" />
-                    Outreach Message
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+                
+                {/* Button Content */}
+                <div className="relative z-10 flex items-center gap-3">
+                  {(isGeneratingAll || isAnyPaneGenerating) ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Loader2 className="h-5 w-5" />
+                      </motion.div>
+                      <span>Generating All Letters...</span>
+                    </>
+                  ) : (
+                    <>
+                      <motion.div
+                        animate={{ 
+                          y: [0, -2, 0],
+                          rotate: [0, 5, -5, 0]
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <Rocket className="h-5 w-5" />
+                      </motion.div>
+                      <span>Generate All ({selectedRoles.length})</span>
+                      <motion.div
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ 
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <ArrowRight className="h-5 w-5" />
+                      </motion.div>
+                    </>
+                  )}
+                </div>
+                
+                {/* Pulse Effect when generating */}
+                {(isGeneratingAll || isAnyPaneGenerating) && (
+                  <motion.div
+                    className="absolute inset-0 bg-white/10"
+                    animate={{ opacity: [0.3, 0.7, 0.3] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                )}
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </motion.div>
 
         {/* Grid Layout Container - Render MultiRolePane for each role */} 
         <div className="grid grid-cols-1 gap-4 w-full">
@@ -211,33 +359,6 @@ export default function WritingHelpPage() {
             ))}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.3 }}
-        className="flex justify-between items-center mt-4"
-      >
-        {/* Optional: Add button to clear selection */} 
-         <Button
-          variant="outline"
-          size="sm"
-          onClick={() => { 
-            dispatch(clearRoleSelection());
-            router.push("/developer/roles/search");
-          }}
-          className="text-xs"
-        >
-          Cancel & Clear Selection
-        </Button>
-
-        <Button
-          size="sm"
-          onClick={() => router.push("/developer/roles/search")}
-          className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-xs"
-        >
-          Back to Roles <ArrowRight className="ml-1 h-3.5 w-3.5" />
-        </Button>
-      </motion.div>
     </div>
   )
 } 

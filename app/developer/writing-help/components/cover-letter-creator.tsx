@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Input } from '@/components/ui-daisy/input'
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState, AppDispatch } from '@/lib/store'
+import { setCoverLetter, selectCoverLetter, updateCoverLetterJobSource, updateCoverLetterAttractionPoints } from '@/lib/features/coverLettersSlice'
 import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, Briefcase, FileText, CheckCircle2, ChevronRight, ChevronDown, ChevronUp } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
@@ -57,18 +60,26 @@ if (typeof window !== 'undefined') {
 
 export function CoverLetterCreator({ role, generationTrigger, onGenerationComplete, isMultiRoleMode = false }: CoverLetterCreatorProps) {
   const { data: session } = useSession()
+  const dispatch = useDispatch<AppDispatch>()
+  
+  // Get cover letter from Redux (if it exists)
+  const existingCoverLetter = useSelector((state: RootState) => selectCoverLetter(state, role.id))
+  
   const [developerProfile, setDeveloperProfile] = useState<InternalProfile | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedLetter, setGeneratedLetter] = useState("")
-  const [jobSource, setJobSource] = useState<string>("")
-  const [companyAttractionPoints, setCompanyAttractionPoints] = useState<string[]>([
-    "Innovative products in the tech space",
-    "Strong company culture and values"
-  ])
   const [newAchievementTitle, setNewAchievementTitle] = useState<string>("")
   const [newAttractionPoint, setNewAttractionPoint] = useState<string>("")
   const [isCopied, setIsCopied] = useState(false)
   const [isPersonalizationExpanded, setIsPersonalizationExpanded] = useState(!isMultiRoleMode)
+  
+  // Use Redux state or default values
+  const generatedLetter = existingCoverLetter?.letter || ""
+  const jobSource = existingCoverLetter?.jobSource || ""
+  const companyAttractionPoints = existingCoverLetter?.companyAttractionPoints || [
+    "Innovative products in the tech space",
+    "Strong company culture and values"
+  ]
+  
   const { toast } = useToast()
 
   useEffect(() => {
@@ -128,14 +139,19 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
 
   const handleAddAttractionPoint = () => {
     if (newAttractionPoint.trim() === '') return
-    setCompanyAttractionPoints([...companyAttractionPoints, newAttractionPoint])
+    const updatedPoints = [...companyAttractionPoints, newAttractionPoint]
+    dispatch(updateCoverLetterAttractionPoints({ roleId: role.id, attractionPoints: updatedPoints }))
     setNewAttractionPoint('')
   }
 
   const handleRemoveAttractionPoint = (index: number) => {
     const updatedPoints = [...companyAttractionPoints]
     updatedPoints.splice(index, 1)
-    setCompanyAttractionPoints(updatedPoints)
+    dispatch(updateCoverLetterAttractionPoints({ roleId: role.id, attractionPoints: updatedPoints }))
+  }
+
+  const handleJobSourceChange = (newJobSource: string) => {
+    dispatch(updateCoverLetterJobSource({ roleId: role.id, jobSource: newJobSource }))
   }
 
   const handleGenerate = async () => {
@@ -188,7 +204,16 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
       }
 
       const data = await response.json()
-      setGeneratedLetter(data.letter)
+      
+      // Save to Redux
+      dispatch(setCoverLetter({
+        roleId: role.id,
+        letter: data.letter,
+        generatedAt: new Date().toISOString(),
+        jobSource: jobSource || undefined,
+        companyAttractionPoints
+      }))
+      
       toast({ title: "Success!", description: `Cover letter for "${role.title}" generated.` });
       success = true;
     } catch (error) {
@@ -264,40 +289,84 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
         {/* Header Card */}
-        <Card className="overflow-hidden border-0  bg-gradient-to-br from-violet-600 via-purple-600 to-pink-500 text-white relative">
-          <div className="absolute inset-0 shimmer opacity-30"></div>
-          <CardHeader className={cn("relative z-10", isMultiRoleMode ? "pb-2 pt-4" : "pb-4")}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+        <Card className="overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-pink-500 text-white relative">
+          <div className={cn("absolute inset-0 opacity-30", isGenerating ? "animate-shimmer" : "shimmer")}></div>
+          <CardHeader className={cn("relative z-10", isMultiRoleMode ? "pb-4 pt-4" : "pb-6 pt-6")}>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1 min-w-0">
                 <motion.div 
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  className="p-3 bg-white/20 backdrop-blur-md rounded-xl border border-white/20"
+                  transition={{ 
+                    duration: isGenerating ? 4 : 20, 
+                    repeat: Infinity, 
+                    ease: "linear" 
+                  }}
+                  className="p-3 bg-white/20 backdrop-blur-md rounded-xl border border-white/20 flex-shrink-0"
                 >
-                  <Sparkles className="h-7 w-7" />
+                  <Sparkles className={cn("text-white", isMultiRoleMode ? "h-6 w-6" : "h-8 w-8")} />
                 </motion.div>
-                <div>
-                  <CardTitle className={cn("font-bold mb-1", isMultiRoleMode ? "text-xl" : "text-2xl")}>AI Cover Letter Generator</CardTitle>
-                  <CardDescription className="text-violet-100 flex items-center gap-2">
-                    <span>Craft the perfect cover letter for</span>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className={cn("font-bold mb-2 text-white truncate", isMultiRoleMode ? "text-2xl" : "text-3xl")}>
+                    {role.title}
+                  </CardTitle>
+                  <CardDescription className="text-violet-100 flex items-center gap-2 flex-wrap">
+                    <span>at</span>
                     <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
                       {role.company.name}
                     </Badge>
+                    {role.location && (
+                      <span className="text-violet-200 text-sm">• {role.location}</span>
+                    )}
                   </CardDescription>
                 </div>
               </div>
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30 animate-pulse">
-                <Sparkles className="h-3 w-3 mr-1" />
-                AI Powered
-              </Badge>
+              
+              {/* Generate Button */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex-shrink-0"
+              >
+                <Button
+                  onClick={handleGenerate}
+                  disabled={isGenerating || !developerProfile}
+                  variant="secondary"
+                  size={isMultiRoleMode ? "default" : "lg"}
+                  className={cn(
+                    "bg-white/20 backdrop-blur-md text-white border-white/30 hover:bg-white/30 transition-all shadow-lg",
+                    isMultiRoleMode ? "px-4 py-2" : "px-6 py-3"
+                  )}
+                >
+                  {isGenerating ? (
+                    <>
+                      <RefreshCw className={cn("animate-spin", isMultiRoleMode ? "mr-2 h-4 w-4" : "mr-2 h-5 w-5")} />
+                      <span className={cn(isMultiRoleMode ? "text-sm" : "text-base")}>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className={cn(isMultiRoleMode ? "mr-2 h-4 w-4" : "mr-2 h-5 w-5")} />
+                      <span className={cn("font-semibold", isMultiRoleMode ? "text-sm" : "text-base")}>
+                        {generatedLetter ? 'Regenerate' : 'Generate'}
+                      </span>
+                      <ArrowRight className={cn("transition-transform group-hover:translate-x-1", isMultiRoleMode ? "ml-2 h-4 w-4" : "ml-2 h-5 w-5")} />
+                    </>
+                  )}
+                </Button>
+              </motion.div>
             </div>
+            
+            {!developerProfile && (
+              <p className="text-xs text-violet-200 mt-2">
+                Loading your profile data...
+              </p>
+            )}
           </CardHeader>
         </Card>
 
         {/* Customization Card */}
-        <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <Card className="hover:shadow-xl transition-shadow duration-300">
           <CardHeader 
-            className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 cursor-pointer"
+            className="bg-slate-100 dark:bg-slate-900 transition-all duration-300"
             onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
           >
             <div className="flex items-center justify-between">
@@ -340,7 +409,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   id="jobSource"
                   placeholder="e.g., LinkedIn, Company Website, Referral from John"
                   value={jobSource}
-                  onChange={(e) => setJobSource(e.target.value)}
+                  onChange={(e) => handleJobSourceChange(e.target.value)}
                   className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500/20 transition-all pl-10"
                 />
                 <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -372,7 +441,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         exit={{ opacity: 0, x: 20, scale: 0.9 }}
                         transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
                         whileHover={{ scale: 1.02 }}
-                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 mb-2 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md"
+                        className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 mb-2 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md"
                       >
                         <motion.div
                           initial={{ scale: 0 }}
@@ -459,7 +528,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         exit={{ opacity: 0, x: 20, scale: 0.9 }}
                         transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
                         whileHover={{ scale: 1.02 }}
-                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 mb-2 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md"
+                        className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 mb-2 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md"
                       >
                         <motion.div
                           initial={{ scale: 0 }}
@@ -504,48 +573,6 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
               </div>
             </motion.div>
 
-            {/* Generate Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  onClick={handleGenerate}
-                  disabled={isGenerating || !developerProfile}
-                  variant="gradient"
-                  size="lg"
-                  rounded="xl"
-                  elevation="float"
-                  className="w-full group relative overflow-hidden"
-                >
-                  {isGenerating && (
-                    <div className="absolute inset-0 bg-white/10 shimmer" />
-                  )}
-                {isGenerating ? (
-                  <>
-                    <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
-                    <span className="animate-pulse">Generating Your Cover Letter...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-                    {generatedLetter ? 'Re-generate Cover Letter' : 'Generate AI Cover Letter'}
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-                </Button>
-              </motion.div>
-              {!developerProfile && (
-                <p className="text-xs text-muted-foreground text-center mt-2">
-                  Loading your profile data...
-                </p>
-              )}
-            </motion.div>
                 </CardContent>
               </motion.div>
             )}
@@ -598,46 +625,12 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
         <Card className={cn(
-          "border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full relative overflow-hidden",
-          generatedLetter && "ring-2 ring-violet-500/30 shadow-violet-500/10"
+          "border-0  hover:shadow-xl transition-all duration-150 h-full relative overflow-hidden"
         )}>
-          {generatedLetter && (
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 animate-pulse" />
-          )}
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "p-2 rounded-lg transition-all duration-300",
-                  generatedLetter ? "bg-violet-100 dark:bg-violet-900/30" : "bg-gray-100 dark:bg-gray-800"
-                )}>
-                  <FileText className={cn(
-                    "h-5 w-5 transition-colors duration-300",
-                    generatedLetter ? "text-violet-600 dark:text-violet-400" : "text-gray-400"
-                  )} />
-                </div>
-                <div>
-                  <CardTitle className="text-lg font-semibold">Your Cover Letter</CardTitle>
-                  <CardDescription className="text-sm">
-                    {generatedLetter ? 'Review and export your personalized cover letter' : 'Your AI-generated cover letter will appear here'}
-                  </CardDescription>
-                </div>
-              </div>
-              {generatedLetter && (
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 200 }}
-                >
-                  <Badge variant="gradient" className="animate-pulse shadow-md">
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                    Ready
-                  </Badge>
-                </motion.div>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6 flex flex-col h-full">
+          {/* {generatedLetter && (
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 animate-pulse" />
+          )} */}
+          <CardContent className="flex flex-col bg-slate-100 dark:bg-slate-900">
             <div className="flex-1 relative">
               {!generatedLetter && (
                 <motion.div 
@@ -653,12 +646,12 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         rotate: [0, 5, -5, 0]
                       }}
                       transition={{ 
-                        duration: 4,
+                        duration: isGenerating ? 1 : 4,
                         repeat: Infinity,
                         ease: "easeInOut"
                       }}
                     >
-                      <Sparkles className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                      <Sparkles className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                     </motion.div>
                     <p className="text-gray-400 dark:text-gray-500 text-base font-medium mb-2">
                       Your cover letter will appear here
@@ -674,8 +667,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                 readOnly
                 variant={generatedLetter ? "default" : "ghost"}
                 className={cn(
-                  "resize-none transition-all duration-300 font-mono",
-                  isMultiRoleMode ? "min-h-[350px]" : "min-h-[500px]",
+                  "resize-none transition-all duration-300 font-sans text-base h-full",
+                  isMultiRoleMode ? "min-h-[350px]" : "min-h-[300px]",
                   !generatedLetter && "text-center opacity-0",
                   generatedLetter && "shadow-inner bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                 )}
@@ -697,7 +690,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         onClick={handleExport}
                         variant="gradient"
                         size="default"
-                        rounded="lg"
+                        rounded="xl"
                         className="w-full group shadow-md hover:shadow-lg transition-all"
                         elevation="sm"
                       >
@@ -710,7 +703,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         onClick={handleCopy}
                         variant={isCopied ? "gradient-blue" : "outline"}
                         size="default"
-                        rounded="lg"
+                        rounded="xl"
                         className="w-full group shadow-md hover:shadow-lg transition-all"
                         elevation="sm"
                       >

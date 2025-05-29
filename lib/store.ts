@@ -11,6 +11,8 @@ import uiReducer from './features/uiSlice';
 import analyticsReducer from './features/analyticsSlice';
 // Import the new selected roles reducer
 import selectedRolesReducer from './features/selectedRolesSlice';
+// Import the cover letters reducer
+import coverLettersReducer from './features/coverLettersSlice';
 // Import reducers here when they are created
 // import rootReducer from './rootReducer'; // Example
 
@@ -37,7 +39,14 @@ const uiPersistConfig = {
 const selectedRolesPersistConfig = {
     key: 'selectedRoles',
     storage,
-    whitelist: ['selectedRoleIds'] // Persist the selected role IDs
+    whitelist: ['selectedRoles'] // Persist the selected roles (full objects)
+};
+
+// Persist config for cover letters
+const coverLettersPersistConfig = {
+    key: 'coverLetters',
+    storage,
+    whitelist: ['coverLetters'] // Persist all cover letters
 };
 
 // Create persisted reducers
@@ -46,6 +55,8 @@ const persistedAnalysisReducer = persistReducer(analysisPersistConfig, analysisR
 const persistedUiReducer = persistReducer(uiPersistConfig, uiReducer);
 // Create persisted reducer for selected roles
 const persistedSelectedRolesReducer = persistReducer(selectedRolesPersistConfig, selectedRolesReducer);
+// Create persisted reducer for cover letters
+const persistedCoverLettersReducer = persistReducer(coverLettersPersistConfig, coverLettersReducer);
 
 export const store = configureStore({
   reducer: {
@@ -55,6 +66,8 @@ export const store = configureStore({
     ui: persistedUiReducer,
     // Add the new selected roles reducer
     selectedRoles: persistedSelectedRolesReducer,
+    // Add the cover letters reducer
+    coverLetters: persistedCoverLettersReducer,
     // Analytics doesn't need persistence
     analytics: analyticsReducer,
   },

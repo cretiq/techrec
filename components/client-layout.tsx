@@ -42,14 +42,14 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                       <Link href="/developer/roles" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
                         About
                       </Link>
-                      <div className="dropdown dropdown-hover">
+                      <div className="dropdown dropdown-hover group">
                         <label tabIndex={0} className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors cursor-pointer flex items-center gap-1">
                           Features
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </label>
-                        <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-3">
+                        <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 group-hover:block">
                           <li><Link href="/developer/cv-management">CV Management</Link></li>
                           <li><Link href="/developer/roles/search2">Role Search</Link></li>
                           {session && (
