@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
+import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select';
+import {  Button  } from '@/components/ui-daisy/button';
 import { Download } from 'lucide-react';
 
 // Import chart components

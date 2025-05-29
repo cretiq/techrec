@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
+import {  Button  } from '@/components/ui-daisy/button'
 import { ArrowRight, Briefcase, FileText, User } from "lucide-react"
 import Link from "next/link"
 

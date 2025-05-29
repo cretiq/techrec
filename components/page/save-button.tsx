@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import {  Button  } from '@/components/ui-daisy/button'
 import { Save, Loader2 } from "lucide-react"
 
 interface SaveButtonProps {

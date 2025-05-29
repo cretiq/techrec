@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { Input } from "@/components/ui/input"
+import {  Input  } from '@/components/ui-daisy/input'
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { Plus, X } from "lucide-react"
@@ -11,7 +11,7 @@ import { PageHeader } from "@/components/page/page-header"
 import { FormCard } from "@/components/page/form-card"
 import { FormField } from "@/components/page/form-field"
 import { FormActions } from "@/components/page/form-actions"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select'
 
 export default function NewRolePage() {
   const router = useRouter()

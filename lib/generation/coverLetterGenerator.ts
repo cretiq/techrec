@@ -2,7 +2,10 @@ import OpenAI from "openai";
 import { InternalProfile, InternalSkill } from "@/types/types";
 import { Role } from "@/types/role"; // Assuming Role type is defined here or imported correctly
 
-const openai = new OpenAI();
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || '',
+    dangerouslyAllowBrowser: process.env.NODE_ENV === 'development',
+});
 const gptModel = process.env.GPT_MODEL || "gpt-4o-mini-2024-07-18";
 
 // Re-define input types needed for the generator function

@@ -4,9 +4,10 @@ import clientPromise from '@/lib/db'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params
     const client = await clientPromise
     const db = client.db('techrec')
     const company = await db.collection('companies').findOne({
@@ -32,9 +33,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params
     const body = await request.json()
     const client = await clientPromise
     const db = client.db('techrec')
@@ -71,9 +73,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const params = await context.params
     const client = await clientPromise
     const db = client.db('techrec')
     

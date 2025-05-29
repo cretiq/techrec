@@ -1,9 +1,9 @@
-import { SelectSeparator } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import {  SelectSeparator  } from '@/components/ui-daisy/select'
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Input  } from '@/components/ui-daisy/input'
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
+import { 
   Select,
   SelectContent,
   SelectGroup,
@@ -11,8 +11,8 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+ } from '@/components/ui-daisy/select'
+import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import { Search, Mail, User, Calendar, CreditCard } from "lucide-react"
 
 export default function FormComponentsPage() {

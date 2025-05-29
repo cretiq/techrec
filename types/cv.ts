@@ -199,10 +199,10 @@ export const CvAnalysisDataSchema = z.object({
 // Schema for the request body of PUT /api/cv-analysis/[id]
 export const UpdateCvAnalysisSchema = CvAnalysisDataSchema;
 
-// Schema for the request body of POST /api/cv-improvement
+// Schema for the request body of POST /api/cv-improvement or /api/cv-improvement-gemini
 export const CvImprovementRequestSchema = CvAnalysisDataSchema;
 
-// Schema for the response of POST /api/cv-improvement
+// Schema for the response of POST /api/cv-improvement or /api/cv-improvement-gemini
 export const CvImprovementResponseSchema = z.object({
     suggestions: z.array(
         z.object({

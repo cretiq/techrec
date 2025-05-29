@@ -1,22 +1,57 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
+import { motion, AnimatePresence } from "framer-motion"
+import { Button } from '@/components/ui-daisy/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui-daisy/card'
+import { Badge } from '@/components/ui-daisy/badge'
+import { Textarea } from "@/components/ui-daisy/textarea"
 import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+import { Input } from '@/components/ui-daisy/input'
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check } from "lucide-react"
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, Briefcase, FileText, CheckCircle2, ChevronRight } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
+import { Progress } from "@/components/ui/progress"
+import { cn } from "@/lib/utils"
 
 interface CoverLetterCreatorProps {
   role: Role
   generationTrigger?: number
   onGenerationComplete?: (roleId: string, success: boolean) => void
+}
+
+// Custom styles injection
+if (typeof window !== 'undefined') {
+  const style = document.createElement('style')
+  style.textContent = `
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.2) 50%, transparent 75%);
+      background-size: 200% 100%;
+      animation: shimmer 2s infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: rgba(139, 92, 246, 0.3); }
+      50% { border-color: rgba(139, 92, 246, 0.6); }
+    }
+    .pulse-border {
+      animation: pulse-border 2s ease-in-out infinite;
+    }
+  `
+  document.head.appendChild(style)
 }
 
 export function CoverLetterCreator({ role, generationTrigger, onGenerationComplete }: CoverLetterCreatorProps) {
@@ -136,7 +171,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
 
       console.log("Sending request data:", JSON.stringify(requestData, null, 2))
 
-      const response = await fetch("/api/generate-cover-letter", {
+      const response = await fetch("/api/generate-cover-letter-gemini", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -197,165 +232,513 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
       });
   }
 
+  // Add a progress animation value for the loading state
+  const [progressValue, setProgressValue] = useState(0)
+  
+  useEffect(() => {
+    if (isGenerating) {
+      const interval = setInterval(() => {
+        setProgressValue(prev => {
+          if (prev >= 90) return 90
+          return prev + Math.random() * 15
+        })
+      }, 1000)
+      return () => clearInterval(interval)
+    } else {
+      setProgressValue(0)
+    }
+  }, [isGenerating])
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="space-y-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-lg">Customize & Generate</CardTitle>
-            <CardDescription className="text-sm">
-              Provide additional context for your cover letter.
-            </CardDescription>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
+      {/* Left Column - Customization */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-6"
+      >
+        {/* Header Card */}
+        <Card className="overflow-hidden border-0 shadow-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-pink-500 text-white relative">
+          <div className="absolute inset-0 shimmer opacity-30"></div>
+          <CardHeader className="pb-4 relative z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="p-3 bg-white/20 backdrop-blur-md rounded-xl border border-white/20"
+                >
+                  <Sparkles className="h-7 w-7" />
+                </motion.div>
+                <div>
+                  <CardTitle className="text-2xl font-bold mb-1">AI Cover Letter Generator</CardTitle>
+                  <CardDescription className="text-violet-100 flex items-center gap-2">
+                    <span>Craft the perfect cover letter for</span>
+                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                      {role.company.name}
+                    </Badge>
+                  </CardDescription>
+                </div>
+              </div>
+              <Badge variant="secondary" className="bg-white/20 text-white border-white/30 animate-pulse">
+                <Sparkles className="h-3 w-3 mr-1" />
+                AI Powered
+              </Badge>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-3 p-4">
-            <div>
-              <Label htmlFor="jobSource" className="text-sm">How did you find this job? (Optional)</Label>
-              <Input
-                id="jobSource"
-                placeholder="e.g., LinkedIn, Company Website, Referral"
-                value={jobSource}
-                onChange={(e) => setJobSource(e.target.value)}
-                className="mt-1.5 h-8 text-sm"
+        </Card>
+
+        {/* Customization Card */}
+        <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+            <div className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Personalize Your Application</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6 space-y-6">
+            {/* Job Source Input */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="space-y-2"
+            >
+              <Label htmlFor="jobSource" className="text-sm font-medium flex items-center gap-2">
+                <Briefcase className="h-4 w-4 text-violet-500" />
+                How did you find this job?
+                <Badge variant="secondary" size="sm" className="ml-auto">Optional</Badge>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="jobSource"
+                  placeholder="e.g., LinkedIn, Company Website, Referral from John"
+                  value={jobSource}
+                  onChange={(e) => setJobSource(e.target.value)}
+                  className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500/20 transition-all pl-10"
+                />
+                <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              </div>
+            </motion.div>
+            
+            {/* Achievements Section */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-3"
+            >
+              <Label className="text-sm font-medium flex items-center gap-2">
+                <Award className="h-4 w-4 text-violet-500" />
+                Your Key Achievements
+                <Badge variant="default" size="sm" className="ml-auto bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                  {developerProfile?.achievements?.length || 0}
+                </Badge>
+              </Label>
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-inner">
+                <ScrollArea className="h-32">
+                  <AnimatePresence mode="popLayout">
+                    {(developerProfile?.achievements || []).map((achievement: InternalAchievement, index) => (
+                      <motion.div
+                        key={achievement.id}
+                        initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 20, scale: 0.9 }}
+                        transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
+                        whileHover={{ scale: 1.02 }}
+                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 mb-2 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md"
+                      >
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: index * 0.05 + 0.2 }}
+                        >
+                          <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        </motion.div>
+                        <p className="text-sm flex-1 truncate" title={achievement.title}>
+                          {achievement.title}
+                        </p>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          onClick={() => handleRemoveAchievement(achievement.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                  {(!developerProfile?.achievements || developerProfile.achievements.length === 0) && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center py-8"
+                    >
+                      <Award className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        No achievements added yet
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Add your key accomplishments to personalize your letter
+                      </p>
+                    </motion.div>
+                  )}
+                </ScrollArea>
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="E.g., Led team of 5 to deliver project 2 weeks early"
+                  value={newAchievementTitle}
+                  onChange={(e) => setNewAchievementTitle(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddAchievement()}
+                  className="bg-white dark:bg-gray-900 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                />
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    variant="gradient"
+                    size="default"
+                    onClick={handleAddAchievement}
+                    disabled={!newAchievementTitle.trim()}
+                    className="px-4 shadow-md hover:shadow-lg transition-all"
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Company Attraction Points */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="space-y-3"
+            >
+              <Label className="text-sm font-medium flex items-center gap-2">
+                <Target className="h-4 w-4 text-violet-500" />
+                Why {role.company.name}?
+                <Badge variant="default" size="sm" className="ml-auto bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                  {companyAttractionPoints.length}
+                </Badge>
+              </Label>
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-inner">
+                <ScrollArea className="h-32">
+                  <AnimatePresence mode="popLayout">
+                    {companyAttractionPoints.map((point, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 20, scale: 0.9 }}
+                        transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
+                        whileHover={{ scale: 1.02 }}
+                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 mb-2 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md"
+                      >
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: index * 0.05 + 0.2 }}
+                        >
+                          <ChevronRight className="h-5 w-5 text-violet-500 flex-shrink-0" />
+                        </motion.div>
+                        <p className="text-sm flex-1">{point}</p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleRemoveAttractionPoint(index)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                        </Button>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </ScrollArea>
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="E.g., Innovative AI products, great work-life balance"
+                  value={newAttractionPoint}
+                  onChange={(e) => setNewAttractionPoint(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddAttractionPoint()}
+                  className="bg-white dark:bg-gray-900 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                />
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    variant="gradient"
+                    size="default"
+                    onClick={handleAddAttractionPoint}
+                    disabled={!newAttractionPoint.trim()}
+                    className="px-4 shadow-md hover:shadow-lg transition-all"
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Generate Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button
+                  onClick={handleGenerate}
+                  disabled={isGenerating || !developerProfile}
+                  variant="gradient"
+                  size="lg"
+                  rounded="xl"
+                  elevation="float"
+                  className="w-full group relative overflow-hidden"
+                >
+                  {isGenerating && (
+                    <div className="absolute inset-0 bg-white/10 shimmer" />
+                  )}
+                {isGenerating ? (
+                  <>
+                    <RefreshCw className="mr-2 h-5 w-5 animate-spin" />
+                    <span className="animate-pulse">Generating Your Cover Letter...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-5 w-5 group-hover:animate-pulse" />
+                    {generatedLetter ? 'Re-generate Cover Letter' : 'Generate AI Cover Letter'}
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+                </Button>
+              </motion.div>
+              {!developerProfile && (
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  Loading your profile data...
+                </p>
+              )}
+            </motion.div>
+          </CardContent>
+        </Card>
+
+        {/* Progress Indicator */}
+        <AnimatePresence>
+          {isGenerating && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.9 }}
+              className="p-5 bg-gradient-to-r from-violet-500/10 to-purple-500/10 rounded-xl border border-violet-500/30 pulse-border shadow-lg"
+            >
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+                  <div className="absolute inset-0 h-8 w-8 animate-ping opacity-30">
+                    <Loader2 className="h-8 w-8 text-violet-600" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-base font-semibold text-gray-900 dark:text-white">AI is crafting your perfect cover letter...</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Analyzing your profile and matching it to {role.company.name}'s requirements
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Progress</span>
+                  <span>Usually takes 10-15 seconds</span>
+                </div>
+                <div className="relative">
+                  <Progress value={progressValue} className="h-2" />
+                  <div className="absolute inset-0 h-2 bg-gradient-to-r from-violet-500 to-purple-500 opacity-20 blur-sm" />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Right Column - Generated Letter */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="space-y-6"
+      >
+        <Card className={cn(
+          "border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full relative overflow-hidden",
+          generatedLetter && "ring-2 ring-violet-500/30 shadow-violet-500/10"
+        )}>
+          {generatedLetter && (
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 animate-pulse" />
+          )}
+          <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "p-2 rounded-lg transition-all duration-300",
+                  generatedLetter ? "bg-violet-100 dark:bg-violet-900/30" : "bg-gray-100 dark:bg-gray-800"
+                )}>
+                  <FileText className={cn(
+                    "h-5 w-5 transition-colors duration-300",
+                    generatedLetter ? "text-violet-600 dark:text-violet-400" : "text-gray-400"
+                  )} />
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-semibold">Your Cover Letter</CardTitle>
+                  <CardDescription className="text-sm">
+                    {generatedLetter ? 'Review and export your personalized cover letter' : 'Your AI-generated cover letter will appear here'}
+                  </CardDescription>
+                </div>
+              </div>
+              {generatedLetter && (
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 200 }}
+                >
+                  <Badge variant="gradient" className="animate-pulse shadow-md">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    Ready
+                  </Badge>
+                </motion.div>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="pt-6 flex flex-col h-full">
+            <div className="flex-1 relative">
+              {!generatedLetter && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                >
+                  <div className="text-center">
+                    <motion.div
+                      animate={{ 
+                        y: [0, -10, 0],
+                        rotate: [0, 5, -5, 0]
+                      }}
+                      transition={{ 
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <Sparkles className="h-16 w-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+                    </motion.div>
+                    <p className="text-gray-400 dark:text-gray-500 text-base font-medium mb-2">
+                      Your cover letter will appear here
+                    </p>
+                    <p className="text-gray-400 dark:text-gray-500 text-sm">
+                      Click the button below to generate
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+              <Textarea
+                value={generatedLetter}
+                readOnly
+                variant={generatedLetter ? "default" : "ghost"}
+                className={cn(
+                  "min-h-[500px] resize-none transition-all duration-300 font-mono",
+                  !generatedLetter && "text-center opacity-0",
+                  generatedLetter && "shadow-inner bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                )}
               />
             </div>
             
-            <div className="space-y-1.5">
-              <Label className="text-sm">Your Key Achievements</Label>
-              <ScrollArea className="h-32 rounded-md border p-2 bg-white dark:bg-gray-800">
-                {(developerProfile?.achievements || []).map((achievement: InternalAchievement) => (
-                  <div key={achievement.id} className="flex items-center justify-between mb-1.5 gap-2">
-                    <p className="text-sm flex-1 pr-2 truncate" title={achievement.title}>{achievement.title}</p>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 p-0 flex-shrink-0"
-                      onClick={() => handleRemoveAchievement(achievement.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                ))}
-              </ScrollArea>
-              <div className="flex gap-2 mt-1.5">
-                <Input
-                  placeholder="Add a key achievement..."
-                  value={newAchievementTitle}
-                  onChange={(e) => setNewAchievementTitle(e.target.value)}
-                  className="text-sm h-8"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddAchievement}
-                  className="h-8 px-2"
+            {/* Action Buttons */}
+            <AnimatePresence>
+              {generatedLetter && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="mt-6 space-y-3"
                 >
-                  <PlusCircle className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-sm">Why This Company?</Label>
-              <ScrollArea className="h-32 rounded-md border p-2 bg-white dark:bg-gray-800">
-                {companyAttractionPoints.map((point, index) => (
-                  <div key={index} className="flex items-center justify-between mb-1.5 gap-2">
-                    <p className="text-sm flex-1 pr-2">{point}</p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 p-0 flex-shrink-0"
-                      onClick={() => handleRemoveAttractionPoint(index)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                  <div className="flex gap-3">
+                    <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Button
+                        onClick={handleExport}
+                        variant="gradient"
+                        size="default"
+                        rounded="lg"
+                        className="w-full group shadow-md hover:shadow-lg transition-all"
+                        elevation="sm"
+                      >
+                        <Download className="mr-2 h-4 w-4 group-hover:animate-bounce" />
+                        Export as Text
+                      </Button>
+                    </motion.div>
+                    <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Button
+                        onClick={handleCopy}
+                        variant={isCopied ? "gradient-blue" : "outline"}
+                        size="default"
+                        rounded="lg"
+                        className="w-full group shadow-md hover:shadow-lg transition-all"
+                        elevation="sm"
+                      >
+                        {isCopied ? (
+                          <>
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 300 }}
+                            >
+                              <Check className="mr-2 h-4 w-4" />
+                            </motion.div>
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                            Copy to Clipboard
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
                   </div>
-                ))}
-              </ScrollArea>
-              <div className="flex gap-2 mt-1.5">
-                <Input
-                  placeholder="Add what attracts you..."
-                  value={newAttractionPoint}
-                  onChange={(e) => setNewAttractionPoint(e.target.value)}
-                  className="text-sm h-8"
-                />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAddAttractionPoint}
-                  className="h-8 px-2"
-                >
-                  <PlusCircle className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating || !developerProfile}
-              className="w-full h-8 text-sm"
-            >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <ArrowRight className="mr-1.5 h-3.5 w-3.5" />
-                  {generatedLetter ? 'Re-generate' : 'Generate Cover Letter'}
-                </>
+                  
+                  {/* Success Message */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="relative overflow-hidden p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800 shadow-md"
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-400 to-emerald-400" />
+                    <div className="flex items-center gap-3">
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: "spring", stiffness: 200 }}
+                        className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg"
+                      >
+                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      </motion.div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-green-800 dark:text-green-300">
+                          Cover letter generated successfully!
+                        </p>
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
+                          Personalized for {role.title} at {role.company.name}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
               )}
-            </Button>
+            </AnimatePresence>
           </CardContent>
         </Card>
-      </div>
-
-      <div className="space-y-4">
-        <Card className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-lg">Generated Cover Letter</CardTitle>
-            <CardDescription className="text-sm">
-              Review and export your generated cover letter.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 space-y-3">
-            <Textarea
-              value={generatedLetter}
-              readOnly
-              placeholder="Your generated cover letter will appear here..."
-              className="min-h-[400px] text-sm bg-white dark:bg-gray-800"
-            />
-            {generatedLetter && (
-              <div className="flex gap-2 mt-1.5">
-                <Button
-                  onClick={handleExport}
-                  className="flex-1 h-8 text-sm"
-                >
-                  <Download className="mr-1.5 h-3.5 w-3.5" />
-                  Export Cover Letter
-                </Button>
-                <Button
-                  onClick={handleCopy}
-                  variant="outline"
-                  className="flex-1 h-8 text-sm"
-                >
-                  {isCopied ? (
-                    <>
-                      <Check className="mr-1.5 h-3.5 w-3.5" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="mr-1.5 h-3.5 w-3.5" />
-                      Copy Text
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      </motion.div>
     </div>
   )
 } 

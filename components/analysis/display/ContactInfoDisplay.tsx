@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import {  Input  } from '@/components/ui-daisy/input';
+import {  Button  } from '@/components/ui-daisy/button';
 import { Label } from '@/components/ui/label';
 import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X, AlertTriangle } from 'lucide-react';
 

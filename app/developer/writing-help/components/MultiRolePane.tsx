@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
+import {  Button  } from '@/components/ui-daisy/button';
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Role } from "@/types/role";
 import { CoverLetterCreator } from "./cover-letter-creator";

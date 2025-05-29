@@ -1,11 +1,11 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { Button } from "@/components/ui/button"
+import {  Button  } from '@/components/ui-daisy/button'
 import { ChevronsUpDown } from "lucide-react"
 
 export interface AnalysisResultCardProps {

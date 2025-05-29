@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
+import {  Button  } from '@/components/ui-daisy/button';
 import { cn } from '@/lib/utils';
 import { CvImprovementSuggestion } from '@/types/cv'; // Import the correct type
 import { Check, X, Lightbulb, Edit3, Trash2, Move, ZoomIn } from 'lucide-react'; // Icons for actions and suggestion types

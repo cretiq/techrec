@@ -3,8 +3,9 @@ import { z } from 'zod';
 import { CvAnalysisDataSchema } from '@/types/cv';
 
 // Initialize OpenAI client (requires OPENAI_API_KEY environment variable)
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const openai = new OpenAI({ 
+    apiKey: process.env.OPENAI_API_KEY || '',
+    dangerouslyAllowBrowser: process.env.NODE_ENV === 'development',
 });
 
 const gptModel = process.env.GPT_MODEL || "gpt-4.1-nano-2025-04-14";

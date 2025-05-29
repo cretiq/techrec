@@ -1,7 +1,7 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
+import {  Button  } from '@/components/ui-daisy/button'
 import { Plus, X } from "lucide-react"
 import { InternalProfile, InternalEducation } from "@/types/types"
 import { formatDateSafe } from "@/lib/utils"

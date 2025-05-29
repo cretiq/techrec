@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import {  Button  } from '@/components/ui-daisy/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Trash2, Download, Eye, Play } from 'lucide-react'; // Icons
 import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns'; // For date formatting
 import { SearchFilters } from './SearchFilters'; // Import the new component
 import { AnalysisStatus } from '@prisma/client';
-import { Badge } from "@/components/ui/badge";
+import {  Badge  } from '@/components/ui-daisy/badge';
 import { useRouter } from 'next/navigation';
 
 // Define the expected structure of a CV object from the API
