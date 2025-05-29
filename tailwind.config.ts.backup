@@ -1,0 +1,150 @@
+import type { Config } from 'tailwindcss';
+
+const config: Config = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        // Dark-first color system inspired by DisplayBuddy
+        background: '#0a0a0a',
+        foreground: '#ffffff',
+        
+        surface: {
+          DEFAULT: '#141414',
+          secondary: '#1f1f1f',
+          tertiary: '#2a2a2a',
+        },
+        
+        border: {
+          DEFAULT: 'rgba(255, 255, 255, 0.1)',
+          hover: 'rgba(255, 255, 255, 0.2)',
+          focus: 'rgba(99, 102, 241, 0.3)',
+        },
+        
+        text: {
+          primary: '#ffffff',
+          secondary: '#a3a3a3',
+          muted: '#6b6b6b',
+        },
+        
+        // Gradient color stops
+        gradient: {
+          'primary-start': '#6366f1',
+          'primary-end': '#8b5cf6',
+          'secondary-start': '#ec4899',
+          'secondary-end': '#f43f5e',
+          'accent-start': '#3b82f6',
+          'accent-end': '#06b6d4',
+          'success-start': '#10b981',
+          'success-end': '#34d399',
+        }
+      },
+      
+      backgroundImage: {
+        'gradient-primary': 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+        'gradient-secondary': 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)',
+        'gradient-accent': 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
+        'gradient-success': 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+      },
+      
+      borderRadius: {
+        'sm': '0.375rem',   // 6px
+        'md': '0.5rem',     // 8px
+        'lg': '0.75rem',    // 12px
+        'xl': '1rem',       // 16px
+        '2xl': '1.5rem',    // 24px
+      },
+      
+      spacing: {
+        '18': '4.5rem',     // 72px
+        '88': '22rem',      // 352px
+        '128': '32rem',     // 512px
+      },
+      
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+      },
+      
+      animation: {
+        'fade-in': 'fadeIn 0.2s ease-out',
+        'fade-out': 'fadeOut 0.15s ease-in',
+        'slide-up': 'slideUp 0.3s ease-out',
+        'slide-down': 'slideDown 0.3s ease-out',
+        'scale-in': 'scaleIn 0.2s ease-out',
+        'shimmer': 'shimmer 2s linear infinite',
+      },
+      
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeOut: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        scaleIn: {
+          '0%': { transform: 'scale(0.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+      },
+      
+      boxShadow: {
+        'xs': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        'sm': '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.2)',
+        'none': 'none',
+      },
+      
+      backdropBlur: {
+        'xs': '2px',
+        'sm': '4px',
+        'md': '8px',
+        'lg': '12px',
+        'xl': '16px',
+      },
+      
+      transitionDuration: {
+        '0': '0ms',
+        '150': '150ms',
+        '200': '200ms',
+        '250': '250ms',
+        '300': '300ms',
+        '350': '350ms',
+      },
+      
+      transitionTimingFunction: {
+        'ease-out-cubic': 'cubic-bezier(0.33, 1, 0.68, 1)',
+        'ease-in-cubic': 'cubic-bezier(0.32, 0, 0.67, 0)',
+      },
+    },
+  },
+  plugins: [
+    require('tailwindcss-animate'),
+  ],
+};
+
+export default config;

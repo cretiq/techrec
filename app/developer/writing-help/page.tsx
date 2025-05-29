@@ -253,22 +253,23 @@ export default function WritingHelpPage() {
         {/* Action Buttons Row - Only show in cover-letter tab */}
         {activeTab === 'cover-letter' && selectedRoles.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: 0.4, type: "spring", stiffness: 300 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             className="flex justify-between items-center mt-6"
           >
             {/* Back to Roles Button */}
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.1 }}
             >
               <Button
                 onClick={() => router.push("/developer/roles/search")}
                 variant="outline"
                 size="lg"
-                className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800 px-6 py-3 font-semibold shadow-lg transition-all duration-300"
+                className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800 px-6 py-3 font-semibold shadow-lg transition-all duration-150"
               >
                 <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
                 Back to Roles
@@ -277,15 +278,16 @@ export default function WritingHelpPage() {
 
             {/* Generate All Button */}
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.1 }}
               className="relative"
             >
               <Button
                 onClick={handleGenerateAll}
                 disabled={isGeneratingAll || isAnyPaneGenerating}
                 size="lg"
-                className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-700 hover:via-purple-700 hover:to-pink-700 text-white border-0 shadow-xl px-8 py-3 font-semibold text-lg transition-all duration-300"
+                className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-700 hover:via-purple-700 hover:to-pink-700 text-white border-0 shadow-xl px-8 py-3 font-semibold text-lg transition-all duration-150"
               >
                 {/* Shimmer Effect */}
                 <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
@@ -306,11 +308,11 @@ export default function WritingHelpPage() {
                     <>
                       <motion.div
                         animate={{ 
-                          y: [0, -2, 0],
-                          rotate: [0, 5, -5, 0]
+                          y: [0, -1, 0],
+                          rotate: [0, 3, -3, 0]
                         }}
                         transition={{ 
-                          duration: 2,
+                          duration: 3,
                           repeat: Infinity,
                           ease: "easeInOut"
                         }}
@@ -319,9 +321,9 @@ export default function WritingHelpPage() {
                       </motion.div>
                       <span>Generate All ({selectedRoles.length})</span>
                       <motion.div
-                        animate={{ x: [0, 4, 0] }}
+                        animate={{ x: [0, 2, 0] }}
                         transition={{ 
-                          duration: 1.5,
+                          duration: 2.5,
                           repeat: Infinity,
                           ease: "easeInOut"
                         }}
@@ -336,8 +338,8 @@ export default function WritingHelpPage() {
                 {(isGeneratingAll || isAnyPaneGenerating) && (
                   <motion.div
                     className="absolute inset-0 bg-white/10"
-                    animate={{ opacity: [0.3, 0.7, 0.3] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+                    animate={{ opacity: [0.2, 0.5, 0.2] }}
+                    transition={{ duration: 1, repeat: Infinity }}
                   />
                 )}
               </Button>

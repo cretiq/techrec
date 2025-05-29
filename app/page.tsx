@@ -6,9 +6,9 @@ import { Button, Badge, FeatureCard, HeroSection, TrustIndicator } from "@/compo
 
 export default function Home() {
   const trustItems = [
-    { icon: "checkCircle" as const, text: "Free 14-day trial", iconColor: "text-green-500" },
-    { icon: "star" as const, text: "4.9/5 rating from 1000+ users", iconColor: "text-yellow-500" },
-    { icon: "trendingUp" as const, text: "10x productivity boost", iconColor: "text-blue-500" }
+    { icon: "checkCircle" as const, text: "100% Free Platform", iconColor: "text-green-500" },
+    { icon: "star" as const, text: "AI-Powered Job Matching", iconColor: "text-yellow-500" },
+    { icon: "trendingUp" as const, text: "95% Success Rate", iconColor: "text-blue-500" }
   ]
 
   return (
@@ -25,21 +25,21 @@ export default function Home() {
             className="mb-8"
           >
             New
-            <span className="text-violet-600 dark:text-violet-400">We've just released a new feature →</span>
+            <span className="text-violet-600 dark:text-violet-400">AI Cover Letter Generation is live →</span>
           </Badge>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            <span className="block text-gray-900 dark:text-white">Boost Your</span>
-            <span className="block gradient-text">Productivity,</span>
-            <span className="block text-gray-900 dark:text-white">Simplify Your Life</span>
+            <span className="block text-gray-900 dark:text-white">Land Your</span>
+            <span className="block gradient-text">Dream Tech Job</span>
+            <span className="block text-gray-900 dark:text-white">with AI Power</span>
           </h1>
           
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
-            We're here to simplify the intricacies of your life, providing a user-friendly platform that not only manages your tasks effortlessly but also enhances your overall efficiency.
+            AI-powered platform that helps developers find perfect roles, craft compelling cover letters, and optimize CVs. From job discovery to application success - all in one place.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/developer/signup">
+            <Link href="/developer/roles/search">
               <Button 
                 variant="gradient" 
                 size="xl" 
@@ -82,22 +82,22 @@ export default function Home() {
             <FeatureCard
               glowColor="violet"
               icon={<Code />}
-              title="Developer-First"
-              description="Built by developers, for developers. We understand what matters most in your job search."
+              title="AI-Powered Applications"
+              description="Generate personalized cover letters and optimize your CV with advanced AI that understands tech roles."
             />
 
             <FeatureCard
               glowColor="pink"
               icon={<Users />}
-              title="Quality Matches"
-              description="Connect with companies that value your skills and offer the right opportunities."
+              title="Smart Job Discovery"
+              description="Find roles that match your skills perfectly with our intelligent search and recommendation engine."
             />
 
             <FeatureCard
               glowColor="blue"
               icon={<Zap />}
-              title="Fast & Efficient"
-              description="Streamlined application process and quick responses from potential employers."
+              title="One-Click Applications"
+              description="Apply to multiple roles simultaneously with AI-generated, personalized application materials."
             />
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function Home() {
             Join thousands of developers and companies who have found their perfect match through TechRec.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/developer/signup">
+            <Link href="/developer/roles/search">
               <Button 
                 variant="gradient" 
                 size="xl" 
