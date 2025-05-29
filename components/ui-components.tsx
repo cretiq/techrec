@@ -1,11 +1,11 @@
 "use client"
 
 import type React from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
+import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
+import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
+import {  Badge  } from '@/components/ui-daisy/badge'
 import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
+import {  Button  } from '@/components/ui-daisy/button'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Code,

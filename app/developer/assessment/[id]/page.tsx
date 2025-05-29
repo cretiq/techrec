@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
+import {  Badge  } from '@/components/ui-daisy/badge'
 import { Progress } from "@/components/ui/progress"
 import { FileText, CheckCircle2, ArrowRight, ArrowLeft, Save, User } from "lucide-react"
 import { TimerButton, WarningButton, SubmitSolutionButton } from "@/components/buttons"

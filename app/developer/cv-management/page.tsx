@@ -5,11 +5,11 @@ import { UploadForm } from '@/components/cv/UploadForm';
 import { CVList } from '@/components/cv/CVList';
 import { AnalysisUploadForm } from '@/components/analysis/AnalysisUploadForm';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
 import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs';
 import { toast } from "@/components/ui/use-toast";
-import { Button } from '@/components/ui/button';
+import {  Button  } from '@/components/ui-daisy/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '@/lib/store';
@@ -124,12 +124,19 @@ export default function CVManagementPage() {
         console.log(`[CVManagementPage useEffect] Running effect. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}`); // LOG
 
         if (analysisIdFromUrl) {
-            if (analysisIdFromUrl !== currentStoreId ||
-                (currentStatus !== 'loading' && currentStatus !== 'succeeded' && currentStatus !== 'suggesting')) {
+            // Only fetch if:
+            // 1. The URL ID is different from store ID, AND
+            // 2. We're not currently loading, AND  
+            // 3. We don't have data for this specific ID (to prevent refetching the same data)
+            const shouldFetch = analysisIdFromUrl !== currentStoreId && 
+                               currentStatus !== 'loading' && 
+                               (currentStatus === 'idle' || currentStatus === 'failed' || !analysisData);
+            
+            if (shouldFetch) {
                 console.log(`[CVManagementPage useEffect] Dispatching fetchAnalysisById(${analysisIdFromUrl})...`); // LOG
                 dispatch(fetchAnalysisById(analysisIdFromUrl));
             } else {
-                console.log(`[CVManagementPage useEffect] Skipping fetch. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}.`); // LOG
+                console.log(`[CVManagementPage useEffect] Skipping fetch. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}, Has Data: ${!!analysisData}.`); // LOG
             }
         } else {
             if (currentStoreId !== null) {
@@ -139,7 +146,7 @@ export default function CVManagementPage() {
                 console.log(`[CVManagementPage useEffect] Skipping clearAnalysis. No ID in URL or store.`); // LOG
             }
         }
-    }, [searchParams, dispatch, analysisIdFromStore, analysisStatus]); // Add analysisIdFromStore and analysisStatus back as dependencies 
+    }, [searchParams, dispatch, analysisIdFromStore, analysisStatus, analysisData]); // Add analysisData as dependency 
 
     useEffect(() => {
         const styles = `

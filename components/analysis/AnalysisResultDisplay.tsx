@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
+import {  Button  } from '@/components/ui-daisy/button';
 import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import _ from 'lodash';
@@ -50,6 +50,7 @@ import {
     applySuggestion,    // Action to apply suggestion
     dismissSuggestion,  // Action to dismiss suggestion
     fetchSuggestions,    // Thunk to get suggestions
+    saveAnalysisVersion, // New thunk for versioned saving
     type AnalysisStatus  // Import the status type
 } from '@/lib/features/analysisSlice';
 
@@ -153,24 +154,37 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     toast({ title: "Suggestion Rejected", description: `Suggestion for ${suggestion.section} dismissed.` });
   };
 
-  // Save Handler: Use Redux state, keep local fetch for now
+  // Save Handler: Use Redux versioned saving
   const handleSaveAll = async () => {
     if (analysisId && analysisId.startsWith('temp-')) {
       toast({ title: "Action Required", description: "Please upload the CV first to save changes permanently.", variant: "default" });
       return;
     }
     if (!analysisId || !hasUnsavedChanges || !analysisData) return; 
+    
     setIsSaving(true);
     try {
-      const response = await fetch(`/api/cv-analysis/${analysisId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(analysisData) // Send data from store
+      console.log('[AnalysisResultDisplay] Dispatching saveAnalysisVersion...');
+      const result = await dispatch(saveAnalysisVersion()).unwrap();
+      console.log('[AnalysisResultDisplay] Save successful:', result);
+      
+      // Update URL to reflect the new analysis ID to prevent infinite loop
+      if (result.analysisId && typeof window !== 'undefined') {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('analysisId', result.analysisId);
+        window.history.replaceState({}, '', currentUrl.toString());
+      }
+      
+      toast({ 
+        title: "Success", 
+        description: `New version saved with ID: ${result.analysisId}. You're now viewing the latest version.` 
       });
-      if (!response.ok) { throw new Error((await response.json()).error || 'Failed to save changes'); }
-      toast({ title: "Success", description: "Analysis changes saved." });
-      // TODO: Update originalData in store after save
-    } catch (error: any) { console.error("Error saving changes:", error); toast({ title: "Save Error", description: error.message, variant: "destructive" }); } finally { setIsSaving(false); }
+    } catch (error: any) { 
+      console.error("Error saving changes:", error); 
+      toast({ title: "Save Error", description: error, variant: "destructive" }); 
+    } finally { 
+      setIsSaving(false); 
+    }
   };
 
   // Export Handler: Use Redux state

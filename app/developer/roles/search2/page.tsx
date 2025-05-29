@@ -1,10 +1,10 @@
 "use client"
 
 import React, { useEffect, useState, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
+import {  Input  } from '@/components/ui-daisy/input'
+import {  Badge  } from '@/components/ui-daisy/badge'
 import { Slider } from "@/components/ui/slider"
 import { Label } from "@/components/ui/label"
 import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, X, Code, BarChart, Bookmark, BookmarkCheck, Send, Plus, PenTool, Check } from "lucide-react"
@@ -562,41 +562,37 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="pt-4 mt-auto">
+                  <CardFooter className="card-body pt-2 mt-auto">
                     <div className="flex justify-between items-center w-full">
+                      <div className="text-md font-semibold">{role.salary || 'Salary not specified'}</div>
                       <div className="flex gap-2">
-                        <div className="flex flex-col gap-2 w-full">
-                          <div className="text-md font-semibold">{role.salary || 'Salary not specified'}</div>
-                          <div className="flex gap-2">
-                            {role.url ? (
-                              <a 
-                                href={role.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center"
-                    onClick={(e) => e.stopPropagation()}
-                              >
-                                <Button size="sm">
-                                  <span className="flex items-center">
-                                    Apply Externally <ArrowRight className="h-4 w-4 ml-1" />
-                                  </span>
-                                </Button>
-                              </a>
-                            ) : (
-                              <Button size="sm" disabled>Apply Now</Button>
-                            )}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                  onClick={handleWriteClick}
-                              disabled={!session?.user}
-                              className="gap-1"
-                              title={!session?.user ? "Login to use Writing Help" : "Get writing assistance"}
-                            >
-                              <PenTool className="h-4 w-4" /> Write to
+                        {role.url ? (
+                          <a 
+                            href={role.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Button size="sm">
+                              <span className="flex items-center">
+                                Apply Externally <ArrowRight className="h-4 w-4 ml-1" />
+                              </span>
                             </Button>
-                          </div>
-                        </div>
+                          </a>
+                        ) : (
+                          <Button size="sm" disabled>Apply Now</Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleWriteClick}
+                          disabled={!session?.user}
+                          className="gap-1"
+                          title={!session?.user ? "Login to use Writing Help" : "Get writing assistance"}
+                        >
+                          <PenTool className="h-4 w-4" /> Write to
+                        </Button>
                       </div>
                     </div>
                   </CardFooter>

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { Button } from '@/components/ui/button';
+import {  Button  } from '@/components/ui-daisy/button';
 import { Loader2, AlertCircle, Check, X as XIcon } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import {  Badge  } from '@/components/ui-daisy/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CvImprovementSuggestion } from '@/types/cv';
 

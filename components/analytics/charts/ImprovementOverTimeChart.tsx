@@ -13,7 +13,7 @@ import {
   Legend,
   Filler, // Import Filler for area below line
 } from 'chart.js';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Optional: Wrap in Card if not done by parent
+import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card'; // Optional: Wrap in Card if not done by parent
 
 ChartJS.register(
   CategoryScale,

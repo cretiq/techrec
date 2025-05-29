@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import {  Button  } from '@/components/ui-daisy/button';
 import { cn } from '@/lib/utils';
 import { CvImprovementSuggestion } from '@/types/cv';
 import { Check, X, Lightbulb, Edit3, Trash2, Move, ZoomIn } from 'lucide-react';

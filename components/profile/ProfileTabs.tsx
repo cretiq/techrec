@@ -1,6 +1,6 @@
 "use client"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
 import { User, Briefcase, GraduationCap, Award } from "lucide-react"
 import { InternalProfile } from "@/types/types"
 import { ProfileInfoCard } from "./ProfileInfoCard"

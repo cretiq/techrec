@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {  Input  } from '@/components/ui-daisy/input';
+import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select';
 import { AnalysisStatus } from '@prisma/client'; // Import enum for dropdown values
 import { debounce } from 'lodash'; // For debouncing search input
 

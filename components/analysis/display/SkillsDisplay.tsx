@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import {  Badge  } from '@/components/ui-daisy/badge';
+import {  Input  } from '@/components/ui-daisy/input';
+import {  Button  } from '@/components/ui-daisy/button';
 import { X, Edit, Save, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid'; // For temporary IDs if adding new items
 

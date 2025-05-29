@@ -1,8 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
+import {  Badge  } from '@/components/ui-daisy/badge'
+import {  Button  } from '@/components/ui-daisy/button'
 import { MapPin, Briefcase, Clock, Building, Code, BarChart } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"

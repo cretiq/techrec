@@ -10,9 +10,9 @@ import {
   applySuggestion, 
   dismissSuggestion
 } from '@/lib/features/analysisSlice';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {  Button  } from '@/components/ui-daisy/button';
+import {  Input  } from '@/components/ui-daisy/input';
+import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select';
 import { ListFilter, Search } from 'lucide-react';
 
 // Type for suggestion status, managed locally or in Redux UI slice?

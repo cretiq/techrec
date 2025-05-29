@@ -2,10 +2,10 @@
 
 import { useState, useRef } from "react"
 import { Editor } from "@monaco-editor/react"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
+import {  Card, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
+import {  Badge  } from '@/components/ui-daisy/badge'
 import { Play, XCircle, CheckCircle, Save, RefreshCw, Code, FileText } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { ScrollArea } from "@/components/ui/scroll-area"

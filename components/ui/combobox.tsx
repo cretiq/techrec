@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Check, ChevronsUpDown, X } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import {  Button  } from '@/components/ui-daisy/button'
 import {
   Command,
   CommandEmpty,
@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Badge } from '@/components/ui/badge'
+import {  Badge  } from '@/components/ui-daisy/badge'
 
 export interface ComboboxOption {
   value: string // Typically the unique ID or code (e.g., country code, tech slug, company name)

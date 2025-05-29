@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import { FileText, ArrowLeft } from "lucide-react"
 import { CodeEditor } from "@/components/code-editor"
 import { useToast } from "@/hooks/use-toast"

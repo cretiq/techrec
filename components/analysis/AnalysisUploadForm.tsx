@@ -2,12 +2,12 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
-import { Button } from '@/components/ui/button';
+import {  Button  } from '@/components/ui-daisy/button';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
 import { CheckCircle, Loader2, UploadCloud, AlertCircle, FileText, X, RefreshCw } from 'lucide-react';
-import { Badge } from '@/components/ui/badge'; // For status display
+import {  Badge  } from '@/components/ui-daisy/badge'; // For status display
 
 // Define allowed MIME types and max size (should match backend)
 const ALLOWED_ANALYSIS_MIME_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];

@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter  } from '@/components/ui-daisy/card'
+import {  Badge  } from '@/components/ui-daisy/badge'
 import { Progress } from "@/components/ui/progress"
 import { FileText, ArrowLeft, Download, CheckCircle, XCircle, Award, User } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"

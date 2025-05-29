@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import { Code, Briefcase, GraduationCap, ArrowRight } from "lucide-react"
 
 export default function LoginPage() {

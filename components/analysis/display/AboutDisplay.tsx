@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button'; 
+import {  Button  } from '@/components/ui-daisy/button'; 
 import { Edit, Save, X } from 'lucide-react';
 
 // Import suggestion-related types and components

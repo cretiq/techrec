@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
 import { FileText, Mail, PenTool, ArrowRight, Loader2, AlertTriangle, Rocket } from "lucide-react"
 import { CVOptimizer } from "./components/cv-optimizer"
 import { CoverLetterCreator } from "./components/cover-letter-creator"

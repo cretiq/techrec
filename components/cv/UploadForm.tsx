@@ -2,8 +2,8 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import {  Button  } from '@/components/ui-daisy/button';
+import {  Input  } from '@/components/ui-daisy/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress'; // Assuming Progress component exists
 import { useToast } from '@/components/ui/use-toast'; // Assuming useToast hook exists

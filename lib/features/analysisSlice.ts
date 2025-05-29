@@ -2,6 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import { CvAnalysisData, CvImprovementSuggestion } from '@/types/cv'; // Import relevant types
 import { set } from 'lodash'; // For applying suggestions
+import { getProviderEndpoints } from '@/utils/aiProviderSelector';
 
 // Define the possible status values
 export type AnalysisStatus = 'idle' | 'loading' | 'succeeded' | 'failed' | 'suggesting' | 'analyzing';
@@ -50,12 +51,69 @@ export const fetchAnalysisById = createAsyncThunk(
   }
 );
 
+// New Async Thunk for fetching the latest analysis version
+export const fetchLatestAnalysis = createAsyncThunk(
+  'analysis/fetchLatest',
+  async (_, { rejectWithValue }) => {
+    console.log(`[fetchLatestAnalysis Thunk] Fetching latest analysis`);
+    try {
+      const response = await fetch(`/api/cv-analysis/latest`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`[fetchLatestAnalysis] Fetch failed with status ${response.status}:`, errorData.error);
+        return rejectWithValue(errorData.error || `Failed to fetch latest analysis (${response.status})`);
+      }
+      const data = await response.json();
+      console.log('[fetchLatestAnalysis Thunk] Fetch successful, received data:', data); 
+      return data; 
+    } catch (error: any) {
+      console.error('[fetchLatestAnalysis] Exception during fetch:', error);
+      return rejectWithValue(error.message || 'An unknown error occurred');
+    }
+  }
+);
+
+// New Async Thunk for saving a new version
+export const saveAnalysisVersion = createAsyncThunk(
+  'analysis/saveVersion',
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState() as { analysis: AnalysisState };
+    const { currentAnalysisId, analysisData } = state.analysis;
+    
+    if (!currentAnalysisId || !analysisData) {
+      return rejectWithValue('No analysis data to save');
+    }
+
+    console.log(`[saveAnalysisVersion Thunk] Saving new version for ID: ${currentAnalysisId}`);
+    try {
+      const response = await fetch(`/api/cv-analysis/${currentAnalysisId}/save-version`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(analysisData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(`[saveAnalysisVersion] Save failed with status ${response.status}:`, errorData.error);
+        return rejectWithValue(errorData.error || `Failed to save analysis version (${response.status})`);
+      }
+      
+      const data = await response.json();
+      console.log('[saveAnalysisVersion Thunk] Save successful, received data:', data); 
+      return data; 
+    } catch (error: any) {
+      console.error('[saveAnalysisVersion] Exception during save:', error);
+      return rejectWithValue(error.message || 'An unknown error occurred');
+    }
+  }
+);
 // Example Async Thunk for getting suggestions
 export const fetchSuggestions = createAsyncThunk(
   'analysis/fetchSuggestions',
   async (cvData: CvAnalysisData, { rejectWithValue }) => {
     try {
-      const response = await fetch('/api/cv-improvement', {
+      const { cvImprovement } = getProviderEndpoints();
+      const response = await fetch(cvImprovement, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cvData)
@@ -174,6 +232,63 @@ export const analysisSlice = createSlice({
         state.status = 'failed'; // Or back to 'succeeded' if suggestions are optional?
         state.error = action.payload as string ?? action.error.message ?? 'Failed to fetch suggestions';
         state.suggestions = []; // Clear suggestions on error
+      })
+      // Fetch Latest Analysis handlers
+      .addCase(fetchLatestAnalysis.pending, (state) => {
+        console.log('[analysisSlice Reducer] fetchLatestAnalysis.pending - Setting status to loading.');
+        state.status = 'loading';
+        state.error = null;
+        state.analysisData = null;
+        state.originalData = null;
+        state.suggestions = [];
+        state.currentAnalysisId = null;
+      })
+      .addCase(fetchLatestAnalysis.fulfilled, (state, action) => {
+        console.log('[analysisSlice Reducer] fetchLatestAnalysis.fulfilled - Received latest analysis:', action.payload);
+        const payload = action.payload;
+        if (payload && payload.id) {
+          const analysisResultData = payload.analysisResult || {};
+          const cvData = payload.cv || {};
+
+          const combinedData = {
+            ...analysisResultData,
+            cv: cvData
+          } as CvAnalysisData;
+
+          state.status = 'succeeded';
+          state.currentAnalysisId = payload.id;
+          state.analysisData = combinedData;
+          state.originalData = combinedData ? JSON.parse(JSON.stringify(combinedData)) : null;
+        }
+      })
+      .addCase(fetchLatestAnalysis.rejected, (state, action) => {
+        console.log('[analysisSlice Reducer] fetchLatestAnalysis.rejected - Setting status to failed.');
+        state.status = 'failed';
+        state.error = action.payload as string ?? action.error.message ?? 'Failed to fetch latest analysis';
+      })
+      // Save Analysis Version handlers
+      .addCase(saveAnalysisVersion.pending, (state) => {
+        console.log('[analysisSlice Reducer] saveAnalysisVersion.pending - Setting status to loading.');
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(saveAnalysisVersion.fulfilled, (state, action) => {
+        console.log('[analysisSlice Reducer] saveAnalysisVersion.fulfilled - New version saved:', action.payload);
+        const payload = action.payload;
+        if (payload && payload.analysisId) {
+          // Update the current analysis ID to the new version
+          // NOTE: This ID change is handled in AnalysisResultDisplay by updating the URL
+          // to prevent infinite loops in CVManagementPage useEffect
+          state.currentAnalysisId = payload.analysisId;
+          // Update original data to match current data (no unsaved changes)
+          state.originalData = state.analysisData ? JSON.parse(JSON.stringify(state.analysisData)) : null;
+          state.status = 'succeeded';
+        }
+      })
+      .addCase(saveAnalysisVersion.rejected, (state, action) => {
+        console.log('[analysisSlice Reducer] saveAnalysisVersion.rejected - Failed to save version.');
+        state.status = 'failed';
+        state.error = action.payload as string ?? action.error.message ?? 'Failed to save analysis version';
       });
   },
 });

@@ -4,12 +4,9 @@ import { authOptions } from '@/lib/auth';
 import { getCV, updateCV, deleteCV, CvUpdateData } from '@/utils/cvOperations';
 import { getPresignedS3Url } from '@/utils/s3Storage';
 
-interface Params {
-  id: string;
-}
-
 // GET /api/cv/[id]?download=true
-export async function GET(request: Request, { params }: { params: Params }) {
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+  const params = await context.params;
   const { id } = params;
   const { searchParams } = new URL(request.url);
   const download = searchParams.get('download') === 'true';
@@ -54,9 +51,10 @@ export async function GET(request: Request, { params }: { params: Params }) {
 }
 
 // PUT /api/cv/[id]
-export async function PUT(request: Request, { params }: { params: Params }) {
-  const { id } = params;
+export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
+    const params = await context.params;
+    const { id } = params;
     console.log(`Received PUT request for CV ID: ${id}`);
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -95,11 +93,13 @@ export async function PUT(request: Request, { params }: { params: Params }) {
 }
 
 // DELETE /api/cv/[id]
-export async function DELETE(request: Request, { params }: { params: Params }) {
-  // const { id } = params; // Don't access params here yet
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
   let cvIdToDelete: string = 'unknown'; // Initialize here
   try {
-    // Await session check first
+    const params = await context.params;
+    cvIdToDelete = params.id;
+    
+    // Await session check
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       console.log('Authentication failed.');
@@ -107,13 +107,6 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     }
     const developerId = session.user.id;
 
-    // Now safely extract the ID from URL
-    const url = new URL(request.url);
-    const pathSegments = url.pathname.split('/');
-    cvIdToDelete = pathSegments[pathSegments.length - 1]; // Get last segment
-    if (!cvIdToDelete) {
-      throw new Error("Could not extract CV ID from URL");
-    }
     console.log(`Received DELETE request for CV ID: ${cvIdToDelete}`);
 
     const existingCv = await getCV(cvIdToDelete);
@@ -132,7 +125,7 @@ export async function DELETE(request: Request, { params }: { params: Params }) {
     return new NextResponse(null, { status: 204 }); // No content on successful delete
 
   } catch (error) {
-    console.error(`Error handling DELETE request for CV ID ${cvIdToDelete ?? 'unknown'}:`, error);
+    console.error(`Error handling DELETE request for CV ID ${cvIdToDelete}:`, error);
     return NextResponse.json({ error: 'Failed to delete CV' }, { status: 500 });
   }
 } 

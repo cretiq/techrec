@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import {  Button  } from '@/components/ui-daisy/button'
 import { Send } from "lucide-react"
 import { ReactNode } from "react"
 

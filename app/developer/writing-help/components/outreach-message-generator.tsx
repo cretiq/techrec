@@ -1,21 +1,21 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
+import {  Input  } from '@/components/ui-daisy/input'
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
-import {
+import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+ } from '@/components/ui-daisy/select'
 import { ArrowRight, Copy, RefreshCw, Shuffle } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import {  Badge  } from '@/components/ui-daisy/badge'
 import { Role } from "@/types/role"
 import { Slider } from "@/components/ui/slider"
 

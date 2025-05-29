@@ -4,7 +4,7 @@ import * as React from "react"
 import { Palette } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { Button } from "@/components/ui/button"
+import {  Button  } from '@/components/ui-daisy/button'
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useRef, ChangeEvent } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import {  Button  } from '@/components/ui-daisy/button';
+import {  Card  } from '@/components/ui-daisy/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/app/hooks/useAuth';
 import { cn } from '@/lib/utils';

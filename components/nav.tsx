@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import {  Button  } from '@/components/ui-daisy/button'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import { Loader2, User, LogOut } from 'lucide-react'

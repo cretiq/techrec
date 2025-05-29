@@ -1,13 +1,13 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import {  Button  } from '@/components/ui-daisy/button'
+import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
+import {  Input  } from '@/components/ui-daisy/input'
+import {  Badge  } from '@/components/ui-daisy/badge'
 import { Label } from "@/components/ui/label"
 import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, Code, Bookmark, BookmarkCheck, Plus, PenTool } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
@@ -439,28 +439,21 @@ export default function RolesPage() {
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="pt-4 mt-auto">
+                <CardFooter className="card-body pt-2 mt-auto">
                   <div className="flex justify-between items-center w-full">
+                    <div className="text-md font-semibold">{role.salary}</div>
                     <div className="flex gap-2">
-                      <div className="flex flex-col gap-2 w-full">
-                        <div className="text-md font-semibold">{role.salary}</div>
-                        <div className="flex gap-2">
-
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => router.push(`/developer/writing-help?roleId=${role.id}`)}
-                            className="gap-1"
-                          >
-                            <PenTool className="h-4 w-4" /> Write to
-                          </Button>
-
-                          <Button size="sm" onClick={() => handleApply(role.id)}>
-                            Apply Now <ArrowRight className="h-4 w-4" />
-                          </Button>
-
-                        </div>
-                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/developer/writing-help?roleId=${role.id}`)}
+                        className="gap-1"
+                      >
+                        <PenTool className="h-4 w-4" /> Write to
+                      </Button>
+                      <Button size="sm" onClick={() => handleApply(role.id)}>
+                        Apply Now <ArrowRight className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </CardFooter>
