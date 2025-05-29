@@ -47,7 +47,7 @@ export default function RolesSearch2Page() {
 
     if (status === 'unauthenticated') {
       console.log("[RolesSearch2Page] User not authenticated, redirecting to signin")
-      router.push('/auth/signin?callbackUrl=/developer/roles/search2')
+      router.push('/auth/signin?callbackUrl=/developer/roles/search')
       return
     }
 
@@ -237,7 +237,7 @@ export default function RolesSearch2Page() {
 
   const handleWriteTo = (role: Role) => {
     if (!session?.user) {
-      router.push('/auth/signin?callbackUrl=/developer/roles/search2')
+      router.push('/auth/signin?callbackUrl=/developer/roles/search')
       return
     }
     const roleData = encodeURIComponent(JSON.stringify(role))
@@ -338,6 +338,7 @@ export default function RolesSearch2Page() {
                 className="w-full" 
                 onClick={fetchRoles}
                 disabled={loading}
+                variant="gradient"
               >
                 {loading ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current mr-2" />
@@ -562,10 +563,16 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="card-body pt-2 mt-auto">
-                    <div className="flex justify-between items-center w-full">
+                  <CardFooter className="card-body pt-2 mt-auto space-y-3">
+                    {/* Salary Section */}
+                    <div className="w-full text-center">
                       <div className="text-md font-semibold">{role.salary || 'Salary not specified'}</div>
-                      <div className="flex gap-2">
+                    </div>
+                    
+                    {/* Action Buttons Section */}
+                    <div className="flex justify-between items-center w-full px-2">
+                      {/* Left: Apply Externally Button */}
+                      <div className="flex-shrink-0">
                         {role.url ? (
                           <a 
                             href={role.url} 
@@ -574,24 +581,30 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                             className="inline-flex items-center"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <Button size="sm">
-                              <span className="flex items-center">
-                                Apply Externally <ArrowRight className="h-4 w-4 ml-1" />
-                              </span>
+                            <Button size="sm" className="text-xs px-3">
+                              Apply Externally
+                              <ArrowRight className="h-3 w-3 ml-1" />
                             </Button>
                           </a>
                         ) : (
-                          <Button size="sm" disabled>Apply Now</Button>
+                          <Button size="sm" disabled className="text-xs px-3">
+                            Apply Now
+                          </Button>
                         )}
+                      </div>
+
+                      {/* Right: Write to Button */}
+                      <div className="flex-shrink-0">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={handleWriteClick}
                           disabled={!session?.user}
-                          className="gap-1"
+                          className="gap-1 text-xs px-3"
                           title={!session?.user ? "Login to use Writing Help" : "Get writing assistance"}
                         >
-                          <PenTool className="h-4 w-4" /> Write to
+                          <PenTool className="h-3 w-3" />
+                          Write to
                         </Button>
                       </div>
                     </div>

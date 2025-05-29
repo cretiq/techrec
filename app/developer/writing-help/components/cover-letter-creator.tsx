@@ -283,9 +283,9 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
     )}>
       {/* Left Column - Customization */}
       <motion.div 
-        initial={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
         className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
         {/* Header Card */}
@@ -388,7 +388,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
                 className="overflow-hidden"
               >
                 <CardContent className={cn("space-y-6", isMultiRoleMode ? "pt-4" : "pt-6")}>
@@ -489,13 +489,17 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   onKeyDown={(e) => e.key === 'Enter' && handleAddAchievement()}
                   className="bg-white dark:bg-gray-900 focus:ring-2 focus:ring-violet-500/20 transition-all"
                 />
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div 
+                  whileHover={{ scale: 1.02 }} 
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.1 }}
+                >
                   <Button
                     variant="gradient"
                     size="default"
                     onClick={handleAddAchievement}
                     disabled={!newAchievementTitle.trim()}
-                    className="px-4 shadow-md hover:shadow-lg transition-all"
+                    className="px-4 shadow-md hover:shadow-lg transition-all duration-150"
                   >
                     <PlusCircle className="h-4 w-4" />
                   </Button>
@@ -559,13 +563,17 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   onKeyDown={(e) => e.key === 'Enter' && handleAddAttractionPoint()}
                   className="bg-white dark:bg-gray-900 focus:ring-2 focus:ring-violet-500/20 transition-all"
                 />
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div 
+                  whileHover={{ scale: 1.02 }} 
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.1 }}
+                >
                   <Button
                     variant="gradient"
                     size="default"
                     onClick={handleAddAttractionPoint}
                     disabled={!newAttractionPoint.trim()}
-                    className="px-4 shadow-md hover:shadow-lg transition-all"
+                    className="px-4 shadow-md hover:shadow-lg transition-all duration-150"
                   >
                     <PlusCircle className="h-4 w-4" />
                   </Button>
@@ -619,9 +627,9 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
 
       {/* Right Column - Generated Letter */}
       <motion.div
-        initial={{ opacity: 0, x: 20 }}
+        initial={{ opacity: 0, x: 10 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.25, delay: 0.1, ease: "easeOut" }}
         className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
         <Card className={cn(
@@ -685,26 +693,36 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   className="mt-6 space-y-3"
                 >
                   <div className="flex gap-3">
-                    <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <motion.div 
+                      className="flex-1" 
+                      whileHover={{ scale: 1.01 }} 
+                      whileTap={{ scale: 0.99 }}
+                      transition={{ duration: 0.1 }}
+                    >
                       <Button
                         onClick={handleExport}
                         variant="gradient"
                         size="default"
                         rounded="xl"
-                        className="w-full group shadow-md hover:shadow-lg transition-all"
+                        className="w-full group shadow-md hover:shadow-lg transition-all duration-150"
                         elevation="sm"
                       >
-                        <Download className="mr-2 h-4 w-4 group-hover:animate-bounce" />
+                        <Download className="mr-2 h-4 w-4" />
                         Export as Text
                       </Button>
                     </motion.div>
-                    <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <motion.div 
+                      className="flex-1" 
+                      whileHover={{ scale: 1.01 }} 
+                      whileTap={{ scale: 0.99 }}
+                      transition={{ duration: 0.1 }}
+                    >
                       <Button
                         onClick={handleCopy}
                         variant={isCopied ? "gradient-blue" : "outline"}
                         size="default"
                         rounded="xl"
-                        className="w-full group shadow-md hover:shadow-lg transition-all"
+                        className="w-full group shadow-md hover:shadow-lg transition-all duration-150"
                         elevation="sm"
                       >
                         {isCopied ? (

@@ -42,30 +42,26 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                       <Link href="/developer/roles" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
                         About
                       </Link>
-                      <div className="dropdown dropdown-hover group">
-                        <label tabIndex={0} className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors cursor-pointer flex items-center gap-1">
+                      <div className="relative group">
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors cursor-pointer flex items-center gap-1 py-2">
                           Features
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
-                        </label>
-                        <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 mt-1 group-hover:block">
-                          <li><Link href="/developer/cv-management">CV Management</Link></li>
-                          <li><Link href="/developer/roles/search2">Role Search</Link></li>
-                          {session && (
-                            <>
-                              <li><Link href="/developer/profile">Profile</Link></li>
-                              <li><Link href="/developer/applications">Applications</Link></li>
-                            </>
-                          )}
-                        </ul>
+                        </div>
+                        <div className="absolute top-full left-0 z-50 w-52 mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out">
+                          <ul className="menu p-2 shadow-lg bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <li><Link href="/developer/cv-management" className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">CV Management</Link></li>
+                            <li><Link href="/developer/roles/search" className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Role Search</Link></li>
+                            {session && (
+                              <>
+                                <li><Link href="/developer/profile" className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Profile</Link></li>
+                                <li><Link href="/developer/applications" className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Applications</Link></li>
+                              </>
+                            )}
+                          </ul>
+                        </div>
                       </div>
-                      <Link href="#testimonial" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-                        Testimonial
-                      </Link>
-                      <Link href="#pricing" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-                        Pricing
-                      </Link>
                     </nav>
                   </div>
                   <div className="flex items-center gap-3">
