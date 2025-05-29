@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from '@/components/ui-daisy/input'
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, Briefcase, FileText, CheckCircle2, ChevronRight } from "lucide-react"
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, Briefcase, FileText, CheckCircle2, ChevronRight, ChevronDown, ChevronUp } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
@@ -21,6 +21,7 @@ interface CoverLetterCreatorProps {
   role: Role
   generationTrigger?: number
   onGenerationComplete?: (roleId: string, success: boolean) => void
+  isMultiRoleMode?: boolean
 }
 
 // Custom styles injection
@@ -54,7 +55,7 @@ if (typeof window !== 'undefined') {
   document.head.appendChild(style)
 }
 
-export function CoverLetterCreator({ role, generationTrigger, onGenerationComplete }: CoverLetterCreatorProps) {
+export function CoverLetterCreator({ role, generationTrigger, onGenerationComplete, isMultiRoleMode = false }: CoverLetterCreatorProps) {
   const { data: session } = useSession()
   const [developerProfile, setDeveloperProfile] = useState<InternalProfile | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
@@ -67,6 +68,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
   const [newAchievementTitle, setNewAchievementTitle] = useState<string>("")
   const [newAttractionPoint, setNewAttractionPoint] = useState<string>("")
   const [isCopied, setIsCopied] = useState(false)
+  const [isPersonalizationExpanded, setIsPersonalizationExpanded] = useState(!isMultiRoleMode)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -250,18 +252,21 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
   }, [isGenerating])
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
+    <div className={cn(
+      "grid grid-cols-1 lg:grid-cols-2 max-w-7xl mx-auto",
+      isMultiRoleMode ? "gap-4" : "gap-6"
+    )}>
       {/* Left Column - Customization */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="space-y-6"
+        className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
         {/* Header Card */}
-        <Card className="overflow-hidden border-0 shadow-2xl bg-gradient-to-br from-violet-600 via-purple-600 to-pink-500 text-white relative">
+        <Card className="overflow-hidden border-0  bg-gradient-to-br from-violet-600 via-purple-600 to-pink-500 text-white relative">
           <div className="absolute inset-0 shimmer opacity-30"></div>
-          <CardHeader className="pb-4 relative z-10">
+          <CardHeader className={cn("relative z-10", isMultiRoleMode ? "pb-2 pt-4" : "pb-4")}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <motion.div 
@@ -272,7 +277,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   <Sparkles className="h-7 w-7" />
                 </motion.div>
                 <div>
-                  <CardTitle className="text-2xl font-bold mb-1">AI Cover Letter Generator</CardTitle>
+                  <CardTitle className={cn("font-bold mb-1", isMultiRoleMode ? "text-xl" : "text-2xl")}>AI Cover Letter Generator</CardTitle>
                   <CardDescription className="text-violet-100 flex items-center gap-2">
                     <span>Craft the perfect cover letter for</span>
                     <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
@@ -291,13 +296,33 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
 
         {/* Customization Card */}
         <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-            <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Personalize Your Application</CardTitle>
+          <CardHeader 
+            className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 cursor-pointer"
+            onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                <CardTitle className="text-lg">Personalize Your Application</CardTitle>
+              </div>
+              <motion.div
+                animate={{ rotate: isPersonalizationExpanded ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ChevronDown className="h-5 w-5 text-gray-500" />
+              </motion.div>
             </div>
           </CardHeader>
-          <CardContent className="pt-6 space-y-6">
+          <AnimatePresence>
+            {isPersonalizationExpanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <CardContent className={cn("space-y-6", isMultiRoleMode ? "pt-4" : "pt-6")}>
             {/* Job Source Input */}
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
@@ -521,7 +546,10 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                 </p>
               )}
             </motion.div>
-          </CardContent>
+                </CardContent>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Card>
 
         {/* Progress Indicator */}
@@ -567,7 +595,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="space-y-6"
+        className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
         <Card className={cn(
           "border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-full relative overflow-hidden",
@@ -646,7 +674,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                 readOnly
                 variant={generatedLetter ? "default" : "ghost"}
                 className={cn(
-                  "min-h-[500px] resize-none transition-all duration-300 font-mono",
+                  "resize-none transition-all duration-300 font-mono",
+                  isMultiRoleMode ? "min-h-[350px]" : "min-h-[500px]",
                   !generatedLetter && "text-center opacity-0",
                   generatedLetter && "shadow-inner bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
                 )}

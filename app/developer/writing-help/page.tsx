@@ -158,19 +158,13 @@ export default function WritingHelpPage() {
         transition={{ duration: 0.3 }}
         className="flex flex-col md:flex-row md:items-center md:justify-between space-y-1 md:space-y-0 mb-6"
       >
-         <div>
-        <h1 className="text-2xl font-bold tracking-tight">Writing Help</h1>
-        <p className="text-sm text-muted-foreground">
-            {isGeneratingAll ? 'Generating cover letters...' : `Review and generate cover letters for ${selectedRoles.length} selected role${selectedRoles.length !== 1 ? 's' : ''}`}
-            </p>
-         </div>
          {/* Generate All Button - Disable while polling or generating */}
          {activeTab === 'cover-letter' && selectedRoles.length > 0 && (
              <Button
                 onClick={handleGenerateAll}
                 disabled={isGeneratingAll || isAnyPaneGenerating}
-                size="sm"
-                className="mt-2 md:mt-0 bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                size="lg"
+                className="mt-2 md:mt-0"
              >
                 {(isGeneratingAll || isAnyPaneGenerating) ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

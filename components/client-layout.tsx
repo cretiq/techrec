@@ -24,7 +24,7 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
     <SessionProvider session={session}>
       <Provider store={store}>
         <ThemeProvider>
-          <div className="flex min-h-screen flex-col">
+          <div className="flex min-h-screen flex-col hero-gradient">
             <header className="fixed top-0 z-50 w-full glass dark:glass-dark">
               <div className="container mx-auto max-w-7xl">
                 <div className="flex h-16 items-center justify-between px-4 md:px-6">

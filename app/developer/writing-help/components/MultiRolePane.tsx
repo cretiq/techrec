@@ -29,10 +29,10 @@ export function MultiRolePane({
 
     return (
         <Card className="h-full flex flex-col overflow-hidden">
-            <CardHeader className="pb-2 flex flex-row items-center justify-between cursor-pointer" onClick={() => setIsCollapsed(!isCollapsed)}>
-                <CardTitle className="text-lg line-clamp-2 flex-1 mr-2" title={role.title}>
+            <div className="pb-2 flex flex-row items-center justify-between cursor-pointer" onClick={() => setIsCollapsed(!isCollapsed)}>
+                <h3 className="text-lg line-clamp-2 flex-1 mr-2" title={role.title}>
                     {role.title} at {role.company?.name || 'Unknown Company'}
-                </CardTitle>
+                </h3>
                 <Button 
                     variant="ghost" 
                     size="icon" 
@@ -44,7 +44,7 @@ export function MultiRolePane({
                      {isCollapsed ? <ChevronDown className="h-5 w-5" /> : <ChevronUp className="h-5 w-5" />}
                     <span className="sr-only">{isCollapsed ? 'Expand' : 'Collapse'} section</span>
                  </Button>
-            </CardHeader>
+            </div>
             <AnimatePresence initial={false}>
                 {!isCollapsed && (
                     <motion.div
@@ -66,7 +66,8 @@ export function MultiRolePane({
                                     <CoverLetterCreator 
                                         role={role} 
                                         generationTrigger={generationTrigger} 
-                                        onGenerationComplete={onGenerationComplete} 
+                                        onGenerationComplete={onGenerationComplete}
+                                        isMultiRoleMode={true}
                                     />}
                                 {activeTab === 'cv' && <CVOptimizer />}
                                 {activeTab === 'outreach' && 
