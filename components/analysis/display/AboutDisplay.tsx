@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from "@/components/ui-daisy/textarea";
 import {  Button  } from '@/components/ui-daisy/button'; 
 import { Edit, Save, X } from 'lucide-react';
 
