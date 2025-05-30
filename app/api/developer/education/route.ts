@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { connectToDatabase } from '@/lib/db'
-import Developer from '@/lib/models/Developer'
+import { connectToDatabase } from '@/prisma/prisma'
+// Removed non-existent import
 
 export async function POST(req: Request) {
   try {

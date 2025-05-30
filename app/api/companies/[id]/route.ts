@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { ObjectId } from 'mongodb'
-import clientPromise from '@/lib/db'
+import clientPromise from '@/prisma/prisma'
 
 export async function GET(
   request: Request,

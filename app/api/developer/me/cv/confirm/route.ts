@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/prisma/prisma';
-import { CVAnalysis } from '@/lib/cv-analysis';
+import { CVAnalysis } from '@/utils/cv-analyzer';
 
 export async function POST(request: Request) {
   try {

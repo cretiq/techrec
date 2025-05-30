@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { connectToDatabase } from '@/lib/db'
-import Role from '@/lib/models/Role'
-import Developer from '@/lib/models/Developer'
-import { Application } from '@/lib/models/Developer'
+import { connectToDatabase } from '@/prisma/prisma'
+// Removed non-existent import
+// Removed non-existent import
+// Removed non-existent import
 
 export async function PATCH(
   request: Request,

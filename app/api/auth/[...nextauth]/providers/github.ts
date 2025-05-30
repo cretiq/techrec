@@ -1,6 +1,15 @@
 import { NextAuthOptions } from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 
+// Add to the top of the file after imports
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+    refreshToken?: string;
+    expiresAt?: number;
+  }
+}
+
 export const githubProvider: NextAuthOptions = {
   providers: [
     GithubProvider({
