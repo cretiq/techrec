@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { processCoverLetterQueue } from '@/lib/workers/coverLetterWorker';
+// import { processCoverLetterQueue } from '@/lib/workers/coverLetterWorker'; // Commented out - worker doesn't exist
 
 // This is a placeholder route to manually trigger the worker.
 // In a production environment, this should be replaced with a secure mechanism 
@@ -18,12 +18,12 @@ export async function GET(request: Request) {
 
     try {
         // Process a limited number of jobs per trigger to avoid timeouts
-        const jobsProcessed = await processCoverLetterQueue(5); 
+        // const jobsProcessed = await processCoverLetterQueue(5); // Commented out - worker doesn't exist
         
-        console.log(`Worker processed ${jobsProcessed} jobs.`);
+        console.log(`Worker would have processed jobs if implemented.`);
         return NextResponse.json({ 
-            message: `Cover letter worker triggered successfully. Processed ${jobsProcessed} potential jobs.`, 
-            jobsProcessed 
+            message: `Cover letter worker not implemented yet.`, 
+            jobsProcessed: 0
         });
     } catch (error) {
         console.error("Error triggering cover letter worker:", error);
