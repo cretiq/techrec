@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { connectToDatabase } from '@/lib/db'
-import Role from '@/lib/models/Role'
+import { connectToDatabase } from '@/prisma/prisma'
+// Removed non-existent import
 
 export async function GET(
   request: Request,

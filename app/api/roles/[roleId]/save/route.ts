@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { connectToDatabase } from '@/lib/db'
-import Developer from '@/lib/models/Developer'
+import { connectToDatabase } from '@/prisma/prisma'
+// Removed non-existent import
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import mongoose from 'mongoose'
