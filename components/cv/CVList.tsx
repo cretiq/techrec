@@ -36,11 +36,11 @@ interface CVListProps {
 }
 
 // Map status to badge variants
-const statusBadgeVariant: { [key in AnalysisStatus]: "default" | "secondary" | "destructive" | "outline" } = {
+const statusBadgeVariant: { [key in AnalysisStatus]: "default" | "secondary" | "error" | "outline" | "success" | "warning" | "info" } = {
   [AnalysisStatus.PENDING]: "secondary",
-  [AnalysisStatus.ANALYZING]: "outline",
-  [AnalysisStatus.COMPLETED]: "default", // Default is often green/primary
-  [AnalysisStatus.FAILED]: "destructive",
+  [AnalysisStatus.ANALYZING]: "info",
+  [AnalysisStatus.COMPLETED]: "success",
+  [AnalysisStatus.FAILED]: "error",
 };
 
 export function CVList({ refreshKey }: CVListProps) {

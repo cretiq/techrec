@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a tech recruitment platform built with Next.js 15, featuring AI-powered CV analysis, role matching, and content generation. The application serves both developers looking for opportunities and companies seeking talent.
 
+### Key Features
+- **AI-Powered CV Analysis**: Multi-stage analysis with ATS scoring, content quality assessment, and actionable feedback
+- **Multi-Role Applications**: Apply to multiple positions simultaneously with batch cover letter generation
+- **Smart Content Generation**: AI-generated cover letters, outreach messages, and CV optimizations
+- **Visual Design System**: Modern UI with glass morphism, gradient animations, and responsive components
+- **Real-time Updates**: Live progress tracking for analysis and generation tasks
+- **Persistent State**: User preferences and generated content preserved across sessions
+
 ## Key Architecture
 
 ### Technology Stack
@@ -77,12 +85,19 @@ RESTful API endpoints following the pattern `/api/[resource]/[id]/[action]`:
 - **Analysis Service** (`utils/analysisService.ts`) - Orchestrates CV analysis workflow with caching
 
 ### State Management
-Redux store with feature slices:
-- `userSlice` - User authentication state
-- `analysisSlice` - CV analysis results
-- `selectedRolesSlice` - Role selection for applications
-- `uiSlice` - UI state management
+Redux store with feature slices and persistence:
+- `userSlice` - User authentication state (persisted)
+- `analysisSlice` - CV analysis results (persisted)
+- `selectedRolesSlice` - Role selection for multi-role applications (persisted)
+- `coverLettersSlice` - Generated cover letters cache (persisted)
+- `uiSlice` - UI state management (persisted)
 - `analyticsSlice` - Analytics data
+
+**Redux Persistence Configuration**
+- User preferences and data persist across sessions
+- Analysis results cached with 24-hour expiry
+- Selected roles maintained for batch operations
+- Generated content preserved during navigation
 
 ### UI Component System
 The project is migrating from custom components to DaisyUI:
@@ -90,6 +105,47 @@ The project is migrating from custom components to DaisyUI:
 - DaisyUI components in `/components/ui-daisy/`
 - Shared components use Radix UI primitives
 - Theme support with dark/light modes via next-themes
+- Glass morphism effects and gradient animations throughout
+
+**Key UI Components**
+- **AnimatedBackground** - Parallax blob animations with glass morphism
+- **HeroSection** - Gradient hero sections with optional animations
+- **FeatureCard** - Cards with gradient glows and hover effects
+- **TrustIndicator** - Trust badges for social proof
+- **Enhanced Badge** - Gradient variants with pulse animations
+- **Enhanced Button** - Gradient variants and elevation effects
+
+**Component Migration Patterns**
+```tsx
+// ❌ Radix UI pattern (shadcn/ui)
+<Select value={value} onValueChange={setValue}>
+  <SelectTrigger>
+    <SelectValue placeholder="Select..." />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">Option 1</SelectItem>
+  </SelectContent>
+</Select>
+
+// ✅ DaisyUI pattern (native HTML)
+<Select value={value} onChange={(e) => setValue(e.target.value)}>
+  <option value="option1">Option 1</option>
+</Select>
+
+// ✅ DaisyUI Tabs pattern (with URL state)
+<Tabs defaultValue={activeTab} onValueChange={handleTabChange}>
+  <TabsList>
+    <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tab1">Content</TabsContent>
+</Tabs>
+```
+
+**CSS Classes & Animations**
+- `magical-glow`, `sparkle-loader`, `pulse-ring` - Loading and emphasis effects
+- `hero-gradient`, `hero-gradient-dark` - Gradient backgrounds
+- `glass`, `glass-dark` - Glass morphism effects
+- `animate-blob`, `animate-fade-in-up` - Animation utilities
 
 ## Development Workflow
 
@@ -103,6 +159,22 @@ The project is migrating from custom components to DaisyUI:
    - Impact measurement
 4. Results cached in Redis (24-hour TTL)
 5. Analysis can be retried or versioned
+6. Results persisted in Redux for seamless navigation
+
+### Multi-Role Application Flow
+1. Users search and filter available roles
+2. Select multiple roles for batch operations
+3. Generate cover letters for all selected roles
+4. Track generation progress with real-time updates
+5. Access generated content from writing assistant
+6. Export or apply to roles with personalized content
+
+### Role Search Features
+- Integration with RapidAPI for expanded job listings
+- Advanced filtering with result limits
+- Bulk selection capabilities
+- URL state management for shareable searches
+- Animated loading states and transitions
 
 ### Task Management (Task Master)
 The project uses Task Master for structured development:
@@ -120,6 +192,23 @@ See `/scripts/README-task-master.md` for comprehensive Task Master documentation
 - React Testing Library for component tests
 - AWS SDK mocking for S3 operations
 - Test files alongside source files (`.test.ts` or `.test.tsx`)
+
+### Debugging & Troubleshooting
+
+**Common React Issues**
+- **Infinite API calls**: Check useEffect dependencies for unstable references
+- **Form control errors**: "You provided a `value` prop without an `onChange` handler" - ensure controlled components have both `value` and `onChange`
+- **Component library mismatch**: Verify you're using the correct API for DaisyUI vs Radix UI components
+
+**Performance Issues**
+- Multiple rapid API calls often indicate useEffect dependency issues
+- Use browser dev tools Network tab to identify API call patterns
+- Look for console warnings about controlled vs uncontrolled components
+
+**Development Tools**
+- Use `console.log` strategically in useEffect to trace dependency changes
+- Browser React DevTools to inspect component state and props
+- Next.js development server provides detailed error logging
 
 ## Environment Variables
 
@@ -180,6 +269,34 @@ RAPIDAPI_KEY=
 - Handle errors gracefully with proper logging
 - Follow Next.js App Router patterns
 - Use server components by default, client components only when needed
+
+### React Best Practices & Anti-Patterns
+
+**CRITICAL: Avoid Infinite Loops in useEffect**
+- Never include unstable dependencies in useEffect arrays (like `toast` from useToast)
+- Remove callback functions from useEffect dependencies if they cause re-renders
+- Use empty dependency arrays `[]` for useCallback when the function doesn't need to change
+- Example fix: Remove `toast` and `fetchFunction` from dependency arrays to prevent infinite loops
+- Always wrap functions passed to useEffect with useCallback
+
+**Form Controls & DaisyUI Components**
+- DaisyUI Select components use native HTML `<select>` with `onChange`, not `onValueChange`
+- Always provide `onChange` handlers for controlled form inputs with `value` props
+- Use `<option>` elements directly inside DaisyUI Select, not SelectItem/SelectContent wrappers
+- When migrating from Radix UI to DaisyUI, replace `onValueChange` with `onChange={(e) => handler(e.target.value)}`
+- Ensure value/onChange pairs are always present together for controlled components
+
+**Component API Consistency**
+- Be aware of component library differences: Radix UI vs DaisyUI have different APIs
+- DaisyUI components are wrappers around native HTML elements
+- Shadcn/ui components (in `/components/ui/`) use Radix UI patterns
+- DaisyUI components (in `/components/ui-daisy/`) use native HTML patterns
+
+**URL State Management**
+- Use URL parameters for shareable state (tabs, filters, search queries)
+- Sync Redux state with URL parameters for better UX
+- Handle browser navigation (back/forward) properly
+- Example: `?tab=analysis&filter=pending`
 
 ## Git Workflow
 

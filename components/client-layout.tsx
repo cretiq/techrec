@@ -24,7 +24,8 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
     <SessionProvider session={session}>
       <Provider store={store}>
         <ThemeProvider>
-          <div className="flex min-h-screen flex-col hero-gradient">
+          <div className="ai-backdrop"></div>
+          <div className="flex min-h-screen flex-col relative">
             <header className="fixed top-0 z-50 w-full glass dark:glass-dark">
               <div className="container mx-auto max-w-7xl">
                 <div className="flex h-16 items-center justify-between px-4 md:px-6">
@@ -38,9 +39,6 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                     <nav className="hidden md:flex items-center gap-6">
                       <Link href="/developer/dashboard" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
                         Home
-                      </Link>
-                      <Link href="/developer/roles" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-                        About
                       </Link>
                       <div className="relative group">
                         <div className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors cursor-pointer flex items-center gap-1 py-2">

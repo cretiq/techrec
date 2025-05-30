@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <HeroSection>
+      <HeroSection showBlobs={false}>
         <div className="max-w-4xl mx-auto text-center">
           {/* New Feature Badge */}
           <Badge 
@@ -67,7 +67,7 @@ export default function Home() {
       </HeroSection>
 
       {/* Features Section */}
-      <section className="py-20 md:py-32 bg-gray-50 dark:bg-gray-900">
+      <section className="py-20 md:py-32">
         <div className="container px-4 mx-auto">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
@@ -104,11 +104,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <HeroSection 
-        showBlobs={false} 
-        minHeight="min-h-0"
-        className="py-20 md:py-32"
-      >
+      <section className="py-20 md:py-32 relative">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
             Ready to Start Your Journey?
@@ -141,7 +137,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
-      </HeroSection>
+      </section>
     </div>
   )
 }

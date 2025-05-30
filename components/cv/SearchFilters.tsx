@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import {  Input  } from '@/components/ui-daisy/input';
-import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select';
+import {  Select  } from '@/components/ui-daisy/select';
 import { AnalysisStatus } from '@prisma/client'; // Import enum for dropdown values
 import { debounce } from 'lodash'; // For debouncing search input
 
@@ -58,18 +58,16 @@ export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
         />
       </div>
       <div className="w-full sm:w-48">
-        <Select value={selectedStatus} onValueChange={handleStatusChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Filter by status..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {Object.values(AnalysisStatus).map((status) => (
-              <SelectItem key={status} value={status}>
-                {status} {/* Display enum key as label */}
-              </SelectItem>
-            ))}
-          </SelectContent>
+        <Select 
+          value={selectedStatus} 
+          onChange={(e) => handleStatusChange(e.target.value)}
+        >
+          <option value="all">All Statuses</option>
+          {Object.values(AnalysisStatus).map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
         </Select>
       </div>
     </div>

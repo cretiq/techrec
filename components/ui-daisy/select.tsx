@@ -55,16 +55,39 @@ const SelectTrigger = React.forwardRef<
     selectSize?: "xs" | "sm" | "md" | "lg"
   }
 >(({ className, variant = "bordered", selectSize, children, ...props }, ref) => {
+  const variantClasses = {
+    default: "select",
+    bordered: "select select-bordered",
+    ghost: "select select-ghost",
+    primary: "select select-bordered select-primary",
+    secondary: "select select-bordered select-secondary",
+    accent: "select select-bordered select-accent",
+    info: "select select-bordered select-info",
+    success: "select select-bordered select-success",
+    warning: "select select-bordered select-warning",
+    error: "select select-bordered select-error",
+  }
+
+  const sizeClasses = {
+    xs: "select-xs",
+    sm: "select-sm",
+    md: "select-md",
+    lg: "select-lg",
+  }
+
   return (
-    <Select
-      className={className}
-      variant={variant}
-      selectSize={selectSize}
+    <select
+      className={cn(
+        variantClasses[variant],
+        selectSize && sizeClasses[selectSize],
+        "w-full",
+        className
+      )}
       ref={ref}
       {...props}
     >
       {children}
-    </Select>
+    </select>
   )
 })
 SelectTrigger.displayName = "SelectTrigger"
