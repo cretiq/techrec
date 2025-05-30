@@ -1,0 +1,21 @@
+#!/bin/bash
+# Safe files to delete
+
+rm -f "./test-template.html"
+rm -f "./test-infinite-loop-fix.md"
+rm -f "./scripts/example_prd.txt"
+rm -f "./jest.config.js"
+rm -f "./jest.setup.js"
+rm -f "./next.config.ts"
+rm -f "./tailwind.config.ts.backup"
+rm -f "./components/ui/AnalysisResultCard.stories.tsx"
+rm -f "./components/ui/Feedback.stories.tsx"
+rm -f "./components/ui/Navigation.stories.tsx"
+rm -f "./components/ui/ProgressIndicator.stories.tsx"
+rm -f "./components/ui/SuggestionCard.stories.tsx"
+rm -f "./components/ui/AnalysisResultCard.test.tsx"
+rm -f "./components/ui/Feedback.test.tsx"
+rm -f "./components/ui/Navigation.test.tsx"
+rm -f "./components/ui/ProgressIndicator.test.tsx"
+rm -f "./components/ui/SuggestionCard.test.tsx"
+rm -f "./lib/migration/component-mapping.ts"
