@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui-daisy/textarea";
 import {  Button  } from '@/components/ui-daisy/button';
 import { StarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';

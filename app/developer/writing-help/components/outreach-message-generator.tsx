@@ -3,7 +3,7 @@
 import { useState } from "react"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui-daisy/textarea"
 import {  Input  } from '@/components/ui-daisy/input'
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"

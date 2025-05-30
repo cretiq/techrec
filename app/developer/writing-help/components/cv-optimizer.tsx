@@ -3,7 +3,7 @@
 import { useState, useRef, ChangeEvent } from 'react';
 import {  Button  } from '@/components/ui-daisy/button';
 import {  Card  } from '@/components/ui-daisy/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from "@/components/ui-daisy/textarea";
 import { useAuth } from '@/app/hooks/useAuth';
 import { cn } from '@/lib/utils';
 

@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import {  Input  } from '@/components/ui-daisy/input'
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui-daisy/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { Plus, X } from "lucide-react"
 import { PageHeader } from "@/components/page/page-header"

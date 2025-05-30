@@ -3,7 +3,7 @@
 import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import {  Input  } from '@/components/ui-daisy/input'
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui-daisy/textarea"
 import { cn } from "@/lib/utils"
 import { InternalProfile } from "@/types/types"
 

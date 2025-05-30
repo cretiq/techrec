@@ -7,7 +7,7 @@ import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import {  Input  } from '@/components/ui-daisy/input'
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui-daisy/textarea"
 import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select'
 import {  Badge  } from '@/components/ui-daisy/badge'
 import { Calendar } from "@/components/ui/calendar"

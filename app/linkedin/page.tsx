@@ -5,7 +5,7 @@ import {  Button  } from '@/components/ui-daisy/button';
 import {  Input  } from '@/components/ui-daisy/input';
 import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from "@/components/ui-daisy/textarea";
 import { toast } from 'sonner';
 
 interface LinkedInJob {
