@@ -43,17 +43,17 @@ const badgeVariants = cva(
 )
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {
   pulse?: boolean
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode
 }
 
-const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant, size, rounded, pulse, leftIcon, rightIcon, children, ...props }, ref) => {
     return (
-      <div
+      <span
         ref={ref}
         className={cn(badgeVariants({ variant, size, rounded }), className)}
         {...props}
@@ -67,7 +67,7 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         {leftIcon && <span>{leftIcon}</span>}
         {children}
         {rightIcon && <span>{rightIcon}</span>}
-      </div>
+      </span>
     )
   }
 )

@@ -3,16 +3,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { UploadForm } from '@/components/cv/UploadForm';
 import { CVList } from '@/components/cv/CVList';
-import { AnalysisUploadForm } from '@/components/analysis/AnalysisUploadForm';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
-import { Separator } from '@/components/ui/separator';
 import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs';
 import { toast } from "@/components/ui/use-toast";
 import {  Button  } from '@/components/ui-daisy/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState, AppDispatch } from '@/lib/store';
+import type { AppDispatch } from '@/lib/store';
 import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
 import { Play } from 'lucide-react';
 
@@ -28,8 +26,14 @@ export default function CVManagementPage() {
     // --- URL State Handling --- 
     const router = useRouter();
     const searchParams = useSearchParams();
-    const initialTab = searchParams.get('tab') === 'analyze' ? 'analyze' : 'manage';
+    const tabFromUrl = searchParams.get('tab');
+    const initialTab = tabFromUrl === 'analyze' ? 'analyze' : 'manage';
     const [activeTab, setActiveTab] = useState(initialTab);
+    
+    // Only log on mount
+    useEffect(() => {
+        console.log('[CVManagementPage] Mount: tabFromUrl=', tabFromUrl, 'initialTab=', initialTab, 'activeTab=', activeTab);
+    }, []); // Empty deps = mount only
 
 
     // Select state from Redux
@@ -62,11 +66,14 @@ export default function CVManagementPage() {
 
     // Effect to sync activeTab state if URL changes externally
     useEffect(() => {
-        const tabFromUrl = searchParams.get('tab') === 'analyze' ? 'analyze' : 'manage';
+        const rawTabFromUrl = searchParams.get('tab');
+        const tabFromUrl = rawTabFromUrl === 'analyze' ? 'analyze' : 'manage';
+        console.log('[CVManagementPage] URL sync effect: rawTabFromUrl=', rawTabFromUrl, 'tabFromUrl=', tabFromUrl, 'activeTab=', activeTab);
         if (tabFromUrl !== activeTab) {
+            console.log('[CVManagementPage] Updating activeTab from', activeTab, 'to', tabFromUrl);
             setActiveTab(tabFromUrl);
         }
-    }, [searchParams, activeTab]);
+    }, [searchParams]); // Remove activeTab from dependencies to prevent loops
 
     // --- Fetch CV List (unrelated to analysis display) ---
     const fetchAnalyses = async () => {
@@ -177,15 +184,15 @@ export default function CVManagementPage() {
     // Determine loading state from Redux status
     const isLoadingAnalysis = analysisStatus === 'loading';
 
-    // Log state just before returning JSX
-    console.log('[CVManagementPage PRE-RENDER] State:', { // LOG
-        activeTab,
-        analysisIdFromUrl: searchParams.get('analysisId'),
-        isLoadingAnalysis,
-        analysisStatus,
-        analysisIdFromStore,
-        hasAnalysisData: !!analysisData // Log if data object exists
-    });
+    // Only log state changes, not every render
+    useEffect(() => {
+        console.log('[CVManagementPage] State changed:', {
+            activeTab,
+            analysisIdFromUrl: searchParams.get('analysisId'),
+            analysisStatus,
+            analysisIdFromStore,
+        });
+    }, [activeTab, analysisStatus, analysisIdFromStore]);
 
     // --- Redis Test Handlers ---
     const handleTestRedisSet = async () => {
@@ -260,7 +267,7 @@ export default function CVManagementPage() {
                 value={activeTab}
                 onValueChange={handleTabChange}
                 className="w-full animate-fade-in-up"
-                style={{ animationDelay: '300ms' }}
+                style={{ animationDelay: '150ms' }}
             >
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="manage">Manage CVs</TabsTrigger>

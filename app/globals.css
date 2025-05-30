@@ -36,7 +36,6 @@
       'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
     /* Add smooth transitions for theme changes */
-    color-scheme: light;
     --transition-duration: 0.15s;
     transition: background-color var(--transition-duration) ease,
                 color var(--transition-duration) ease,
@@ -44,7 +43,7 @@
   }
 }
 
-/* Custom gradient backgrounds */
+/* Custom gradient backgrounds - colorful for light, grayish for dark */
 .hero-gradient {
   background: linear-gradient(135deg, 
     rgba(139, 92, 246, 0.1) 0%, 
@@ -55,10 +54,10 @@
 
 .hero-gradient-dark {
   background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.2) 0%, 
-    rgba(139, 92, 246, 0.1) 25%, 
-    rgba(236, 72, 153, 0.1) 75%, 
-    rgba(236, 72, 153, 0.2) 100%);
+    rgba(148, 163, 184, 0.1) 0%, 
+    rgba(148, 163, 184, 0.05) 25%, 
+    rgba(148, 163, 184, 0.05) 75%, 
+    rgba(148, 163, 184, 0.1) 100%);
 }
 
 /* Gradient text effect */
@@ -341,5 +340,274 @@ select {
     transparent
   );
   animation: shimmer 1.5s infinite;
+}
+
+/* Futuristic AI Background with animated dots - theme dependent */
+.ai-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(135deg, 
+    #fdf4ff 0%, 
+    #fae8ff 25%, 
+    #f3e8ff 50%, 
+    #fae8ff 75%, 
+    #fdf4ff 100%);
+}
+
+.dark .ai-backdrop {
+  background: linear-gradient(135deg, 
+    #0f172a 0%, 
+    #1e293b 25%, 
+    #334155 50%, 
+    #1e293b 75%, 
+    #0f172a 100%);
+}
+
+/* Static dot grid - theme dependent */
+.ai-backdrop::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(139, 92, 246, 0.2) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+.dark .ai-backdrop::before {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(148, 163, 184, 0.2) 1px, transparent 0);
+}
+
+/* Neural network lines */
+.neural-network {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.neural-line {
+  position: absolute;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(139, 92, 246, 0.1), 
+    transparent);
+  height: 1px;
+  animation: neural-pulse 4s ease-in-out infinite;
+}
+
+.neural-line:nth-child(1) {
+  top: 20%;
+  left: 0;
+  width: 30%;
+  animation-delay: 0s;
+}
+
+.neural-line:nth-child(2) {
+  top: 50%;
+  right: 0;
+  width: 40%;
+  animation-delay: 1.5s;
+}
+
+.neural-line:nth-child(3) {
+  top: 80%;
+  left: 20%;
+  width: 35%;
+  animation-delay: 3s;
+}
+
+@keyframes neural-pulse {
+  0%, 100% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+/* Sparkle Loading Animation */
+.sparkle-loader {
+  position: relative;
+  display: inline-block;
+}
+
+.sparkle-loader::before,
+.sparkle-loader::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  animation: sparkle 1.5s infinite ease-in-out;
+}
+
+.sparkle-loader::before {
+  width: 4px;
+  height: 4px;
+  background: linear-gradient(45deg, #8b5cf6, #ec4899);
+  top: -8px;
+  left: -8px;
+  animation-delay: 0s;
+}
+
+.sparkle-loader::after {
+  width: 3px;
+  height: 3px;
+  background: linear-gradient(45deg, #06b6d4, #3b82f6);
+  top: 20px;
+  right: -6px;
+  animation-delay: 0.5s;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+}
+
+/* Cool Pulse Loading */
+.pulse-ring {
+  position: relative;
+  display: inline-block;
+}
+
+.pulse-ring::before,
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  border: 2px solid;
+  border-color: currentColor;
+  border-radius: 50%;
+  opacity: 1;
+  animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+.pulse-ring::before {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  animation-delay: 0s;
+}
+
+.pulse-ring::after {
+  width: 120%;
+  height: 120%;
+  top: -10%;
+  left: -10%;
+  animation-delay: 0.5s;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Magical Glow Effect */
+.magical-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.magical-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 92, 246, 0.3),
+    rgba(236, 72, 153, 0.3),
+    transparent
+  );
+  animation: magical-sweep 2s infinite;
+}
+
+@keyframes magical-sweep {
+  0% {
+    left: -100%;
+  }
+   100% {
+    left: 100%;
+  }
+}
+
+/* Enhanced Slider Styles */
+.slider-enhanced [data-orientation="horizontal"] {
+  height: 8px;
+  background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 100%);
+  border-radius: 9999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.slider-enhanced [data-orientation="horizontal"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  border-radius: inherit;
+  animation: slider-shimmer 3s infinite;
+  opacity: 0.1;
+}
+
+.slider-enhanced [role="slider"] {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  transition: all 0.2s ease;
+}
+
+.slider-enhanced [role="slider"]:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.slider-enhanced [role="slider"]:focus {
+  outline: none;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+@keyframes slider-shimmer {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
 }
 

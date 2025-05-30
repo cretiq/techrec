@@ -321,27 +321,36 @@ export default function RolesSearch2Page() {
               </div>
 
               {/* Results Limit Slider */}
-              <div className="space-y-2">
-                <Label>Results Limit: {searchLimit[0]}</Label>
+              <div className="space-y-3 p-4 rounded-lg bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border border-violet-100 dark:border-violet-800">
+                <div className="flex justify-between items-center">
+                  <Label className="text-sm font-medium text-violet-700 dark:text-violet-300">Results Limit</Label>
+                  <div className="px-2 py-1 bg-violet-100 dark:bg-violet-800 rounded-full text-xs font-bold text-violet-700 dark:text-violet-300">
+                    {searchLimit[0]}
+                  </div>
+                </div>
                 <Slider
                   value={searchLimit}
                   onValueChange={setSearchLimit}
                   min={1}
                   max={20}
                   step={1}
-                  className="w-full"
+                  className="w-full slider-enhanced"
                 />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>1</span>
+                  <span>20</span>
+                </div>
               </div>
 
               {/* Search Button */}
               <Button 
-                className="w-full" 
+                className="w-full magical-glow" 
                 onClick={fetchRoles}
                 disabled={loading}
                 variant="gradient"
               >
                 {loading ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current mr-2" />
+                  <div className="sparkle-loader pulse-ring animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current mr-2" />
                 ) : (
                   <Search className="h-4 w-4 mr-2" />
                 )}
@@ -393,16 +402,21 @@ export default function RolesSearch2Page() {
                 onClick={handleWriteToSelected}
                 disabled={selectedCount === 0}
                 size="sm"
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                variant="gradient"
+                className="relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <PenTool className="mr-2 h-4 w-4" />
-                Write to {selectedCount} role{selectedCount !== 1 ? 's' : ''}
+                <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-pink-500 opacity-0 transition-opacity hover:opacity-100"></div>
+                <div className="relative flex items-center">
+                  <PenTool className="mr-2 h-4 w-4" />
+                  Write to {selectedCount} role{selectedCount !== 1 ? 's' : ''}
+                </div>
               </Button>
             )}
           </div>
           {loading && (
-            <div className="flex items-center justify-center min-h-[300px]">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4">
+              <div className="sparkle-loader pulse-ring animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              <div className="text-sm text-muted-foreground animate-pulse">Searching for amazing opportunities...</div>
             </div>
           )}
           {!loading && filteredRoles.length === 0 && (

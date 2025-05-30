@@ -30,6 +30,7 @@ const Tabs = React.forwardRef<
   const [internalValue, setInternalValue] = React.useState(defaultValue || "")
   const currentValue = value !== undefined ? value : internalValue
   
+  
   const handleValueChange = React.useCallback((newValue: string) => {
     if (value === undefined) {
       setInternalValue(newValue)
@@ -134,7 +135,7 @@ const TabsContent = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("tab-content pt-4", className)}
+      className={cn("pt-4", className)}
       role="tabpanel"
       {...props}
     >
