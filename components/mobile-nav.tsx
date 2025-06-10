@@ -19,7 +19,7 @@ export function MobileNav() {
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[350px]">
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between border-b py-4">
+          <div className="flex items-center justify-between py-4">
             <span className="font-bold text-xl">Menu</span>
             <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
               <X className="h-5 w-5" />

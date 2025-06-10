@@ -297,7 +297,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
 
   return (
     <motion.div
-      className="analysis-display-container p-4 md:p-6 lg:p-8 bg-background dark:bg-gray-950 min-h-screen font-sans"
+      className="analysis-display-container p-4 md:p-6 lg:p-8 bg-background dark:bg-black/20 min-h-screen font-sans rounded-2xl"
       variants={pageVariants}
       initial="hidden"
       animate="visible"
@@ -333,7 +333,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
          initial="hidden"
          whileInView="visible"
          viewport={{ once: true, amount: 0.2 }}
-         whileHover={scaleOnHover} // Use shared hover variant
        >
          <AnalysisSummaryDashboard
            analysisData={analysisData}
@@ -352,14 +351,13 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
               {analysisData.contactInfo && (
                   <motion.section
                     id="contact-info" 
-                    className="p-4 bg-card text-card-foreground rounded-xl shadow-lg border scroll-mt-20"
+                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20"
                     variants={sectionVariants}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.2 }}
-                    whileHover={scaleOnHover} // Use shared hover variant
                   >
-                      <h3 className="text-2xl font-semibold text-foreground mb-3 border-b pb-1">Contact Info</h3>
+                      <h3 className="text-2xl font-semibold text-foreground mb-3 pb-1">Contact Info</h3>
                       {/* Log before rendering ContactInfoDisplay */} 
                       <ContactInfoDisplay 
                           data={analysisData.contactInfo}
@@ -381,8 +379,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="about" 
                     id="about" 
-                    className="p-4 bg-card text-card-foreground rounded-xl shadow-lg border scroll-mt-20 overflow-hidden"
-                    whileHover={scaleOnHover}
+                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20 overflow-hidden"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">About / Summary</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -411,8 +408,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="skills" 
                     id="skills" 
-                    className="p-4 bg-card text-card-foreground rounded-xl shadow-lg border scroll-mt-20 overflow-hidden"
-                    whileHover={scaleOnHover}
+                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20 overflow-hidden"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Skills</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -441,8 +437,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="experience" 
                     id="experience" 
-                    className="p-4 bg-card text-card-foreground rounded-xl shadow-lg border scroll-mt-20 overflow-hidden"
-                    whileHover={scaleOnHover}
+                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20 overflow-hidden"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Work Experience</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -471,8 +466,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="education" 
                     id="education" 
-                    className="p-4 bg-card text-card-foreground rounded-xl shadow-lg border scroll-mt-20 overflow-hidden"
-                    whileHover={scaleOnHover}
+                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20 overflow-hidden"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Education</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -508,7 +502,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
 
        {/* Action Buttons - corrected footer */}
        {/* Use theme border color */}
-       <footer className="mt-10 pt-6 border-t border-border flex justify-end gap-4 print:hidden"> 
+       <footer className="mt-10 pt-6 flex justify-end gap-4 print:hidden"> 
          {/* Use theme primary button colors */}
          <Button 
            onClick={handlePrintOrExport} 

@@ -27,8 +27,8 @@ export const CvViewer: React.FC<CvViewerProps> = ({ pdfUrl, extractedText }) => 
   }, [pdfUrl, extractedText]);
 
   return (
-    <Card className="mt-6 shadow-lg border">
-      <CardHeader className="border-b pb-4">
+    <Card className="mt-6 bg-white/20 dark:bg-black/20 rounded-lg">
+      <CardHeader className="pb-4">
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-semibold text-foreground">Document Viewer</CardTitle>
           <Tabs 

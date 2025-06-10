@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import {  Button  } from '@/components/ui-daisy/button';
 import { Wand2, AlertCircle } from 'lucide-react';
 import { CvAnalysisData, CvImprovementSuggestion } from '@/types/cv';
+import { motion } from 'framer-motion';
 
 interface SectionMetrics {
   completeness: number;
@@ -26,6 +27,8 @@ export function AnalysisSummaryDashboard({
   isSuggesting 
 }: AnalysisSummaryDashboardProps) {
   
+  const scaleOnHover = { scale: 1.05 };
+
   // Calculate section metrics
   const calculateSectionMetrics = (section: keyof CvAnalysisData): SectionMetrics => {
     const data = analysisData[section];
@@ -42,7 +45,7 @@ export function AnalysisSummaryDashboard({
         completeness = (contactFields / totalContactFields) * 100;
         break;
       case 'about':
-        completeness = data ? (data.length > 50 ? 100 : (data.length / 50) * 100) : 0;
+        completeness = typeof data === 'string' && data ? (data.length > 50 ? 100 : (data.length / 50) * 100) : 0;
         break;
       case 'skills':
         const skills = Array.isArray(data) ? data : [];
@@ -80,7 +83,7 @@ export function AnalysisSummaryDashboard({
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {/* Overall Score Card */}
-      <Card className="col-span-full md:col-span-1">
+      <Card className="col-span-full md:col-span-1 bg-background dark:bg-black/20">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Overall CV Score</CardTitle>
           <Button 
@@ -113,22 +116,46 @@ export function AnalysisSummaryDashboard({
 
       {/* Section Score Cards */}
       {sectionMetrics.map(({ section, completeness, suggestions: sectionSuggestions }) => (
-        <Card key={section}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {section.charAt(0).toUpperCase() + section.slice(1)}
-            </CardTitle>
-            {sectionSuggestions > 0 && (
-              <span className="text-sm text-muted-foreground">
-                {sectionSuggestions} suggestion{sectionSuggestions !== 1 ? 's' : ''}
-              </span>
-            )}
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold mb-2">{completeness}%</div>
-            <Progress value={completeness} className="h-2" />
-          </CardContent>
-        </Card>
+        <motion.div key={section} whileHover={scaleOnHover}>
+          <Card 
+            className='bg-background dark:bg-black/20 cursor-pointer'
+            onClick={() => {
+              const sectionId = section === 'contactInfo' ? 'contact-info' : section;
+              const element = document.getElementById(sectionId);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                const sectionId = section === 'contactInfo' ? 'contact-info' : section;
+                const element = document.getElementById(sectionId);
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
+            }}
+          >
+            <CardHeader 
+              className="flex flex-row items-center justify-between space-y-0 pb-2"
+            >
+              <CardTitle className="text-sm font-medium">
+                {section.charAt(0).toUpperCase() + section.slice(1)}
+              </CardTitle>
+              {sectionSuggestions > 0 && (
+                <span className="text-sm text-muted-foreground">
+                  {sectionSuggestions} suggestion{sectionSuggestions !== 1 ? 's' : ''}
+                </span>
+              )}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold mb-2">{completeness}%</div>
+              <Progress value={completeness} className="h-2" />
+            </CardContent>
+          </Card>
+        </motion.div>
       ))}
     </div>
   );

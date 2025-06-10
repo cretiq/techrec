@@ -157,7 +157,7 @@ export function EducationDisplay({ data, onChange, suggestions, onAcceptSuggesti
           {editData.map((edu, index) => (
             <motion.div
               key={edu.id || `edu-${index}`}
-              className={`p-4 border rounded-md relative group ${edu.isNew ? 'border-dashed border-primary' : ''}`}
+              className={`p-6 rounded-lg relative group bg-white/20 dark:bg-black/20 ${edu.isNew ? 'border-dashed border-primary' : ''}`}
               variants={listItemVariants}
               initial="hidden"
               animate="visible"
