@@ -180,7 +180,7 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
           {editData.map((exp, index) => (
             <motion.div
               key={exp.id || `exp-${index}`}
-              className={`p-4 border rounded-md relative group ${exp.isNew ? 'border-dashed border-primary' : ''}`}
+              className={`p-6 rounded-lg relative group bg-white/20 dark:bg-black/20 ${exp.isNew ? 'border-dashed border-primary' : ''}`}
               variants={listItemVariants}
               initial="hidden"
               animate="visible"

@@ -13,7 +13,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "card bg-white dark:bg-gray-900/10",
+      "card bg-white dark:bg-gray-900/20",
       bordered && "",
       compact && "card-compact",
       imageFull && "image-full",

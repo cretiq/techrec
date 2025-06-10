@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
 import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
 import { Play } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function CVManagementPage() {
     const [refreshKey, setRefreshKey] = useState(0);
@@ -269,9 +270,31 @@ export default function CVManagementPage() {
                 className="w-full animate-fade-in-up"
                 style={{ animationDelay: '150ms' }}
             >
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="manage">Manage CVs</TabsTrigger>
-                    <TabsTrigger value="analyze">Analyze & Edit</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 gap-2 p-1 bg-base-200/50 backdrop-blur-sm rounded-lg border border-base-300" variant="default">
+                    <TabsTrigger 
+                        value="manage" 
+                        className={cn(
+                            "font-semibold transition-all duration-200",
+                            activeTab === "manage" 
+                                ? "bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-lg transform scale-[1.02]" 
+                                : "hover:bg-base-300/50 hover:shadow-md"
+                        )}
+                        size="lg"
+                    >
+                        Manage CVs
+                    </TabsTrigger>
+                    <TabsTrigger 
+                        value="analyze"
+                        className={cn(
+                            "font-semibold transition-all duration-200",
+                            activeTab === "analyze" 
+                                ? "bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-lg transform scale-[1.02]" 
+                                : "hover:bg-base-300/50 hover:shadow-md"
+                        )}
+                        size="lg"
+                    >
+                        Analyze & Edit
+                    </TabsTrigger>
                 </TabsList>
                 <TabsContent value="manage" className="mt-4 space-y-6">
                     <Card>
@@ -314,14 +337,7 @@ export default function CVManagementPage() {
                         if (shouldShowAnalysis) {
                             // Verify data exists in store before rendering display, otherwise show loading state
                             if (analysisIdFromStore === analysisIdFromUrl && analysisData) {
-                                return (
-                                    <Card>
-                                        <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>View and edit the results of the CV analysis</CardDescription></CardHeader>
-                                        <CardContent>
-                                            <AnalysisResultDisplay originalMimeType={originalMimeType} />
-                                        </CardContent>
-                                    </Card>
-                                );
+                                return <AnalysisResultDisplay originalMimeType={originalMimeType} />;
                             } else {
                                 // Data isn't ready yet, even though ID is in URL (e.g., still fetching)
                                 // Render a loading state consistent with the isLoading condition above

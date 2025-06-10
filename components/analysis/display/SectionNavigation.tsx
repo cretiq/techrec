@@ -77,7 +77,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
 
   return (
     <nav className="sticky top-6 h-fit">
-        <div className="p-4 bg-card text-card-foreground rounded-xl shadow-lg border">
+        <div className="p-4 rounded-lg bg-white/20 dark:bg-black/20">
             <h3 className="text-lg font-semibold text-foreground mb-4">Sections</h3>
             <ul className="space-y-1">
                 {sections.map(section => (
