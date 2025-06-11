@@ -135,16 +135,16 @@ export default function CVManagementPage() {
             // Only fetch if:
             // 1. The URL ID is different from store ID, AND
             // 2. We're not currently loading, AND  
-            // 3. We don't have data for this specific ID (to prevent refetching the same data)
+            // 3. We're in a state that requires fetching (idle, failed)
             const shouldFetch = analysisIdFromUrl !== currentStoreId && 
                                currentStatus !== 'loading' && 
-                               (currentStatus === 'idle' || currentStatus === 'failed' || !analysisData);
+                               (currentStatus === 'idle' || currentStatus === 'failed');
             
             if (shouldFetch) {
                 console.log(`[CVManagementPage useEffect] Dispatching fetchAnalysisById(${analysisIdFromUrl})...`); // LOG
                 dispatch(fetchAnalysisById(analysisIdFromUrl));
             } else {
-                console.log(`[CVManagementPage useEffect] Skipping fetch. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}, Has Data: ${!!analysisData}.`); // LOG
+                console.log(`[CVManagementPage useEffect] Skipping fetch. URL ID: ${analysisIdFromUrl}, Store ID: ${currentStoreId}, Status: ${currentStatus}.`); // LOG
             }
         } else {
             if (currentStoreId !== null) {
@@ -154,7 +154,7 @@ export default function CVManagementPage() {
                 console.log(`[CVManagementPage useEffect] Skipping clearAnalysis. No ID in URL or store.`); // LOG
             }
         }
-    }, [searchParams, dispatch, analysisIdFromStore, analysisStatus, analysisData]); // Add analysisData as dependency 
+    }, [searchParams, dispatch, analysisIdFromStore, analysisStatus]); // Remove analysisData to prevent infinite loops 
 
     useEffect(() => {
         const styles = `
