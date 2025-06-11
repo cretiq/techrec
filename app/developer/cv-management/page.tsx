@@ -335,8 +335,14 @@ export default function CVManagementPage() {
 
                         // Condition 2: Analysis ID exists in URL (and not loading)
                         if (shouldShowAnalysis) {
-                            // Verify data exists in store before rendering display, otherwise show loading state
-                            if (analysisIdFromStore === analysisIdFromUrl && analysisData) {
+                            // Verify data exists in store before rendering display
+                            // IMPORTANT: The URL might contain either the CV ID or the analysis ID
+                            // We don't do strict ID matching because:
+                            // 1. CVList might pass cv.id instead of cv.analysisId
+                            // 2. The API returns analysis.id which differs from the cv.id
+                            // 3. After Redux persistence, IDs might not match but data exists
+                            // Solution: Check for data existence rather than ID equality
+                            if (analysisData && analysisIdFromStore) {
                                 return <AnalysisResultDisplay originalMimeType={originalMimeType} />;
                             } else {
                                 // Data isn't ready yet, even though ID is in URL (e.g., still fetching)

@@ -200,6 +200,32 @@ See `/scripts/README-task-master.md` for comprehensive Task Master documentation
 - **Form control errors**: "You provided a `value` prop without an `onChange` handler" - ensure controlled components have both `value` and `onChange`
 - **Component library mismatch**: Verify you're using the correct API for DaisyUI vs Radix UI components
 
+**Redux Persistence Issues**
+- **"Loading..." stuck after refresh**: Check if all necessary Redux state fields are in the persist whitelist
+- **Status field not persisted**: Add 'status' to the whitelist in store.ts to maintain state across refreshes
+- **REHYDRATE handling**: Ensure analysisSlice handles rehydration properly when data exists but status is 'idle'
+
+**ID Mismatch Issues (CV Analysis)**
+- **Problem**: CVManagementPage shows "Loading..." when analysisIdFromStore !== analysisIdFromUrl
+- **Root Cause**: The URL might contain a CV ID while the store has the analysis ID from the API response
+- **Solution**: Updated the conditional logic to check for data existence rather than strict ID matching
+- **Key Files**: 
+  - `/app/developer/cv-management/page.tsx` (line 340) - Conditional rendering logic
+  - `/components/cv/CVList.tsx` - Ensure it passes the correct analysisId
+  - `/lib/features/analysisSlice.ts` - Handles ID mapping from API response
+- **API Response Structure**: 
+  ```javascript
+  {
+    id: "analysis-id",        // This is what goes in Redux store
+    cvId: "cv-id",           // This might be in the URL
+    analysisResult: {...},   // The actual analysis data
+  }
+  ```
+- **Debugging Tips**:
+  - Check console logs for ID values: `URL ID: xxx, Store ID: yyy`
+  - Verify which ID is being passed in the URL (CV vs Analysis)
+  - Ensure CVList passes `cv.analysisId` not `cv.id` to the Improve button
+
 **Performance Issues**
 - Multiple rapid API calls often indicate useEffect dependency issues
 - Use browser dev tools Network tab to identify API call patterns
