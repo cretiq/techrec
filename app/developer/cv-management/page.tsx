@@ -133,12 +133,12 @@ export default function CVManagementPage() {
 
         if (analysisIdFromUrl) {
             // Only fetch if:
-            // 1. The URL ID is different from store ID, AND
-            // 2. We're not currently loading, AND  
-            // 3. We're in a state that requires fetching (idle, failed)
-            const shouldFetch = analysisIdFromUrl !== currentStoreId && 
+            // 1. The URL ID is different from store ID, OR
+            // 2. We don't have analysis data yet, AND
+            // 3. We're not currently loading
+            const shouldFetch = (analysisIdFromUrl !== currentStoreId || !analysisData) && 
                                currentStatus !== 'loading' && 
-                               (currentStatus === 'idle' || currentStatus === 'failed');
+                               currentStatus !== 'succeeded';
             
             if (shouldFetch) {
                 console.log(`[CVManagementPage useEffect] Dispatching fetchAnalysisById(${analysisIdFromUrl})...`); // LOG

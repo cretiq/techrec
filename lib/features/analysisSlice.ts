@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { REHYDRATE } from 'redux-persist';
 import type { RootState } from '../store';
 import { CvAnalysisData, CvImprovementSuggestion } from '@/types/cv'; // Import relevant types
 import { set } from 'lodash'; // For applying suggestions
@@ -289,6 +290,23 @@ export const analysisSlice = createSlice({
         console.log('[analysisSlice Reducer] saveAnalysisVersion.rejected - Failed to save version.');
         state.status = 'failed';
         state.error = action.payload as string ?? action.error.message ?? 'Failed to save analysis version';
+      })
+      // Handle Redux Persist REHYDRATE action
+      .addCase(REHYDRATE, (state, action: any) => {
+        console.log('[analysisSlice Reducer] REHYDRATE - Handling rehydration');
+        if (action.payload && action.payload.analysis) {
+          const rehydratedState = action.payload.analysis;
+          // If we have analysis data but status is 'idle', set it to 'succeeded'
+          if (rehydratedState.analysisData && rehydratedState.status === 'idle') {
+            console.log('[analysisSlice Reducer] REHYDRATE - Setting status to succeeded because data exists');
+            return {
+              ...rehydratedState,
+              status: 'succeeded' as AnalysisStatus
+            };
+          }
+          return rehydratedState;
+        }
+        return state;
       });
   },
 });
