@@ -26,7 +26,7 @@ const userPersistConfig = {
 const analysisPersistConfig = {
   key: 'analysis',
   storage,
-  whitelist: ['analysisData', 'originalData', 'currentAnalysisId'] // Persist analysis data
+  whitelist: ['analysisData', 'originalData', 'currentAnalysisId', 'status', 'suggestions'] // Persist analysis data and status
 };
 
 const uiPersistConfig = {
