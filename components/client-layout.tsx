@@ -26,7 +26,7 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
         <ThemeProvider>
           <div className="ai-backdrop"></div>
           <div className="flex min-h-screen flex-col relative">
-            <header className="fixed top-0 z-50 w-full glass dark:glass-dark">
+            <header className="fixed top-0 z-50 w-full glass">
               <div className="container mx-auto max-w-7xl">
                 <div className="flex h-16 items-center justify-between px-4 md:px-6">
                   <div className="flex items-center gap-8">
@@ -37,24 +37,24 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                       <span className="font-bold text-xl">TechRec</span>
                     </Link>
                     <nav className="hidden md:flex items-center gap-6">
-                      <Link href="/developer/dashboard" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
+                      <Link href="/developer/dashboard" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors">
                         Home
                       </Link>
                       <div className="relative group">
-                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors cursor-pointer flex items-center gap-1 py-2">
+                        <div className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors cursor-pointer flex items-center gap-1 py-2">
                           Features
                           <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </div>
                         <div className="absolute top-full left-0 z-50 w-52 mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out">
-                          <ul className="menu p-2 shadow-lg bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                            <li><Link href="/developer/cv-management" className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">CV Management</Link></li>
-                            <li><Link href="/developer/roles/search" className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Role Search</Link></li>
+                          <ul className="menu p-2 shadow-lg bg-base-100 rounded-lg border border-base-300">
+                            <li><Link href="/developer/cv-management" className="hover:bg-base-200 rounded-md">CV Management</Link></li>
+                            <li><Link href="/developer/roles/search" className="hover:bg-base-200 rounded-md">Role Search</Link></li>
                             {session && (
                               <>
-                                <li><Link href="/developer/profile" className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Profile</Link></li>
-                                <li><Link href="/developer/applications" className="hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">Applications</Link></li>
+                                <li><Link href="/developer/profile" className="hover:bg-base-200 rounded-md">Profile</Link></li>
+                                <li><Link href="/developer/applications" className="hover:bg-base-200 rounded-md">Applications</Link></li>
                               </>
                             )}
                           </ul>

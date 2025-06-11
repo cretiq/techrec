@@ -83,7 +83,7 @@ export function AnalysisSummaryDashboard({
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {/* Overall Score Card */}
-      <Card className="col-span-full md:col-span-1 bg-background dark:bg-black/20">
+      <Card className="col-span-full md:col-span-1 bg-base-100/60">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Overall CV Score</CardTitle>
           <Button 
@@ -118,7 +118,7 @@ export function AnalysisSummaryDashboard({
       {sectionMetrics.map(({ section, completeness, suggestions: sectionSuggestions }) => (
         <motion.div key={section} whileHover={scaleOnHover}>
           <Card 
-            className='bg-background dark:bg-black/20 cursor-pointer'
+            className='bg-base-100/60 cursor-pointer'
             onClick={() => {
               const sectionId = section === 'contactInfo' ? 'contact-info' : section;
               const element = document.getElementById(sectionId);

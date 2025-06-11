@@ -23,33 +23,33 @@ export function AnimatedBackground() {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
       {/* Base gradient that extends full page */}
-      <div className="absolute inset-0 hero-gradient dark:hero-gradient-dark" />
+      <div className="absolute inset-0 hero-gradient" />
       
       {/* Animated blobs with scroll-based movement */}
       <div 
-        className="absolute top-20 -left-4 w-72 h-72 bg-purple-300 dark:bg-slate-600 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-xl opacity-70 dark:opacity-20 animate-blob"
+        className="absolute top-20 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"
         style={{ transform: blob1Transform }}
       />
       <div 
-        className="absolute top-40 -right-4 w-72 h-72 bg-yellow-300 dark:bg-slate-700 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-xl opacity-70 dark:opacity-20 animate-blob animation-delay-2000"
+        className="absolute top-40 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"
         style={{ transform: blob2Transform }}
       />
       <div 
-        className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-slate-600 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-xl opacity-70 dark:opacity-20 animate-blob animation-delay-4000"
+        className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"
         style={{ transform: blob3Transform }}
       />
       
       {/* Additional blobs for depth throughout the page */}
       <div 
-        className="absolute top-[50vh] left-[60%] w-96 h-96 bg-blue-300 dark:bg-slate-700 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-xl opacity-50 dark:opacity-15 animate-blob animation-delay-2000"
+        className="absolute top-[50vh] left-[60%] w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-blob animation-delay-2000"
         style={{ transform: `${blob1Transform} scale(1.2)` }}
       />
       <div 
-        className="absolute top-[100vh] right-[20%] w-80 h-80 bg-green-300 dark:bg-slate-600 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-xl opacity-50 dark:opacity-15 animate-blob"
+        className="absolute top-[100vh] right-[20%] w-80 h-80 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-blob"
         style={{ transform: `${blob2Transform} scale(0.8)` }}
       />
       <div 
-        className="absolute top-[150vh] left-[30%] w-64 h-64 bg-indigo-300 dark:bg-slate-700 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-xl opacity-60 dark:opacity-20 animate-blob animation-delay-4000"
+        className="absolute top-[150vh] left-[30%] w-64 h-64 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-60 animate-blob animation-delay-4000"
         style={{ transform: `${blob3Transform} scale(0.9)` }}
       />
     </div>

@@ -165,10 +165,10 @@ export default function WritingHelpPage() {
           onValueChange={(value) => setActiveTab(value as "cv" | "cover-letter" | "outreach")}
           className="w-full"
         >
-          <TabsList className="relative grid grid-cols-3 w-full max-w-2xl mx-auto h-12 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-1.5 shadow-xl">
+          <TabsList className="relative grid grid-cols-3 w-full max-w-2xl mx-auto h-12 bg-base-100/70 backdrop-blur-md border border-base-300/50 rounded-xl p-1.5 shadow-xl">
             <TabsTrigger 
               value="cv" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white z-20"
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-base-content/80 hover:text-base-content z-20"
             >
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline font-semibold">CV Optimization</span>
@@ -177,7 +177,7 @@ export default function WritingHelpPage() {
             
             <TabsTrigger 
               value="cover-letter" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white z-20"
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-base-content/80 hover:text-base-content z-20"
             >
               <PenTool className="h-4 w-4" />
               <span className="hidden sm:inline font-semibold">Cover Letter</span>
@@ -186,7 +186,7 @@ export default function WritingHelpPage() {
             
             <TabsTrigger 
               value="outreach" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white z-20"
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-base-content/80 hover:text-base-content z-20"
             >
               <Mail className="h-4 w-4" />
               <span className="hidden sm:inline font-semibold">Outreach Message</span>
@@ -269,7 +269,7 @@ export default function WritingHelpPage() {
                 onClick={() => router.push("/developer/roles/search")}
                 variant="outline"
                 size="lg"
-                className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-800 px-6 py-3 font-semibold shadow-lg transition-all duration-150"
+                className="bg-base-100/70 backdrop-blur-md border-base-300/50 hover:bg-base-200 px-6 py-3 font-semibold shadow-lg transition-all duration-150"
               >
                 <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
                 Back to Roles
