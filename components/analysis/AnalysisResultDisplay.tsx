@@ -118,7 +118,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
         console.error('[AnalysisResultDisplay] Error toast triggered:', error);
       toast({ title: "Error", description: error, variant: "destructive" });
     }
-  }, [status, error, toast]);
+  }, [status, error]); // Remove toast from dependencies to prevent infinite loops
 
   // Update handler: dispatch Redux action
   const handleSectionChange = <T extends any>(
