@@ -16,7 +16,7 @@ interface ProfileInfoCardProps {
 
 export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange, errors }: ProfileInfoCardProps) {
   return (
-    <Card className="border shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up">
+    <Card className="border shadow-none bg-gradient-to-br from-blue-50 to-purple-50 animate-fade-in-up">
       <CardHeader>
         <CardTitle>Personal Information</CardTitle>
       </CardHeader>
@@ -33,7 +33,7 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               onChange={onInputChange}
               required
               className={cn(
-                "text-sm bg-white dark:bg-gray-800 border",
+                "text-sm bg-base-100 border",
                 modifiedFields.has('name') && "ring-2 ring-blue-500/50",
                 errors.name && "border-red-500 focus:ring-red-500"
               )}
@@ -53,7 +53,7 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               onChange={onInputChange}
               required
               className={cn(
-                "text-sm bg-white dark:bg-gray-800 border",
+                "text-sm bg-base-100 border",
                 modifiedFields.has('title') && "ring-2 ring-blue-500/50",
                 errors.title && "border-red-500 focus:ring-red-500"
               )}
@@ -72,7 +72,7 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               value={currentProfile?.profileEmail || ''}
               onChange={onInputChange}
               className={cn(
-                "text-sm bg-white dark:bg-gray-800 border",
+                "text-sm bg-base-100 border",
                 modifiedFields.has('profileEmail') && "ring-2 ring-blue-500/50",
                 errors.profileEmail && "border-red-500 focus:ring-red-500"
               )}
@@ -89,7 +89,7 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               value={currentProfile?.contactInfo?.phone || ''}
               onChange={onInputChange}
               className={cn(
-                "text-sm bg-white dark:bg-gray-800 border",
+                "text-sm bg-base-100 border",
                 modifiedFields.has('phone') && "ring-2 ring-blue-500/50"
               )}
             />
@@ -103,7 +103,7 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               value={currentProfile?.contactInfo?.city || ''}
               onChange={onInputChange}
               className={cn(
-                "text-sm bg-white dark:bg-gray-800 border",
+                "text-sm bg-base-100 border",
                 modifiedFields.has('city') && "ring-2 ring-blue-500/50"
               )}
               placeholder="Your city"
@@ -116,7 +116,7 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               value={currentProfile?.contactInfo?.country || ''}
               onChange={onInputChange}
               className={cn(
-                "text-sm bg-white dark:bg-gray-800 border",
+                "text-sm bg-base-100 border",
                 modifiedFields.has('country') && "ring-2 ring-blue-500/50"
               )}
               placeholder="Your country"
@@ -131,7 +131,7 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
             value={currentProfile?.about || ''}
             onChange={onInputChange}
             className={cn(
-              "text-xs bg-white dark:bg-gray-800 border scrollbar-hide",
+              "text-xs bg-base-100 border scrollbar-hide",
               modifiedFields.has('about') && "ring-2 ring-blue-500/50"
             )}
           />

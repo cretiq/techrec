@@ -297,7 +297,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
 
   return (
     <motion.div
-      className="analysis-display-container p-4 md:p-6 lg:p-8 bg-background dark:bg-black/20 min-h-screen font-sans rounded-2xl"
+      className="analysis-display-container p-4 md:p-6 lg:p-8 bg-background min-h-screen font-sans rounded-2xl"
       variants={pageVariants}
       initial="hidden"
       animate="visible"
@@ -351,7 +351,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
               {analysisData.contactInfo && (
                   <motion.section
                     id="contact-info" 
-                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20"
+                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20"
                     variants={sectionVariants}
                     initial="hidden"
                     whileInView="visible"
@@ -379,7 +379,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="about" 
                     id="about" 
-                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20 overflow-hidden"
+                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">About / Summary</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -408,7 +408,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="skills" 
                     id="skills" 
-                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20 overflow-hidden"
+                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Skills</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -437,7 +437,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="experience" 
                     id="experience" 
-                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20 overflow-hidden"
+                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Work Experience</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -466,7 +466,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="education" 
                     id="education" 
-                    className="p-6 bg-card text-card-foreground rounded-xl bg-white/20 dark:bg-black/20 scroll-mt-20 overflow-hidden"
+                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Education</AccordionTrigger>
                     <AccordionContent className="pt-3">

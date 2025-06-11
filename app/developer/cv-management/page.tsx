@@ -270,14 +270,14 @@ export default function CVManagementPage() {
                 className="w-full animate-fade-in-up"
                 style={{ animationDelay: '150ms' }}
             >
-                <TabsList className="grid w-full grid-cols-2 gap-2 p-1 bg-base-200/50 backdrop-blur-sm rounded-lg border border-base-300" variant="default">
+                <TabsList className="grid w-full grid-cols-2 gap-2 p-1 bg-base-100/20 backdrop-blur-sm rounded-lg border border-base-300" variant="default">
                     <TabsTrigger 
                         value="manage" 
                         className={cn(
                             "font-semibold transition-all duration-200",
                             activeTab === "manage" 
-                                ? "bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-lg transform scale-[1.02]" 
-                                : "hover:bg-base-300/50 hover:shadow-md"
+                                ? "bg-base-100/80 text-base-content shadow-lg transform scale-[1.02]" 
+                                : "bg-base-100/20 hover:bg-base-100/30 hover:shadow-md"
                         )}
                         size="lg"
                     >
@@ -288,8 +288,8 @@ export default function CVManagementPage() {
                         className={cn(
                             "font-semibold transition-all duration-200",
                             activeTab === "analyze" 
-                                ? "bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-lg transform scale-[1.02]" 
-                                : "hover:bg-base-300/50 hover:shadow-md"
+                                ? "bg-base-100/80 text-base-content shadow-lg transform scale-[1.02]" 
+                                : "bg-base-100/20 hover:bg-base-100/30 hover:shadow-md"
                         )}
                         size="lg"
                     >

@@ -283,7 +283,7 @@ export default function RolesSearch2Page() {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Section */}
         <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up">
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg shadow p-6 sticky top-8">
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow p-6 sticky top-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Filters (RapidAPI)</h2>
               {activeFilters > 0 && (
@@ -305,7 +305,7 @@ export default function RolesSearch2Page() {
                   placeholder="Search roles (e.g., Engineer)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white/50 dark:bg-gray-800/50"
+                  className="pl-10 bg-base-100/50"
                 />
               </div>
 
@@ -316,15 +316,15 @@ export default function RolesSearch2Page() {
                   placeholder="Location (e.g., United States)"
                   value={selectedLocation === 'all' ? '' : selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value || 'all')}
-                  className="bg-white/50 dark:bg-gray-800/50"
+                  className="bg-base-100/50"
                 />
               </div>
 
               {/* Results Limit Slider */}
-              <div className="space-y-3 p-4 rounded-lg bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border border-violet-100 dark:border-violet-800">
+              <div className="space-y-3 p-4 rounded-lg bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-100">
                 <div className="flex justify-between items-center">
-                  <Label className="text-sm font-medium text-violet-700 dark:text-violet-300">Results Limit</Label>
-                  <div className="px-2 py-1 bg-violet-100 dark:bg-violet-800 rounded-full text-xs font-bold text-violet-700 dark:text-violet-300">
+                  <Label className="text-sm font-medium text-violet-700">Results Limit</Label>
+                  <div className="px-2 py-1 bg-violet-100 rounded-full text-xs font-bold text-violet-700">
                     {searchLimit[0]}
                   </div>
                 </div>
@@ -420,7 +420,7 @@ export default function RolesSearch2Page() {
             </div>
           )}
           {!loading && filteredRoles.length === 0 && (
-            <Card className="md:col-span-2 xl:col-span-3 text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/30 dark:to-gray-900/30 animate-fade-in-up">
+            <Card className="md:col-span-2 xl:col-span-3 text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100 animate-fade-in-up">
               <CardHeader>
                 <CardTitle>No Roles Found</CardTitle>
                 <CardDescription>Try adjusting your search terms or filters.</CardDescription>
@@ -502,8 +502,8 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
       className={cn(
-        "hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up flex flex-col h-full relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-        isSelected && "border-2 border-primary bg-primary/10 dark:bg-primary/20"
+        "hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 animate-fade-in-up flex flex-col h-full relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+        isSelected && "border-2 border-primary bg-primary/10"
       )}
       style={{ animationDelay: `${index * 100}ms` }}
                 >

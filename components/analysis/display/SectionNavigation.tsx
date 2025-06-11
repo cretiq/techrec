@@ -77,7 +77,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
 
   return (
     <nav className="sticky top-6 h-fit">
-        <div className="p-4 rounded-lg bg-white/20 dark:bg-black/20">
+        <div className="p-4 rounded-lg bg-base-100/80">
             <h3 className="text-lg font-semibold text-foreground mb-4">Sections</h3>
             <ul className="space-y-1">
                 {sections.map(section => (
@@ -85,7 +85,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
                         <button 
                             onClick={() => scrollToSection(section.id)}
                             className={cn(
-                                "w-full text-left px-3 py-1.5 text-sm rounded transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1 dark:focus:ring-offset-background",
+                                "w-full text-left px-3 py-1.5 text-sm rounded transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1",
                                 activeSection === section.id 
                                     ? "bg-primary/10 text-primary font-medium"
                                     : "text-muted-foreground hover:bg-muted hover:text-foreground"

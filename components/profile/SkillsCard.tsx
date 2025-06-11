@@ -26,7 +26,7 @@ export function SkillsCard({ profile, onDeleteSkill }: SkillsCardProps) {
   const groupedSkills = groupSkillsByCategory(profile?.skills || []);
 
   return (
-    <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up">
+    <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 animate-fade-in-up">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg md:text-xl">Skills</CardTitle>
       </CardHeader>
