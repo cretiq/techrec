@@ -259,18 +259,19 @@ export default function CVManagementPage() {
     // --- End Redis Test Handlers ---
 
     return (
-        <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-            <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                <h1 className="text-2xl font-bold">CV Management & Analysis</h1>
-                <p className="text-sm text-muted-foreground mt-1">Upload, manage, analyze, and edit your CV documents.</p>
+        <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" style={{ animationDelay: '100ms' }} data-testid="cv-management-page-container">
+            <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }} data-testid="cv-management-page-header">
+                <h1 className="text-2xl font-bold" data-testid="cv-management-title">CV Management & Analysis</h1>
+                <p className="text-sm text-muted-foreground mt-1" data-testid="cv-management-description">Upload, manage, analyze, and edit your CV documents.</p>
             </div>
             <Tabs
                 value={activeTab}
                 onValueChange={handleTabChange}
                 className="w-full animate-fade-in-up"
                 style={{ animationDelay: '150ms' }}
+                data-testid="cv-management-tabs-container"
             >
-                <TabsList className="grid w-full grid-cols-2 gap-2 p-1 bg-base-100/20 backdrop-blur-sm rounded-lg border border-base-300" variant="default">
+                <TabsList className="grid w-full grid-cols-2 gap-2 p-1 bg-base-100/20 backdrop-blur-sm rounded-lg border border-base-300" variant="default" data-testid="cv-management-tabs-list">
                     <TabsTrigger 
                         value="manage" 
                         className={cn(
@@ -280,6 +281,7 @@ export default function CVManagementPage() {
                                 : "bg-base-100/20 hover:bg-base-100/30 hover:shadow-md"
                         )}
                         size="lg"
+                        data-testid="cv-management-tab-manage"
                     >
                         Manage CVs
                     </TabsTrigger>
@@ -292,31 +294,32 @@ export default function CVManagementPage() {
                                 : "bg-base-100/20 hover:bg-base-100/30 hover:shadow-md"
                         )}
                         size="lg"
+                        data-testid="cv-management-tab-analyze"
                     >
                         Analyze & Edit
                     </TabsTrigger>
                 </TabsList>
-                <TabsContent value="manage" className="mt-4 space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Upload New CV</CardTitle>
-                            <CardDescription>Upload a new CV document (PDF, DOCX, TXT). Analysis will start automatically.</CardDescription>
+                <TabsContent value="manage" className="mt-4 space-y-6" data-testid="cv-management-content-manage">
+                    <Card data-testid="cv-management-card-upload">
+                        <CardHeader data-testid="cv-management-upload-header">
+                            <CardTitle data-testid="cv-management-upload-title">Upload New CV</CardTitle>
+                            <CardDescription data-testid="cv-management-upload-description">Upload a new CV document (PDF, DOCX, TXT). Analysis will start automatically.</CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent data-testid="cv-management-upload-content">
                             <UploadForm onUploadComplete={handleUploadComplete} />
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>My CVs</CardTitle>
-                            <CardDescription>Manage your uploaded CVs. Click 'Improve' to view analysis.</CardDescription>
+                    <Card data-testid="cv-management-card-cv-list">
+                        <CardHeader data-testid="cv-management-cv-list-header">
+                            <CardTitle data-testid="cv-management-cv-list-title">My CVs</CardTitle>
+                            <CardDescription data-testid="cv-management-cv-list-description">Manage your uploaded CVs. Click 'Improve' to view analysis.</CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent data-testid="cv-management-cv-list-content">
                             <CVList refreshKey={refreshKey} />
                         </CardContent>
                     </Card>
                 </TabsContent>
-                <TabsContent value="analyze" className="mt-4 space-y-6">
+                <TabsContent value="analyze" className="mt-4 space-y-6" data-testid="cv-management-content-analyze">
                     {/* --- Conditional Rendering Logic --- */}
                     {(() => { // Use IIFE for clearer conditional logic
                         const analysisIdFromUrl = searchParams.get('analysisId');
@@ -326,9 +329,9 @@ export default function CVManagementPage() {
                         // Condition 1: Loading state (regardless of ID presence)
                         if (isLoading) {
                             return (
-                                <Card>
-                                    <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>Loading analysis...</CardDescription></CardHeader>
-                                    <CardContent><div className="flex justify-center items-center h-40">Loading...</div></CardContent>
+                                <Card data-testid="cv-management-analysis-loading">
+                                    <CardHeader><CardTitle data-testid="cv-management-analysis-loading-title">Analysis Result</CardTitle><CardDescription data-testid="cv-management-analysis-loading-description">Loading analysis...</CardDescription></CardHeader>
+                                    <CardContent><div className="flex justify-center items-center h-40" data-testid="cv-management-analysis-loading-spinner">Loading...</div></CardContent>
                                 </Card>
                             );
                         }
@@ -348,9 +351,9 @@ export default function CVManagementPage() {
                                 // Data isn't ready yet, even though ID is in URL (e.g., still fetching)
                                 // Render a loading state consistent with the isLoading condition above
                                 return (
-                                    <Card>
-                                        <CardHeader><CardTitle>Analysis Result</CardTitle><CardDescription>Loading analysis...</CardDescription></CardHeader>
-                                        <CardContent><div className="flex justify-center items-center h-40">Loading...</div></CardContent>
+                                    <Card data-testid="cv-management-analysis-fetching">
+                                        <CardHeader><CardTitle data-testid="cv-management-analysis-fetching-title">Analysis Result</CardTitle><CardDescription data-testid="cv-management-analysis-fetching-description">Loading analysis...</CardDescription></CardHeader>
+                                        <CardContent><div className="flex justify-center items-center h-40" data-testid="cv-management-analysis-fetching-spinner">Loading...</div></CardContent>
                                     </Card>
                                 );
                             }
@@ -359,10 +362,10 @@ export default function CVManagementPage() {
                         // Condition 3: No Analysis ID in URL and not loading
                         // Show the placeholder/prompt to select a CV
                         return (
-                            <Card className="mt-4">
-                                <CardHeader><CardTitle>Select a CV</CardTitle></CardHeader>
-                                <CardContent>
-                                    <p className="text-muted-foreground">
+                            <Card className="mt-4" data-testid="cv-management-analysis-empty">
+                                <CardHeader data-testid="cv-management-analysis-empty-header"><CardTitle data-testid="cv-management-analysis-empty-title">Select a CV</CardTitle></CardHeader>
+                                <CardContent data-testid="cv-management-analysis-empty-content">
+                                    <p className="text-muted-foreground" data-testid="cv-management-analysis-empty-message">
                                         Please select a CV from the 'Manage CVs' tab by clicking the 'Improve' <Play className="inline h-4 w-4 mx-1" /> button to view its analysis and suggestions.
                                     </p>
                                 </CardContent>
@@ -374,23 +377,23 @@ export default function CVManagementPage() {
             </Tabs>
 
             {/* --- Temporary Redis Test Card --- */}
-            <Card className="mt-6 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-                <CardHeader>
-                    <CardTitle>Redis Cache Test (Temporary)</CardTitle>
-                    <CardDescription>
+            <Card className="mt-6 animate-fade-in-up" style={{ animationDelay: '400ms' }} data-testid="cv-management-redis-test-card">
+                <CardHeader data-testid="cv-management-redis-test-header">
+                    <CardTitle data-testid="cv-management-redis-test-title">Redis Cache Test (Temporary)</CardTitle>
+                    <CardDescription data-testid="cv-management-redis-test-description">
                         Use these buttons to test basic set and get operations with Redis.
                         Check server logs for detailed Redis client interactions.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="flex space-x-4">
-                        <Button onClick={handleTestRedisSet}>Test Redis Set</Button>
-                        <Button onClick={handleTestRedisGet} variant="outline">Test Redis Get</Button>
+                <CardContent className="space-y-4" data-testid="cv-management-redis-test-content">
+                    <div className="flex space-x-4" data-testid="cv-management-redis-test-buttons">
+                        <Button onClick={handleTestRedisSet} data-testid="cv-management-button-redis-set">Test Redis Set</Button>
+                        <Button onClick={handleTestRedisGet} variant="outline" data-testid="cv-management-button-redis-get">Test Redis Get</Button>
                     </div>
                     {redisTestMessage && (
-                        <div className="mt-4 p-3 bg-muted rounded-md text-sm">
-                            <p className="font-semibold">Test Log:</p>
-                            <pre className="whitespace-pre-wrap break-all">{redisTestMessage}</pre>
+                        <div className="mt-4 p-3 bg-muted rounded-md text-sm" data-testid="cv-management-redis-test-message">
+                            <p className="font-semibold" data-testid="cv-management-redis-test-log-title">Test Log:</p>
+                            <pre className="whitespace-pre-wrap break-all" data-testid="cv-management-redis-test-log-content">{redisTestMessage}</pre>
                         </div>
                     )}
                 </CardContent>

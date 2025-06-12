@@ -1,23 +1,17 @@
 "use client"
 
-import { useState, useEffect, useMemo, useRef } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
-import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
-import { FileText, Mail, PenTool, ArrowRight, Loader2, AlertTriangle, Rocket } from "lucide-react"
-import { CVOptimizer } from "./components/cv-optimizer"
-import { CoverLetterCreator } from "./components/cover-letter-creator"
-import { OutreachMessageGenerator } from "./components/outreach-message-generator"
-import { RoleContextCard } from "./components/role-context-card"
+import { FileText, Mail, PenTool, ArrowRight, Loader2, Rocket } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
 import { useSelector, useDispatch } from 'react-redux';
-import { selectSelectedRoles, clearRoleSelection } from '@/lib/features/selectedRolesSlice';
-import { RootState, AppDispatch } from '@/lib/store';
+import { selectSelectedRoles } from '@/lib/features/selectedRolesSlice';
+import { AppDispatch } from '@/lib/store';
 import { Role } from "@/types/role"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { MultiRolePane } from "./components/MultiRolePane"
 
 export default function WritingHelpPage() {
@@ -33,7 +27,6 @@ export default function WritingHelpPage() {
   const router = useRouter()
   const { toast } = useToast()
   const { data: session, status: sessionStatus } = useSession()
-  const dispatch = useDispatch<AppDispatch>();
 
   // Get selected role IDs from Redux
   const selectedRoles = useSelector(selectSelectedRoles); // Get full Role objects from Redux
@@ -165,10 +158,14 @@ export default function WritingHelpPage() {
           onValueChange={(value) => setActiveTab(value as "cv" | "cover-letter" | "outreach")}
           className="w-full"
         >
-          <TabsList className="relative grid grid-cols-3 w-full max-w-2xl mx-auto h-12 bg-base-100/70 backdrop-blur-md border border-base-300/50 rounded-xl p-1.5 shadow-xl">
+          <TabsList 
+            className="relative grid grid-cols-3 w-full max-w-2xl mx-auto h-12 bg-base-100/60 backdrop-blur-md border border-base-300/50 rounded-xl p-1.5 shadow-xl"
+            data-testid="write-nav-tabs-main"
+          >
             <TabsTrigger 
               value="cv" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-base-content/80 hover:text-base-content z-20"
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content z-20"
+              data-testid="write-nav-tab-cv-trigger"
             >
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline font-semibold">CV Optimization</span>
@@ -177,7 +174,8 @@ export default function WritingHelpPage() {
             
             <TabsTrigger 
               value="cover-letter" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-base-content/80 hover:text-base-content z-20"
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content z-20"
+              data-testid="write-nav-tab-cover-letter-trigger"
             >
               <PenTool className="h-4 w-4" />
               <span className="hidden sm:inline font-semibold">Cover Letter</span>
@@ -186,7 +184,8 @@ export default function WritingHelpPage() {
             
             <TabsTrigger 
               value="outreach" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 text-base-content/80 hover:text-base-content z-20"
+              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content z-20"
+              data-testid="write-nav-tab-outreach-trigger"
             >
               <Mail className="h-4 w-4" />
               <span className="hidden sm:inline font-semibold">Outreach Message</span>
@@ -196,7 +195,7 @@ export default function WritingHelpPage() {
             {/* Active Tab Background */}
             <motion.div
               layoutId="activeTabBackground"
-              className="absolute top-1.5 bottom-1.5 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg shadow-lg z-10"
+              className="absolute top-1.5 bottom-1.5 bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg z-10"
               style={{
                 width: `calc(33.333% - 4px)`,
                 left: activeTab === "cv" ? "6px" : 
@@ -210,43 +209,6 @@ export default function WritingHelpPage() {
                 duration: 0.25
               }}
             />
-            
-            {/* Active Tab Text Overlay */}
-            <motion.div
-              className="absolute inset-1.5 grid grid-cols-3 pointer-events-none z-30"
-              initial={false}
-            >
-              {["cv", "cover-letter", "outreach"].map((tab, index) => (
-                <div 
-                  key={tab}
-                  className="flex items-center justify-center gap-2"
-                >
-                  {activeTab === tab && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2, delay: 0.1 }}
-                      className="flex items-center justify-center gap-2 text-sm font-semibold text-white"
-                    >
-                      {tab === "cv" && <FileText className="h-4 w-4" />}
-                      {tab === "cover-letter" && <PenTool className="h-4 w-4" />}
-                      {tab === "outreach" && <Mail className="h-4 w-4" />}
-                      <span className="hidden sm:inline">
-                        {tab === "cv" && "CV Optimization"}
-                        {tab === "cover-letter" && "Cover Letter"}
-                        {tab === "outreach" && "Outreach Message"}
-                      </span>
-                      <span className="sm:hidden">
-                        {tab === "cv" && "CV"}
-                        {tab === "cover-letter" && "Letter"}
-                        {tab === "outreach" && "Outreach"}
-                      </span>
-                    </motion.div>
-                  )}
-                </div>
-              ))}
-            </motion.div>
           </TabsList>
         </Tabs>
         
@@ -270,6 +232,7 @@ export default function WritingHelpPage() {
                 variant="outline"
                 size="lg"
                 className="bg-base-100/70 backdrop-blur-md border-base-300/50 hover:bg-base-200 px-6 py-3 font-semibold shadow-lg transition-all duration-150"
+                data-testid="write-button-back-to-roles-trigger"
               >
                 <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
                 Back to Roles
@@ -287,7 +250,8 @@ export default function WritingHelpPage() {
                 onClick={handleGenerateAll}
                 disabled={isGeneratingAll || isAnyPaneGenerating}
                 size="lg"
-                className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-700 hover:via-purple-700 hover:to-pink-700 text-white border-0 shadow-xl px-8 py-3 font-semibold text-lg transition-all duration-150"
+                className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-700 hover:via-purple-700 hover:to-pink-700 text-white border-0 shadow-xl px-8 py-3 font-semibold text-lg transition-all duration-150 rounded-lg"
+                data-testid="write-button-generate-all-trigger"
               >
                 {/* Shimmer Effect */}
                 <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>

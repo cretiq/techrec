@@ -81,34 +81,35 @@ export function AnalysisSummaryDashboard({
   const totalSuggestions = suggestions?.length || 0;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-testid="cv-analysis-dashboard-container">
       {/* Overall Score Card */}
-      <Card className="col-span-full md:col-span-1 bg-base-100/60">
+      <Card className="col-span-full md:col-span-1 bg-base-100/60" data-testid="cv-analysis-card-overall-score">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Overall CV Score</CardTitle>
+          <CardTitle className="text-sm font-medium" data-testid="cv-analysis-title-overall-score">Overall CV Score</CardTitle>
           <Button 
             onClick={onGetSuggestions} 
             disabled={isSuggesting}
             variant="outline" 
             size="sm"
+            data-testid="cv-analysis-button-get-suggestions-trigger"
           >
             {isSuggesting ? (
-              <>Getting Suggestions...</>
+              <span data-testid="cv-analysis-text-getting-suggestions">Getting Suggestions...</span>
             ) : (
               <>
-                <Wand2 className="mr-2 h-4 w-4" />
-                Get Suggestions
+                <Wand2 className="mr-2 h-4 w-4" data-testid="cv-analysis-icon-suggestions-wand" />
+                <span data-testid="cv-analysis-text-get-suggestions">Get Suggestions</span>
               </>
             )}
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold mb-2">{overallCompleteness}%</div>
-          <Progress value={overallCompleteness} className="h-2" />
+          <div className="text-2xl font-bold mb-2" data-testid="cv-analysis-score-overall-percentage">{overallCompleteness}%</div>
+          <Progress value={overallCompleteness} className="h-2" data-testid="cv-analysis-progress-overall-score" />
           {totalSuggestions > 0 && (
-            <p className="text-sm text-muted-foreground mt-2 flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              {totalSuggestions} improvement suggestion{totalSuggestions !== 1 ? 's' : ''}
+            <p className="text-sm text-muted-foreground mt-2 flex items-center" data-testid="cv-analysis-text-suggestions-summary">
+              <AlertCircle className="h-4 w-4 mr-1" data-testid="cv-analysis-icon-suggestions-alert" />
+              <span data-testid="cv-analysis-text-suggestions-count">{totalSuggestions} improvement suggestion{totalSuggestions !== 1 ? 's' : ''}</span>
             </p>
           )}
         </CardContent>
@@ -116,7 +117,7 @@ export function AnalysisSummaryDashboard({
 
       {/* Section Score Cards */}
       {sectionMetrics.map(({ section, completeness, suggestions: sectionSuggestions }) => (
-        <motion.div key={section} whileHover={scaleOnHover}>
+        <motion.div key={section} whileHover={scaleOnHover} data-testid={`cv-analysis-motion-section-${section}`}>
           <Card 
             className='bg-base-100/60 cursor-pointer'
             onClick={() => {
@@ -137,22 +138,24 @@ export function AnalysisSummaryDashboard({
                 }
               }
             }}
+            data-testid={`cv-analysis-card-section-${section}`}
           >
             <CardHeader 
               className="flex flex-row items-center justify-between space-y-0 pb-2"
+              data-testid={`cv-analysis-header-section-${section}`}
             >
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium" data-testid={`cv-analysis-title-section-${section}`}>
                 {section.charAt(0).toUpperCase() + section.slice(1)}
               </CardTitle>
               {sectionSuggestions > 0 && (
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-muted-foreground" data-testid={`cv-analysis-text-section-${section}-suggestions`}>
                   {sectionSuggestions} suggestion{sectionSuggestions !== 1 ? 's' : ''}
                 </span>
               )}
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold mb-2">{completeness}%</div>
-              <Progress value={completeness} className="h-2" />
+            <CardContent data-testid={`cv-analysis-content-section-${section}`}>
+              <div className="text-2xl font-bold mb-2" data-testid={`cv-analysis-score-section-${section}-percentage`}>{completeness}%</div>
+              <Progress value={completeness} className="h-2" data-testid={`cv-analysis-progress-${section}-score`} />
             </CardContent>
           </Card>
         </motion.div>

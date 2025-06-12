@@ -164,24 +164,25 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md p-4 border rounded-lg shadow-sm dark:border-gray-500">
-      <Label htmlFor="cv-upload">Upload CV</Label>
+    <div className="w-full max-w-md p-4 border rounded-lg shadow-sm dark:border-gray-500" data-testid="cv-management-upload-form-container">
+      <Label htmlFor="cv-upload" data-testid="cv-management-upload-label">Upload CV</Label>
       <div
         {...getRootProps()}
         id="cv-upload"
         className={`mt-2 flex flex-col justify-center items-center w-full h-32 px-6 py-10 border-2 border-dashed dark:border-gray-500 rounded-md cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-input hover:border-primary/50'} ${uploadState === 'success' ? 'border-green-500 bg-green-50' : ''}`}
+        data-testid="cv-management-upload-dropzone"
       >
-        <input {...getInputProps()} disabled={uploadState === 'uploading' || uploadState === 'success'} />
+        <input {...getInputProps()} disabled={uploadState === 'uploading' || uploadState === 'success'} data-testid="cv-management-upload-file-input" />
         {
           uploadState === 'uploading' ? (
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" data-testid="cv-management-upload-icon-loading" />
           ) : uploadState === 'success' ? (
-            <CheckCircle className="h-8 w-8 text-green-500" />
+            <CheckCircle className="h-8 w-8 text-green-500" data-testid="cv-management-upload-icon-success" />
           ) : (
-             <UploadCloud className="h-8 w-8 text-muted-foreground" />
+             <UploadCloud className="h-8 w-8 text-muted-foreground" data-testid="cv-management-upload-icon-default" />
           )
         }
-        <p className={`mt-2 text-sm text-center ${uploadState === 'success' ? 'text-green-600 font-medium' : 'text-muted-foreground'}`}>
+        <p className={`mt-2 text-sm text-center ${uploadState === 'success' ? 'text-green-600 font-medium' : 'text-muted-foreground'}`} data-testid="cv-management-upload-status-text">
           {isDragActive ? "Drop the file here ..." : 
            uploadState === 'uploading' ? `Uploading (${uploadProgress}%)` : 
            uploadState === 'success' ? "Upload Complete!" : 
@@ -189,20 +190,21 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
            "Drag & drop or click to select"}
         </p>
         {uploadState !== 'uploading' && uploadState !== 'success' && !selectedFile && (
-             <p className="text-xs text-muted-foreground mt-1">(PDF, DOCX, TXT - Max {MAX_FILE_SIZE_MB}MB)</p>
+             <p className="text-xs text-muted-foreground mt-1" data-testid="cv-management-upload-file-restrictions">(PDF, DOCX, TXT - Max {MAX_FILE_SIZE_MB}MB)</p>
         )}
       </div>
 
       {selectedFile && uploadState !== 'success' && (
-        <div className="mt-4">
+        <div className="mt-4" data-testid="cv-management-upload-actions">
           {/* Optionally show progress bar outside dropzone too */}
           {/* {uploadState === 'uploading' && <Progress value={uploadProgress} className="mt-2 h-2" />} */} 
           <Button
             onClick={handleUpload}
             disabled={uploadState === 'uploading'}
             className="w-full"
+            data-testid="cv-management-button-upload-trigger"
           >
-            {uploadState === 'uploading' ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...</> : 'Upload CV'}
+            {uploadState === 'uploading' ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-upload-button-spinner" /> Uploading...</> : 'Upload CV'}
           </Button>
         </div>
       )}
