@@ -266,17 +266,17 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   console.log(`[AnalysisResultDisplay] Checking render conditions: status='${status}', hasAnalysisData=${!!analysisData}`);
   if (status === 'loading') {
     console.log('[AnalysisResultDisplay] Rendering LOADING state.');
-    return <div className="p-6 text-center text-gray-500"><Loader2 className="inline mr-2 h-5 w-5 animate-spin" /> Loading analysis data...</div>;
+    return <div className="p-6 text-center text-gray-500" data-testid="cv-management-analysis-display-loading"><Loader2 className="inline mr-2 h-5 w-5 animate-spin" data-testid="cv-management-analysis-display-loading-spinner" /> Loading analysis data...</div>;
   }
   
   // Handle case where loading finished but data is still null
   if (!analysisData) {
     if (status === 'failed') {
       console.error('[AnalysisResultDisplay] Rendering FAILED state.');
-      return <p className="p-6 text-center text-destructive">Failed to load analysis data. {error || 'Unknown error'}</p>;
+      return <p className="p-6 text-center text-destructive" data-testid="cv-management-analysis-display-error">Failed to load analysis data. {error || 'Unknown error'}</p>;
     } 
     console.log('[AnalysisResultDisplay] Rendering NO DATA state.');
-    return <p className="p-6 text-center text-muted-foreground">No analysis data available.</p>;
+    return <p className="p-6 text-center text-muted-foreground" data-testid="cv-management-analysis-display-no-data">No analysis data available.</p>;
   }
 
   // Determine button disabled states based on Redux status
@@ -301,28 +301,30 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
       variants={pageVariants}
       initial="hidden"
       animate="visible"
+      data-testid="cv-management-analysis-display-container"
     >
-       <header className="mb-8 flex justify-between items-start flex-wrap gap-4 print:hidden"> {/* Hide header buttons when printing */}
-          <div>
+       <header className="mb-8 flex justify-between items-start flex-wrap gap-4 print:hidden" data-testid="cv-management-analysis-display-header"> {/* Hide header buttons when printing */}
+          <div data-testid="cv-management-analysis-display-title-section">
               {/* Use theme foreground colors */}
-              <h1 className="text-3xl font-bold text-foreground">CV Analysis Results</h1>
+              <h1 className="text-3xl font-bold text-foreground" data-testid="cv-management-analysis-display-title">CV Analysis Results</h1>
               {analysisId && !analysisId.startsWith('temp-') && (
-                  <p className="text-sm text-muted-foreground mt-1">Analysis ID: {analysisId}</p> /* text-muted-foreground should adapt */
+                  <p className="text-sm text-muted-foreground mt-1" data-testid="cv-management-analysis-display-id">Analysis ID: {analysisId}</p> /* text-muted-foreground should adapt */
               )}
           </div>
           {/* Action Buttons moved to header - shadcn Buttons should adapt */}
-          <div className="flex gap-2 flex-wrap justify-end">
-             <Button onClick={handleExpandAll} variant="outline" size="sm" disabled={openSections.length === accordionSectionKeys.length || isProcessing}> <ChevronsDownUp className="mr-2 h-4 w-4" /> Expand All </Button>
-             <Button onClick={handleCollapseAll} variant="outline" size="sm" disabled={openSections.length === 0 || isProcessing}> <ChevronsUpDown className="mr-2 h-4 w-4" /> Collapse All </Button>
-             <Button onClick={handleGetSuggestions} disabled={isSuggesting || isSaving || isExporting || isProcessing} size="sm" variant="outline"> {isSuggesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" /> } {isSuggesting ? 'Getting Suggestions...' : 'Get Suggestions'} </Button>
-             <Button onClick={handleExport} disabled={isExporting || isSaving || isSuggesting || isProcessing || analysisData == null} size="sm" variant="outline"> {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />} {isExporting ? 'Exporting...' : 'Export Edited CV'} </Button>
+          <div className="flex gap-2 flex-wrap justify-end" data-testid="cv-management-analysis-display-actions">
+             <Button onClick={handleExpandAll} variant="outline" size="sm" disabled={openSections.length === accordionSectionKeys.length || isProcessing} data-testid="cv-management-button-expand-all"> <ChevronsDownUp className="mr-2 h-4 w-4" data-testid="cv-management-icon-expand-all" /> Expand All </Button>
+             <Button onClick={handleCollapseAll} variant="outline" size="sm" disabled={openSections.length === 0 || isProcessing} data-testid="cv-management-button-collapse-all"> <ChevronsUpDown className="mr-2 h-4 w-4" data-testid="cv-management-icon-collapse-all" /> Collapse All </Button>
+             <Button onClick={handleGetSuggestions} disabled={isSuggesting || isSaving || isExporting || isProcessing} size="sm" variant="outline" data-testid="cv-management-button-get-suggestions"> {isSuggesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-icon-suggestions-loading" /> : <Wand2 className="mr-2 h-4 w-4" data-testid="cv-management-icon-suggestions" /> } {isSuggesting ? 'Getting Suggestions...' : 'Get Suggestions'} </Button>
+             <Button onClick={handleExport} disabled={isExporting || isSaving || isSuggesting || isProcessing || analysisData == null} size="sm" variant="outline" data-testid="cv-management-button-export"> {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-icon-export-loading" /> : <Download className="mr-2 h-4 w-4" data-testid="cv-management-icon-export" />} {isExporting ? 'Exporting...' : 'Export Edited CV'} </Button>
              {/* Primary action button styling? Default should work */}
              <Button 
                onClick={handleSaveAll} 
                disabled={!hasUnsavedChanges || isSaving || isSuggesting || isExporting || isProcessing || !!(analysisId && analysisId.startsWith('temp-'))} 
                size="sm"
+               data-testid="cv-management-button-save-changes"
              >
-                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />} 
+                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-icon-save-loading" /> : <Save className="mr-2 h-4 w-4" data-testid="cv-management-icon-save" />} 
                  {isSaving ? 'Saving...' : (hasUnsavedChanges ? 'Save Changes' : 'All Changes Saved')} 
              </Button>
           </div>
@@ -333,6 +335,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
          initial="hidden"
          whileInView="visible"
          viewport={{ once: true, amount: 0.2 }}
+         data-testid="cv-management-analysis-summary-section"
        >
          <AnalysisSummaryDashboard
            analysisData={analysisData}
@@ -342,12 +345,12 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
          />
        </motion.div>
 
-       <div className="flex flex-col md:flex-row gap-8 mt-8">
-          <aside className="w-full md:w-1/4 lg:w-1/5 order-2 md:order-1 hidden md:block">
+       <div className="flex flex-col md:flex-row gap-8 mt-8" data-testid="cv-management-analysis-content">
+          <aside className="w-full md:w-1/4 lg:w-1/5 order-2 md:order-1 hidden md:block" data-testid="cv-management-analysis-navigation">
              <SectionNavigation sections={availableSections} offset={80} /> 
           </aside>
 
-          <main className="w-full md:w-3/4 lg:w-4/5 order-1 md:order-2 space-y-4">
+          <main className="w-full md:w-3/4 lg:w-4/5 order-1 md:order-2 space-y-4" data-testid="cv-management-analysis-main">
               {analysisData.contactInfo && (
                   <motion.section
                     id="contact-info" 

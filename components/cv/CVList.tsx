@@ -170,61 +170,62 @@ export function CVList({ refreshKey }: CVListProps) {
 
   // Render logic remains largely the same, but includes SearchFilters
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4" data-testid="cv-management-cv-list-container">
       <SearchFilters onFilterChange={handleFilterChange} />
 
-      {isLoading && <div>Loading CVs...</div>}
-      {error && <div className="text-destructive">Error loading CVs: {error}</div>}
+      {isLoading && <div data-testid="cv-management-cv-list-loading">Loading CVs...</div>}
+      {error && <div className="text-destructive" data-testid="cv-management-cv-list-error">Error loading CVs: {error}</div>}
       
       {!isLoading && !error && (
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Filename</TableHead>
-                <TableHead>Uploaded</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+        <div className="border rounded-lg overflow-hidden" data-testid="cv-management-table-container">
+          <Table data-testid="cv-management-table-cv-list">
+            <TableHeader data-testid="cv-management-table-header">
+              <TableRow data-testid="cv-management-table-header-row">
+                <TableHead data-testid="cv-management-table-header-filename">Filename</TableHead>
+                <TableHead data-testid="cv-management-table-header-uploaded">Uploaded</TableHead>
+                <TableHead data-testid="cv-management-table-header-status">Status</TableHead>
+                <TableHead data-testid="cv-management-table-header-score">Score</TableHead>
+                <TableHead className="text-right" data-testid="cv-management-table-header-actions">Actions</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody data-testid="cv-management-table-body">
               {cvs.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                <TableRow data-testid="cv-management-table-empty-row">
+                  <TableCell colSpan={6} className="text-center h-24 text-muted-foreground" data-testid="cv-management-table-empty-message">
                     No CVs found matching your criteria.
                   </TableCell>
                 </TableRow>
               ) : (
                 cvs.map((cv) => (
-                  <TableRow key={cv.id}>
-                    <TableCell className="font-medium">{cv.originalName}</TableCell>
-                    <TableCell>{format(new Date(cv.uploadDate), 'PPpp')}</TableCell>
-                    <TableCell>
-                      <Badge variant={statusBadgeVariant[cv.status] || 'secondary'}>
+                  <TableRow key={cv.id} data-testid={`cv-management-row-cv-item-${cv.id}`}>
+                    <TableCell className="font-medium" data-testid={`cv-management-cell-filename-${cv.id}`}>{cv.originalName}</TableCell>
+                    <TableCell data-testid={`cv-management-cell-uploaded-${cv.id}`}>{format(new Date(cv.uploadDate), 'PPpp')}</TableCell>
+                    <TableCell data-testid={`cv-management-cell-status-${cv.id}`}>
+                      <Badge variant={statusBadgeVariant[cv.status] || 'secondary'} data-testid={`cv-management-badge-status-${cv.status.toLowerCase()}-${cv.id}`}>
                         {cv.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell data-testid={`cv-management-cell-score-${cv.id}`}>
                       {cv.status === AnalysisStatus.COMPLETED && typeof cv.improvementScore === 'number' 
                         ? `${cv.improvementScore.toFixed(0)}%` 
                         : '-'}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" data-testid={`cv-management-cell-actions-${cv.id}`}>
                       <Button 
                         variant="ghost" 
                         size="icon" 
                         onClick={() => handleImprove(cv.analysisId)} 
                         disabled={cv.status !== AnalysisStatus.COMPLETED || !cv.analysisId}
                         title="View Analysis & Improve"
+                        data-testid={`cv-management-button-analyze-${cv.id}`}
                       >
-                        <Play className="h-4 w-4" />
+                        <Play className="h-4 w-4" data-testid={`cv-management-icon-analyze-${cv.id}`} />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDownload(cv.id, cv.originalName)} title="Download">
-                        <Download className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" onClick={() => handleDownload(cv.id, cv.originalName)} title="Download" data-testid={`cv-management-button-download-${cv.id}`}>
+                        <Download className="h-4 w-4" data-testid={`cv-management-icon-download-${cv.id}`} />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(cv.id, cv.originalName)} title="Delete">
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(cv.id, cv.originalName)} title="Delete" data-testid={`cv-management-button-delete-${cv.id}`}>
+                        <Trash2 className="h-4 w-4 text-destructive" data-testid={`cv-management-icon-delete-${cv.id}`} />
                       </Button>
                     </TableCell>
                   </TableRow>

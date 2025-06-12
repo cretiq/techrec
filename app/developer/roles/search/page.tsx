@@ -272,18 +272,18 @@ export default function RolesSearch2Page() {
 
   if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen" data-testid="role-search-container-auth-loading">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" data-testid="role-search-spinner-auth-loading"></div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" data-testid="role-search-container-main">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Section */}
-        <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up">
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow p-6 sticky top-8">
+        <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up" data-testid="role-search-container-filters">
+          <div className="bg-base-100/60 backdrop-blur-sm rounded-lg shadow-lg p-6 sticky top-8 border border-base-200" data-testid="role-search-card-filters">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Filters (RapidAPI)</h2>
               {activeFilters > 0 && (
@@ -292,6 +292,7 @@ export default function RolesSearch2Page() {
                   size="sm"
                   onClick={clearFilters}
                   className="text-xs text-primary hover:bg-primary/10 h-auto p-1"
+                  data-testid="role-search-button-clear-filters-trigger"
                 >
                   Clear ({activeFilters})
                 </Button>
@@ -305,7 +306,8 @@ export default function RolesSearch2Page() {
                   placeholder="Search roles (e.g., Engineer)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-base-100/50"
+                  className="pl-10 bg-base-100/80 backdrop-blur-sm"
+                  data-testid="role-search-input-keyword"
                 />
               </div>
 
@@ -316,15 +318,16 @@ export default function RolesSearch2Page() {
                   placeholder="Location (e.g., United States)"
                   value={selectedLocation === 'all' ? '' : selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value || 'all')}
-                  className="bg-base-100/50"
+                  className="bg-base-100/80 backdrop-blur-sm"
+                  data-testid="role-search-input-location"
                 />
               </div>
 
               {/* Results Limit Slider */}
-              <div className="space-y-3 p-4 rounded-lg bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-100">
+              <div className="space-y-3 p-4 rounded-lg bg-primary/10 backdrop-blur-sm border border-primary/20" data-testid="role-search-container-limit-slider">
                 <div className="flex justify-between items-center">
-                  <Label className="text-sm font-medium text-violet-700">Results Limit</Label>
-                  <div className="px-2 py-1 bg-violet-100 rounded-full text-xs font-bold text-violet-700">
+                  <Label className="text-sm font-medium text-primary">Results Limit</Label>
+                  <div className="px-2 py-1 bg-primary/20 rounded-full text-xs font-bold text-primary" data-testid="role-search-display-limit-value">
                     {searchLimit[0]}
                   </div>
                 </div>
@@ -335,6 +338,7 @@ export default function RolesSearch2Page() {
                   max={20}
                   step={1}
                   className="w-full slider-enhanced"
+                  data-testid="role-search-input-limit-slider"
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>1</span>
@@ -348,6 +352,7 @@ export default function RolesSearch2Page() {
                 onClick={fetchRoles}
                 disabled={loading}
                 variant="gradient"
+                data-testid="role-search-button-search-trigger"
               >
                 {loading ? (
                   <div className="sparkle-loader pulse-ring animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current mr-2" />
@@ -370,18 +375,19 @@ export default function RolesSearch2Page() {
         </div>
 
         {/* Roles Grid */}
-        <div className="w-full lg:w-3/4">
+        <div className="w-full lg:w-3/4" data-testid="role-search-container-results">
           {/* Action Buttons Bar */}
-          <div className="mb-4 flex flex-wrap justify-between items-center gap-2">
+          <div className="mb-4 flex flex-wrap justify-between items-center gap-2" data-testid="role-search-container-actions">
             {/* Bulk Selection Buttons */}
             {!loading && filteredRoles.length > 0 && (
-              <div className="flex gap-2">
+              <div className="flex gap-2" data-testid="role-search-container-bulk-actions">
                 <Button
                   onClick={handleSelectAllVisible}
                   disabled={allVisibleSelected || filteredRoles.length === 0}
                   variant="outline"
                   size="sm"
                   title={allVisibleSelected ? "All visible roles already selected" : "Select all roles currently visible"}
+                  data-testid="role-search-button-select-visible-trigger"
                 >
                   Select Visible ({filteredRoles.length})
                 </Button>
@@ -391,6 +397,7 @@ export default function RolesSearch2Page() {
                   variant="outline"
                   size="sm"
                   title="Deselect all roles"
+                  data-testid="role-search-button-deselect-all-trigger"
                 >
                   Deselect All ({selectedCount})
                 </Button>
@@ -404,6 +411,7 @@ export default function RolesSearch2Page() {
                 size="sm"
                 variant="gradient"
                 className="relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                data-testid="role-search-button-write-selected-trigger"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-pink-500 opacity-0 transition-opacity hover:opacity-100"></div>
                 <div className="relative flex items-center">
@@ -414,13 +422,13 @@ export default function RolesSearch2Page() {
             )}
           </div>
           {loading && (
-            <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4">
-              <div className="sparkle-loader pulse-ring animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-              <div className="text-sm text-muted-foreground animate-pulse">Searching for amazing opportunities...</div>
+            <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4" data-testid="role-search-container-loading">
+              <div className="sparkle-loader pulse-ring animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" data-testid="role-search-spinner-search-loading"></div>
+              <div className="text-sm text-muted-foreground animate-pulse" data-testid="role-search-text-loading-message">Searching for amazing opportunities...</div>
             </div>
           )}
           {!loading && filteredRoles.length === 0 && (
-            <Card className="md:col-span-2 xl:col-span-3 text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100 animate-fade-in-up">
+            <Card className="md:col-span-2 xl:col-span-3 text-center p-8 bg-base-100/60 backdrop-blur-sm animate-fade-in-up" data-testid="role-search-card-no-results">
               <CardHeader>
                 <CardTitle>No Roles Found</CardTitle>
                 <CardDescription>Try adjusting your search terms or filters.</CardDescription>
@@ -428,7 +436,7 @@ export default function RolesSearch2Page() {
             </Card>
           )}
           {!loading && filteredRoles.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" data-testid="role-search-container-roles-grid">
               {filteredRoles.map((role, index) => (
                 <RoleCardWrapper
                   key={role.id}
@@ -438,6 +446,7 @@ export default function RolesSearch2Page() {
                   session={session}
                   handleSaveToggleRole={handleSaveToggleRole}
                   handleWriteTo={handleWriteTo}
+                  data-testid={`role-search-card-role-item-${role.id}`}
                 />
               ))}
             </div>
@@ -455,6 +464,7 @@ interface RoleCardWrapperProps {
   session: ReturnType<typeof useSession>['data'];
   handleSaveToggleRole: (roleId: string) => void;
   handleWriteTo: (role: Role) => void;
+  'data-testid'?: string;
 }
 
 const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
@@ -464,6 +474,7 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
   session,
   handleSaveToggleRole,
   handleWriteTo,
+  'data-testid': testId,
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const isSelected = useSelector((state: RootState) => selectIsRoleSelected(state, role.id))
@@ -502,10 +513,11 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
       className={cn(
-        "hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 animate-fade-in-up flex flex-col h-full relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-        isSelected && "border-2 border-primary bg-primary/10"
+        "hover:shadow-lg transition-all hover:transform hover:scale-[1.02] bg-base-100/60 backdrop-blur-sm animate-fade-in-up flex flex-col h-full relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 border border-base-200",
+        isSelected && "border-2 border-primary bg-primary/20 shadow-primary/20 shadow-md"
       )}
       style={{ animationDelay: `${index * 100}ms` }}
+      data-testid={testId || `role-search-card-role-item-${role.id}`}
                 >
       {session && (
         <Button
@@ -515,6 +527,7 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
           className="absolute top-2 right-10 text-muted-foreground hover:text-primary shrink-0 z-10"
           aria-label={isRoleSaved ? "Unsave role" : "Save role"}
           title={isRoleSaved ? "Unsave Role" : "Save Role"}
+          data-testid={`role-search-button-save-trigger-${role.id}`}
         >
           {isRoleSaved ? (
             <BookmarkCheck className="h-5 w-5 text-primary" />
@@ -524,11 +537,11 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
         </Button>
       )}
       {isSelected && (
-        <div className="absolute top-2 right-2 text-primary z-10 p-1 bg-background/50 rounded-full">
+        <div className="absolute top-2 right-2 text-primary z-10 p-1 bg-base-100/80 backdrop-blur-sm rounded-full" data-testid={`role-search-indicator-selected-${role.id}`}>
           <Check className="h-4 w-4" />
         </div>
       )}
-      <CardHeader className="pb-4 pr-16">
+      <CardHeader className="pb-4 pr-16" data-testid={`role-search-header-role-${role.id}`}>
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <CardTitle className="text-lg line-clamp-2">{role.title}</CardTitle>
@@ -539,18 +552,18 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="flex-1 space-y-4">
+                  <CardContent className="flex-1 space-y-4" data-testid={`role-search-content-role-${role.id}`}>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="muted">
+                      <Badge variant="secondary">
                         <MapPin className="mr-1 h-3 w-3" />
                         <span className="line-clamp-1">{role.location || 'N/A'}</span>
                       </Badge>
-                      <Badge variant="muted">
+                      <Badge variant="secondary">
                         <Briefcase className="mr-1 h-3 w-3" />
                         {formatJobType(role.type)}
                       </Badge>
                       {role.remote && (
-                        <Badge variant="muted">
+                        <Badge variant="secondary">
                           <Clock className="mr-1 h-3 w-3" />
                           Remote
                         </Badge>
@@ -577,7 +590,7 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="card-body pt-2 mt-auto space-y-3">
+                  <CardFooter className="card-body pt-2 mt-auto space-y-3" data-testid={`role-search-footer-role-${role.id}`}>
                     {/* Salary Section */}
                     <div className="w-full text-center">
                       <div className="text-md font-semibold">{role.salary || 'Salary not specified'}</div>
@@ -595,13 +608,13 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                             className="inline-flex items-center"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <Button size="sm" className="text-xs px-3">
+                            <Button size="sm" className="text-xs px-3" data-testid={`role-search-button-apply-external-trigger-${role.id}`}>
                               Apply Externally
                               <ArrowRight className="h-3 w-3 ml-1" />
                             </Button>
                           </a>
                         ) : (
-                          <Button size="sm" disabled className="text-xs px-3">
+                          <Button size="sm" disabled className="text-xs px-3" data-testid={`role-search-button-apply-disabled-${role.id}`}>
                             Apply Now
                           </Button>
                         )}
@@ -616,6 +629,7 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                           disabled={!session?.user}
                           className="gap-1 text-xs px-3"
                           title={!session?.user ? "Login to use Writing Help" : "Get writing assistance"}
+                          data-testid={`role-search-button-write-trigger-${role.id}`}
                         >
                           <PenTool className="h-3 w-3" />
                           Write to

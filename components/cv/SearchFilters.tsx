@@ -48,23 +48,25 @@ export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mb-4 p-4 border rounded-lg">
-      <div className="flex-1">
+    <div className="flex flex-col sm:flex-row gap-4 mb-4 p-4 border rounded-lg" data-testid="cv-management-search-filters-container">
+      <div className="flex-1" data-testid="cv-management-search-input-container">
         <Input
           type="text"
           placeholder="Search by filename..."
           value={searchTerm}
           onChange={handleSearchChange}
+          data-testid="cv-management-search-input"
         />
       </div>
-      <div className="w-full sm:w-48">
+      <div className="w-full sm:w-48" data-testid="cv-management-status-filter-container">
         <Select 
           value={selectedStatus} 
           onChange={(e) => handleStatusChange(e.target.value)}
+          data-testid="cv-management-status-filter-select"
         >
-          <option value="all">All Statuses</option>
+          <option value="all" data-testid="cv-management-status-option-all">All Statuses</option>
           {Object.values(AnalysisStatus).map((status) => (
-            <option key={status} value={status}>
+            <option key={status} value={status} data-testid={`cv-management-status-option-${status.toLowerCase()}`}>
               {status}
             </option>
           ))}

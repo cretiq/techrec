@@ -264,7 +264,10 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
         {/* Header Card */}
-        <Card className="overflow-hidden bg-base-100/60 backdrop-blur-sm border border-base-300 hover:shadow-lg transition-all duration-300">
+        <Card 
+          className="overflow-hidden bg-base-100/60 backdrop-blur-sm border border-base-300/50 hover:shadow-lg transition-all duration-300 rounded-lg"
+          data-testid="write-coverletter-card-header"
+        >
             <CardHeader className={cn(isMultiRoleMode ? "pb-4 pt-4" : "pb-6 pt-6")}>
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -275,7 +278,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                     repeat: isGenerating ? Infinity : 0, 
                     ease: "linear" 
                   }}
-                  className="p-3 bg-primary/10 backdrop-blur-md rounded-xl border border-primary/20 flex-shrink-0"
+                  className="p-3 bg-primary/10 backdrop-blur-md rounded-lg border border-primary/20 flex-shrink-0"
                 >
                   <Sparkles className={cn("text-primary", isMultiRoleMode ? "h-6 w-6" : "h-8 w-8")} />
                 </motion.div>
@@ -310,6 +313,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                     "bg-primary hover:bg-primary/90 text-primary-content border-0 transition-all shadow-md hover:shadow-lg",
                     isMultiRoleMode ? "px-4 py-2" : "px-6 py-3"
                   )}
+                  data-testid="write-coverletter-button-generate-trigger"
                 >
                   {isGenerating ? (
                     <>
@@ -339,10 +343,14 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
 
         {/* Customization Card */}
         <motion.div variants={fadeInUp}>
-          <Card className="bg-base-100/60 backdrop-blur-sm border border-base-300 hover:shadow-lg transition-all duration-300">
+          <Card 
+            className="bg-base-100/60 backdrop-blur-sm border border-base-300/50 hover:shadow-lg transition-all duration-300 rounded-lg"
+            data-testid="write-coverletter-card-customization"
+          >
             <CardHeader 
-              className="bg-base-200/50 transition-all duration-300 cursor-pointer"
+              className="bg-base-100/30 backdrop-blur-sm transition-all duration-300 cursor-pointer"
               onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
+              data-testid="write-coverletter-header-personalization-trigger"
             >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -375,7 +383,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
               className="space-y-2"
             >
               <Label htmlFor="jobSource" className="text-sm font-medium flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-violet-500" />
+                <Briefcase className="h-4 w-4 text-primary" />
                 How did you find this job?
                 <Badge variant="secondary" size="sm" className="ml-auto">Optional</Badge>
               </Label>
@@ -385,7 +393,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   placeholder="e.g., LinkedIn, Company Website, Referral from John"
                   value={jobSource}
                   onChange={(e) => handleJobSourceChange(e.target.value)}
-                  className="bg-base-200/50 border-base-300 focus:ring-2 focus:ring-primary/20 transition-all pl-10"
+                  className="bg-base-100/70 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all pl-10 rounded-lg"
+                  data-testid="write-coverletter-input-job-source"
                 />
                 <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/40" />
               </div>
@@ -399,13 +408,16 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
               className="space-y-3"
             >
               <Label className="text-sm font-medium flex items-center gap-2">
-                <Award className="h-4 w-4 text-violet-500" />
+                <Award className="h-4 w-4 text-primary" />
                 Your Key Achievements
-                <Badge variant="default" size="sm" className="ml-auto bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                <Badge variant="secondary" size="sm" className="ml-auto bg-primary/20 text-primary">
                   {developerProfile?.achievements?.length || 0}
                 </Badge>
               </Label>
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-inner">
+              <div 
+                className="bg-base-100/40 backdrop-blur-sm rounded-lg p-4 border border-base-300/50 shadow-inner"
+                data-testid="write-coverletter-container-achievements"
+              >
                 <ScrollArea className="h-32">
                   <AnimatePresence mode="popLayout">
                     {(developerProfile?.achievements || []).map((achievement: InternalAchievement, index) => (
@@ -416,7 +428,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         exit={{ opacity: 0, x: 20, scale: 0.9 }}
                         transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
                         whileHover={{ scale: 1.02 }}
-                        className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 mb-2 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md"
+                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50 hover:shadow-md"
                       >
                         <motion.div
                           initial={{ scale: 0 }}
@@ -431,7 +443,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         <Button 
                           variant="ghost" 
                           size="icon" 
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-error/10"
                           onClick={() => handleRemoveAchievement(achievement.id)}
                         >
                           <Trash2 className="h-4 w-4 text-red-500" />
@@ -445,7 +457,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                       animate={{ opacity: 1 }}
                       className="text-center py-8"
                     >
-                      <Award className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
+                      <Award className="h-8 w-8 text-base-content/30 mx-auto mb-2" />
                       <p className="text-sm text-muted-foreground">
                         No achievements added yet
                       </p>
@@ -462,7 +474,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   value={newAchievementTitle}
                   onChange={(e) => setNewAchievementTitle(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddAchievement()}
-                  className="bg-white dark:bg-gray-900 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                  className="bg-base-100/60 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
+                  data-testid="write-coverletter-input-add-achievement"
                 />
                 <motion.div 
                   whileHover={{ scale: 1.02 }} 
@@ -475,6 +488,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                     onClick={handleAddAchievement}
                     disabled={!newAchievementTitle.trim()}
                     className="px-4 shadow-md hover:shadow-lg transition-all duration-150"
+                    data-testid="write-coverletter-button-add-achievement-trigger"
                   >
                     <PlusCircle className="h-4 w-4" />
                   </Button>
@@ -490,13 +504,16 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
               className="space-y-3"
             >
               <Label className="text-sm font-medium flex items-center gap-2">
-                <Target className="h-4 w-4 text-violet-500" />
+                <Target className="h-4 w-4 text-primary" />
                 Why {role.company.name}?
-                <Badge variant="default" size="sm" className="ml-auto bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300">
+                <Badge variant="secondary" size="sm" className="ml-auto bg-primary/20 text-primary">
                   {companyAttractionPoints.length}
                 </Badge>
               </Label>
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 shadow-inner">
+              <div 
+                className="bg-base-100/40 backdrop-blur-sm rounded-lg p-4 border border-base-300/50 shadow-inner"
+                data-testid="write-coverletter-container-attraction-points"
+              >
                 <ScrollArea className="h-32">
                   <AnimatePresence mode="popLayout">
                     {companyAttractionPoints.map((point, index) => (
@@ -507,14 +524,14 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         exit={{ opacity: 0, x: 20, scale: 0.9 }}
                         transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
                         whileHover={{ scale: 1.02 }}
-                        className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 mb-2 border border-transparent hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md"
+                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50 hover:shadow-md"
                       >
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: index * 0.05 + 0.2 }}
                         >
-                          <ChevronRight className="h-5 w-5 text-violet-500 flex-shrink-0" />
+                          <ChevronRight className="h-5 w-5 text-primary flex-shrink-0" />
                         </motion.div>
                         <p className="text-sm flex-1">{point}</p>
                         <Button
@@ -536,7 +553,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   value={newAttractionPoint}
                   onChange={(e) => setNewAttractionPoint(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddAttractionPoint()}
-                  className="bg-white dark:bg-gray-900 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                  className="bg-base-100/60 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
+                  data-testid="write-coverletter-input-add-attraction-point"
                 />
                 <motion.div 
                   whileHover={{ scale: 1.02 }} 
@@ -549,6 +567,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                     onClick={handleAddAttractionPoint}
                     disabled={!newAttractionPoint.trim()}
                     className="px-4 shadow-md hover:shadow-lg transition-all duration-150"
+                    data-testid="write-coverletter-button-add-attraction-point-trigger"
                   >
                     <PlusCircle className="h-4 w-4" />
                   </Button>
@@ -570,17 +589,17 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.9 }}
-              className="p-5 bg-gradient-to-r from-violet-500/10 to-purple-500/10 rounded-xl border border-violet-500/30 pulse-border shadow-lg"
+              className="p-5 bg-primary/10 backdrop-blur-sm rounded-lg border border-primary/30 shadow-lg"
             >
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   <div className="absolute inset-0 h-8 w-8 animate-ping opacity-30">
-                    <Loader2 className="h-8 w-8 text-violet-600" />
+                    <Loader2 className="h-8 w-8 text-primary" />
                   </div>
                 </div>
                 <div className="flex-1">
-                  <p className="text-base font-semibold text-gray-900 dark:text-white">AI is crafting your perfect cover letter...</p>
+                  <p className="text-base font-semibold text-base-content">AI is crafting your perfect cover letter...</p>
                   <p className="text-sm text-muted-foreground mt-1">
                     Analyzing your profile and matching it to {role.company.name}'s requirements
                   </p>
@@ -593,7 +612,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                 </div>
                 <div className="relative">
                   <Progress value={progressValue} className="h-2" />
-                  <div className="absolute inset-0 h-2 bg-gradient-to-r from-violet-500 to-purple-500 opacity-20 blur-sm" />
+                  <div className="absolute inset-0 h-2 bg-gradient-to-r from-primary to-secondary opacity-20 blur-sm" />
                 </div>
               </div>
             </motion.div>
@@ -608,13 +627,13 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         transition={{ duration: 0.25, delay: 0.1, ease: "easeOut" }}
         className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
-        <Card className={cn(
-          "border-0  hover:shadow-xl transition-all duration-150 h-full relative overflow-hidden"
-        )}>
-          {/* {generatedLetter && (
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 animate-pulse" />
-          )} */}
-          <CardContent className="flex flex-col bg-slate-100 dark:bg-slate-900">
+        <Card 
+          className={cn(
+            "bg-base-100/60 backdrop-blur-sm border border-base-300/50 hover:shadow-xl transition-all duration-300 h-full relative overflow-hidden rounded-lg"
+          )}
+          data-testid="write-coverletter-card-output"
+        >
+          <CardContent className="flex flex-col bg-transparent p-6">
             <div className="flex-1 relative">
               {!generatedLetter && (
                 <motion.div 
@@ -635,12 +654,12 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         ease: "easeInOut"
                       }}
                     >
-                      <Sparkles className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                      <Sparkles className="h-12 w-12 text-base-content/30 mx-auto mb-3" />
                     </motion.div>
-                    <p className="text-gray-400 dark:text-gray-500 text-base font-medium mb-2">
+                    <p className="text-base-content/50 text-base font-medium mb-2">
                       Your cover letter will appear here
                     </p>
-                    <p className="text-gray-400 dark:text-gray-500 text-sm">
+                    <p className="text-base-content/50 text-sm">
                       Click the button below to generate
                     </p>
                   </div>
@@ -654,8 +673,9 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   "resize-none transition-all duration-300 font-sans text-base h-full",
                   isMultiRoleMode ? "min-h-[350px]" : "min-h-[300px]",
                   !generatedLetter && "text-center opacity-0",
-                  generatedLetter && "shadow-inner bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                  generatedLetter && "shadow-inner bg-base-100/60 backdrop-blur-sm border-base-300/50 rounded-lg"
                 )}
+                data-testid="write-coverletter-textarea-output"
               />
             </div>
             
@@ -677,11 +697,10 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                     >
                       <Button
                         onClick={handleExport}
-                        variant="gradient"
+                        variant="default"
                         size="default"
-                        rounded="xl"
-                        className="w-full group shadow-md hover:shadow-lg transition-all duration-150"
-                        elevation="sm"
+                        className="w-full group bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-150 font-medium rounded-lg"
+                        data-testid="write-coverletter-button-export-trigger"
                       >
                         <Download className="mr-2 h-4 w-4" />
                         Export as Text
@@ -697,9 +716,9 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         onClick={handleCopy}
                         variant={isCopied ? "gradient-blue" : "outline"}
                         size="default"
-                        rounded="xl"
-                        className="w-full group shadow-md hover:shadow-lg transition-all duration-150"
+                        className="w-full group shadow-md hover:shadow-lg transition-all duration-150 rounded-lg"
                         elevation="sm"
+                        data-testid="write-coverletter-button-copy-trigger"
                       >
                         {isCopied ? (
                           <>
@@ -727,23 +746,23 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="relative overflow-hidden p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800 shadow-md"
+                    className="relative overflow-hidden p-4 bg-success/10 backdrop-blur-sm rounded-lg border border-success/30 shadow-md"
                   >
-                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-400 to-emerald-400" />
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-success to-success" />
                     <div className="flex items-center gap-3">
                       <motion.div
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
                         transition={{ type: "spring", stiffness: 200 }}
-                        className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg"
+                        className="p-2 bg-success/20 rounded-lg"
                       >
-                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        <CheckCircle2 className="h-5 w-5 text-success" />
                       </motion.div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-green-800 dark:text-green-300">
+                        <p className="text-sm font-semibold text-success">
                           Cover letter generated successfully!
                         </p>
-                        <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
+                        <p className="text-xs text-success/80 mt-0.5">
                           Personalized for {role.title} at {role.company.name}
                         </p>
                       </div>
