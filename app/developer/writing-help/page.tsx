@@ -4,8 +4,9 @@ import { useState, useEffect, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import {  Button  } from '@/components/ui-daisy/button'
-import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
+import {  Tabs, TabsContent  } from '@/components/ui-daisy/tabs'
 import { FileText, Mail, PenTool, ArrowRight, Loader2, Rocket } from "lucide-react"
+import { AnimatedTabs } from '@/components/ui/animated-tabs'
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
 import { useSelector, useDispatch } from 'react-redux';
@@ -21,9 +22,22 @@ export default function WritingHelpPage() {
   const initialTab = (initialTabParam === 'cv' || initialTabParam === 'cover-letter' || initialTabParam === 'outreach') ? initialTabParam : 'cover-letter';
   
   const [activeTab, setActiveTab] = useState<"cv" | "cover-letter" | "outreach">(initialTab)
+  
+  // Update URL on initial load if tab param is not present or is the default
+  useEffect(() => {
+    if (!initialTabParam || initialTabParam === 'cover-letter') {
+      // Remove the tab parameter from URL for cleaner URLs when on default tab
+      const newUrl = new URL(window.location.href)
+      newUrl.searchParams.delete('tab')
+      window.history.replaceState({}, '', newUrl.toString())
+    }
+  }, [])
   const [isGeneratingAll, setIsGeneratingAll] = useState<boolean>(false);
-  const [generationTriggers, setGenerationTriggers] = useState<Record<string, number>>({});
-  const [generationStatus, setGenerationStatus] = useState<Record<string, { status: 'idle' | 'generating' | 'success' | 'error' }>>({});
+  // Separate states for cover letters and outreach messages
+  const [coverLetterTriggers, setCoverLetterTriggers] = useState<Record<string, number>>({});
+  const [coverLetterStatus, setCoverLetterStatus] = useState<Record<string, { status: 'idle' | 'generating' | 'success' | 'error' }>>({});
+  const [outreachTriggers, setOutreachTriggers] = useState<Record<string, number>>({});
+  const [outreachStatus, setOutreachStatus] = useState<Record<string, { status: 'idle' | 'generating' | 'success' | 'error' }>>({});
   const router = useRouter()
   const { toast } = useToast()
   const { data: session, status: sessionStatus } = useSession()
@@ -39,8 +53,10 @@ export default function WritingHelpPage() {
       initialTriggers[role.id] = 0;
       initialStatus[role.id] = { status: 'idle' };
     });
-    setGenerationTriggers(initialTriggers);
-    setGenerationStatus(initialStatus);
+    setCoverLetterTriggers(initialTriggers);
+    setCoverLetterStatus(initialStatus);
+    setOutreachTriggers(initialTriggers);
+    setOutreachStatus(initialStatus);
   }, [selectedRoles]);
 
   useEffect(() => {
@@ -67,38 +83,50 @@ export default function WritingHelpPage() {
        }; */
   }, [selectedRoles.length, sessionStatus, router, toast]); // Only depend on length for redirect
 
-  // Simplified: Just update the status for the specific role
-  const handleGenerationComplete = (roleId: string, success: boolean) => {
-    setGenerationStatus(prev => ({
+  // Tab-specific generation completion handlers
+  const handleCoverLetterComplete = (roleId: string, success: boolean) => {
+    setCoverLetterStatus(prev => ({
       ...prev,
       [roleId]: { status: success ? 'success' : 'error' }
     }));
-    // The check for overall completion is moved to useEffect below
   };
 
-  // useEffect to check for overall completion when generationStatus changes
+  const handleOutreachComplete = (roleId: string, success: boolean) => {
+    setOutreachStatus(prev => ({
+      ...prev,
+      [roleId]: { status: success ? 'success' : 'error' }
+    }));
+  };
+
+  // useEffect to check for overall completion when generation status changes
   useEffect(() => {
     // Only run the check if the "Generate All" process is active
     if (!isGeneratingAll) {
       return;
     }
 
+    // Choose the appropriate status based on active tab
+    const currentStatus = activeTab === 'cover-letter' ? coverLetterStatus : outreachStatus;
+    
     // Check if all selected roles have reached a final state
     const allDone = selectedRoles.every(role => {
-        const statusEntry = generationStatus[role.id];
+        const statusEntry = currentStatus[role.id];
         // A role is considered "done" if its status is success or error
         return statusEntry && (statusEntry.status === 'success' || statusEntry.status === 'error');
     });
 
     if (allDone) {
-        console.log("[WritingHelpPage useEffect] All generations complete, setting isGeneratingAll to false."); // Add log
+        console.log(`[WritingHelpPage useEffect] All ${activeTab} generations complete, setting isGeneratingAll to false.`);
         setIsGeneratingAll(false);
-        toast({ title: "Batch Generation Finished", description: "All selected cover letters have been processed." });
+        toast({ 
+          title: "Batch Generation Finished", 
+          description: `All selected ${activeTab === 'cover-letter' ? 'cover letters' : 'outreach messages'} have been processed.` 
+        });
     }
 
-  }, [generationStatus, selectedRoles, isGeneratingAll, toast]); // Dependencies
+  }, [coverLetterStatus, outreachStatus, selectedRoles, isGeneratingAll, activeTab, toast]); // Dependencies
 
-  // --- Handler for Generate All button ---
+  // --- Handler for Generate All button (tab-aware) ---
   const handleGenerateAll = async () => {
     if (selectedRoles.length === 0 || isGeneratingAll) {
         return;
@@ -107,19 +135,30 @@ export default function WritingHelpPage() {
     const newTriggers: Record<string, number> = {};
     const newStatus: Record<string, { status: 'idle' | 'generating' | 'success' | 'error' }> = {};
 
-    selectedRoles.forEach(role => {
-        newTriggers[role.id] = (generationTriggers[role.id] || 0) + 1;
-        newStatus[role.id] = { status: 'generating' }; // Set individual status to generating
-    });
-    setGenerationStatus(newStatus); // Set all relevant statuses to generating
-    setGenerationTriggers(newTriggers); // This will trigger the useEffect in CoverLetterCreator for each pane
-    toast({ title: "Batch Generation Started", description: `Generating ${selectedRoles.length} cover letter(s)...` });
+    if (activeTab === 'cover-letter') {
+      selectedRoles.forEach(role => {
+          newTriggers[role.id] = (coverLetterTriggers[role.id] || 0) + 1;
+          newStatus[role.id] = { status: 'generating' };
+      });
+      setCoverLetterStatus(newStatus);
+      setCoverLetterTriggers(newTriggers);
+      toast({ title: "Batch Generation Started", description: `Generating ${selectedRoles.length} cover letter(s)...` });
+    } else if (activeTab === 'outreach') {
+      selectedRoles.forEach(role => {
+          newTriggers[role.id] = (outreachTriggers[role.id] || 0) + 1;
+          newStatus[role.id] = { status: 'generating' };
+      });
+      setOutreachStatus(newStatus);
+      setOutreachTriggers(newTriggers);
+      toast({ title: "Batch Generation Started", description: `Generating ${selectedRoles.length} outreach message(s)...` });
+    }
   };
 
   // Determine if any individual pane is still generating for the master "Generate All" button state
-  const isAnyPaneGenerating = useMemo(() => 
-    Object.values(generationStatus).some(s => s.status === 'generating'), 
-  [generationStatus]);
+  const isAnyPaneGenerating = useMemo(() => {
+    const currentStatus = activeTab === 'cover-letter' ? coverLetterStatus : outreachStatus;
+    return Object.values(currentStatus).some(s => s.status === 'generating');
+  }, [coverLetterStatus, outreachStatus, activeTab]);
 
   if (sessionStatus === 'loading') {
     return (
@@ -147,73 +186,55 @@ export default function WritingHelpPage() {
     <div className="container max-w-7xl mx-auto p-4">
 
       {/* Enhanced Tabs Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="mb-6"
+      <AnimatedTabs
+        tabs={[
+          {
+            value: "cv",
+            icon: FileText,
+            label: "CV Optimization",
+            shortLabel: "CV",
+            testId: "write-nav-tab-cv-trigger"
+          },
+          {
+            value: "cover-letter",
+            icon: PenTool,
+            label: "Cover Letter",
+            shortLabel: "Letter",
+            testId: "write-nav-tab-cover-letter-trigger"
+          },
+          {
+            value: "outreach",
+            icon: Mail,
+            label: "Outreach Message",
+            shortLabel: "Outreach",
+            testId: "write-nav-tab-outreach-trigger"
+          }
+        ]}
+        value={activeTab}
+        onValueChange={(value) => {
+          setActiveTab(value as "cv" | "cover-letter" | "outreach")
+          // Update URL without navigation
+          const newUrl = new URL(window.location.href)
+          if (value === 'cover-letter') {
+            // Remove tab param for default tab
+            newUrl.searchParams.delete('tab')
+          } else {
+            newUrl.searchParams.set('tab', value)
+          }
+          window.history.pushState({}, '', newUrl.toString())
+        }}
+        layoutId="writeHelpTabBackground"
+        testId="write-nav-tabs-main"
+      />
+      
+      <Tabs
+        value={activeTab}
+        onValueChange={() => {}} // Controlled by AnimatedTabs
+        className="w-full"
       >
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as "cv" | "cover-letter" | "outreach")}
-          className="w-full"
-        >
-          <TabsList 
-            className="relative grid grid-cols-3 w-full max-w-2xl mx-auto h-12 bg-base-100/60 backdrop-blur-md border border-base-300/50 rounded-xl p-1.5 shadow-xl"
-            data-testid="write-nav-tabs-main"
-          >
-            <TabsTrigger 
-              value="cv" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content z-20"
-              data-testid="write-nav-tab-cv-trigger"
-            >
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline font-semibold">CV Optimization</span>
-              <span className="sm:hidden font-semibold">CV</span>
-            </TabsTrigger>
-            
-            <TabsTrigger 
-              value="cover-letter" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content z-20"
-              data-testid="write-nav-tab-cover-letter-trigger"
-            >
-              <PenTool className="h-4 w-4" />
-              <span className="hidden sm:inline font-semibold">Cover Letter</span>
-              <span className="sm:hidden font-semibold">Letter</span>
-            </TabsTrigger>
-            
-            <TabsTrigger 
-              value="outreach" 
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content z-20"
-              data-testid="write-nav-tab-outreach-trigger"
-            >
-              <Mail className="h-4 w-4" />
-              <span className="hidden sm:inline font-semibold">Outreach Message</span>
-              <span className="sm:hidden font-semibold">Outreach</span>
-            </TabsTrigger>
-            
-            {/* Active Tab Background */}
-            <motion.div
-              layoutId="activeTabBackground"
-              className="absolute top-1.5 bottom-1.5 bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg z-10"
-              style={{
-                width: `calc(33.333% - 4px)`,
-                left: activeTab === "cv" ? "6px" : 
-                      activeTab === "cover-letter" ? `calc(33.333% + 2px)` : 
-                      `calc(66.666% - 2px)`
-              }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 400, 
-                damping: 35,
-                duration: 0.25
-              }}
-            />
-          </TabsList>
-        </Tabs>
         
-        {/* Action Buttons Row - Only show in cover-letter tab */}
-        {activeTab === 'cover-letter' && selectedRoles.length > 0 && (
+        {/* Action Buttons Row - Show in cover-letter and outreach tabs */}
+        {(activeTab === 'cover-letter' || activeTab === 'outreach') && selectedRoles.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -250,7 +271,7 @@ export default function WritingHelpPage() {
                 onClick={handleGenerateAll}
                 disabled={isGeneratingAll || isAnyPaneGenerating}
                 size="lg"
-                className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-700 hover:via-purple-700 hover:to-pink-700 text-white border-0 shadow-xl px-8 py-3 font-semibold text-lg transition-all duration-150 rounded-lg"
+                className="relative overflow-hidden bg-gradient-to-r border-0 px-8 py-3 transition-all duration-150"
                 data-testid="write-button-generate-all-trigger"
               >
                 {/* Shimmer Effect */}
@@ -266,7 +287,7 @@ export default function WritingHelpPage() {
                       >
                         <Loader2 className="h-5 w-5" />
                       </motion.div>
-                      <span>Generating All Letters...</span>
+                      <span>Generating All {activeTab === 'cover-letter' ? 'Letters' : 'Messages'}...</span>
                     </>
                   ) : (
                     <>
@@ -283,7 +304,7 @@ export default function WritingHelpPage() {
                       >
                         <Rocket className="h-5 w-5" />
                       </motion.div>
-                      <span>Generate All ({selectedRoles.length})</span>
+                      <span>Generate All {activeTab === 'cover-letter' ? 'Letters' : 'Messages'} ({selectedRoles.length})</span>
                       <motion.div
                         animate={{ x: [0, 2, 0] }}
                         transition={{ 
@@ -310,19 +331,29 @@ export default function WritingHelpPage() {
             </motion.div>
           </motion.div>
         )}
-      </motion.div>
+      </Tabs>
 
         {/* Grid Layout Container - Render MultiRolePane for each role */} 
-        <div className="grid grid-cols-1 gap-4 w-full">
-            {selectedRoles.map((role: Role) => (
-                 <MultiRolePane 
-                    key={role.id} 
-                    role={role} 
-                    activeTab={activeTab}
-                    generationTrigger={generationTriggers[role.id] || 0}
-                    onGenerationComplete={handleGenerationComplete}
-                 />
-            ))}
+        <div className="grid grid-cols-1 gap-4 w-full mt-6">
+            {selectedRoles.map((role: Role) => {
+                // Choose the appropriate trigger and handler based on active tab
+                const generationTrigger = activeTab === 'cover-letter' 
+                  ? (coverLetterTriggers[role.id] || 0)
+                  : (outreachTriggers[role.id] || 0);
+                const onGenerationComplete = activeTab === 'cover-letter'
+                  ? handleCoverLetterComplete
+                  : handleOutreachComplete;
+                
+                return (
+                  <MultiRolePane 
+                      key={role.id} 
+                      role={role} 
+                      activeTab={activeTab}
+                      generationTrigger={generationTrigger}
+                      onGenerationComplete={onGenerationComplete}
+                  />
+                );
+            })}
       </div>
 
     </div>

@@ -47,6 +47,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
   const [newAttractionPoint, setNewAttractionPoint] = useState<string>("")
   const [isCopied, setIsCopied] = useState(false)
   const [isPersonalizationExpanded, setIsPersonalizationExpanded] = useState(!isMultiRoleMode)
+  const [lastTriggeredValue, setLastTriggeredValue] = useState<number>(0)
+  const [isNewlyGenerated, setIsNewlyGenerated] = useState(false)
   
   // Use Redux state or default values
   const generatedLetter = existingCoverLetter?.letter || ""
@@ -77,13 +79,35 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
   }, [session, toast])
 
   useEffect(() => {
-    if (generationTrigger && generationTrigger > 0 && developerProfile && !isGenerating) {
-      console.log(`[CoverLetterCreator] External trigger detected for role ${role.id}, trigger: ${generationTrigger}. Profile loaded: ${!!developerProfile}. Triggering generation.`);
+    // Only trigger generation for "Generate All" if:
+    // 1. We have a valid trigger value
+    // 2. This trigger value hasn't been processed yet
+    // 3. We have the developer profile
+    // 4. We're not currently generating
+    // 5. No cover letter exists yet (skip roles with existing content)
+    if (
+      generationTrigger && 
+      generationTrigger > 0 && 
+      generationTrigger !== lastTriggeredValue &&
+      developerProfile && 
+      !isGenerating &&
+      !generatedLetter // Only generate for "Generate All" if no cover letter exists yet
+    ) {
+      console.log(`[CoverLetterCreator] External trigger detected for role ${role.id}, trigger: ${generationTrigger}. No existing letter found. Triggering generation.`);
+      
+      // Mark this trigger value as processed
+      setLastTriggeredValue(generationTrigger)
       handleGenerate();
+    } else if (generationTrigger && generationTrigger > 0 && generationTrigger !== lastTriggeredValue && generatedLetter) {
+      console.log(`[CoverLetterCreator] External trigger detected for role ${role.id}, trigger: ${generationTrigger}. Cover letter already exists. Skipping generation.`);
+      // Mark this trigger as processed even though we skipped generation
+      setLastTriggeredValue(generationTrigger)
+      // Report completion immediately since we're skipping
+      onGenerationComplete?.(role.id, true)
     } else if (generationTrigger && generationTrigger > 0 && !developerProfile) {
-        console.log(`[CoverLetterCreator] External trigger detected for role ${role.id}, trigger: ${generationTrigger}. Profile NOT loaded yet. Generation deferred.`);
+      console.log(`[CoverLetterCreator] External trigger detected for role ${role.id}, trigger: ${generationTrigger}. Profile NOT loaded yet. Generation deferred.`);
     }
-  }, [generationTrigger]);
+  }, [generationTrigger, lastTriggeredValue, developerProfile, isGenerating, generatedLetter, role.id]);
 
   const handleAddAchievement = () => {
     if (newAchievementTitle.trim() === '') return
@@ -128,6 +152,12 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
 
   const handleJobSourceChange = (newJobSource: string) => {
     dispatch(updateCoverLetterJobSource({ roleId: role.id, jobSource: newJobSource }))
+  }
+
+  const handleRegenerate = () => {
+    // Reset trigger tracking to allow manual regeneration
+    setLastTriggeredValue(0)
+    handleGenerate()
   }
 
   const handleGenerate = async () => {
@@ -190,6 +220,10 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         companyAttractionPoints
       }))
       
+      // Trigger fade-in animation
+      setIsNewlyGenerated(true)
+      setTimeout(() => setIsNewlyGenerated(false), 1500) // Reset after animation completes
+      
       toast({ title: "Success!", description: `Cover letter for "${role.title}" generated.` });
       success = true;
     } catch (error) {
@@ -202,6 +236,11 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
     } finally {
       setIsGenerating(false)
       onGenerationComplete?.(role.id, success)
+      
+      // If generation failed, reset the last triggered value so it can be retried
+      if (!success && isMultiRoleMode) {
+        setLastTriggeredValue(0)
+      }
     }
   }
 
@@ -265,7 +304,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
       >
         {/* Header Card */}
         <Card 
-          className="overflow-hidden bg-base-100/60 backdrop-blur-sm border border-base-300/50 hover:shadow-lg transition-all duration-300 rounded-lg"
+          variant="transparent"
           data-testid="write-coverletter-card-header"
         >
             <CardHeader className={cn(isMultiRoleMode ? "pb-4 pt-4" : "pb-6 pt-6")}>
@@ -305,12 +344,12 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                 className="flex-shrink-0"
               >
                 <Button
-                  onClick={handleGenerate}
+                  onClick={generatedLetter ? handleRegenerate : handleGenerate}
                   disabled={isGenerating || !developerProfile}
                   variant="default"
                   size={isMultiRoleMode ? "default" : "lg"}
                   className={cn(
-                    "bg-primary hover:bg-primary/90 text-primary-content border-0 transition-all shadow-md hover:shadow-lg",
+                    "bg-primary hover:bg-primary/90 text-primary-content transition-all",
                     isMultiRoleMode ? "px-4 py-2" : "px-6 py-3"
                   )}
                   data-testid="write-coverletter-button-generate-trigger"
@@ -344,7 +383,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         {/* Customization Card */}
         <motion.div variants={fadeInUp}>
           <Card 
-            className="bg-base-100/60 backdrop-blur-sm border border-base-300/50 hover:shadow-lg transition-all duration-300 rounded-lg"
+            className="bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 rounded-lg"
             data-testid="write-coverletter-card-customization"
           >
             <CardHeader 
@@ -427,8 +466,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: 20, scale: 0.9 }}
                         transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
-                        whileHover={{ scale: 1.02 }}
-                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50 hover:shadow-md"
+                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50"
                       >
                         <motion.div
                           initial={{ scale: 0 }}
@@ -478,16 +516,15 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   data-testid="write-coverletter-input-add-achievement"
                 />
                 <motion.div 
-                  whileHover={{ scale: 1.02 }} 
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.1 }}
                 >
                   <Button
-                    variant="gradient"
+                    variant="default"
                     size="default"
                     onClick={handleAddAchievement}
                     disabled={!newAchievementTitle.trim()}
-                    className="px-4 shadow-md hover:shadow-lg transition-all duration-150"
+                    className="transition-all duration-150"
                     data-testid="write-coverletter-button-add-achievement-trigger"
                   >
                     <PlusCircle className="h-4 w-4" />
@@ -523,8 +560,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: 20, scale: 0.9 }}
                         transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
-                        whileHover={{ scale: 1.02 }}
-                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50 hover:shadow-md"
+                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50"
                       >
                         <motion.div
                           initial={{ scale: 0 }}
@@ -557,16 +593,15 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   data-testid="write-coverletter-input-add-attraction-point"
                 />
                 <motion.div 
-                  whileHover={{ scale: 1.02 }} 
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.1 }}
                 >
                   <Button
-                    variant="gradient"
+                    variant="default"
                     size="default"
                     onClick={handleAddAttractionPoint}
                     disabled={!newAttractionPoint.trim()}
-                    className="px-4 shadow-md hover:shadow-lg transition-all duration-150"
+                    className="transition-all duration-150"
                     data-testid="write-coverletter-button-add-attraction-point-trigger"
                   >
                     <PlusCircle className="h-4 w-4" />
@@ -627,12 +662,24 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         transition={{ duration: 0.25, delay: 0.1, ease: "easeOut" }}
         className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
       >
-        <Card 
-          className={cn(
-            "bg-base-100/60 backdrop-blur-sm border border-base-300/50 hover:shadow-xl transition-all duration-300 h-full relative overflow-hidden rounded-lg"
-          )}
-          data-testid="write-coverletter-card-output"
+        <motion.div
+          animate={isNewlyGenerated ? {
+            boxShadow: [
+              "0 0 0 0 rgba(139, 92, 246, 0)",
+              "0 0 20px 4px rgba(139, 92, 246, 0.5)",
+              "0 0 40px 8px rgba(139, 92, 246, 0.3)",
+              "0 0 0 0 rgba(139, 92, 246, 0)"
+            ]
+          } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="rounded-lg"
         >
+          <Card 
+            className={cn(
+              "bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 h-full relative overflow-hidden rounded-lg"
+            )}
+            data-testid="write-coverletter-card-output"
+          >
           <CardContent className="flex flex-col bg-transparent p-6">
             <div className="flex-1 relative">
               {!generatedLetter && (
@@ -665,18 +712,81 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   </div>
                 </motion.div>
               )}
-              <Textarea
-                value={generatedLetter}
-                readOnly
-                variant={generatedLetter ? "default" : "ghost"}
-                className={cn(
-                  "resize-none transition-all duration-300 font-sans text-base h-full",
-                  isMultiRoleMode ? "min-h-[350px]" : "min-h-[300px]",
-                  !generatedLetter && "text-center opacity-0",
-                  generatedLetter && "shadow-inner bg-base-100/60 backdrop-blur-sm border-base-300/50 rounded-lg"
-                )}
-                data-testid="write-coverletter-textarea-output"
-              />
+              <motion.div
+                key={generatedLetter ? "letter-present" : "letter-empty"}
+                initial={isNewlyGenerated ? { opacity: 0, scale: 0.95, y: 10 } : false}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.4, 
+                  ease: "easeOut",
+                  opacity: { duration: 0.3 },
+                  scale: { duration: 0.3, ease: [0.175, 0.885, 0.32, 1.275] }
+                }}
+                className="h-full relative"
+              >
+                {/* Shimmer effect for newly generated content */}
+                <AnimatePresence>
+                  {isNewlyGenerated && generatedLetter && (
+                    <>
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none z-10 rounded-lg overflow-hidden"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                          animate={{
+                            x: ['-100%', '100%'],
+                          }}
+                          transition={{
+                            duration: 0.8,
+                            ease: "easeInOut"
+                          }}
+                        />
+                      </motion.div>
+                      
+                      {/* Floating sparkles */}
+                      {[...Array(6)].map((_, i) => (
+                        <motion.div
+                          key={`sparkle-${i}`}
+                          className="absolute w-2 h-2 pointer-events-none z-20"
+                          style={{
+                            left: `${20 + (i * 12)}%`,
+                            top: `${10 + (i % 2) * 80}%`,
+                          }}
+                          initial={{ opacity: 0, scale: 0, y: 20 }}
+                          animate={{
+                            opacity: [0, 1, 1, 0],
+                            scale: [0, 1, 1, 0],
+                            y: [20, -30, -50, -80],
+                          }}
+                          transition={{
+                            duration: 2,
+                            delay: i * 0.1,
+                            ease: "easeOut"
+                          }}
+                        >
+                          <Sparkles className="w-full h-full text-primary" />
+                        </motion.div>
+                      ))}
+                    </>
+                  )}
+                </AnimatePresence>
+                <Textarea
+                  value={generatedLetter}
+                  readOnly
+                  variant={generatedLetter ? "default" : "ghost"}
+                  className={cn(
+                    "resize-none transition-all duration-300 font-sans text-base h-full",
+                    isMultiRoleMode ? "min-h-[350px]" : "min-h-[300px]",
+                    !generatedLetter && "text-center opacity-0",
+                    generatedLetter && "shadow-inner bg-base-100/60 backdrop-blur-sm border-base-300/50 rounded-lg"
+                  )}
+                  data-testid="write-coverletter-textarea-output"
+                />
+              </motion.div>
             </div>
             
             {/* Action Buttons */}
@@ -689,34 +799,24 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   className="mt-6 space-y-3"
                 >
                   <div className="flex gap-3">
-                    <motion.div 
-                      className="flex-1" 
-                      whileHover={{ scale: 1.01 }} 
-                      whileTap={{ scale: 0.99 }}
-                      transition={{ duration: 0.1 }}
-                    >
+                    <div className="flex-1">
                       <Button
                         onClick={handleExport}
                         variant="default"
                         size="default"
-                        className="w-full group bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-150 font-medium rounded-lg"
+                        className="w-full group bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 backdrop-blur-sm shadow-md transition-all duration-150 font-medium rounded-lg"
                         data-testid="write-coverletter-button-export-trigger"
                       >
                         <Download className="mr-2 h-4 w-4" />
                         Export as Text
                       </Button>
-                    </motion.div>
-                    <motion.div 
-                      className="flex-1" 
-                      whileHover={{ scale: 1.01 }} 
-                      whileTap={{ scale: 0.99 }}
-                      transition={{ duration: 0.1 }}
-                    >
+                    </div>
+                    <div className="flex-1">
                       <Button
                         onClick={handleCopy}
                         variant={isCopied ? "gradient-blue" : "outline"}
                         size="default"
-                        className="w-full group shadow-md hover:shadow-lg transition-all duration-150 rounded-lg"
+                        className="w-full group shadow-md transition-all duration-150 rounded-lg"
                         elevation="sm"
                         data-testid="write-coverletter-button-copy-trigger"
                       >
@@ -738,7 +838,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                           </>
                         )}
                       </Button>
-                    </motion.div>
+                    </div>
                   </div>
                   
                   {/* Success Message */}
@@ -772,7 +872,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
               )}
             </AnimatePresence>
           </CardContent>
-        </Card>
+          </Card>
+        </motion.div>
       </motion.div>
     </div>
   )

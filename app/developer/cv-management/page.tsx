@@ -5,14 +5,15 @@ import { UploadForm } from '@/components/cv/UploadForm';
 import { CVList } from '@/components/cv/CVList';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
-import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs';
+import {  Tabs, TabsContent  } from '@/components/ui-daisy/tabs';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { toast } from "@/components/ui/use-toast";
 import {  Button  } from '@/components/ui-daisy/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
 import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
-import { Play } from 'lucide-react';
+import { Play, Settings, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function CVManagementPage() {
@@ -264,41 +265,36 @@ export default function CVManagementPage() {
                 <h1 className="text-2xl font-bold" data-testid="cv-management-title">CV Management & Analysis</h1>
                 <p className="text-sm text-muted-foreground mt-1" data-testid="cv-management-description">Upload, manage, analyze, and edit your CV documents.</p>
             </div>
-            <Tabs
+            <AnimatedTabs
+                tabs={[
+                    {
+                        value: "manage",
+                        icon: Settings,
+                        label: "Manage CVs",
+                        shortLabel: "Manage",
+                        testId: "cv-management-tab-manage"
+                    },
+                    {
+                        value: "analyze",
+                        icon: BarChart3,
+                        label: "Analyze & Edit",
+                        shortLabel: "Analyze",
+                        testId: "cv-management-tab-analyze"
+                    }
+                ]}
                 value={activeTab}
                 onValueChange={handleTabChange}
-                className="w-full animate-fade-in-up"
-                style={{ animationDelay: '150ms' }}
-                data-testid="cv-management-tabs-container"
+                layoutId="cvManagementTabBackground"
+                testId="cv-management-tabs-container"
+                className="animate-fade-in-up"
+            />
+            
+            <Tabs
+                value={activeTab}
+                onValueChange={() => {}} // Controlled by AnimatedTabs
+                className="w-full"
+                data-testid="cv-management-tabs-content"
             >
-                <TabsList className="grid w-full grid-cols-2 gap-2 p-1 bg-base-100/20 backdrop-blur-sm rounded-lg border border-base-300" variant="default" data-testid="cv-management-tabs-list">
-                    <TabsTrigger 
-                        value="manage" 
-                        className={cn(
-                            "font-semibold transition-all duration-200",
-                            activeTab === "manage" 
-                                ? "bg-base-100/80 text-base-content shadow-lg transform scale-[1.02]" 
-                                : "bg-base-100/20 hover:bg-base-100/30 hover:shadow-md"
-                        )}
-                        size="lg"
-                        data-testid="cv-management-tab-manage"
-                    >
-                        Manage CVs
-                    </TabsTrigger>
-                    <TabsTrigger 
-                        value="analyze"
-                        className={cn(
-                            "font-semibold transition-all duration-200",
-                            activeTab === "analyze" 
-                                ? "bg-base-100/80 text-base-content shadow-lg transform scale-[1.02]" 
-                                : "bg-base-100/20 hover:bg-base-100/30 hover:shadow-md"
-                        )}
-                        size="lg"
-                        data-testid="cv-management-tab-analyze"
-                    >
-                        Analyze & Edit
-                    </TabsTrigger>
-                </TabsList>
                 <TabsContent value="manage" className="mt-4 space-y-6" data-testid="cv-management-content-manage">
                     <Card data-testid="cv-management-card-upload">
                         <CardHeader data-testid="cv-management-upload-header">
