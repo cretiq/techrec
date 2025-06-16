@@ -8,6 +8,7 @@ export function SignInButton() {
     <Button
       onClick={() => signIn("google", { callbackUrl: "/developer/dashboard" })}
       className="w-full"
+      data-testid="auth-button-signin-google-trigger"
     >
       Sign in with Google
     </Button>

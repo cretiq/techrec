@@ -38,6 +38,28 @@ export const generateCoverLetterWithProvider = async (
   }
 };
 
+export const selectAIProvider = (taskType: string): { provider: AIProvider; model: string } => {
+  const provider = getDefaultProvider();
+  
+  const models = {
+    openai: {
+      analysis: 'gpt-4o-mini',
+      generation: 'gpt-4o-mini',
+      outreach: 'gpt-4o-mini'
+    },
+    gemini: {
+      analysis: 'gemini-1.5-flash',
+      generation: 'gemini-1.5-flash',
+      outreach: 'gemini-1.5-flash'
+    }
+  };
+  
+  return {
+    provider,
+    model: models[provider][taskType as keyof typeof models[typeof provider]] || models[provider].generation
+  };
+};
+
 export const getProviderEndpoints = (provider?: AIProvider) => {
   const selectedProvider = provider || getDefaultProvider();
   

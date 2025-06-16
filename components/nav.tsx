@@ -38,13 +38,14 @@ export function MainNav() {
   }
 
   return (
-    <div className="flex items-center space-x-4 lg:space-x-6">
+    <div className="flex items-center space-x-4 lg:space-x-6" data-testid="nav-main-container">
       <Link
         href="/developer/dashboard"
         className={cn(
           "text-sm font-medium transition-colors hover:text-primary",
           isActive("/developer/dashboard") ? "text-primary" : "text-muted-foreground"
         )}
+        data-testid="nav-link-dashboard-trigger"
       >
         {isActive("/developer/dashboard") && isNavigating ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -60,6 +61,7 @@ export function MainNav() {
               "text-sm font-medium transition-colors hover:text-primary",
               isActive("/developer/profile") ? "text-primary" : "text-muted-foreground"
             )}
+            data-testid="nav-link-profile-trigger"
           >
             {isActive("/developer/profile") && isNavigating ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -73,6 +75,7 @@ export function MainNav() {
               "text-sm font-medium transition-colors hover:text-primary",
               isActive("/developer/applications") ? "text-primary" : "text-muted-foreground"
             )}
+            data-testid="nav-link-applications-trigger"
           >
             {isActive("/developer/applications") && isNavigating ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -112,19 +115,19 @@ export function UserNav() {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center space-x-4">
-        <Loader2 className="h-4 w-4 animate-spin" />
+      <div className="flex items-center space-x-4" data-testid="nav-user-loading">
+        <Loader2 className="h-4 w-4 animate-spin" data-testid="nav-user-loading-spinner" />
       </div>
     )
   }
 
   if (status === "unauthenticated") {
     return (
-      <div className="flex items-center space-x-4">
-        <Link href="/auth/signin">
-          <Button variant="outline" size="sm">
+      <div className="flex items-center space-x-4" data-testid="nav-user-unauthenticated">
+        <Link href="/auth/signin" data-testid="nav-link-signin-trigger">
+          <Button variant="outline" size="sm" data-testid="nav-button-signin-trigger">
             {isNavigating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" data-testid="nav-signin-loading-spinner" />
             ) : (
               "Sign In"
             )}
@@ -135,20 +138,20 @@ export function UserNav() {
   }
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-4" data-testid="nav-user-authenticated">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" data-testid="nav-button-account-trigger">
             {isNavigating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" data-testid="nav-account-loading-spinner" />
             ) : (
               "My Account"
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" data-testid="nav-dropdown-account-menu">
           <DropdownMenuItem asChild>
-            <Link href="/developer/profile" className="flex items-center">
+            <Link href="/developer/profile" className="flex items-center" data-testid="nav-dropdown-profile-trigger">
               <User className="mr-2 h-4 w-4" />
               <span>My Profile</span>
             </Link>
@@ -156,6 +159,7 @@ export function UserNav() {
           <DropdownMenuItem 
             onClick={handleLogout}
             className="flex items-center text-red-600 focus:text-red-600"
+            data-testid="nav-dropdown-logout-trigger"
           >
             <LogOut className="mr-2 h-4 w-4" />
             <span>Logout</span>

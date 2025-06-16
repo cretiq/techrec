@@ -13,6 +13,8 @@ import analyticsReducer from './features/analyticsSlice';
 import selectedRolesReducer from './features/selectedRolesSlice';
 // Import the cover letters reducer
 import coverLettersReducer from './features/coverLettersSlice';
+// Import the outreach messages reducer
+import outreachMessagesReducer from './features/outreachMessagesSlice';
 // Import reducers here when they are created
 // import rootReducer from './rootReducer'; // Example
 
@@ -49,6 +51,13 @@ const coverLettersPersistConfig = {
     whitelist: ['coverLetters'] // Persist all cover letters
 };
 
+// Persist config for outreach messages
+const outreachMessagesPersistConfig = {
+    key: 'outreachMessages',
+    storage,
+    whitelist: ['messages'] // Persist all outreach messages
+};
+
 // Create persisted reducers
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedAnalysisReducer = persistReducer(analysisPersistConfig, analysisReducer);
@@ -57,6 +66,8 @@ const persistedUiReducer = persistReducer(uiPersistConfig, uiReducer);
 const persistedSelectedRolesReducer = persistReducer(selectedRolesPersistConfig, selectedRolesReducer);
 // Create persisted reducer for cover letters
 const persistedCoverLettersReducer = persistReducer(coverLettersPersistConfig, coverLettersReducer);
+// Create persisted reducer for outreach messages
+const persistedOutreachMessagesReducer = persistReducer(outreachMessagesPersistConfig, outreachMessagesReducer);
 
 export const store = configureStore({
   reducer: {
@@ -68,6 +79,8 @@ export const store = configureStore({
     selectedRoles: persistedSelectedRolesReducer,
     // Add the cover letters reducer
     coverLetters: persistedCoverLettersReducer,
+    // Add the outreach messages reducer
+    outreachMessages: persistedOutreachMessagesReducer,
     // Analytics doesn't need persistence
     analytics: analyticsReducer,
   },

@@ -246,54 +246,56 @@ export default function RolesPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen" data-testid="role-search-loading-container">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" data-testid="role-search-loading-spinner"></div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
+    <div className="container mx-auto px-4 py-8" data-testid="role-search-page-container">
+      <div className="flex flex-col lg:flex-row gap-8" data-testid="role-search-content">
         {/* Filters Section */}
-        <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up">
-          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg shadow p-6 sticky top-8">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Filters</h2>
+        <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up" data-testid="role-search-filters-sidebar">
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg shadow p-6 sticky top-8" data-testid="role-search-container-filters">
+            <div className="flex justify-between items-center mb-4" data-testid="role-search-filters-header">
+              <h2 className="text-lg font-semibold" data-testid="role-search-filters-title">Filters</h2>
               {activeFilters > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
                   className="text-xs text-primary hover:bg-primary/10 h-auto p-1"
+                  data-testid="role-search-button-clear-filters-trigger"
                 >
                   Clear ({activeFilters})
                 </Button>
               )}
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4" data-testid="role-search-filters-content">
               {/* Search Input */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <div className="relative" data-testid="role-search-search-field">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" data-testid="role-search-search-icon" />
                 <Input
                   placeholder="Search roles..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 bg-white/50 dark:bg-gray-800/50"
+                  data-testid="role-search-input-keyword"
                 />
               </div>
 
               {/* Location Filter */}
-              <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-                <Label>Location</Label>
-                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
+              <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }} data-testid="role-search-location-filter">
+                <Label data-testid="role-search-location-label">Location</Label>
+                <Select value={selectedLocation} onValueChange={setSelectedLocation} data-testid="role-search-select-location">
+                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50" data-testid="role-search-location-trigger">
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
+                  <SelectContent data-testid="role-search-location-options">
+                    <SelectItem value="all" data-testid="role-search-location-option-all">All Locations</SelectItem>
                     {locations.map((location) => (
-                      <SelectItem key={location} value={location}>
+                      <SelectItem key={location} value={location} data-testid={`role-search-location-option-${location.toLowerCase().replace(/\s+/g, '-')}`}>
                         {location}
                       </SelectItem>
                     ))}
@@ -302,16 +304,16 @@ export default function RolesPage() {
               </div>
 
               {/* Job Type Filter */}
-              <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                <Label>Job Type</Label>
-                <Select value={selectedJobType} onValueChange={setSelectedJobType}>
-                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
+              <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }} data-testid="role-search-jobtype-filter">
+                <Label data-testid="role-search-jobtype-label">Job Type</Label>
+                <Select value={selectedJobType} onValueChange={setSelectedJobType} data-testid="role-search-select-jobtype">
+                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50" data-testid="role-search-jobtype-trigger">
                     <SelectValue placeholder="Select job type" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
+                  <SelectContent data-testid="role-search-jobtype-options">
+                    <SelectItem value="all" data-testid="role-search-jobtype-option-all">All Types</SelectItem>
                     {jobTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
+                      <SelectItem key={type} value={type} data-testid={`role-search-jobtype-option-${String(type).toLowerCase().replace(/\s+/g, '-')}`}>
                         {formatJobType(type)}
                       </SelectItem>
                     ))}
@@ -320,17 +322,18 @@ export default function RolesPage() {
               </div>
 
               {/* Skills Filter */}
-              <Accordion type="single" collapsible className="w-full animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-                <AccordionItem value="skills">
-                  <AccordionTrigger className="text-sm font-medium">Skills ({selectedSkills.length})</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto pr-2">
+              <Accordion type="single" collapsible className="w-full animate-fade-in-up" style={{ animationDelay: '300ms' }} data-testid="role-search-skills-filter">
+                <AccordionItem value="skills" data-testid="role-search-skills-accordion-item">
+                  <AccordionTrigger className="text-sm font-medium" data-testid="role-search-skills-accordion-trigger">Skills ({selectedSkills.length})</AccordionTrigger>
+                  <AccordionContent data-testid="role-search-skills-accordion-content">
+                    <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto pr-2" data-testid="role-search-skills-container">
                       {allSkills.map((skill) => (
                         <Badge
                           key={skill}
                           variant={selectedSkills.includes(skill) ? "default" : "outline"}
                           className="cursor-pointer bg-white/50 dark:bg-gray-800/50 hover:bg-primary/10 dark:hover:bg-primary/30"
                           onClick={() => toggleSkill(skill)}
+                          data-testid={`role-search-skill-badge-${skill.toLowerCase().replace(/\s+/g, '-')}`}
                         >
                           {skill}
                         </Badge>
@@ -346,8 +349,9 @@ export default function RolesPage() {
                 className="w-full flex items-center gap-2 hover:bg-primary/10 animate-fade-in-up mt-4"
                 style={{ animationDelay: '600ms' }}
                 onClick={() => router.push('/developer/roles/new')}
+                data-testid="role-search-button-add-custom-trigger"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4" data-testid="role-search-icon-add-custom" />
                 Add Custom Role
               </Button>
             </div>
@@ -355,19 +359,20 @@ export default function RolesPage() {
         </div>
 
         {/* Roles Grid */}
-        <div className="w-full lg:w-3/4">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="w-full lg:w-3/4" data-testid="role-search-results-section">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" data-testid="role-search-container-results">
             {/* Add Custom Role Card */}
             <Card 
               className="hover:shadow-lg transition-shadow border-dashed border-2 cursor-pointer bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up" 
               style={{ animationDelay: '100ms' }}
               onClick={() => router.push('/developer/roles/new')}
+              data-testid="role-search-card-add-custom"
             >
-              <CardHeader>
-                <div className="flex flex-col items-center justify-center h-full py-8">
-                  <Plus className="h-12 w-12 text-muted-foreground mb-2" />
-                  <CardTitle className="text-lg text-center">Add Custom Role</CardTitle>
-                  <CardDescription className="text-center mt-2">Create your own role</CardDescription>
+              <CardHeader data-testid="role-search-add-custom-header">
+                <div className="flex flex-col items-center justify-center h-full py-8" data-testid="role-search-add-custom-content">
+                  <Plus className="h-12 w-12 text-muted-foreground mb-2" data-testid="role-search-add-custom-icon" />
+                  <CardTitle className="text-lg text-center" data-testid="role-search-add-custom-title">Add Custom Role</CardTitle>
+                  <CardDescription className="text-center mt-2" data-testid="role-search-add-custom-description">Create your own role</CardDescription>
                 </div>
               </CardHeader>
             </Card>
@@ -377,13 +382,14 @@ export default function RolesPage() {
                 key={role.id} 
                 className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up flex flex-col h-full"
                 style={{ animationDelay: `${(index + 2) * 100}ms` }}
+                data-testid={`role-search-card-role-item-${role.id}`}
               >
-                <CardHeader className="pb-4">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                      <CardTitle className="text-xl line-clamp-2">{role.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-1">
-                        <Building className="h-4 w-4" />
+                <CardHeader className="pb-4" data-testid={`role-search-card-header-${role.id}`}>
+                  <div className="flex justify-between items-start" data-testid={`role-search-card-title-section-${role.id}`}>
+                    <div className="space-y-1" data-testid={`role-search-card-title-content-${role.id}`}>
+                      <CardTitle className="text-xl line-clamp-2" data-testid={`role-search-card-title-${role.id}`}>{role.title}</CardTitle>
+                      <CardDescription className="flex items-center gap-1" data-testid={`role-search-card-company-${role.id}`}>
+                        <Building className="h-4 w-4" data-testid={`role-search-icon-building-${role.id}`} />
                         <span className="line-clamp-1">{role.company.name} (ID: {role.id})</span>
                       </CardDescription>
                     </div>
@@ -394,65 +400,67 @@ export default function RolesPage() {
                         onClick={() => handleSaveToggleRole(role.id)}
                         className="text-muted-foreground hover:text-primary shrink-0 ml-1"
                         title={savedRoles.some(r => r.roleId === role.id) ? "Unsave Role" : "Save Role"}
+                        data-testid={`role-search-button-save-trigger-${role.id}`}
                       >
                         {savedRoles.some(r => r.roleId === role.id) ? (
-                          <BookmarkCheck className="h-5 w-5" />
+                          <BookmarkCheck className="h-5 w-5" data-testid={`role-search-icon-saved-${role.id}`} />
                         ) : (
-                          <Bookmark className="h-5 w-5" />
+                          <Bookmark className="h-5 w-5" data-testid={`role-search-icon-save-${role.id}`} />
                         )}
                       </Button>
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="flex-1 space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">
+                <CardContent className="flex-1 space-y-4" data-testid={`role-search-card-content-${role.id}`}>
+                  <div className="flex flex-wrap gap-2" data-testid={`role-search-card-badges-${role.id}`}>
+                    <Badge variant="secondary" data-testid={`role-search-badge-location-${role.id}`}>
                       <MapPin className="mr-1 h-3 w-3" />
                       <span className="line-clamp-1">{role.location}</span>
                     </Badge>
-                    <Badge variant="secondary">
+                    <Badge variant="secondary" data-testid={`role-search-badge-jobtype-${role.id}`}>
                       <Briefcase className="mr-1 h-3 w-3" />
                       {formatJobType(role.type)}
                     </Badge>
                     {role.remote && (
-                      <Badge variant="secondary">
+                      <Badge variant="secondary" data-testid={`role-search-badge-remote-${role.id}`}>
                         <Clock className="mr-1 h-3 w-3" />
                         Remote
                       </Badge>
                     )}
                     {role.visaSponsorship && (
-                      <Badge variant="secondary">
+                      <Badge variant="secondary" data-testid={`role-search-badge-visa-${role.id}`}>
                         <Code className="mr-1 h-3 w-3" />
                         Visa Sponsorship
                       </Badge>
                     )}
                   </div>
-                  <p className="text-muted-foreground line-clamp-3">{role.description}</p>
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Required Skills:</h4>
-                    <div className="flex flex-wrap gap-2">
+                  <p className="text-muted-foreground line-clamp-3" data-testid={`role-search-card-description-${role.id}`}>{role.description}</p>
+                  <div className="space-y-2" data-testid={`role-search-card-skills-section-${role.id}`}>
+                    <h4 className="font-medium text-sm" data-testid={`role-search-card-skills-title-${role.id}`}>Required Skills:</h4>
+                    <div className="flex flex-wrap gap-2" data-testid={`role-search-card-skills-container-${role.id}`}>
                       {role.skills.map((skill) => (
-                        <Badge key={skill.id} variant="outline" className="text-xs">
+                        <Badge key={skill.id} variant="outline" className="text-xs" data-testid={`role-search-badge-skill-${skill.name.toLowerCase().replace(/\s+/g, '-')}-${role.id}`}>
                           {skill.name}
                         </Badge>
                       ))}
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="card-body pt-2 mt-auto">
-                  <div className="flex justify-between items-center w-full">
-                    <div className="text-md font-semibold">{role.salary}</div>
-                    <div className="flex gap-2">
+                <CardFooter className="card-body pt-2 mt-auto" data-testid={`role-search-card-footer-${role.id}`}>
+                  <div className="flex justify-between items-center w-full" data-testid={`role-search-card-actions-${role.id}`}>
+                    <div className="text-md font-semibold" data-testid={`role-search-card-salary-${role.id}`}>{role.salary}</div>
+                    <div className="flex gap-2" data-testid={`role-search-card-buttons-${role.id}`}>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => router.push(`/developer/writing-help?roleId=${role.id}`)}
                         className="gap-1"
+                        data-testid={`role-search-button-write-trigger-${role.id}`}
                       >
-                        <PenTool className="h-4 w-4" /> Write to
+                        <PenTool className="h-4 w-4" data-testid={`role-search-icon-write-${role.id}`} /> Write to
                       </Button>
-                      <Button size="sm" onClick={() => handleApply(role.id)}>
-                        Apply Now <ArrowRight className="h-4 w-4" />
+                      <Button size="sm" onClick={() => handleApply(role.id)} data-testid={`role-search-button-apply-trigger-${role.id}`}>
+                        Apply Now <ArrowRight className="h-4 w-4" data-testid={`role-search-icon-apply-${role.id}`} />
                       </Button>
                     </div>
                   </div>

@@ -31,22 +31,22 @@ export function ProfileTabs({
   errors
 }: ProfileTabsProps) {
   return (
-    <Tabs defaultValue="profile" className="w-full">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border">
-        <TabsTrigger value="profile" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
-          <User className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+    <Tabs defaultValue="profile" className="w-full" data-testid="profile-tabs-container">
+      <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border" data-testid="profile-tabs-list">
+        <TabsTrigger value="profile" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" data-testid="profile-tab-profile-trigger">
+          <User className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" data-testid="profile-tab-profile-icon" />
           Profile
         </TabsTrigger>
-        <TabsTrigger value="experience" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
-          <Briefcase className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+        <TabsTrigger value="experience" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" data-testid="profile-tab-experience-trigger">
+          <Briefcase className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" data-testid="profile-tab-experience-icon" />
           Experience
         </TabsTrigger>
-        <TabsTrigger value="education" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
-          <GraduationCap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+        <TabsTrigger value="education" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" data-testid="profile-tab-education-trigger">
+          <GraduationCap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" data-testid="profile-tab-education-icon" />
           Education
         </TabsTrigger>
-        <TabsTrigger value="achievements" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white">
-          <Award className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+        <TabsTrigger value="achievements" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" data-testid="profile-tab-achievements-trigger">
+          <Award className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" data-testid="profile-tab-achievements-icon" />
           Achievements
         </TabsTrigger>
       </TabsList>

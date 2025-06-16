@@ -1,22 +1,31 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
+const cardVariants = {
+  default: "card",
+  transparent: "overflow-hidden bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 rounded-lg shadow-none",
+  glass: "bg-base-100/40 backdrop-blur-md border border-base-300/30 transition-all duration-300 rounded-lg shadow-sm",
+  solid: "bg-base-100 border border-base-300 transition-all duration-300 rounded-lg shadow-md",
+  outlined: "bg-transparent border border-base-300 transition-all duration-300 rounded-lg shadow-none",
+}
+
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
+    variant?: keyof typeof cardVariants
     hoverable?: boolean
     compact?: boolean
     bordered?: boolean
     imageFull?: boolean
   }
->(({ className, hoverable = false, compact = false, bordered = true, imageFull = false, ...props }, ref) => (
+>(({ className, variant = "default", hoverable = false, compact = false, bordered = true, imageFull = false, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "card bg-base-100",
-      bordered && "",
-      compact && "card-compact",
-      imageFull && "image-full",
+      cardVariants[variant],
+      variant === "default" && bordered && "",
+      variant === "default" && compact && "card-compact",
+      variant === "default" && imageFull && "image-full",
       hoverable && "hover:shadow-2xl transition-shadow duration-200",
       className
     )}
