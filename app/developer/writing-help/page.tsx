@@ -19,7 +19,8 @@ export default function WritingHelpPage() {
   // Read initial tab from URL query param, default to cover-letter if present
   const searchParams = useSearchParams();
   const initialTabParam = searchParams.get('tab');
-  const initialTab = (initialTabParam === 'cv' || initialTabParam === 'cover-letter' || initialTabParam === 'outreach') ? initialTabParam : 'cover-letter';
+  // Don't allow CV tab to be selected initially
+  const initialTab = (initialTabParam === 'cover-letter' || initialTabParam === 'outreach') ? initialTabParam : 'cover-letter';
   
   const [activeTab, setActiveTab] = useState<"cv" | "cover-letter" | "outreach">(initialTab)
   
@@ -193,7 +194,8 @@ export default function WritingHelpPage() {
             icon: FileText,
             label: "CV Optimization",
             shortLabel: "CV",
-            testId: "write-nav-tab-cv-trigger"
+            testId: "write-nav-tab-cv-trigger",
+            disabled: true
           },
           {
             value: "cover-letter",
@@ -212,6 +214,9 @@ export default function WritingHelpPage() {
         ]}
         value={activeTab}
         onValueChange={(value) => {
+          // Don't allow switching to CV tab
+          if (value === "cv") return;
+          
           setActiveTab(value as "cv" | "cover-letter" | "outreach")
           // Update URL without navigation
           const newUrl = new URL(window.location.href)

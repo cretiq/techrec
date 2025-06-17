@@ -12,6 +12,7 @@ export interface TabConfig {
   label: string
   shortLabel?: string
   testId?: string
+  disabled?: boolean
 }
 
 interface AnimatedTabsProps {
@@ -62,13 +63,22 @@ export function AnimatedTabs({
             <TabsTrigger 
               key={tab.value}
               value={tab.value}
-              className="relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content z-20 h-full min-h-0 py-0 leading-none"
+              disabled={tab.disabled}
+              className={cn(
+                "relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-200 z-20 h-full min-h-0 py-0 leading-none",
+                tab.disabled 
+                  ? "opacity-50 cursor-not-allowed text-base-content/40 hover:text-base-content/40" 
+                  : "data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content"
+              )}
               data-testid={tab.testId || `${testId}-trigger-${tab.value}`}
             >
               <tab.icon className="h-4 w-4" />
               <span className="hidden sm:inline font-semibold">{tab.label}</span>
               {tab.shortLabel && (
                 <span className="sm:hidden font-semibold">{tab.shortLabel}</span>
+              )}
+              {tab.disabled && (
+                <span className="ml-1 text-xs hidden lg:inline">(Coming Soon)</span>
               )}
             </TabsTrigger>
           ))}
