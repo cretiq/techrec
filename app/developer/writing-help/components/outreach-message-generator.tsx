@@ -296,10 +296,6 @@ export function OutreachMessageGenerator({
       setShowCelebration(true)
       setTimeout(() => setShowCelebration(false), 3000)
       
-      toast({ 
-        title: "Success!", 
-        description: `Outreach messages for "${role.title}" generated.` 
-      })
       success = true
     } catch (error) {
       console.error("Generate Outreach Message Error:", error)
