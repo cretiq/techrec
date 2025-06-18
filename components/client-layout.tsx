@@ -53,7 +53,7 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                             <li><Link href="/developer/roles/search" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-role-search-trigger">Role Search</Link></li>
                             {session && (
                               <>
-                                <li><Link href="/developer/profile" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-profile-trigger">Profile</Link></li>
+                                <li><Link href="/developer/cv-management" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-profile-trigger">My Profile & CV</Link></li>
                                 <li><Link href="/developer/applications" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-applications-trigger">Applications</Link></li>
                               </>
                             )}

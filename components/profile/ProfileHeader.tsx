@@ -37,7 +37,7 @@ export function ProfileHeader({ profile, onAvatarChange }: ProfileHeaderProps) {
   const fallbackInitials = profile?.name ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase() : '??';
 
   return (
-    <Card className="border shadow-none bg-gradient-to-br from-blue-50 to-purple-50 animate-fade-in-up" data-testid="profile-header-card">
+    <Card variant="transparent" className="animate-fade-in-up" data-testid="profile-header-card">
       <CardContent className="flex flex-col items-center text-center pt-6" data-testid="profile-header-content">
         <div
           className="relative group cursor-pointer"

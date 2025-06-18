@@ -14,17 +14,30 @@ interface ExperienceCardProps {
 
 export function ExperienceCard({ profile, onDeleteExperience }: ExperienceCardProps) {
   return (
-    <Card className="border shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Work Experience</CardTitle>
-        <Button variant="outline" size="sm" className="gap-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">
+    <Card 
+      variant="transparent" 
+      className="animate-fade-in-up" 
+      data-testid="profile-experience-card"
+    >
+      <CardHeader className="flex flex-row items-center justify-between" data-testid="profile-experience-header">
+        <CardTitle data-testid="profile-experience-title">Work Experience</CardTitle>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-1 bg-base-100/50 backdrop-blur-sm border border-base-300/50 hover:bg-base-200/50"
+          data-testid="profile-experience-add-button"
+        >
           <Plus className="h-4 w-4" />
           Add Experience
         </Button>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6" data-testid="profile-experience-content">
         {(profile?.experience || []).map((exp: InternalExperience) => (
-          <div key={exp.id} className="border rounded-lg p-4 space-y-4 bg-white dark:bg-gray-800 shadow-sm">
+          <div 
+            key={exp.id} 
+            className="border border-base-300/50 rounded-lg p-4 space-y-4 bg-base-100/30 backdrop-blur-sm shadow-sm"
+            data-testid={`profile-experience-item-${exp.id}`}
+          >
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="font-medium">{exp.title}</h3>
@@ -89,7 +102,8 @@ export function ExperienceCard({ profile, onDeleteExperience }: ExperienceCardPr
                     <Badge 
                       key={index} 
                       variant="outline" 
-                      className="bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800 px-1.5 py-0.5 text-xs"
+                      className="bg-primary/10 text-primary border-primary/20 backdrop-blur-sm px-1.5 py-0.5 text-xs"
+                      data-testid={`profile-experience-tech-${exp.id}-${index}`}
                     >
                       {tech}
                     </Badge>

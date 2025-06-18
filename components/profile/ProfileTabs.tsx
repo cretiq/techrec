@@ -1,7 +1,7 @@
 "use client"
 
 import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
-import { User, Briefcase, GraduationCap, Award } from "lucide-react"
+import { User, Briefcase, GraduationCap, Award, Sparkles, Settings } from "lucide-react"
 import { InternalProfile } from "@/types/types"
 import { ProfileInfoCard } from "./ProfileInfoCard"
 import { SkillsCard } from "./SkillsCard"
@@ -18,6 +18,7 @@ interface ProfileTabsProps {
   onDeleteEducation: (id: string) => void;
   onDeleteAchievement: (id: string) => void;
   errors: Record<string, string>;
+  activeTab: string;
 }
 
 export function ProfileTabs({
@@ -28,62 +29,77 @@ export function ProfileTabs({
   onDeleteExperience,
   onDeleteEducation,
   onDeleteAchievement,
-  errors
+  errors,
+  activeTab
 }: ProfileTabsProps) {
+  // Render content based on activeTab instead of using TabsContent
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "personal":
+        return (
+          <div className="space-y-6">
+            <ProfileInfoCard
+              currentProfile={currentProfile}
+              modifiedFields={modifiedFields}
+              onInputChange={onInputChange}
+              errors={errors}
+            />
+          </div>
+        )
+      case "skills":
+        return (
+          <div className="space-y-6">
+            <SkillsCard
+              profile={currentProfile}
+              onDeleteSkill={onDeleteSkill}
+            />
+          </div>
+        )
+      case "experience":
+        return (
+          <div className="space-y-6">
+            <ExperienceCard
+              profile={currentProfile}
+              onDeleteExperience={onDeleteExperience}
+            />
+          </div>
+        )
+      case "education":
+        return (
+          <div className="space-y-6">
+            <EducationCard
+              profile={currentProfile}
+              onDeleteEducation={onDeleteEducation}
+            />
+          </div>
+        )
+      case "achievements":
+        return (
+          <div className="space-y-6">
+            <AchievementsCard
+              profile={currentProfile}
+              onDeleteAchievement={onDeleteAchievement}
+            />
+          </div>
+        )
+      case "settings":
+        return (
+          <div className="space-y-6">
+            <div className="p-8 text-center text-base-content/70">
+              <Settings className="h-12 w-12 mx-auto mb-4 text-base-content/40" />
+              <h3 className="text-lg font-semibold mb-2">Settings Coming Soon</h3>
+              <p className="text-sm">Profile settings and preferences will be available here.</p>
+            </div>
+          </div>
+        )
+      default:
+        return null
+    }
+  }
+
   return (
-    <Tabs defaultValue="profile" className="w-full" data-testid="profile-tabs-container">
-      <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border" data-testid="profile-tabs-list">
-        <TabsTrigger value="profile" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" data-testid="profile-tab-profile-trigger">
-          <User className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" data-testid="profile-tab-profile-icon" />
-          Profile
-        </TabsTrigger>
-        <TabsTrigger value="experience" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" data-testid="profile-tab-experience-trigger">
-          <Briefcase className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" data-testid="profile-tab-experience-icon" />
-          Experience
-        </TabsTrigger>
-        <TabsTrigger value="education" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" data-testid="profile-tab-education-trigger">
-          <GraduationCap className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" data-testid="profile-tab-education-icon" />
-          Education
-        </TabsTrigger>
-        <TabsTrigger value="achievements" className="text-xs md:text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-purple-600 data-[state=active]:text-white" data-testid="profile-tab-achievements-trigger">
-          <Award className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" data-testid="profile-tab-achievements-icon" />
-          Achievements
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="profile" className="space-y-6 mt-6">
-        <ProfileInfoCard
-          currentProfile={currentProfile}
-          modifiedFields={modifiedFields}
-          onInputChange={onInputChange}
-          errors={errors}
-        />
-        <SkillsCard
-          profile={currentProfile}
-          onDeleteSkill={onDeleteSkill}
-        />
-      </TabsContent>
-
-      <TabsContent value="experience" className="space-y-6 mt-6">
-        <ExperienceCard
-          profile={currentProfile}
-          onDeleteExperience={onDeleteExperience}
-        />
-      </TabsContent>
-
-      <TabsContent value="education" className="space-y-6 mt-6">
-        <EducationCard
-          profile={currentProfile}
-          onDeleteEducation={onDeleteEducation}
-        />
-      </TabsContent>
-
-      <TabsContent value="achievements" className="space-y-6 mt-6">
-        <AchievementsCard
-          profile={currentProfile}
-          onDeleteAchievement={onDeleteAchievement}
-        />
-      </TabsContent>
-    </Tabs>
+    <div className="w-full" data-testid="profile-tabs-container">
+      {renderTabContent()}
+    </div>
   )
 } 

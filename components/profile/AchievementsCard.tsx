@@ -12,18 +12,32 @@ interface AchievementsCardProps {
 
 export function AchievementsCard({ profile, onDeleteAchievement }: AchievementsCardProps) {
   return (
-    <Card className="border shadow-none bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 animate-fade-in-up">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Achievements</CardTitle>
-        <Button variant="outline" size="sm" className="gap-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">
+    <Card 
+      variant="transparent" 
+      className="animate-fade-in-up" 
+      data-testid="profile-achievements-card"
+    >
+      <CardHeader className="flex flex-row items-center justify-between" data-testid="profile-achievements-header">
+        <CardTitle data-testid="profile-achievements-title">Achievements</CardTitle>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-1 bg-base-100/50 backdrop-blur-sm border border-base-300/50 hover:bg-base-200/50"
+          data-testid="profile-achievements-add-button"
+        >
           <Plus className="h-4 w-4" />
           Add Achievement
         </Button>
       </CardHeader>
-      <CardContent>
+      <CardContent data-testid="profile-achievements-content">
         <div className="space-y-4">
           {(profile?.achievements || []).map((achievement: InternalAchievement) => (
-            <Card key={achievement.id} className="p-4 bg-white dark:bg-gray-800 shadow-sm">
+            <Card 
+              key={achievement.id} 
+              variant="transparent" 
+              className="p-4 bg-base-100/30 backdrop-blur-sm shadow-sm"
+              data-testid={`profile-achievement-item-${achievement.id}`}
+            >
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="font-semibold">{achievement.title}</h3>

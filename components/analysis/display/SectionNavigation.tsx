@@ -85,10 +85,10 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
                         <button 
                             onClick={() => scrollToSection(section.id)}
                             className={cn(
-                                "w-full text-left px-3 py-1.5 text-sm rounded transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1",
+                                "w-full text-left px-3 py-1.5 text-sm rounded transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1 cursor-pointer",
                                 activeSection === section.id 
-                                    ? "bg-primary/10 text-primary font-medium"
-                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    ? "bg-primary/10 text-primary font-medium border-l-2 border-primary pl-2"
+                                    : "text-muted-foreground hover:bg-base-200/60 hover:text-foreground hover:translate-x-1 hover:shadow-sm"
                             )}
                         >
                             {section.title}
