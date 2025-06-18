@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { UploadForm } from '@/components/cv/UploadForm';
-import { CVList } from '@/components/cv/CVList';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
 import { ProfileScoringSidebar } from '@/components/cv/ProfileScoringSidebar';
 import { GuidedProfileCreation } from '@/components/cv/GuidedProfileCreation';
@@ -17,7 +16,6 @@ import { cn } from '@/lib/utils';
 import { RefreshCw, Download, BarChart3 } from 'lucide-react';
 
 export default function CVManagementPage() {
-    const [refreshKey, setRefreshKey] = useState(0);
     const [originalMimeType, setOriginalMimeType] = useState<string>('application/pdf'); // Keep this for now
     const [showGuidedCreation, setShowGuidedCreation] = useState(false);
 
@@ -38,9 +36,6 @@ export default function CVManagementPage() {
     const handleUploadComplete = useCallback((analysisId?: string) => {
         console.log('[CVManagementPage] handleUploadComplete called with analysisId:', analysisId);
         
-        // Trigger a refresh of the CV list to reflect the new upload
-        setRefreshKey(prev => prev + 1);
-        
         // Load the new analysis and update URL
         if (analysisId) {
             console.log('[CVManagementPage] Loading analysis:', analysisId);
@@ -54,22 +49,53 @@ export default function CVManagementPage() {
         }
     }, [dispatch, searchParams, router]);
 
-    // URL Effect: Handle loading analysis from URL params on mount or URL change
+    // Auto-load user's latest CV analysis on mount, or load from URL if provided
     useEffect(() => {
         const analysisIdFromUrl = searchParams.get('analysisId');
         
-        console.log('[CVManagementPage] URL Effect triggered with analysisId:', analysisIdFromUrl);
-        
         if (analysisIdFromUrl) {
-            // Only fetch if we don't already have this analysis loaded in Redux
+            // URL has specific analysis ID - load it
+            console.log('[CVManagementPage] URL Effect triggered with analysisId:', analysisIdFromUrl);
             if (analysisIdFromStore !== analysisIdFromUrl) {
                 console.log('[CVManagementPage] Fetching analysis from URL:', analysisIdFromUrl);
                 dispatch(fetchAnalysisById(analysisIdFromUrl));
             } else {
                 console.log('[CVManagementPage] Analysis already loaded in Redux, skipping fetch');
             }
+        } else if (!analysisIdFromStore && analysisStatus === 'idle') {
+            // No URL parameter and no analysis loaded - fetch user's latest analysis
+            console.log('[CVManagementPage] No URL param, fetching user\'s latest analysis');
+            fetchLatestUserAnalysis();
         }
-    }, [searchParams, dispatch, analysisIdFromStore]);
+    }, [searchParams, dispatch, analysisIdFromStore, analysisStatus]);
+
+    // Function to fetch user's latest CV analysis
+    const fetchLatestUserAnalysis = async () => {
+        try {
+            const response = await fetch('/api/cv-analysis/latest');
+            
+            if (response.ok) {
+                const latestAnalysis = await response.json();
+                console.log('[CVManagementPage] Found latest analysis:', latestAnalysis.id);
+                
+                // Load the analysis into Redux
+                dispatch(fetchAnalysisById(latestAnalysis.id));
+                
+                // Update URL to reflect the loaded analysis (optional - maintains URL state)
+                const params = new URLSearchParams(searchParams.toString());
+                params.set('analysisId', latestAnalysis.id);
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                router.replace(newUrl);
+            } else if (response.status === 404) {
+                console.log('[CVManagementPage] No latest analysis found - user needs to upload CV');
+                // Keep showing upload/start from scratch options
+            } else {
+                console.error('[CVManagementPage] Error fetching latest analysis:', response.status);
+            }
+        } catch (error) {
+            console.error('[CVManagementPage] Failed to fetch latest analysis:', error);
+        }
+    };
 
     useEffect(() => {
         const styles = `
@@ -131,23 +157,24 @@ export default function CVManagementPage() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2" data-testid="cv-management-title">My Profile & CV</h1>
                 <p className="text-base-content/70 mb-6" data-testid="cv-management-description">Build your professional profile - upload your CV or start from scratch</p>
             </div>
-            {/* Entry Section - Upload CV or Start from Scratch */}
-            <Card 
-                variant="transparent" 
-                className="animate-fade-in-up" 
-                style={{ animationDelay: '300ms' }}
-                data-testid="cv-management-entry-section"
-            >
+            {/* Entry Section - Upload CV or Start from Scratch - Only show when no analysis data */}
+            {!analysisData && (
+                <Card 
+                    variant="transparent" 
+                    className="animate-fade-in-up" 
+                    style={{ animationDelay: '300ms' }}
+                    data-testid="cv-management-entry-section"
+                >
                 <CardContent className="p-8">
                     <div className="max-w-2xl mx-auto text-center space-y-8">
                         <div data-testid="cv-management-entry-options">
                             <div className="grid gap-6 md:grid-cols-2">
                                 {/* Upload CV Option */}
                                 <div className="space-y-4" data-testid="cv-management-upload-option">
-                                    <div className="p-6 border-2 border-dashed border-primary/20 rounded-lg hover:border-primary/40 transition-colors">
+                                    <div className="h-32 p-6 border-2 border-dashed border-primary/20 rounded-lg hover:border-primary/40 transition-colors flex items-center justify-center">
                                         <UploadForm onUploadComplete={handleUploadComplete} />
                                     </div>
-                                    <p className="text-sm text-base-content/60">
+                                    <p className="text-sm text-base-content/60 text-center">
                                         Already have a CV? Import & enhance
                                     </p>
                                 </div>
@@ -165,7 +192,7 @@ export default function CVManagementPage() {
                                         <div className="font-semibold">Start from Scratch</div>
                                         <div className="text-xs text-muted-foreground">Build with guided assistance</div>
                                     </Button>
-                                    <p className="text-sm text-base-content/60">
+                                    <p className="text-sm text-base-content/60 text-center">
                                         New to this? We'll guide you
                                     </p>
                                 </div>
@@ -173,30 +200,11 @@ export default function CVManagementPage() {
                         </div>
                     </div>
                 </CardContent>
-            </Card>
-
-            {/* CV Management Section */}
-            <Card 
-                variant="transparent" 
-                className="animate-fade-in-up" 
-                style={{ animationDelay: '400ms' }}
-                data-testid="cv-management-list-section"
-            >
-                <CardHeader data-testid="cv-management-list-header">
-                    <CardTitle data-testid="cv-management-list-title">My CVs</CardTitle>
-                    <CardDescription data-testid="cv-management-list-description">
-                        Manage your uploaded CVs. Click 'Improve' to edit your profile.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent data-testid="cv-management-list-content">
-                    <CVList refreshKey={refreshKey} />
-                </CardContent>
-            </Card>
+                </Card>
+            )}
 
             {/* Profile/Analysis Section */}
             {(() => {
-                const analysisIdFromUrl = searchParams.get('analysisId');
-                const shouldShowAnalysis = !!analysisIdFromUrl;
                 const isLoading = analysisStatus === 'loading';
 
                 if (isLoading) {
@@ -209,7 +217,7 @@ export default function CVManagementPage() {
                         >
                             <CardHeader data-testid="cv-management-profile-loading-header">
                                 <CardTitle data-testid="cv-management-profile-loading-title">Your Professional Profile</CardTitle>
-                                <CardDescription data-testid="cv-management-profile-loading-description">Analyzing your CV...</CardDescription>
+                                <CardDescription data-testid="cv-management-profile-loading-description">Loading your CV...</CardDescription>
                             </CardHeader>
                             <CardContent data-testid="cv-management-profile-loading-content">
                                 <div className="flex justify-center items-center h-40" data-testid="cv-management-profile-loading-spinner">
@@ -220,7 +228,8 @@ export default function CVManagementPage() {
                     );
                 }
 
-                if (shouldShowAnalysis && analysisData && analysisIdFromStore) {
+                // Show analysis if we have data (either from URL param or auto-loaded)
+                if (analysisData && analysisIdFromStore) {
                     return (
                         <div 
                             className="animate-fade-in-up space-y-6" 
