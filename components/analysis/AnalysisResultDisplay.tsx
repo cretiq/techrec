@@ -385,16 +385,18 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                     id="about" 
                     className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
                   >
-                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3 flex items-center justify-between group">
-                      <span>About / Summary</span>
+                    <div className="flex items-center justify-between group">
+                      <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3 flex-1">
+                        About / Summary
+                      </AccordionTrigger>
                       <AIAssistanceButton
                         section="about"
                         currentData={analysisData.about}
                         isEmpty={!analysisData.about || analysisData.about.trim() === ''}
                         onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'about', value: improvedData }))}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity mr-4"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity ml-4"
                       />
-                    </AccordionTrigger>
+                    </div>
                     <AccordionContent className="pt-3">
                       <AnimatePresence initial={false}>
                         <motion.div
