@@ -24,6 +24,7 @@ This is a tech recruitment platform built with Next.js 15, featuring AI-powered 
 - **AWS S3** for file storage
 - **Redux Toolkit** for state management
 - **TailwindCSS 4** with DaisyUI components
+- **Framer Motion** for animations and transitions
 
 ### AI Integration
 The project uses a flexible AI provider system that can switch between:
@@ -41,6 +42,28 @@ AI provider selection is handled via `utils/aiProviderSelector.ts`. Both provide
 - JWT-based session management
 - Middleware-based route protection
 - Role-based access (Developer/Company user types)
+
+### Data Architecture Patterns
+
+**Dual Data Source Strategy**: The platform maintains separate data sources for different user workflows:
+
+1. **Profile Data** (`InternalExperience`, `InternalEducation`, etc.)
+   - Source: Manual user input via profile forms
+   - API: `/api/developer/me/profile`
+   - Purpose: Comprehensive, curated professional information
+   - Features: Rich metadata (tech stack, team size, achievements)
+
+2. **CV Analysis Data** (`ExperienceItem`, `EducationItem`, etc.) 
+   - Source: AI extraction from uploaded CV documents
+   - API: CV analysis endpoints
+   - Purpose: Document analysis and improvement suggestions
+   - Features: Basic structured data with AI insights
+
+**Key Considerations**:
+- Data sources are intentionally separate (manual vs AI-extracted)
+- Users may see different information in Profile vs CV Analysis sections
+- Consider implementing sync/import functionality for data reconciliation
+- Always clarify data source context when displaying information
 
 ## Common Development Commands
 
@@ -114,6 +137,9 @@ The project is migrating from custom components to DaisyUI:
 - **TrustIndicator** - Trust badges for social proof
 - **Enhanced Badge** - Gradient variants with pulse animations
 - **Enhanced Button** - Gradient variants and elevation effects
+- **OrbitalLoader** - Sophisticated loading animation with spinning ring and orbital dots
+- **ProfileInfoCard, ExperienceCard, SkillsCard** - Glass morphism profile components
+- **CVList** - Table with fixed column layouts and skeleton loading states
 
 **Component Migration Patterns**
 ```tsx
@@ -141,11 +167,79 @@ The project is migrating from custom components to DaisyUI:
 </Tabs>
 ```
 
+**Glass Morphism Patterns**
+```tsx
+// ✅ Standard glass morphism card pattern
+<Card variant="transparent" className="bg-base-100/60 backdrop-blur-sm border border-base-300/50">
+
+// ✅ Glass form inputs
+<Input className="bg-base-100/50 backdrop-blur-sm border border-base-300/50 focus:ring-2 focus:ring-primary/20" />
+
+// ✅ Glass table container
+<div className="bg-base-100/30 backdrop-blur-sm border border-base-300/50 rounded-lg overflow-hidden">
+```
+
+**Animation System Patterns**
+```tsx
+// ✅ Orbital loader animation (sophisticated multi-element system)
+<motion.div
+  className="absolute inset-0 border-2 border-primary/30 rounded-full"
+  animate={{ rotate: 360 }}
+  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+/>
+// Add orbital dots with different rotation speeds for complexity
+<motion.div
+  className="absolute top-0 left-1/2 w-2 h-2 bg-primary rounded-full"
+  animate={{ rotate: 360 }}
+  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+  style={{ transformOrigin: '0 16px' }}
+/>
+
+// ✅ Enhanced hover effects with movement
+<button className="hover:bg-base-200/60 hover:translate-x-1 hover:shadow-sm transition-all duration-200">
+
+// ✅ Interactive card hover animations
+<motion.button
+  whileHover={{ scale: 1.02 }}
+  whileTap={{ scale: 0.98 }}
+  className="hover:translate-y-[-1px] hover:shadow-md"
+>
+
+// ✅ Skeleton loading with consistent sizing
+<div className="h-4 w-32 bg-base-300/30 rounded animate-pulse" />
+```
+
+**Cross-Component Communication Pattern**
+```tsx
+// ✅ Decoupled component events
+// Sender component:
+window.dispatchEvent(new CustomEvent('expandAllSections'));
+
+// Receiver component:
+useEffect(() => {
+  const handleExpandAll = () => setOpenSections(allSections);
+  window.addEventListener('expandAllSections', handleExpandAll);
+  return () => window.removeEventListener('expandAllSections', handleExpandAll);
+}, [allSections]);
+```
+
+**Table Layout Best Practices**
+```tsx
+// ✅ Fixed column layouts prevent width flickering
+<Table className="table-fixed w-full">
+  <TableHead className="w-[40%] min-w-[200px]">Filename</TableHead>
+  <TableHead className="w-[25%] min-w-[140px]">Uploaded</TableHead>
+  // Apply same width classes to all TableCell elements
+</Table>
+```
+
 **CSS Classes & Animations**
 - `magical-glow`, `sparkle-loader`, `pulse-ring` - Loading and emphasis effects
 - `hero-gradient`, `hero-gradient-dark` - Gradient backgrounds
 - `glass`, `glass-dark` - Glass morphism effects
 - `animate-blob`, `animate-fade-in-up` - Animation utilities
+- `cursor-pointer` - Essential for clickable non-button elements
+- `transition-all duration-200` - Smooth multi-property transitions
 
 ## Development Workflow
 
@@ -323,6 +417,95 @@ RAPIDAPI_KEY=
 - Sync Redux state with URL parameters for better UX
 - Handle browser navigation (back/forward) properly
 - Example: `?tab=analysis&filter=pending`
+
+### Development Quality & AI Collaboration
+
+**Systematic Analysis Approach**
+- **Ask for clarification** when requirements are unclear or could be interpreted multiple ways
+- **Investigate data flow** thoroughly before making assumptions about system behavior
+- **Validate component APIs** when migrating between different UI libraries (Radix UI vs DaisyUI)
+- **Test visual consistency** across different loading states and data population scenarios
+
+**Component Implementation Standards**
+- **Glass morphism consistency**: Always use `variant="transparent"` with backdrop blur patterns
+- **Loading state management**: Implement skeleton loading that matches actual content dimensions
+- **Animation sophistication**: Prefer multi-element animations (orbital systems) over simple spinners
+- **Hover effect enhancement**: Include movement (`translate-x-1`), shadow, and background changes
+
+**Data Architecture Awareness**
+- **Dual data sources**: Profile data (manual) vs CV analysis data (AI-parsed) serve different purposes
+- **Type safety**: Use proper TypeScript types (`InternalExperience` vs `ExperienceItem`)
+- **Context clarity**: Always clarify which data source is being displayed to users
+- **Sync opportunities**: Consider import/export functionality between manual and AI-extracted data
+
+**Visual Design Patterns**
+- **Fixed table layouts**: Use `table-fixed` with percentage-based column widths to prevent flickering
+- **Consistent spacing**: Apply width classes (`w-[40%] min-w-[200px]`) to headers, data cells, and skeleton rows
+- **Progressive enhancement**: Implement basic functionality first, then add visual polish and animations
+- **Responsive considerations**: Ensure minimum widths prevent layout collapse on smaller screens
+
+**Navigation & Interaction Patterns**
+- **Dual-purpose UI elements**: Components can serve multiple functions (e.g., Progress Overview as both indicator and navigation)
+- **Section navigation standards**: Clickable progress cards with hover animations (`scale: 1.02`, `translate-y-[-1px]`)
+- **Active state tracking**: Scroll-based highlighting with distinct visual treatment for current sections
+- **Smooth scrolling**: Use `scrollIntoView({ behavior: 'smooth' })` for section navigation
+- **Component decoupling**: Use custom browser events for cross-component communication when needed
+
+**Current Architecture Decisions**
+- **Profile page decommissioned**: All profile functionality moved to CV management workflow
+- **Unified action bars**: Group related actions in sticky toolbars with left/right organization
+- **Progress-driven navigation**: Progress Overview serves as primary section navigation
+- **Header minimalism**: Remove redundant titles and IDs for cleaner interfaces
+
+**Testing & Quality Assurance**
+
+**CRITICAL: data-testid Attribute Standards**
+Every interactive element and component MUST include comprehensive `data-testid` attributes for automated testing coverage:
+
+```tsx
+// ✅ Component-level test IDs
+<Card data-testid="profile-experience-card">
+  <CardHeader data-testid="profile-experience-header">
+    <Button data-testid="profile-experience-add-button">Add Experience</Button>
+  </CardHeader>
+</Card>
+
+// ✅ List/table item test IDs with unique identifiers
+<TableRow data-testid={`cv-management-row-cv-item-${cv.id}`}>
+  <TableCell data-testid={`cv-management-cell-filename-${cv.id}`}>
+  <Button data-testid={`cv-management-button-improve-${cv.id}`}>
+
+// ✅ Form input test IDs
+<Input data-testid="profile-info-input-name" />
+<Select data-testid="profile-experience-select-company" />
+
+// ✅ Loading state test IDs
+<div data-testid="cv-management-skeleton-row-0">
+  <OrbitalLoader testId="cv-management-loader-filename-0" />
+</div>
+
+// ✅ Status/state-specific test IDs
+<Badge data-testid={`cv-management-badge-status-${status.toLowerCase()}-${cv.id}`}>
+```
+
+**Test ID Naming Conventions**:
+- **Format**: `{page/section}-{component}-{element}-{identifier?}`
+- **Examples**: 
+  - `profile-experience-card`
+  - `cv-management-table-header-filename`
+  - `writing-help-button-generate-trigger`
+  - `analysis-display-section-experience-${index}`
+
+**MANDATORY Test Coverage**:
+- ✅ **ALL buttons, links, and interactive elements**
+- ✅ **ALL form inputs, selects, and textareas** 
+- ✅ **ALL table headers, rows, and cells**
+- ✅ **ALL loading states and skeleton components**
+- ✅ **ALL conditional UI elements (badges, status indicators)**
+- ✅ **ALL navigation elements and tabs**
+- ✅ **ALL card containers and major layout sections**
+
+**Never ship components without comprehensive data-testid coverage** - this is essential for automated testing and quality assurance.
 
 ## Git Workflow
 
