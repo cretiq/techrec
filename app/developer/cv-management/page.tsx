@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { UploadForm } from '@/components/cv/UploadForm';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
+import { AnalysisActionButtons } from '@/components/analysis/AnalysisActionButtons';
 import { ProfileScoringSidebar } from '@/components/cv/ProfileScoringSidebar';
 import { GuidedProfileCreation } from '@/components/cv/GuidedProfileCreation';
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
@@ -289,8 +290,14 @@ export default function CVManagementPage() {
                                                 View Analysis
                                             </Button>
                                         </div>
-                                        <div className="text-sm text-muted-foreground">
-                                            Last updated: {new Date().toLocaleDateString()}
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-sm text-muted-foreground">
+                                                Last updated: {new Date().toLocaleDateString()}
+                                            </div>
+                                            {/* Additional action buttons moved from AnalysisResultDisplay */}
+                                            <div className="flex gap-2" data-testid="cv-management-additional-actions">
+                                                <AnalysisActionButtons />
+                                            </div>
                                         </div>
                                     </div>
                                 </CardContent>

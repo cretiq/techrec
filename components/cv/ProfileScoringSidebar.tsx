@@ -265,91 +265,69 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         </div>
       )}
 
-      {/* Section Navigation */}
-      <div className="space-y-3" data-testid="profile-section-navigation">
-        <h4 className="text-sm font-semibold" data-testid="profile-sections-title">Sections</h4>
-        <div className="space-y-2" data-testid="profile-sections-list">
-          {sectionScores.map((section, index) => {
-            const isActive = activeSection === section.id;
-            return (
-              <motion.button
-                key={section.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-                onClick={() => handleSectionClick(section.id)}
-                className={cn(
-                  "w-full text-left p-3 rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1 cursor-pointer",
-                  "flex items-center gap-3",
-                  isActive 
-                    ? "bg-primary/15 text-primary font-medium border-l-2 border-primary" 
-                    : "text-muted-foreground hover:bg-primary/5 hover:text-foreground hover:translate-x-1"
-                )}
-                data-testid={`profile-section-nav-${section.id}`}
-                data-active={isActive}
-              >
-                <section.sectionIcon className={cn(
-                  "h-4 w-4 flex-shrink-0",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )} data-testid={`profile-section-icon-${section.id}`} />
-                <div className="flex-1 flex items-center justify-between">
-                  <span className="text-sm" data-testid={`profile-section-name-${section.id}`}>{section.name}</span>
-                  <div className="flex items-center gap-2" data-testid={`profile-section-indicators-${section.id}`}>
-                    <span className={cn(
-                      "text-xs font-medium px-2 py-1 rounded-full",
-                      section.score === 100 
-                        ? "bg-green-100 text-green-700" 
-                        : section.score >= 70 
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
-                    )} data-testid={`profile-section-score-${section.id}`}>
-                      {section.score}%
-                    </span>
-                    {section.score === 100 && (
-                      <CheckCircle2 className="h-3 w-3 text-green-600" data-testid={`profile-section-complete-${section.id}`} />
-                    )}
-                  </div>
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Section Breakdown */}
       <div className="space-y-3" data-testid="profile-progress-overview">
         <h4 className="text-sm font-semibold" data-testid="profile-progress-title">Progress Overview</h4>
-        <div className="space-y-3" data-testid="profile-progress-list">
-          {sectionScores.map((section, index) => (
-            <motion.div
-              key={section.name}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="space-y-1"
-              data-testid={`profile-progress-${section.id}`}
-            >
-              <div className="flex items-center justify-between text-sm" data-testid={`profile-progress-header-${section.id}`}>
-                <span className="text-muted-foreground" data-testid={`profile-progress-name-${section.id}`}>{section.name}</span>
-                <span className={cn(
-                  "font-medium",
-                  section.score === 100 ? "text-green-600" : "text-base-content"
-                )} data-testid={`profile-progress-percentage-${section.id}`}>
-                  {section.score}%
-                </span>
-              </div>
-              <div className="relative" data-testid={`profile-progress-bar-${section.id}`}>
-                <Progress 
-                  value={section.score} 
-                  className="h-2"
-                  data-testid={`profile-progress-bar-fill-${section.id}`}
-                />
-                {section.score === 100 && (
-                  <CheckCircle2 className="absolute -right-1 -top-1 h-4 w-4 text-green-600" data-testid={`profile-progress-complete-icon-${section.id}`} />
+        <div className="space-y-4" data-testid="profile-progress-list">
+          {sectionScores.map((section, index) => {
+            const isActive = activeSection === section.id;
+            return (
+              <motion.button
+                key={section.name}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleSectionClick(section.id)}
+                className={cn(
+                  "w-full text-left p-4 rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1 cursor-pointer",
+                  "bg-base-100/60 backdrop-blur-sm border border-base-300/50 space-y-3",
+                  isActive 
+                    ? "bg-primary/10 border-primary/30 shadow-md" 
+                    : "hover:bg-base-200/60 hover:border-base-300/70 hover:shadow-sm hover:translate-y-[-1px]"
                 )}
-              </div>
-            </motion.div>
-          ))}
+                data-testid={`profile-progress-${section.id}`}
+                data-active={isActive}
+              >
+                <div className="flex items-center justify-between" data-testid={`profile-progress-header-${section.id}`}>
+                  <div className="flex items-center gap-3">
+                    <section.sectionIcon className={cn(
+                      "h-5 w-5 flex-shrink-0",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )} data-testid={`profile-progress-icon-${section.id}`} />
+                    <span className={cn(
+                      "font-medium",
+                      isActive ? "text-primary" : "text-base-content"
+                    )} data-testid={`profile-progress-name-${section.id}`}>
+                      {section.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-lg font-bold",
+                      section.score === 100 ? "text-green-600" : 
+                      section.score >= 70 ? "text-blue-600" :
+                      section.score >= 50 ? "text-yellow-600" : "text-red-600"
+                    )} data-testid={`profile-progress-percentage-${section.id}`}>
+                      {section.score}%
+                    </span>
+                    {section.score === 100 && (
+                      <CheckCircle2 className="h-5 w-5 text-green-600" data-testid={`profile-progress-complete-icon-${section.id}`} />
+                    )}
+                  </div>
+                </div>
+                <div className="relative" data-testid={`profile-progress-bar-${section.id}`}>
+                  <Progress 
+                    value={section.score} 
+                    className="h-3"
+                    data-testid={`profile-progress-bar-fill-${section.id}`}
+                  />
+                </div>
+              </motion.button>
+            );
+          })}
         </div>
       </div>
 
