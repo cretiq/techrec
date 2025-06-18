@@ -188,19 +188,20 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
   const quickWins = sectionScores.filter(s => s.quickWin).slice(0, 3);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="profile-scoring-sidebar">
       {/* Overall Score */}
-      <div className="text-center">
+      <div className="text-center" data-testid="profile-overall-score">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="relative inline-flex items-center justify-center"
+          data-testid="profile-score-circle"
         >
           <div className="w-32 h-32 rounded-full bg-base-200 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-3xl font-bold">{overallScore}%</div>
-              <div className={cn("text-sm font-medium", scoreQuality.color)}>
+              <div className="text-3xl font-bold" data-testid="profile-score-percentage">{overallScore}%</div>
+              <div className={cn("text-sm font-medium", scoreQuality.color)} data-testid="profile-score-quality">
                 {scoreQuality.label}
               </div>
             </div>
@@ -235,26 +236,28 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
 
       {/* Quick Wins */}
       {quickWins.length > 0 && (
-        <div className="space-y-3">
-          <h4 className="text-sm font-semibold flex items-center gap-2">
-            <Zap className="h-4 w-4 text-yellow-500" />
+        <div className="space-y-3" data-testid="profile-quick-wins">
+          <h4 className="text-sm font-semibold flex items-center gap-2" data-testid="profile-quick-wins-title">
+            <Zap className="h-4 w-4 text-yellow-500" data-testid="profile-quick-wins-icon" />
             Quick Wins
           </h4>
-          <div className="space-y-2">
+          <div className="space-y-2" data-testid="profile-quick-wins-list">
             {quickWins.map((win, index) => (
               <motion.div
                 key={win.name}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
+                data-testid={`profile-quick-win-${win.id}`}
               >
                 <Button
                   variant="ghost"
                   size="sm"
                   className="w-full justify-start text-left h-auto py-2 px-3 hover:bg-primary/10"
+                  data-testid={`profile-quick-win-button-${win.id}`}
                 >
-                  <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0" />
-                  <span className="text-xs">{win.quickWin}</span>
+                  <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0" data-testid={`profile-quick-win-icon-${win.id}`} />
+                  <span className="text-xs" data-testid={`profile-quick-win-text-${win.id}`}>{win.quickWin}</span>
                 </Button>
               </motion.div>
             ))}
@@ -263,9 +266,9 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
       )}
 
       {/* Section Navigation */}
-      <div className="space-y-3">
-        <h4 className="text-sm font-semibold">Sections</h4>
-        <div className="space-y-2">
+      <div className="space-y-3" data-testid="profile-section-navigation">
+        <h4 className="text-sm font-semibold" data-testid="profile-sections-title">Sections</h4>
+        <div className="space-y-2" data-testid="profile-sections-list">
           {sectionScores.map((section, index) => {
             const isActive = activeSection === section.id;
             return (
@@ -282,14 +285,16 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
                     ? "bg-primary/15 text-primary font-medium border-l-2 border-primary" 
                     : "text-muted-foreground hover:bg-primary/5 hover:text-foreground hover:translate-x-1"
                 )}
+                data-testid={`profile-section-nav-${section.id}`}
+                data-active={isActive}
               >
                 <section.sectionIcon className={cn(
                   "h-4 w-4 flex-shrink-0",
                   isActive ? "text-primary" : "text-muted-foreground"
-                )} />
+                )} data-testid={`profile-section-icon-${section.id}`} />
                 <div className="flex-1 flex items-center justify-between">
-                  <span className="text-sm">{section.name}</span>
-                  <div className="flex items-center gap-2">
+                  <span className="text-sm" data-testid={`profile-section-name-${section.id}`}>{section.name}</span>
+                  <div className="flex items-center gap-2" data-testid={`profile-section-indicators-${section.id}`}>
                     <span className={cn(
                       "text-xs font-medium px-2 py-1 rounded-full",
                       section.score === 100 
@@ -297,11 +302,11 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
                         : section.score >= 70 
                         ? "bg-yellow-100 text-yellow-700"
                         : "bg-red-100 text-red-700"
-                    )}>
+                    )} data-testid={`profile-section-score-${section.id}`}>
                       {section.score}%
                     </span>
                     {section.score === 100 && (
-                      <CheckCircle2 className="h-3 w-3 text-green-600" />
+                      <CheckCircle2 className="h-3 w-3 text-green-600" data-testid={`profile-section-complete-${section.id}`} />
                     )}
                   </div>
                 </div>
@@ -312,9 +317,9 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
       </div>
 
       {/* Section Breakdown */}
-      <div className="space-y-3">
-        <h4 className="text-sm font-semibold">Progress Overview</h4>
-        <div className="space-y-3">
+      <div className="space-y-3" data-testid="profile-progress-overview">
+        <h4 className="text-sm font-semibold" data-testid="profile-progress-title">Progress Overview</h4>
+        <div className="space-y-3" data-testid="profile-progress-list">
           {sectionScores.map((section, index) => (
             <motion.div
               key={section.name}
@@ -322,23 +327,25 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
               className="space-y-1"
+              data-testid={`profile-progress-${section.id}`}
             >
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{section.name}</span>
+              <div className="flex items-center justify-between text-sm" data-testid={`profile-progress-header-${section.id}`}>
+                <span className="text-muted-foreground" data-testid={`profile-progress-name-${section.id}`}>{section.name}</span>
                 <span className={cn(
                   "font-medium",
                   section.score === 100 ? "text-green-600" : "text-base-content"
-                )}>
+                )} data-testid={`profile-progress-percentage-${section.id}`}>
                   {section.score}%
                 </span>
               </div>
-              <div className="relative">
+              <div className="relative" data-testid={`profile-progress-bar-${section.id}`}>
                 <Progress 
                   value={section.score} 
                   className="h-2"
+                  data-testid={`profile-progress-bar-fill-${section.id}`}
                 />
                 {section.score === 100 && (
-                  <CheckCircle2 className="absolute -right-1 -top-1 h-4 w-4 text-green-600" />
+                  <CheckCircle2 className="absolute -right-1 -top-1 h-4 w-4 text-green-600" data-testid={`profile-progress-complete-icon-${section.id}`} />
                 )}
               </div>
             </motion.div>
@@ -347,7 +354,7 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
       </div>
 
       {/* One-Click Actions */}
-      <div className="pt-4 space-y-2">
+      <div className="pt-4 space-y-2" data-testid="profile-actions">
         <Button
           variant="default"
           size="sm"
@@ -356,8 +363,9 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
             // TODO: Implement AI optimization
             console.log('Optimize with AI');
           }}
+          data-testid="profile-action-optimize-ai"
         >
-          <Sparkles className="h-4 w-4 mr-2" />
+          <Sparkles className="h-4 w-4 mr-2" data-testid="profile-action-optimize-ai-icon" />
           Optimize with AI
         </Button>
         <Button
@@ -368,8 +376,9 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
             // TODO: Navigate to first incomplete section
             console.log('Complete profile');
           }}
+          data-testid="profile-action-complete-profile"
         >
-          <Target className="h-4 w-4 mr-2" />
+          <Target className="h-4 w-4 mr-2" data-testid="profile-action-complete-profile-icon" />
           Complete Profile
         </Button>
       </div>

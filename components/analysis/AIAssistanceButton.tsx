@@ -145,22 +145,23 @@ export function AIAssistanceButton({
         isProcessing && "opacity-75",
         className
       )}
+      data-testid={`ai-assistance-button-${section}`}
     >
       {isProcessing ? (
         <>
-          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" data-testid={`ai-assistance-loading-icon-${section}`} />
           Enhancing...
         </>
       ) : (
         <>
           {isEmpty ? (
             <>
-              <Sparkles className="h-4 w-4 mr-2" />
+              <Sparkles className="h-4 w-4 mr-2" data-testid={`ai-assistance-write-icon-${section}`} />
               Write this for me
             </>
           ) : (
             <>
-              <Wand2 className="h-4 w-4 mr-2" />
+              <Wand2 className="h-4 w-4 mr-2" data-testid={`ai-assistance-improve-icon-${section}`} />
               Improve with AI
             </>
           )}
