@@ -40,7 +40,7 @@ export default async function DeveloperDashboard() {
                   <div className="h-full w-3/4 rounded-full bg-primary"></div>
                 </div>
               </div>
-              <Link href="/developer/profile">
+              <Link href="/developer/cv-management">
                 <Button className="w-full gap-1">
                   Complete Profile
                   <ArrowRight className="h-4 w-4" />

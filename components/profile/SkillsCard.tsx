@@ -26,11 +26,15 @@ export function SkillsCard({ profile, onDeleteSkill }: SkillsCardProps) {
   const groupedSkills = groupSkillsByCategory(profile?.skills || []);
 
   return (
-    <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 animate-fade-in-up">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg md:text-xl">Skills</CardTitle>
+    <Card 
+      variant="transparent" 
+      className="animate-fade-in-up" 
+      data-testid="profile-skills-card"
+    >
+      <CardHeader className="flex flex-row items-center justify-between" data-testid="profile-skills-header">
+        <CardTitle className="text-lg md:text-xl" data-testid="profile-skills-title">Skills</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent data-testid="profile-skills-content">
         <div className="space-y-2">
           {Object.entries(groupedSkills).map(([category, skillsInCategory]) => (
             <div key={category} className="space-y-1 border-b border-gray-200 dark:border-gray-700 pb-3 mb-3 flex flex-col md:flex-row items-start md:items-center justify-between">
@@ -40,7 +44,8 @@ export function SkillsCard({ profile, onDeleteSkill }: SkillsCardProps) {
                   <Badge
                     key={skill.id}
                     variant="outline"
-                    className="flex items-center gap-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-sm py-1 px-2"
+                    className="flex items-center gap-1 bg-base-100/50 backdrop-blur-sm border border-base-300/50 shadow-sm py-1 px-2"
+                    data-testid={`profile-skill-badge-${skill.id}`}
                   >
                     <span>{skill.name} ({skill.level.substring(0,3)})</span>
                     <Button
@@ -48,6 +53,7 @@ export function SkillsCard({ profile, onDeleteSkill }: SkillsCardProps) {
                       size="icon"
                       className="h-4 w-4 p-0 rounded-full hover:bg-destructive/10"
                       onClick={() => onDeleteSkill(skill.id)}
+                      data-testid={`profile-skill-delete-${skill.id}`}
                     >
                       <X className="h-3 w-3 text-destructive" />
                     </Button>

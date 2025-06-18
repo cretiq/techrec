@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import {  Button  } from '@/components/ui-daisy/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Trash2, Download, Eye, Play } from 'lucide-react'; // Icons
@@ -168,73 +169,160 @@ export function CVList({ refreshKey }: CVListProps) {
     }
   };
 
+  // Orbital Loading Component
+  const OrbitalLoader = ({ testId }: { testId: string }) => (
+    <div className="flex items-center justify-start pl-4" data-testid={testId}>
+      <div className="relative w-6 h-6" data-testid={`${testId}-container`}>
+        <motion.div
+          className="absolute inset-0 border-2 border-primary/30 rounded-full"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          data-testid={`${testId}-ring`}
+        />
+        <motion.div
+          className="absolute top-0 left-1/2 w-1 h-1 bg-primary rounded-full transform -translate-x-1/2"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          style={{ transformOrigin: '50% 12px' }}
+          data-testid={`${testId}-dot-1`}
+        />
+        <motion.div
+          className="absolute top-1/2 left-0 w-1 h-1 bg-primary/70 rounded-full transform -translate-y-1/2"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+          style={{ transformOrigin: '12px 50%' }}
+          data-testid={`${testId}-dot-2`}
+        />
+      </div>
+    </div>
+  );
+
+  // Skeleton Row Component
+  const SkeletonRow = ({ index }: { index: number }) => (
+    <TableRow key={`skeleton-${index}`} data-testid={`cv-management-skeleton-row-${index}`}>
+      <TableCell className="w-[40%] min-w-[200px]" data-testid={`cv-management-skeleton-filename-${index}`}>
+        <div className="flex items-center gap-3">
+          <OrbitalLoader testId={`cv-management-loader-filename-${index}`} />
+          <div className="h-4 w-32 bg-base-300/30 rounded animate-pulse" data-testid={`cv-management-skeleton-filename-placeholder-${index}`} />
+        </div>
+      </TableCell>
+      <TableCell className="w-[25%] min-w-[140px]" data-testid={`cv-management-skeleton-uploaded-${index}`}>
+        <div className="h-4 w-28 bg-base-300/30 rounded animate-pulse" data-testid={`cv-management-skeleton-uploaded-placeholder-${index}`} />
+      </TableCell>
+      <TableCell className="w-[15%] min-w-[100px]" data-testid={`cv-management-skeleton-status-${index}`}>
+        <div className="h-6 w-20 bg-base-300/30 rounded-full animate-pulse" data-testid={`cv-management-skeleton-status-placeholder-${index}`} />
+      </TableCell>
+      <TableCell className="w-[10%] min-w-[60px]" data-testid={`cv-management-skeleton-score-${index}`}>
+        <div className="h-4 w-8 bg-base-300/30 rounded animate-pulse" data-testid={`cv-management-skeleton-score-placeholder-${index}`} />
+      </TableCell>
+      <TableCell className="w-[10%] min-w-[120px] text-right" data-testid={`cv-management-skeleton-actions-${index}`}>
+        <div className="flex justify-end gap-1" data-testid={`cv-management-skeleton-actions-container-${index}`}>
+          <div className="h-8 w-8 bg-base-300/30 rounded animate-pulse" data-testid={`cv-management-skeleton-action-1-${index}`} />
+          <div className="h-8 w-8 bg-base-300/30 rounded animate-pulse" data-testid={`cv-management-skeleton-action-2-${index}`} />
+          <div className="h-8 w-8 bg-base-300/30 rounded animate-pulse" data-testid={`cv-management-skeleton-action-3-${index}`} />
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+
   // Render logic remains largely the same, but includes SearchFilters
   return (
     <div className="w-full space-y-4" data-testid="cv-management-cv-list-container">
       <SearchFilters onFilterChange={handleFilterChange} />
 
-      {isLoading && <div data-testid="cv-management-cv-list-loading">Loading CVs...</div>}
       {error && <div className="text-destructive" data-testid="cv-management-cv-list-error">Error loading CVs: {error}</div>}
       
-      {!isLoading && !error && (
-        <div className="border rounded-lg overflow-hidden" data-testid="cv-management-table-container">
-          <Table data-testid="cv-management-table-cv-list">
-            <TableHeader data-testid="cv-management-table-header">
-              <TableRow data-testid="cv-management-table-header-row">
-                <TableHead data-testid="cv-management-table-header-filename">Filename</TableHead>
-                <TableHead data-testid="cv-management-table-header-uploaded">Uploaded</TableHead>
-                <TableHead data-testid="cv-management-table-header-status">Status</TableHead>
-                <TableHead data-testid="cv-management-table-header-score">Score</TableHead>
-                <TableHead className="text-right" data-testid="cv-management-table-header-actions">Actions</TableHead>
+      {/* Always show table structure - with skeleton rows when loading */}
+      <div className="border border-base-300/50 rounded-lg overflow-hidden bg-base-100/30 backdrop-blur-sm" data-testid="cv-management-table-container">
+        <Table className="table-fixed w-full" data-testid="cv-management-table-cv-list">
+          <TableHeader data-testid="cv-management-table-header">
+            <TableRow data-testid="cv-management-table-header-row">
+              <TableHead className="w-[40%] min-w-[200px]" data-testid="cv-management-table-header-filename">Filename</TableHead>
+              <TableHead className="w-[25%] min-w-[140px]" data-testid="cv-management-table-header-uploaded">Uploaded</TableHead>
+              <TableHead className="w-[15%] min-w-[100px]" data-testid="cv-management-table-header-status">Status</TableHead>
+              <TableHead className="w-[10%] min-w-[60px]" data-testid="cv-management-table-header-score">Score</TableHead>
+              <TableHead className="w-[10%] min-w-[120px] text-right" data-testid="cv-management-table-header-actions">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody data-testid="cv-management-table-body">
+            {isLoading ? (
+              // Show skeleton rows while loading
+              <>  
+                {[...Array(3)].map((_, index) => (
+                  <SkeletonRow key={`skeleton-${index}`} index={index} />
+                ))}
+              </>
+            ) : cvs.length === 0 ? (
+              <TableRow data-testid="cv-management-table-empty-row">
+                <TableCell colSpan={5} className="text-center h-24 text-muted-foreground" data-testid="cv-management-table-empty-message">
+                  No CVs found matching your criteria.
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody data-testid="cv-management-table-body">
-              {cvs.length === 0 ? (
-                <TableRow data-testid="cv-management-table-empty-row">
-                  <TableCell colSpan={6} className="text-center h-24 text-muted-foreground" data-testid="cv-management-table-empty-message">
-                    No CVs found matching your criteria.
+            ) : (
+              // Show actual CV data with staggered animation
+              cvs.map((cv, index) => (
+                <motion.tr
+                  key={cv.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                  data-testid={`cv-management-row-cv-item-${cv.id}`}
+                >
+                  <TableCell className="w-[40%] min-w-[200px] font-medium" data-testid={`cv-management-cell-filename-${cv.id}`}>
+                    {cv.originalName}
                   </TableCell>
-                </TableRow>
-              ) : (
-                cvs.map((cv) => (
-                  <TableRow key={cv.id} data-testid={`cv-management-row-cv-item-${cv.id}`}>
-                    <TableCell className="font-medium" data-testid={`cv-management-cell-filename-${cv.id}`}>{cv.originalName}</TableCell>
-                    <TableCell data-testid={`cv-management-cell-uploaded-${cv.id}`}>{format(new Date(cv.uploadDate), 'PPpp')}</TableCell>
-                    <TableCell data-testid={`cv-management-cell-status-${cv.id}`}>
-                      <Badge variant={statusBadgeVariant[cv.status] || 'secondary'} data-testid={`cv-management-badge-status-${cv.status.toLowerCase()}-${cv.id}`}>
-                        {cv.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell data-testid={`cv-management-cell-score-${cv.id}`}>
-                      {cv.status === AnalysisStatus.COMPLETED && typeof cv.improvementScore === 'number' 
-                        ? `${cv.improvementScore.toFixed(0)}%` 
-                        : '-'}
-                    </TableCell>
-                    <TableCell className="text-right" data-testid={`cv-management-cell-actions-${cv.id}`}>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => handleImprove(cv.analysisId)} 
-                        disabled={cv.status !== AnalysisStatus.COMPLETED || !cv.analysisId}
-                        title="View Analysis & Improve"
-                        data-testid={`cv-management-button-analyze-${cv.id}`}
-                      >
-                        <Play className="h-4 w-4" data-testid={`cv-management-icon-analyze-${cv.id}`} />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDownload(cv.id, cv.originalName)} title="Download" data-testid={`cv-management-button-download-${cv.id}`}>
-                        <Download className="h-4 w-4" data-testid={`cv-management-icon-download-${cv.id}`} />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleDelete(cv.id, cv.originalName)} title="Delete" data-testid={`cv-management-button-delete-${cv.id}`}>
-                        <Trash2 className="h-4 w-4 text-destructive" data-testid={`cv-management-icon-delete-${cv.id}`} />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+                  <TableCell className="w-[25%] min-w-[140px]" data-testid={`cv-management-cell-uploaded-${cv.id}`}>
+                    {format(new Date(cv.uploadDate), 'PPpp')}
+                  </TableCell>
+                  <TableCell className="w-[15%] min-w-[100px]" data-testid={`cv-management-cell-status-${cv.id}`}>
+                    <Badge 
+                      variant={statusBadgeVariant[cv.status] || 'secondary'} 
+                      data-testid={`cv-management-badge-status-${cv.status.toLowerCase()}-${cv.id}`}
+                    >
+                      {cv.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="w-[10%] min-w-[60px]" data-testid={`cv-management-cell-score-${cv.id}`}>
+                    {cv.status === AnalysisStatus.COMPLETED && typeof cv.improvementScore === 'number' 
+                      ? `${cv.improvementScore.toFixed(0)}%` 
+                      : '-'}
+                  </TableCell>
+                  <TableCell className="w-[10%] min-w-[120px] text-right" data-testid={`cv-management-cell-actions-${cv.id}`}>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleImprove(cv.analysisId)} 
+                      disabled={cv.status !== AnalysisStatus.COMPLETED || !cv.analysisId}
+                      title="View Analysis & Improve"
+                      data-testid={`cv-management-button-analyze-${cv.id}`}
+                    >
+                      <Play className="h-4 w-4" data-testid={`cv-management-icon-analyze-${cv.id}`} />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleDownload(cv.id, cv.originalName)} 
+                      title="Download" 
+                      data-testid={`cv-management-button-download-${cv.id}`}
+                    >
+                      <Download className="h-4 w-4" data-testid={`cv-management-icon-download-${cv.id}`} />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleDelete(cv.id, cv.originalName)} 
+                      title="Delete" 
+                      data-testid={`cv-management-button-delete-${cv.id}`}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" data-testid={`cv-management-icon-delete-${cv.id}`} />
+                    </Button>
+                  </TableCell>
+                </motion.tr>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 } 

@@ -16,11 +16,15 @@ interface ProfileInfoCardProps {
 
 export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange, errors }: ProfileInfoCardProps) {
   return (
-    <Card className="border shadow-none bg-gradient-to-br from-blue-50 to-purple-50 animate-fade-in-up">
-      <CardHeader>
-        <CardTitle>Personal Information</CardTitle>
+    <Card 
+      variant="transparent" 
+      className="animate-fade-in-up" 
+      data-testid="profile-personal-info-card"
+    >
+      <CardHeader data-testid="profile-personal-info-header">
+        <CardTitle data-testid="profile-personal-info-title">Personal Information</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4" data-testid="profile-personal-info-content">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="flex items-center gap-1">
@@ -33,10 +37,11 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               onChange={onInputChange}
               required
               className={cn(
-                "text-sm bg-base-100 border",
-                modifiedFields.has('name') && "ring-2 ring-blue-500/50",
+                "text-sm bg-base-100/50 backdrop-blur-sm border border-base-300/50",
+                modifiedFields.has('name') && "ring-2 ring-primary/50",
                 errors.name && "border-red-500 focus:ring-red-500"
               )}
+              data-testid="profile-input-name"
             />
             {errors.name && (
               <p className="text-xs text-red-500 mt-1">{errors.name}</p>
@@ -53,10 +58,11 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               onChange={onInputChange}
               required
               className={cn(
-                "text-sm bg-base-100 border",
-                modifiedFields.has('title') && "ring-2 ring-blue-500/50",
+                "text-sm bg-base-100/50 backdrop-blur-sm border border-base-300/50",
+                modifiedFields.has('title') && "ring-2 ring-primary/50",
                 errors.title && "border-red-500 focus:ring-red-500"
               )}
+              data-testid="profile-input-title"
             />
             {errors.title && (
               <p className="text-xs text-red-500 mt-1">{errors.title}</p>
@@ -72,11 +78,12 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               value={currentProfile?.profileEmail || ''}
               onChange={onInputChange}
               className={cn(
-                "text-sm bg-base-100 border",
-                modifiedFields.has('profileEmail') && "ring-2 ring-blue-500/50",
+                "text-sm bg-base-100/50 backdrop-blur-sm border border-base-300/50",
+                modifiedFields.has('profileEmail') && "ring-2 ring-primary/50",
                 errors.profileEmail && "border-red-500 focus:ring-red-500"
               )}
               placeholder="Email for contact purposes"
+              data-testid="profile-input-email"
             />
             {errors.profileEmail && (
               <p className="text-xs text-red-500 mt-1">{errors.profileEmail}</p>
@@ -89,9 +96,10 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               value={currentProfile?.contactInfo?.phone || ''}
               onChange={onInputChange}
               className={cn(
-                "text-sm bg-base-100 border",
-                modifiedFields.has('phone') && "ring-2 ring-blue-500/50"
+                "text-sm bg-base-100/50 backdrop-blur-sm border border-base-300/50",
+                modifiedFields.has('phone') && "ring-2 ring-primary/50"
               )}
+              data-testid="profile-input-phone"
             />
           </div>
         </div>
@@ -103,10 +111,11 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               value={currentProfile?.contactInfo?.city || ''}
               onChange={onInputChange}
               className={cn(
-                "text-sm bg-base-100 border",
-                modifiedFields.has('city') && "ring-2 ring-blue-500/50"
+                "text-sm bg-base-100/50 backdrop-blur-sm border border-base-300/50",
+                modifiedFields.has('city') && "ring-2 ring-primary/50"
               )}
               placeholder="Your city"
+              data-testid="profile-input-city"
             />
           </div>
           <div className="space-y-2">
@@ -116,10 +125,11 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
               value={currentProfile?.contactInfo?.country || ''}
               onChange={onInputChange}
               className={cn(
-                "text-sm bg-base-100 border",
-                modifiedFields.has('country') && "ring-2 ring-blue-500/50"
+                "text-sm bg-base-100/50 backdrop-blur-sm border border-base-300/50",
+                modifiedFields.has('country') && "ring-2 ring-primary/50"
               )}
               placeholder="Your country"
+              data-testid="profile-input-country"
             />
           </div>
         </div>
@@ -131,9 +141,10 @@ export function ProfileInfoCard({ currentProfile, modifiedFields, onInputChange,
             value={currentProfile?.about || ''}
             onChange={onInputChange}
             className={cn(
-              "text-xs bg-base-100 border scrollbar-hide",
-              modifiedFields.has('about') && "ring-2 ring-blue-500/50"
+              "text-xs bg-base-100/50 backdrop-blur-sm border border-base-300/50 scrollbar-hide",
+              modifiedFields.has('about') && "ring-2 ring-primary/50"
             )}
+            data-testid="profile-textarea-about"
           />
         </div>
       </CardContent>

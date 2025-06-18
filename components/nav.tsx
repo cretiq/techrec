@@ -56,17 +56,17 @@ export function MainNav() {
       {status === "authenticated" && (
         <>
           <Link
-            href="/developer/profile"
+            href="/developer/cv-management"
             className={cn(
               "text-sm font-medium transition-colors hover:text-primary",
-              isActive("/developer/profile") ? "text-primary" : "text-muted-foreground"
+              isActive("/developer/cv-management") ? "text-primary" : "text-muted-foreground"
             )}
             data-testid="nav-link-profile-trigger"
           >
-            {isActive("/developer/profile") && isNavigating ? (
+            {isActive("/developer/cv-management") && isNavigating ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              "Profile"
+              "My Profile & CV"
             )}
           </Link>
           <Link
@@ -151,9 +151,9 @@ export function UserNav() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" data-testid="nav-dropdown-account-menu">
           <DropdownMenuItem asChild>
-            <Link href="/developer/profile" className="flex items-center" data-testid="nav-dropdown-profile-trigger">
+            <Link href="/developer/cv-management" className="flex items-center" data-testid="nav-dropdown-profile-trigger">
               <User className="mr-2 h-4 w-4" />
-              <span>My Profile</span>
+              <span>My Profile & CV</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem 

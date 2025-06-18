@@ -140,8 +140,8 @@ export default function AssessmentResultsPage({ params }) {
               <Link href="/developer/assessments" className="text-sm font-medium hover:underline underline-offset-4">
                 Assessments
               </Link>
-              <Link href="/developer/profile" className="text-sm font-medium hover:underline underline-offset-4">
-                Profile
+              <Link href="/developer/cv-management" className="text-sm font-medium hover:underline underline-offset-4">
+                My Profile & CV
               </Link>
             </nav>
             <div className="flex items-center gap-4">

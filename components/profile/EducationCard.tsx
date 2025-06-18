@@ -13,18 +13,31 @@ interface EducationCardProps {
 
 export function EducationCard({ profile, onDeleteEducation }: EducationCardProps) {
   return (
-    <Card className="border shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 animate-fade-in-up">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Education</CardTitle>
-        <Button variant="outline" size="sm" className="gap-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-0 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/30 dark:hover:to-purple-800/30">
+    <Card 
+      variant="transparent" 
+      className="animate-fade-in-up" 
+      data-testid="profile-education-card"
+    >
+      <CardHeader className="flex flex-row items-center justify-between" data-testid="profile-education-header">
+        <CardTitle data-testid="profile-education-title">Education</CardTitle>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-1 bg-base-100/50 backdrop-blur-sm border border-base-300/50 hover:bg-base-200/50"
+          data-testid="profile-education-add-button"
+        >
           <Plus className="h-4 w-4" />
           Add Education
         </Button>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6" data-testid="profile-education-content">
         <div className="space-y-4">
           {(profile?.education || []).map((edu: InternalEducation) => (
-            <div key={edu.id} className="border rounded-lg p-4 space-y-4 bg-white dark:bg-gray-800 shadow-sm">
+            <div 
+              key={edu.id} 
+              className="border border-base-300/50 rounded-lg p-4 space-y-4 bg-base-100/30 backdrop-blur-sm shadow-sm"
+              data-testid={`profile-education-item-${edu.id}`}
+            >
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-medium">{edu.institution}</h4>
