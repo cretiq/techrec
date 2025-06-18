@@ -103,75 +103,12 @@ export default function CVManagementPage() {
     // Only log state changes, not every render
     useEffect(() => {
         console.log('[CVManagementPage] State changed:', {
-            activeTab,
             analysisIdFromUrl: searchParams.get('analysisId'),
             analysisStatus,
             analysisIdFromStore,
         });
-    }, [activeTab, analysisStatus, analysisIdFromStore]);
+    }, [analysisStatus, analysisIdFromStore, searchParams]);
 
-    // --- Redis Test Handlers ---
-    const handleTestRedisSet = async () => {
-        setRedisTestMessage('Setting test value in Redis...');
-        console.log('[CVManagementPage] handleTestRedisSet triggered'); // Added log
-        try {
-            const response = await fetch('/api/redis-test', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    key: 'my_temporary_test_key',
-                    value: `Hello from CV Management Page @ ${new Date().toLocaleTimeString()}`,
-                    ttl: 120 // 2 minutes TTL
-                }),
-            });
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to set Redis test value');
-            }
-            setRedisTestMessage(`Set successful: ${JSON.stringify(result)}`);
-            toast({
-                title: "Redis Test: Set OK",
-                description: `Key: ${result.key}, Value: ${result.value}`,
-            });
-        } catch (error: any) {
-            console.error('Error testing Redis set:', error);
-            setRedisTestMessage(`Set error: ${error.message}`);
-            toast({
-                title: "Redis Test: Set FAILED",
-                description: error.message,
-                variant: "destructive",
-            });
-        }
-    };
-
-    const handleTestRedisGet = async () => {
-        setRedisTestMessage('Getting test value from Redis...');
-        const testKey = 'my_temporary_test_key';
-        console.log('[CVManagementPage] handleTestRedisGet triggered'); // Added log
-        try {
-            const response = await fetch(`/api/redis-test?key=${testKey}`);
-            const result = await response.json();
-            if (!response.ok) {
-                throw new Error(result.error || 'Failed to get Redis test value');
-            }
-            setRedisTestMessage(`Get result: ${JSON.stringify(result)}`);
-            toast({
-                title: result.fromCache ? "Redis Test: Get HIT" : "Redis Test: Get MISS",
-                description: result.fromCache ? `Value: ${JSON.stringify(result.value)}` : `Key ${testKey} not found.`,
-            });
-        } catch (error: any) {
-            console.error('Error testing Redis get:', error);
-            setRedisTestMessage(`Get error: ${error.message}`);
-            toast({
-                title: "Redis Test: Get FAILED",
-                description: error.message,
-                variant: "destructive",
-            });
-        }
-    };
-    // --- End Redis Test Handlers ---
 
     const handleGuidedCreationComplete = async (profileData: any) => {
         console.log('[CVManagementPage] Guided creation complete:', profileData);
