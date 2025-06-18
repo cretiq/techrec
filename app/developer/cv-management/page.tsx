@@ -5,6 +5,7 @@ import { UploadForm } from '@/components/cv/UploadForm';
 import { CVList } from '@/components/cv/CVList';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
 import { ProfileScoringSidebar } from '@/components/cv/ProfileScoringSidebar';
+import { GuidedProfileCreation } from '@/components/cv/GuidedProfileCreation';
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
 import { toast } from "@/components/ui/use-toast";
 import {  Button  } from '@/components/ui-daisy/button';
@@ -18,6 +19,7 @@ import { RefreshCw, Download, BarChart3 } from 'lucide-react';
 export default function CVManagementPage() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [originalMimeType, setOriginalMimeType] = useState<string>('application/pdf'); // Keep this for now
+    const [showGuidedCreation, setShowGuidedCreation] = useState(false);
 
     // Get Redux dispatch
     const dispatch: AppDispatch = useDispatch();
@@ -171,6 +173,21 @@ export default function CVManagementPage() {
     };
     // --- End Redis Test Handlers ---
 
+    const handleGuidedCreationComplete = async (profileData: any) => {
+        console.log('[CVManagementPage] Guided creation complete:', profileData);
+        
+        // TODO: Save profile data and create initial CV
+        toast({
+            title: "Profile Created!",
+            description: "Your profile has been created. You can now enhance it further.",
+        });
+        
+        setShowGuidedCreation(false);
+        
+        // Optionally redirect to show the created profile
+        // This would require creating an initial CV/analysis from the profile data
+    };
+
     return (
         <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" style={{ animationDelay: '100ms' }} data-testid="cv-management-page-container">
             <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }} data-testid="cv-management-page-header">
@@ -204,6 +221,7 @@ export default function CVManagementPage() {
                                         size="lg"
                                         variant="outline"
                                         className="w-full h-32 flex flex-col gap-2 border-2 border-dashed border-secondary/20 hover:border-secondary/40 hover:bg-secondary/5 transition-all"
+                                        onClick={() => setShowGuidedCreation(true)}
                                         data-testid="cv-management-start-scratch-button"
                                     >
                                         <div className="text-2xl">✨</div>
@@ -361,6 +379,13 @@ export default function CVManagementPage() {
                 return null;
             })()}
 
+            {/* Guided Profile Creation Modal */}
+            {showGuidedCreation && (
+                <GuidedProfileCreation
+                    onComplete={handleGuidedCreationComplete}
+                    onCancel={() => setShowGuidedCreation(false)}
+                />
+            )}
 
         </div>
     );
