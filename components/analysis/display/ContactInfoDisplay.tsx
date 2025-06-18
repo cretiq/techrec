@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {  Input  } from '@/components/ui-daisy/input';
 import {  Button  } from '@/components/ui-daisy/button';
 import { Label } from '@/components/ui/label';
-import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X, AlertTriangle } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X, AlertTriangle, Camera, User } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/components/ui/use-toast';
 
 // Import suggestion-related types and components
 import { CvImprovementSuggestion } from '@/types/cv';
@@ -44,6 +46,9 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
   console.log('[ContactInfoDisplay] Rendering with data:', data); // LOG
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ContactInfoData>(data);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null); // TODO: Get from user data
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     setEditData(data);
@@ -65,6 +70,47 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     setEditData(data); // Revert to original data from props
     onChange(data); // Notify parent of reversion
     setIsEditing(false);
+  };
+
+  const handleProfilePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: 'Invalid file type',
+        description: 'Please upload an image file',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Validate file size (2MB limit)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: 'File too large',
+        description: 'Please upload an image smaller than 2MB',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Create local preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setProfilePicture(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // TODO: Upload to S3 and update user profile
+    toast({
+      title: "Profile Picture Updated",
+      description: "Profile picture upload functionality coming soon!",
+    });
+
+    // Reset input
+    if (e.target) e.target.value = '';
   };
 
   // Function to render a single field (editable or display) with inline suggestions
@@ -191,29 +237,71 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     );
   }
 
+  // Get initials for avatar fallback
+  const getInitials = (name?: string | null) => {
+    if (!name) return 'U';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
   return (
     // Remove Card, CardHeader - managed by parent
-    <div className="space-y-2">
-      {/* Edit/Save Buttons - moved to top right for consistency? Or keep inline? Keeping simple for now */}
-       <div className="flex justify-end mb-2">
-        {isEditing ? (
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-7 w-7"><X className="h-4 w-4" /></Button>
-            <Button variant="default" size="icon" onClick={handleSave} className="h-7 w-7"><Save className="h-4 w-4" /></Button>
+    <div className="space-y-4">
+      {/* Profile Picture and Edit Button Row */}
+      <div className="flex items-start justify-between">
+        {/* Profile Picture */}
+        <div className="relative group">
+          <Avatar className="h-24 w-24 border-2 border-base-300">
+            <AvatarImage src={profilePicture || undefined} alt={data.name || 'Profile'} />
+            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-lg font-semibold">
+              {getInitials(data.name)}
+            </AvatarFallback>
+          </Avatar>
+          
+          {/* Upload overlay */}
+          <div 
+            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Camera className="h-6 w-6 text-white" />
           </div>
-        ) : (
-          <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
-        )}
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleProfilePictureChange}
+            className="hidden"
+          />
+        </div>
+
+        {/* Edit/Save Buttons */}
+        <div>
+          {isEditing ? (
+            <div className="flex gap-1">
+              <Button variant="ghost" size="icon" onClick={handleCancel} className="h-7 w-7"><X className="h-4 w-4" /></Button>
+              <Button variant="default" size="icon" onClick={handleSave} className="h-7 w-7"><Save className="h-4 w-4" /></Button>
+            </div>
+          ) : (
+            <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
+          )}
+        </div>
       </div>
 
-      {/* Render fields */} 
-      {isEditing && renderFieldWithSuggestions('name', Mail, 'Full Name', 'Full Name')} {/* Show name only when editing? */}
-      {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email', 'email')}
-      {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone', 'tel')}
-      {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)', 'Location')}
-      {renderLinkWithSuggestions('linkedin', Linkedin, 'linkedin.com/in/...')}
-      {renderLinkWithSuggestions('github', Github, 'github.com/...')}
-      {renderLinkWithSuggestions('website', LinkIcon, 'yourwebsite.com')}
+      {/* Contact Info Fields */}
+      <div className="space-y-2">
+        {/* Render fields */} 
+        {isEditing && renderFieldWithSuggestions('name', User, 'Full Name', 'Full Name')} {/* Changed icon from Mail to User */}
+        {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email', 'email')}
+        {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone', 'tel')}
+        {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)', 'Location')}
+        {renderLinkWithSuggestions('linkedin', Linkedin, 'linkedin.com/in/...')}
+        {renderLinkWithSuggestions('github', Github, 'github.com/...')}
+        {renderLinkWithSuggestions('website', LinkIcon, 'yourwebsite.com')}
+      </div>
     </div>
   );
 } 
