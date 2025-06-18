@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
 import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
 import { cn } from '@/lib/utils';
+import { RefreshCw, Download, BarChart3 } from 'lucide-react';
 
 export default function CVManagementPage() {
     const [refreshKey, setRefreshKey] = useState(0);
@@ -266,10 +267,70 @@ export default function CVManagementPage() {
                 if (shouldShowAnalysis && analysisData && analysisIdFromStore) {
                     return (
                         <div 
-                            className="animate-fade-in-up" 
+                            className="animate-fade-in-up space-y-6" 
                             style={{ animationDelay: '500ms' }}
                             data-testid="cv-management-profile-section"
                         >
+                            {/* Quick Actions Bar */}
+                            <Card 
+                                variant="transparent"
+                                className="sticky top-4 z-10 shadow-lg"
+                                data-testid="cv-management-quick-actions"
+                            >
+                                <CardContent className="py-3">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                    const params = new URLSearchParams(searchParams.toString());
+                                                    params.delete('analysisId');
+                                                    router.replace(`${window.location.pathname}?${params.toString()}`);
+                                                }}
+                                                data-testid="cv-management-action-reupload"
+                                            >
+                                                <RefreshCw className="h-4 w-4 mr-2" />
+                                                Re-upload CV
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                    // TODO: Implement PDF export
+                                                    toast({
+                                                        title: "Export PDF",
+                                                        description: "PDF export coming soon!",
+                                                    });
+                                                }}
+                                                data-testid="cv-management-action-export"
+                                            >
+                                                <Download className="h-4 w-4 mr-2" />
+                                                Export PDF
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                    // TODO: Implement view analysis
+                                                    toast({
+                                                        title: "View Analysis",
+                                                        description: "Detailed analysis view coming soon!",
+                                                    });
+                                                }}
+                                                data-testid="cv-management-action-analysis"
+                                            >
+                                                <BarChart3 className="h-4 w-4 mr-2" />
+                                                View Analysis
+                                            </Button>
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                            Last updated: {new Date().toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
                             <AnalysisResultDisplay originalMimeType={originalMimeType} />
                         </div>
                     );
