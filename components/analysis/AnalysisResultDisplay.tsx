@@ -226,6 +226,25 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     setOpenSections([]);
   };
 
+  // Listen for expand/collapse events from AnalysisActionButtons
+  useEffect(() => {
+    const handleExpandAllEvent = () => {
+      setOpenSections(accordionSectionKeys);
+    };
+    
+    const handleCollapseAllEvent = () => {
+      setOpenSections([]);
+    };
+
+    window.addEventListener('expandAllSections', handleExpandAllEvent);
+    window.addEventListener('collapseAllSections', handleCollapseAllEvent);
+
+    return () => {
+      window.removeEventListener('expandAllSections', handleExpandAllEvent);
+      window.removeEventListener('collapseAllSections', handleCollapseAllEvent);
+    };
+  }, [accordionSectionKeys]);
+
   // Handler for printing the current view
   const handlePrintOrExport = () => {
     // Basic print functionality for now
@@ -297,32 +316,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
       animate="visible"
       data-testid="cv-management-analysis-display-container"
     >
-       <header className="mb-8 flex justify-between items-start flex-wrap gap-4 print:hidden" data-testid="cv-management-analysis-display-header"> {/* Hide header buttons when printing */}
-          <div data-testid="cv-management-analysis-display-title-section">
-              {/* Use theme foreground colors */}
-              <h1 className="text-3xl font-bold text-foreground" data-testid="cv-management-analysis-display-title">CV Analysis Results</h1>
-              {analysisId && !analysisId.startsWith('temp-') && (
-                  <p className="text-sm text-muted-foreground mt-1" data-testid="cv-management-analysis-display-id">Analysis ID: {analysisId}</p> /* text-muted-foreground should adapt */
-              )}
-          </div>
-          {/* Action Buttons moved to header - shadcn Buttons should adapt */}
-          <div className="flex gap-2 flex-wrap justify-end" data-testid="cv-management-analysis-display-actions">
-             <Button onClick={handleExpandAll} variant="outline" size="sm" disabled={openSections.length === accordionSectionKeys.length || isProcessing} data-testid="cv-management-button-expand-all"> <ChevronsDownUp className="mr-2 h-4 w-4" data-testid="cv-management-icon-expand-all" /> Expand All </Button>
-             <Button onClick={handleCollapseAll} variant="outline" size="sm" disabled={openSections.length === 0 || isProcessing} data-testid="cv-management-button-collapse-all"> <ChevronsUpDown className="mr-2 h-4 w-4" data-testid="cv-management-icon-collapse-all" /> Collapse All </Button>
-             <Button onClick={handleGetSuggestions} disabled={isSuggesting || isSaving || isExporting || isProcessing} size="sm" variant="outline" data-testid="cv-management-button-get-suggestions"> {isSuggesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-icon-suggestions-loading" /> : <Wand2 className="mr-2 h-4 w-4" data-testid="cv-management-icon-suggestions" /> } {isSuggesting ? 'Getting Suggestions...' : 'Get Suggestions'} </Button>
-             <Button onClick={handleExport} disabled={isExporting || isSaving || isSuggesting || isProcessing || analysisData == null} size="sm" variant="outline" data-testid="cv-management-button-export"> {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-icon-export-loading" /> : <Download className="mr-2 h-4 w-4" data-testid="cv-management-icon-export" />} {isExporting ? 'Exporting...' : 'Export Edited CV'} </Button>
-             {/* Primary action button styling? Default should work */}
-             <Button 
-               onClick={handleSaveAll} 
-               disabled={!hasUnsavedChanges || isSaving || isSuggesting || isExporting || isProcessing || !!(analysisId && analysisId.startsWith('temp-'))} 
-               size="sm"
-               data-testid="cv-management-button-save-changes"
-             >
-                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-icon-save-loading" /> : <Save className="mr-2 h-4 w-4" data-testid="cv-management-icon-save" />} 
-                 {isSaving ? 'Saving...' : (hasUnsavedChanges ? 'Save Changes' : 'All Changes Saved')} 
-             </Button>
-          </div>
-       </header>
 
        <div className="flex flex-col md:flex-row gap-8 mt-8" data-testid="cv-management-analysis-content">
           <main className="w-full space-y-4" data-testid="cv-management-analysis-main">
