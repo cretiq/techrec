@@ -287,40 +287,42 @@ export function GuidedProfileCreation({ onComplete, onCancel }: GuidedProfileCre
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-testid="guided-profile-creation-modal">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         className="w-full max-w-2xl"
+        data-testid="guided-profile-creation-container"
       >
-        <Card variant="transparent" className="backdrop-blur-md">
-          <CardHeader>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <step.icon className="h-6 w-6 text-primary" />
+        <Card variant="transparent" className="backdrop-blur-md" data-testid="guided-profile-creation-card">
+          <CardHeader data-testid="guided-profile-creation-header">
+            <div className="flex items-center justify-between mb-4" data-testid="guided-profile-creation-header-content">
+              <div className="flex items-center gap-3" data-testid="guided-profile-creation-step-info">
+                <div className="p-2 bg-primary/10 rounded-lg" data-testid="guided-profile-creation-step-icon-container">
+                  <step.icon className="h-6 w-6 text-primary" data-testid={`guided-profile-creation-step-icon-${step.id}`} />
                 </div>
-                <div>
-                  <CardTitle>{step.title}</CardTitle>
-                  <CardDescription>{step.description}</CardDescription>
+                <div data-testid="guided-profile-creation-step-text">
+                  <CardTitle data-testid={`guided-profile-creation-step-title-${step.id}`}>{step.title}</CardTitle>
+                  <CardDescription data-testid={`guided-profile-creation-step-description-${step.id}`}>{step.description}</CardDescription>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onCancel}
+                data-testid="guided-profile-creation-cancel-button"
               >
                 Cancel
               </Button>
             </div>
-            <Progress value={progress} className="h-2" />
-            <p className="text-xs text-muted-foreground mt-2">
+            <Progress value={progress} className="h-2" data-testid="guided-profile-creation-progress" />
+            <p className="text-xs text-muted-foreground mt-2" data-testid="guided-profile-creation-step-counter">
               Step {currentStep + 1} of {steps.length}
             </p>
           </CardHeader>
 
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6" data-testid="guided-profile-creation-content">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
@@ -329,12 +331,13 @@ export function GuidedProfileCreation({ onComplete, onCancel }: GuidedProfileCre
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
                 className="space-y-4"
+                data-testid={`guided-profile-creation-step-${step.id}`}
               >
                 {step.fields.map(field => (
-                  <div key={field.name} className="space-y-2">
-                    <Label htmlFor={field.name}>
+                  <div key={field.name} className="space-y-2" data-testid={`guided-profile-creation-field-${field.name}`}>
+                    <Label htmlFor={field.name} data-testid={`guided-profile-creation-label-${field.name}`}>
                       {field.label}
-                      {field.required && <span className="text-red-500 ml-1">*</span>}
+                      {field.required && <span className="text-red-500 ml-1" data-testid={`guided-profile-creation-required-${field.name}`}>*</span>}
                     </Label>
                     
                     {field.type === 'textarea' ? (
@@ -345,6 +348,7 @@ export function GuidedProfileCreation({ onComplete, onCancel }: GuidedProfileCre
                         onChange={(e) => handleInputChange(field.name, e.target.value)}
                         className={errors[field.name] ? 'border-red-500' : ''}
                         rows={4}
+                        data-testid={`guided-profile-creation-textarea-${field.name}`}
                       />
                     ) : (
                       <Input
@@ -354,17 +358,18 @@ export function GuidedProfileCreation({ onComplete, onCancel }: GuidedProfileCre
                         value={formData[field.name] || ''}
                         onChange={(e) => handleInputChange(field.name, e.target.value)}
                         className={errors[field.name] ? 'border-red-500' : ''}
+                        data-testid={`guided-profile-creation-input-${field.name}`}
                       />
                     )}
                     
                     {errors[field.name] && (
-                      <p className="text-xs text-red-500">{errors[field.name]}</p>
+                      <p className="text-xs text-red-500" data-testid={`guided-profile-creation-error-${field.name}`}>{errors[field.name]}</p>
                     )}
                     
                     {field.tip && (
-                      <div className="flex items-start gap-2 p-3 bg-primary/5 rounded-lg">
-                        <Lightbulb className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <p className="text-xs text-muted-foreground">{field.tip}</p>
+                      <div className="flex items-start gap-2 p-3 bg-primary/5 rounded-lg" data-testid={`guided-profile-creation-tip-${field.name}`}>
+                        <Lightbulb className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" data-testid={`guided-profile-creation-tip-icon-${field.name}`} />
+                        <p className="text-xs text-muted-foreground" data-testid={`guided-profile-creation-tip-text-${field.name}`}>{field.tip}</p>
                       </div>
                     )}
                   </div>
@@ -372,29 +377,31 @@ export function GuidedProfileCreation({ onComplete, onCancel }: GuidedProfileCre
               </motion.div>
             </AnimatePresence>
 
-            <div className="flex justify-between pt-4">
+            <div className="flex justify-between pt-4" data-testid="guided-profile-creation-navigation">
               <Button
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={currentStep === 0}
+                data-testid="guided-profile-creation-previous-button"
               >
-                <ChevronLeft className="h-4 w-4 mr-2" />
+                <ChevronLeft className="h-4 w-4 mr-2" data-testid="guided-profile-creation-previous-icon" />
                 Previous
               </Button>
               
               <Button
                 onClick={handleNext}
                 className="bg-primary hover:bg-primary/90"
+                data-testid="guided-profile-creation-next-button"
               >
                 {currentStep === steps.length - 1 ? (
                   <>
                     Complete
-                    <Check className="h-4 w-4 ml-2" />
+                    <Check className="h-4 w-4 ml-2" data-testid="guided-profile-creation-complete-icon" />
                   </>
                 ) : (
                   <>
                     Next
-                    <ChevronRight className="h-4 w-4 ml-2" />
+                    <ChevronRight className="h-4 w-4 ml-2" data-testid="guided-profile-creation-next-icon" />
                   </>
                 )}
               </Button>
