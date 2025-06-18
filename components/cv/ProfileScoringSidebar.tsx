@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui-daisy/button';
 import { 
@@ -10,7 +10,12 @@ import {
   Sparkles,
   Target,
   Zap,
-  ChevronRight 
+  ChevronRight,
+  User,
+  FileText,
+  Briefcase,
+  GraduationCap,
+  Award
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -24,10 +29,14 @@ interface SectionScore {
   score: number;
   icon: React.ElementType;
   quickWin?: string;
+  id: string; // For navigation
+  sectionIcon: React.ElementType; // Different icon for navigation
 }
 
 export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarProps) {
-  // Calculate section scores
+  const [activeSection, setActiveSection] = useState<string>('contact-info');
+
+  // Calculate section scores with navigation data
   const calculateSectionScores = (): SectionScore[] => {
     const scores: SectionScore[] = [];
 
@@ -40,6 +49,8 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         name: 'Contact Info',
         score,
         icon: AlertCircle,
+        sectionIcon: User,
+        id: 'contact-info',
         quickWin: score < 100 ? 'Add missing contact details' : undefined
       });
     }
@@ -52,6 +63,8 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         name: 'Summary',
         score,
         icon: AlertCircle,
+        sectionIcon: FileText,
+        id: 'about',
         quickWin: score < 100 ? 'Write a compelling summary' : undefined
       });
     }
@@ -64,6 +77,8 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         name: 'Skills',
         score,
         icon: AlertCircle,
+        sectionIcon: Award,
+        id: 'skills',
         quickWin: score < 100 ? `Add ${10 - skillCount} more skills` : undefined
       });
     }
@@ -79,6 +94,8 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         name: 'Experience',
         score,
         icon: AlertCircle,
+        sectionIcon: Briefcase,
+        id: 'experience',
         quickWin: score < 100 ? 'Add job responsibilities and achievements' : undefined
       });
     }
@@ -91,6 +108,8 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         name: 'Education',
         score,
         icon: AlertCircle,
+        sectionIcon: GraduationCap,
+        id: 'education',
         quickWin: score < 100 ? 'Add your education history' : undefined
       });
     }
@@ -102,6 +121,58 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
   const overallScore = Math.round(
     sectionScores.reduce((sum, section) => sum + section.score, 0) / sectionScores.length
   );
+
+  // Scroll detection for active section highlighting
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = sectionScores.map(s => s.id);
+      let currentSection = sections[0];
+
+      for (const sectionId of sections) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // Section is considered active if it's in the top half of the viewport
+          if (rect.top <= window.innerHeight / 2 && rect.bottom >= 0) {
+            currentSection = sectionId;
+          }
+        }
+      }
+
+      setActiveSection(currentSection);
+    };
+
+    // Throttle scroll events
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll);
+    handleScroll(); // Initial check
+
+    return () => {
+      window.removeEventListener('scroll', throttledScroll);
+    };
+  }, [sectionScores]);
+
+  // Navigation handler
+  const handleSectionClick = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start',
+        inline: 'nearest'
+      });
+    }
+  };
 
   // Determine score quality
   const getScoreQuality = (score: number) => {
@@ -191,9 +262,58 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         </div>
       )}
 
+      {/* Section Navigation */}
+      <div className="space-y-3">
+        <h4 className="text-sm font-semibold">Sections</h4>
+        <div className="space-y-2">
+          {sectionScores.map((section, index) => {
+            const isActive = activeSection === section.id;
+            return (
+              <motion.button
+                key={section.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                onClick={() => handleSectionClick(section.id)}
+                className={cn(
+                  "w-full text-left p-3 rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1 cursor-pointer",
+                  "flex items-center gap-3",
+                  isActive 
+                    ? "bg-primary/15 text-primary font-medium border-l-2 border-primary" 
+                    : "text-muted-foreground hover:bg-primary/5 hover:text-foreground hover:translate-x-1"
+                )}
+              >
+                <section.sectionIcon className={cn(
+                  "h-4 w-4 flex-shrink-0",
+                  isActive ? "text-primary" : "text-muted-foreground"
+                )} />
+                <div className="flex-1 flex items-center justify-between">
+                  <span className="text-sm">{section.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-xs font-medium px-2 py-1 rounded-full",
+                      section.score === 100 
+                        ? "bg-green-100 text-green-700" 
+                        : section.score >= 70 
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-red-100 text-red-700"
+                    )}>
+                      {section.score}%
+                    </span>
+                    {section.score === 100 && (
+                      <CheckCircle2 className="h-3 w-3 text-green-600" />
+                    )}
+                  </div>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Section Breakdown */}
       <div className="space-y-3">
-        <h4 className="text-sm font-semibold">Section Breakdown</h4>
+        <h4 className="text-sm font-semibold">Progress Overview</h4>
         <div className="space-y-3">
           {sectionScores.map((section, index) => (
             <motion.div

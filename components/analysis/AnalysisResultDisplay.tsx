@@ -22,8 +22,6 @@ import { AboutDisplay } from './display/AboutDisplay';
 import { SkillsDisplay } from './display/SkillsDisplay';
 import { ExperienceDisplay } from './display/ExperienceDisplay';
 import { EducationDisplay } from './display/EducationDisplay';
-import { AnalysisSummaryDashboard } from './display/AnalysisSummaryDashboard';
-import { SectionNavigation } from './display/SectionNavigation';
 import { AIAssistanceButton } from './AIAssistanceButton';
 import { Accordion, AccordionItem as ShadcnAccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { CvViewer } from './display/CvViewer';
@@ -90,19 +88,14 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   // State for controlled Accordion
-  const availableSections = useMemo(() => {
-    const sections = [];
-    if (analysisData?.contactInfo) sections.push({ id: 'contact-info', title: 'Contact Info' });
-    if (analysisData?.about) sections.push({ id: 'about', title: 'About / Summary' });
-    if (analysisData?.skills && analysisData.skills.length > 0) sections.push({ id: 'skills', title: 'Skills' });
-    if (analysisData?.experience && analysisData.experience.length > 0) sections.push({ id: 'experience', title: 'Experience' });
-    if (analysisData?.education && analysisData.education.length > 0) sections.push({ id: 'education', title: 'Education' });
-    console.log('[AnalysisResultDisplay] Calculated availableSections:', sections); // Log calculated sections
-    return sections;
+  const accordionSectionKeys = useMemo(() => {
+    const keys = [];
+    if (analysisData?.about !== undefined) keys.push('about');
+    if (analysisData?.skills && analysisData.skills.length > 0) keys.push('skills');
+    if (analysisData?.experience && analysisData.experience.length > 0) keys.push('experience');
+    if (analysisData?.education && analysisData.education.length > 0) keys.push('education');
+    return keys;
   }, [analysisData]);
-  const accordionSectionKeys = useMemo(() =>
-    availableSections.filter(s => s.id !== 'contact-info').map(s => s.id)
-  , [availableSections]);
   const [openSections, setOpenSections] = useState<string[]>(accordionSectionKeys);
 
   // Calculate unsaved changes by comparing current data with original data from store
@@ -331,27 +324,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
           </div>
        </header>
 
-       <motion.div
-         variants={sectionVariants}
-         initial="hidden"
-         whileInView="visible"
-         viewport={{ once: true, amount: 0.2 }}
-         data-testid="cv-management-analysis-summary-section"
-       >
-         <AnalysisSummaryDashboard
-           analysisData={analysisData}
-           suggestions={suggestions}
-           onGetSuggestions={handleGetSuggestions}
-           isSuggesting={isSuggesting}
-         />
-       </motion.div>
-
        <div className="flex flex-col md:flex-row gap-8 mt-8" data-testid="cv-management-analysis-content">
-          <aside className="w-full md:w-1/4 lg:w-1/5 order-2 md:order-1 hidden md:block" data-testid="cv-management-analysis-navigation">
-             <SectionNavigation sections={availableSections} offset={80} /> 
-          </aside>
-
-          <main className="w-full md:w-3/4 lg:w-4/5 order-1 md:order-2 space-y-4" data-testid="cv-management-analysis-main">
+          <main className="w-full space-y-4" data-testid="cv-management-analysis-main">
               {analysisData.contactInfo && (
                   <motion.section
                     id="contact-info" 
