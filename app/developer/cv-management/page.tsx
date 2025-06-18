@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { UploadForm } from '@/components/cv/UploadForm';
 import { CVList } from '@/components/cv/CVList';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
+import { ProfileScoringSidebar } from '@/components/cv/ProfileScoringSidebar';
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
 import { toast } from "@/components/ui/use-toast";
 import {  Button  } from '@/components/ui-daisy/button';
@@ -331,7 +332,28 @@ export default function CVManagementPage() {
                                 </CardContent>
                             </Card>
 
-                            <AnalysisResultDisplay originalMimeType={originalMimeType} />
+                            <div className="flex gap-6">
+                                {/* Smart Scoring Sidebar */}
+                                <aside className="w-80 hidden lg:block" data-testid="cv-management-scoring-sidebar">
+                                    <Card 
+                                        variant="transparent"
+                                        className="sticky top-20"
+                                        data-testid="cv-management-scoring-card"
+                                    >
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">Profile Score</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <ProfileScoringSidebar analysisData={analysisData} />
+                                        </CardContent>
+                                    </Card>
+                                </aside>
+
+                                {/* Main Profile Content */}
+                                <div className="flex-1">
+                                    <AnalysisResultDisplay originalMimeType={originalMimeType} />
+                                </div>
+                            </div>
                         </div>
                     );
                 }
