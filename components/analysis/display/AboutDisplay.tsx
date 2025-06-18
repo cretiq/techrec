@@ -3,6 +3,7 @@ import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-dais
 import { Textarea } from "@/components/ui-daisy/textarea";
 import {  Button  } from '@/components/ui-daisy/button'; 
 import { Edit, Save, X } from 'lucide-react';
+import { AIAssistanceButton } from '@/components/analysis/AIAssistanceButton';
 
 // Import suggestion-related types and components
 import { CvImprovementSuggestion } from '@/types/cv';
