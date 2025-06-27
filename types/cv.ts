@@ -202,7 +202,57 @@ export const UpdateCvAnalysisSchema = CvAnalysisDataSchema;
 // Schema for the request body of POST /api/cv-improvement or /api/cv-improvement-gemini
 export const CvImprovementRequestSchema = CvAnalysisDataSchema;
 
-// Schema for the response of POST /api/cv-improvement or /api/cv-improvement-gemini
+// Enhanced schema for structured CV improvement suggestions with interactive UI support
+export const EnhancedCvSuggestionSchema = z.object({
+    id: z.string(), // Unique identifier for accept/decline tracking
+    type: z.enum([
+        "experience_bullet", // Add bullet point to work experience
+        "education_gap", // Fill missing education information
+        "missing_skill", // Add skill found in other sections
+        "summary_improvement", // Improve about/summary section
+        "general_improvement" // Fallback for other improvements
+    ]),
+    section: z.string(), // Target section (experience, education, skills, about)
+    targetId: z.string().optional(), // Specific item ID within section (for experience/education items)
+    title: z.string(), // Short description for UI
+    reasoning: z.string(), // Detailed explanation
+    suggestedContent: z.string(), // The actual content to add/replace
+    originalContent: z.string().nullable().optional(), // Content being replaced (if any)
+    priority: z.enum(["high", "medium", "low"]).default("medium"),
+    confidence: z.number().min(0).max(1).default(0.8), // AI confidence score
+    metadata: z.object({
+        position: z.number().optional(), // Where to insert (for bullets/lists)
+        skillCategory: z.string().optional(), // Category for skill suggestions
+        fieldName: z.string().optional(), // Specific field being improved (for education gaps)
+    }).optional(),
+});
+
+// Schema for interactive suggestion state
+export const SuggestionStateSchema = z.object({
+    id: z.string(),
+    status: z.enum(["pending", "accepted", "declined"]).default("pending"),
+    timestamp: z.string().optional(),
+});
+
+// Enhanced response schema for the new suggestion system
+export const EnhancedCvImprovementResponseSchema = z.object({
+    suggestions: z.array(EnhancedCvSuggestionSchema),
+    summary: z.object({
+        totalSuggestions: z.number(),
+        highPriority: z.number(),
+        categories: z.object({
+            experienceBullets: z.number(),
+            educationGaps: z.number(),
+            missingSkills: z.number(),
+            summaryImprovements: z.number(),
+            generalImprovements: z.number(),
+        })
+    }),
+    fromCache: z.boolean().optional(),
+    provider: z.string().optional(),
+});
+
+// Legacy schema for backward compatibility
 export const CvImprovementResponseSchema = z.object({
     suggestions: z.array(
         z.object({
@@ -236,7 +286,15 @@ export type EducationItem = z.infer<typeof EducationItemSchema>;
 export type AchievementItem = z.infer<typeof AchievementSchema>;
 export type CvAnalysisData = z.infer<typeof CvAnalysisDataSchema>;
 export type CvListFilters = z.infer<typeof CvListFilterSchema>;
+
+// Enhanced suggestion types
+export type EnhancedCvSuggestion = z.infer<typeof EnhancedCvSuggestionSchema>;
+export type SuggestionState = z.infer<typeof SuggestionStateSchema>;
+export type EnhancedCvImprovementResponse = z.infer<typeof EnhancedCvImprovementResponseSchema>;
+
+// Legacy types for backward compatibility
 export type CvImprovementSuggestion = z.infer<typeof CvImprovementResponseSchema>['suggestions'][number];
+export type CvImprovementResponse = z.infer<typeof CvImprovementResponseSchema>;
 
 // --- Enum for shared status (if not using Prisma directly) ---
 // export { CvStatus, AnalysisStatus }; // Re-export if needed elsewhere 

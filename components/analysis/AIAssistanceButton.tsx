@@ -34,8 +34,8 @@ export function AIAssistanceButton({
     setIsProcessing(true);
     
     try {
-      // Use real AI endpoint for CV improvement
-      const response = await fetch('/api/cv-improvement', {
+      // Use Gemini endpoint for CV improvement (enhanced with debugging)
+      const response = await fetch('/api/cv-improvement-gemini', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,11 +57,19 @@ export function AIAssistanceButton({
       }
 
       const result = await response.json();
+      console.log('AI Assistance response received:', {
+        fromCache: result.fromCache,
+        provider: result.provider,
+        totalSuggestions: result.suggestions?.length || 0,
+        section: section
+      });
       
       // Filter suggestions for current section
       const sectionSuggestions = result.suggestions?.filter((suggestion: CvImprovementSuggestion) => 
         suggestion.section === section
       ) || [];
+
+      console.log(`Filtered suggestions for section "${section}":`, sectionSuggestions.length);
 
       if (sectionSuggestions.length === 0) {
         toast({

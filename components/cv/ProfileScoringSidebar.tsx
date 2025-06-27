@@ -15,10 +15,15 @@ import {
   FileText,
   Briefcase,
   GraduationCap,
-  Award
+  Award,
+  Loader2
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/components/ui/use-toast';
+import { useSelector } from 'react-redux';
+import { selectSuggestionsLoading, selectSuggestionsStats, selectSuggestionsError } from '@/lib/features/suggestionsSlice';
+import { useSuggestionsFetcher } from '@/components/suggestions/SuggestionManager';
 
 interface ProfileScoringSidebarProps {
   analysisData: any; // TODO: Use proper CvAnalysisData type
@@ -35,6 +40,15 @@ interface SectionScore {
 
 export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarProps) {
   const [activeSection, setActiveSection] = useState<string>('contact-info');
+  const { toast } = useToast();
+  
+  // Redux selectors for suggestions state
+  const isLoadingSuggestions = useSelector(selectSuggestionsLoading);
+  const suggestionsStats = useSelector(selectSuggestionsStats);
+  const suggestionsError = useSelector(selectSuggestionsError);
+  
+  // Suggestion fetcher hook
+  const { fetchSuggestions } = useSuggestionsFetcher();
 
   // Calculate section scores with navigation data
   const calculateSectionScores = (): SectionScore[] => {
@@ -187,6 +201,40 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
   // Get quick wins
   const quickWins = sectionScores.filter(s => s.quickWin).slice(0, 3);
 
+  // Handle AI suggestion generation
+  const handleGetSuggestions = async () => {
+    try {
+      console.log('🤖 [ProfileScoringSidebar] Starting AI suggestion generation...');
+      
+      // Prepare request payload with full CV data
+      const requestPayload = {
+        contactInfo: analysisData?.contactInfo,
+        about: analysisData?.about,
+        skills: analysisData?.skills,
+        experience: analysisData?.experience,
+        education: analysisData?.education,
+        achievements: analysisData?.achievements,
+        cv: analysisData?.cv
+      };
+
+      console.log('📊 [ProfileScoringSidebar] CV data structure:', {
+        hasContactInfo: !!analysisData?.contactInfo,
+        hasAbout: !!analysisData?.about,
+        skillsCount: analysisData?.skills?.length || 0,
+        experienceCount: analysisData?.experience?.length || 0,
+        educationCount: analysisData?.education?.length || 0,
+        achievementsCount: analysisData?.achievements?.length || 0
+      });
+
+      // Use the suggestion fetcher
+      await fetchSuggestions(requestPayload);
+
+    } catch (error: any) {
+      console.error('❌ [ProfileScoringSidebar] AI suggestion generation failed:', error);
+      // Error handling is done in the useSuggestionsFetcher hook
+    }
+  };
+
   return (
     <div className="space-y-6" data-testid="profile-scoring-sidebar">
       {/* Overall Score */}
@@ -331,21 +379,194 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         </div>
       </div>
 
-      {/* One-Click Actions */}
-      <div className="pt-4 space-y-2" data-testid="profile-actions">
-        <Button
-          variant="default"
-          size="sm"
-          className="w-full"
-          onClick={() => {
-            // TODO: Implement AI optimization
-            console.log('Optimize with AI');
-          }}
-          data-testid="profile-action-optimize-ai"
+      {/* Enhanced AI Suggestions Section */}
+      <div className="pt-4 space-y-4" data-testid="profile-actions">
+        {/* Suggestions Statistics */}
+        <AnimatePresence>
+          {(suggestionsStats.total > 0 || isLoadingSuggestions) && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div 
+                className="p-3 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-lg border border-primary/20"
+                data-testid="profile-suggestions-stats"
+              >
+                {isLoadingSuggestions ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="relative w-8 h-8"
+                      >
+                        <div className="absolute inset-0 border-2 border-primary/30 rounded-full"></div>
+                        <div className="absolute inset-0 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                        {/* Orbital dots */}
+                        <motion.div
+                          className="absolute top-0 left-1/2 w-1 h-1 bg-primary rounded-full"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          style={{ transformOrigin: '0 16px' }}
+                        />
+                        <motion.div
+                          className="absolute top-1/2 left-0 w-1 h-1 bg-secondary rounded-full"
+                          animate={{ rotate: -360 }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                          style={{ transformOrigin: '16px 0' }}
+                        />
+                      </motion.div>
+                      <div>
+                        <p className="text-sm font-semibold text-primary">Analyzing Your CV...</p>
+                        <p className="text-xs text-base-content/60">AI is finding improvement opportunities</p>
+                      </div>
+                    </div>
+                    
+                    {/* Animated progress bar */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs text-base-content/60">
+                        <span>Progress</span>
+                        <span>Usually takes 5-10 seconds</span>
+                      </div>
+                      <div className="relative h-2 bg-base-300 rounded-full overflow-hidden">
+                        <motion.div
+                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-secondary rounded-full"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: 8, ease: "easeInOut" }}
+                        />
+                        {/* Shimmer effect */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                          animate={{ x: ['-100%', '100%'] }}
+                          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">AI Suggestions Ready</span>
+                      <div className="flex gap-1">
+                        {suggestionsStats.pending > 0 && (
+                          <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
+                            {suggestionsStats.pending} pending
+                          </span>
+                        )}
+                        {suggestionsStats.accepted > 0 && (
+                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                            {suggestionsStats.accepted} applied
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-base-content/60">
+                      {suggestionsStats.total} suggestions found • {suggestionsStats.highPriority} high priority
+                    </p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Enhanced Get Suggestions Button */}
+        <motion.div
+          whileHover={{ scale: isLoadingSuggestions ? 1 : 1.02 }}
+          whileTap={{ scale: isLoadingSuggestions ? 1 : 0.98 }}
+          className="relative"
         >
-          <Sparkles className="h-4 w-4 mr-2" data-testid="profile-action-optimize-ai-icon" />
-          Optimize with AI
-        </Button>
+          {/* Orbital rings when loading */}
+          {isLoadingSuggestions && (
+            <div className="absolute inset-0 pointer-events-none">
+              <motion.div
+                className="absolute inset-0 border-2 border-primary/30 rounded-lg"
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  opacity: [0.3, 0.1, 0.3]
+                }}
+                transition={{ 
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div
+                className="absolute inset-0 border-2 border-secondary/30 rounded-lg"
+                animate={{ 
+                  scale: [1, 1.03, 1],
+                  opacity: [0.4, 0.2, 0.4]
+                }}
+                transition={{ 
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              />
+            </div>
+          )}
+          
+          <Button
+            variant="default"
+            size="sm"
+            className="w-full relative overflow-hidden"
+            onClick={handleGetSuggestions}
+            disabled={isLoadingSuggestions}
+            data-testid="profile-action-get-suggestions"
+          >
+            {/* Pulse wave effect when loading */}
+            {isLoadingSuggestions && (
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                animate={{ x: ['-100%', '100%'] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              />
+            )}
+            
+            <div className="relative z-10 flex items-center justify-center">
+              {isLoadingSuggestions ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="mr-2"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                  </motion.div>
+                  <span data-testid="profile-action-get-suggestions-loading">
+                    Getting Suggestions...
+                  </span>
+                </>
+              ) : (
+                <>
+                  <motion.div
+                    animate={{ 
+                      rotate: [0, 10, -10, 0],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ 
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" data-testid="profile-action-get-suggestions-icon" />
+                  </motion.div>
+                  <span data-testid="profile-action-get-suggestions-text">
+                    {suggestionsStats.total > 0 ? 'Refresh Suggestions' : 'Get AI Suggestions'}
+                  </span>
+                </>
+              )}
+            </div>
+          </Button>
+        </motion.div>
+        
+        {/* Complete Profile Button */}
         <Button
           variant="outline"
           size="sm"
