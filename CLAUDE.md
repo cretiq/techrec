@@ -40,8 +40,12 @@ AI provider selection is handled via `utils/aiProviderSelector.ts`. Both provide
 ### Authentication & Security
 - **NextAuth.js** with Google and GitHub OAuth providers
 - JWT-based session management
-- Middleware-based route protection
+- **Middleware-based route protection** (`middleware.ts`)
+  - Protected routes: `/developer/*`, `/company/*`, `/assessments/*`
+  - Custom sign-in page: `/auth/signin`
+  - Token validation on all protected routes
 - Role-based access (Developer/Company user types)
+- MongoDB session adapter for persistent authentication
 
 ### Data Architecture Patterns
 
@@ -106,6 +110,7 @@ RESTful API endpoints following the pattern `/api/[resource]/[id]/[action]`:
 - **CV Analyzer** (`utils/cv-analyzer/`) - Multi-stage analysis including ATS scoring, content quality, and impact assessment
 - **S3 Storage** (`utils/s3Storage.ts`) - File upload/download with proper error handling
 - **Analysis Service** (`utils/analysisService.ts`) - Orchestrates CV analysis workflow with caching
+- **AI Provider Selector** (`utils/aiProviderSelector.ts`) - Intelligent switching between OpenAI and Gemini based on availability
 
 ### State Management
 Redux store with feature slices and persistence:
@@ -115,6 +120,8 @@ Redux store with feature slices and persistence:
 - `coverLettersSlice` - Generated cover letters cache (persisted)
 - `uiSlice` - UI state management (persisted)
 - `analyticsSlice` - Analytics data
+- `suggestionsSlice` - AI-powered CV improvement suggestions (new)
+- `outreachMessagesSlice` - Generated outreach messages cache (persisted)
 
 **Redux Persistence Configuration**
 - User preferences and data persist across sessions
@@ -140,6 +147,9 @@ The project is migrating from custom components to DaisyUI:
 - **OrbitalLoader** - Sophisticated loading animation with spinning ring and orbital dots
 - **ProfileInfoCard, ExperienceCard, SkillsCard** - Glass morphism profile components
 - **CVList** - Table with fixed column layouts and skeleton loading states
+- **SuggestionManager** - AI-powered CV improvement suggestions with section-based targeting
+- **SuggestionOverlay** - Interactive suggestion display with accept/decline functionality
+- **AIAssistanceButton** - Centralized AI assistance triggering with loading states
 
 **Component Migration Patterns**
 ```tsx
@@ -269,6 +279,22 @@ useEffect(() => {
 - Bulk selection capabilities
 - URL state management for shareable searches
 - Animated loading states and transitions
+
+### AI Suggestions System
+**Architecture**: Section-based improvement suggestions with persistent user interactions
+1. **SuggestionManager** - Component-level management for specific CV sections
+2. **SuggestionsSlice** - Redux state management with persistence
+3. **API Integration** - `/api/cv-improvement-gemini` endpoint for AI analysis
+4. **User Interaction Tracking** - Accept/decline status with timestamps
+5. **Section Targeting** - Granular suggestions for experience, education, skills, etc.
+
+**Key Features**:
+- **Real-time generation** from CV analysis data
+- **Persistent user decisions** across sessions  
+- **Section-based visibility** controls
+- **Bulk operations** for accepting/declining multiple suggestions
+- **Provider-agnostic** design (OpenAI/Gemini compatibility)
+- **Cache integration** with 24-hour TTL
 
 ### Task Management (Task Master)
 The project uses Task Master for structured development:

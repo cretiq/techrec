@@ -15,6 +15,8 @@ import selectedRolesReducer from './features/selectedRolesSlice';
 import coverLettersReducer from './features/coverLettersSlice';
 // Import the outreach messages reducer
 import outreachMessagesReducer from './features/outreachMessagesSlice';
+// Import the suggestions reducer
+import suggestionsReducer from './features/suggestionsSlice';
 // Import reducers here when they are created
 // import rootReducer from './rootReducer'; // Example
 
@@ -58,6 +60,13 @@ const outreachMessagesPersistConfig = {
     whitelist: ['messages'] // Persist all outreach messages
 };
 
+// Persist config for suggestions
+const suggestionsPersistConfig = {
+    key: 'suggestions',
+    storage,
+    whitelist: ['suggestions', 'summary', 'suggestionStatuses', 'isVisible', 'sectionVisibility', 'lastFetched'] // Persist suggestions and user interactions
+};
+
 // Create persisted reducers
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedAnalysisReducer = persistReducer(analysisPersistConfig, analysisReducer);
@@ -68,6 +77,8 @@ const persistedSelectedRolesReducer = persistReducer(selectedRolesPersistConfig,
 const persistedCoverLettersReducer = persistReducer(coverLettersPersistConfig, coverLettersReducer);
 // Create persisted reducer for outreach messages
 const persistedOutreachMessagesReducer = persistReducer(outreachMessagesPersistConfig, outreachMessagesReducer);
+// Create persisted reducer for suggestions
+const persistedSuggestionsReducer = persistReducer(suggestionsPersistConfig, suggestionsReducer);
 
 export const store = configureStore({
   reducer: {
@@ -81,6 +92,8 @@ export const store = configureStore({
     coverLetters: persistedCoverLettersReducer,
     // Add the outreach messages reducer
     outreachMessages: persistedOutreachMessagesReducer,
+    // Add the suggestions reducer
+    suggestions: persistedSuggestionsReducer,
     // Analytics doesn't need persistence
     analytics: analyticsReducer,
   },

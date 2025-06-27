@@ -26,6 +26,7 @@ import { AIAssistanceButton } from './AIAssistanceButton';
 import { Accordion, AccordionItem as ShadcnAccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { CvViewer } from './display/CvViewer';
 import { SuggestionList } from './display/SuggestionList';
+import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 // Import shared types
 import { 
     CvAnalysisData, 
@@ -329,6 +330,10 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                     viewport={{ once: true, amount: 0.2 }}
                   >
                       <h3 className="text-2xl font-semibold text-foreground mb-3 pb-1">Contact Info</h3>
+                      
+                      {/* AI Suggestions for Contact Info */}
+                      <SuggestionManager section="contactInfo" className="mb-4" />
+                      
                       {/* Log before rendering ContactInfoDisplay */} 
                       <ContactInfoDisplay 
                           data={analysisData.contactInfo}
@@ -374,6 +379,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
+                          {/* AI Suggestions for About/Summary */}
+                          <SuggestionManager section="about" className="mb-4" />
+                          
                           <AboutDisplay 
                             data={analysisData.about}
                             onChange={(newData) => dispatch(updateAnalysisData({ path: 'about', value: newData }))} 
@@ -403,6 +411,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
+                          {/* AI Suggestions for Skills */}
+                          <SuggestionManager section="skills" className="mb-4" />
+                          
                           <SkillsDisplay 
                             data={analysisData.skills}
                             onChange={(newData) => dispatch(updateAnalysisData({ path: 'skills', value: newData }))} 
@@ -432,6 +443,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
+                          {/* AI Suggestions for Experience */}
+                          <SuggestionManager section="experience" className="mb-4" />
+                          
                           <ExperienceDisplay 
                             data={analysisData.experience}
                             onChange={(newData) => dispatch(updateAnalysisData({ path: 'experience', value: newData }))} 
@@ -461,6 +475,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
+                          {/* AI Suggestions for Education */}
+                          <SuggestionManager section="education" className="mb-4" />
+                          
                           <EducationDisplay 
                             data={analysisData.education}
                             onChange={(newData) => dispatch(updateAnalysisData({ path: 'education', value: newData }))} 
