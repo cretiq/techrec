@@ -17,6 +17,8 @@ import coverLettersReducer from './features/coverLettersSlice';
 import outreachMessagesReducer from './features/outreachMessagesSlice';
 // Import the suggestions reducer
 import suggestionsReducer from './features/suggestionsSlice';
+// Import the gamification reducer
+import gamificationReducer from './features/gamificationSlice';
 // Import reducers here when they are created
 // import rootReducer from './rootReducer'; // Example
 
@@ -67,6 +69,13 @@ const suggestionsPersistConfig = {
     whitelist: ['suggestions', 'summary', 'suggestionStatuses', 'isVisible', 'sectionVisibility', 'lastFetched'] // Persist suggestions and user interactions
 };
 
+// Persist config for gamification
+const gamificationPersistConfig = {
+    key: 'gamification',
+    storage,
+    whitelist: ['userProfile', 'earnedBadges', 'dailyChallenges', 'showAnimations', 'soundEnabled', 'notificationsEnabled', 'lastUpdated'] // Persist core gamification data and settings
+};
+
 // Create persisted reducers
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedAnalysisReducer = persistReducer(analysisPersistConfig, analysisReducer);
@@ -79,6 +88,8 @@ const persistedCoverLettersReducer = persistReducer(coverLettersPersistConfig, c
 const persistedOutreachMessagesReducer = persistReducer(outreachMessagesPersistConfig, outreachMessagesReducer);
 // Create persisted reducer for suggestions
 const persistedSuggestionsReducer = persistReducer(suggestionsPersistConfig, suggestionsReducer);
+// Create persisted reducer for gamification
+const persistedGamificationReducer = persistReducer(gamificationPersistConfig, gamificationReducer);
 
 export const store = configureStore({
   reducer: {
@@ -94,6 +105,8 @@ export const store = configureStore({
     outreachMessages: persistedOutreachMessagesReducer,
     // Add the suggestions reducer
     suggestions: persistedSuggestionsReducer,
+    // Add the gamification reducer
+    gamification: persistedGamificationReducer,
     // Analytics doesn't need persistence
     analytics: analyticsReducer,
   },

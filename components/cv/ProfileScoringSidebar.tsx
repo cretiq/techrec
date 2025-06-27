@@ -24,6 +24,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useSelector } from 'react-redux';
 import { selectSuggestionsLoading, selectSuggestionsStats, selectSuggestionsError } from '@/lib/features/suggestionsSlice';
 import { useSuggestionsFetcher } from '@/components/suggestions/SuggestionManager';
+import { GamificationDashboard } from '@/components/gamification/GamificationDashboard';
 
 interface ProfileScoringSidebarProps {
   analysisData: any; // TODO: Use proper CvAnalysisData type
@@ -581,6 +582,9 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
           Complete Profile
         </Button>
       </div>
+
+      {/* Gamification Section */}
+      <GamificationDashboard variant="sidebar" data-testid="profile-gamification-section" />
     </div>
   );
 }
