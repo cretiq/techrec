@@ -50,6 +50,43 @@ enum ProjectStatus {
   ARCHIVED
 }
 
+// Gamification enums
+enum ProfileTier {
+  BRONZE    // 0-199 XP
+  SILVER    // 200-499 XP  
+  GOLD      // 500-999 XP
+  PLATINUM  // 1000-1999 XP
+  DIAMOND   // 2000+ XP
+}
+
+enum BadgeCategory {
+  PROFILE_COMPLETION
+  CV_IMPROVEMENT
+  APPLICATION_SUCCESS
+  SKILL_MASTERY
+  ENGAGEMENT
+  SPECIAL_EVENT
+}
+
+enum BadgeTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum XPSource {
+  PROFILE_UPDATE
+  CV_UPLOAD
+  CV_ANALYSIS
+  CV_IMPROVEMENT
+  APPLICATION_SUBMIT
+  SKILL_ADD
+  ACHIEVEMENT_ADD
+  DAILY_LOGIN
+  STREAK_BONUS
+}
+
 enum EmployeeRange {
   LESS_THAN_10
   FROM_10_TO_50
@@ -119,6 +156,14 @@ model Developer {
   // Contact Information
   contactInfo     ContactInfo?
 
+  // Gamification fields
+  totalXP         Int       @default(0)
+  currentLevel    Int       @default(1)
+  levelProgress   Float     @default(0.0) // 0.0 to 1.0
+  tier            ProfileTier @default(BRONZE)
+  streak          Int       @default(0)
+  lastActivityDate DateTime?
+
   // Relations
   developerSkills DeveloperSkill[]
   experience      Experience[]
@@ -136,9 +181,18 @@ model Developer {
   // Add relation to CvAnalyses
   cvAnalyses      CvAnalysis[]
 
+  // Gamification relations
+  userBadges      UserBadge[]
+  xpTransactions  XPTransaction[]
+  dailyChallenges DailyChallenge[]
+  gamePreferences GamePreferences?
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
+  @@index([totalXP])      // For leaderboards
+  @@index([currentLevel]) // For level-based queries
+  @@index([streak])       // For streak tracking
   @@map("Developer")
 }
 
@@ -506,6 +560,114 @@ model CV {
   @@index([status])
   // No separate index needed for analysisId, @unique provides one.
   @@map("CVs") // Use plural for collection name
+}
+
+// Gamification Models
+
+model GamePreferences {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId       String    @db.ObjectId @unique
+  developer         Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  
+  showLevelUp       Boolean   @default(true)
+  showAchievements  Boolean   @default(true)
+  publicProfile     Boolean   @default(false)
+  emailNotifications Boolean  @default(true)
+  showComparisons   Boolean   @default(true)
+  challengeReminders Boolean  @default(true)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@map("GamePreferences")
+}
+
+model Badge {
+  id               String      @id @default(cuid()) @map("_id")
+  name             String      @unique
+  description      String
+  icon             String      // Icon identifier (emoji or icon name)
+  category         BadgeCategory
+  tier             BadgeTier   @default(BRONZE)
+  criteria         Json        // Flexible criteria definition
+  xpReward         Int         @default(0)
+  isSecret         Boolean     @default(false)
+  userBadges       UserBadge[]
+  
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  
+  @@index([category, tier])
+  @@map("Badge")
+}
+
+model UserBadge {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId String    @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  badgeId     String
+  badge       Badge     @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt    DateTime  @default(now())
+  progress    Float     @default(1.0) // For progressive badges
+  
+  @@unique([developerId, badgeId])
+  @@index([developerId])
+  @@index([earnedAt])
+  @@map("UserBadge")
+}
+
+model XPTransaction {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId String    @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  amount      Int
+  source      XPSource
+  sourceId    String?   // Reference to CV, application, etc.
+  description String
+  earnedAt    DateTime  @default(now())
+  
+  @@index([developerId, earnedAt])
+  @@index([source])
+  @@map("XPTransaction")
+}
+
+model DailyChallenge {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId  String    @db.ObjectId
+  developer    Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  
+  title        String
+  description  String
+  type         String    // 'PROFILE_UPDATE', 'AI_INTERACTION', etc.
+  targetValue  Int
+  currentProgress Int    @default(0)
+  xpReward     Int
+  difficulty   String    // 'Easy', 'Medium', 'Hard'
+  
+  completedAt  DateTime?
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  
+  @@index([developerId, expiresAt])
+  @@index([completedAt])
+  @@map("DailyChallenge")
+}
+
+model LeaderboardEntry {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId // Anonymous reference
+  category  String    // 'global', 'weekly', 'monthly'
+  score     Int
+  rank      Int
+  period    String    // '2024-01', 'week-3-2024', etc.
+  metadata  Json?     // Additional data
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  @@index([category, period, rank])
+  @@index([userId, category])
+  @@map("LeaderboardEntry")
 }
 
 // model User {

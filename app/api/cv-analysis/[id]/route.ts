@@ -6,6 +6,8 @@ import { PrismaClient, AnalysisStatus } from '@prisma/client';
 import { setCache, getCache } from '@/lib/redis'; // Import setCache AND getCache
 // Import Zod schema
 import { UpdateCvAnalysisSchema } from '@/types/cv';
+// Import gamification system
+import { gamificationEvents } from '@/lib/gamification/eventManager';
 
 const prisma = new PrismaClient();
 const ANALYSIS_CACHE_PREFIX = 'cv_analysis:';
@@ -178,6 +180,19 @@ export async function PUT(request: Request, { params }: { params: Params }) {
       },
     });
     console.log("Analysis record updated in DB.");
+
+    // --- Trigger Gamification Events ---
+    try {
+      await gamificationEvents.trigger('CV_ANALYSIS_COMPLETED', {
+        userId: developerId,
+        analysisId: analysisId,
+        improvementScore: updatedAnalysisData?.summary?.overallScore || 0
+      });
+      console.log(`Gamification event triggered for CV analysis completion: ${analysisId}`);
+    } catch (gamificationError) {
+      // Don't fail the main request if gamification fails
+      console.error('Gamification event failed:', gamificationError);
+    }
 
     // --- Remove Cache Update Logic --- 
     // Caching should primarily happen on GET requests after validation.
