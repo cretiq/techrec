@@ -74,7 +74,7 @@ export class XPCalculator {
   /**
    * Get XP award amount for a specific source
    */
-  static getXPForSource(source: XPSource): number {
+  static getXPForSource(source: string): number {
     return XP_REWARDS[source] || 0;
   }
 

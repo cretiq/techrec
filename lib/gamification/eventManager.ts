@@ -2,7 +2,7 @@
 
 import { PrismaClient, XPSource } from '@prisma/client';
 import { XPCalculator } from './xpCalculator';
-import { BadgeTracker } from './badgeTracker';
+import { BadgeEvaluator } from './badgeEvaluator';
 import { StreakManager } from './streakManager';
 import { XPAward, GamificationEvent, GamificationEventType } from '@/types/gamification';
 
@@ -49,12 +49,48 @@ export class GamificationEventManager {
       // Award XP based on event type
       await this.processXPAward(event, data);
 
-      // Check for badge unlocks
-      await BadgeTracker.checkProgress(data.userId, event, data);
-
-      // Update streak if applicable
+      // Update streak if applicable and get current profile
+      let userProfile = null;
       if (this.isStreakEvent(event)) {
-        await StreakManager.updateDailyStreak(data.userId);
+        const streakManager = StreakManager.getInstance();
+        const streakResult = await streakManager.recordActivity(data.userId, event);
+        
+        // Get updated user profile for badge evaluation
+        userProfile = await this.getUserProfile(data.userId);
+        
+        // Trigger streak milestone celebration if applicable
+        if (streakResult.xpBonusEarned > 0) {
+          await this.trigger('STREAK_MILESTONE', {
+            userId: data.userId,
+            streakCount: streakResult.newStreak,
+            xpBonusEarned: streakResult.xpBonusEarned
+          });
+        }
+      }
+
+      // Check for badge unlocks with current context
+      if (!userProfile) {
+        userProfile = await this.getUserProfile(data.userId);
+      }
+      
+      if (userProfile) {
+        const badgeEvaluator = BadgeEvaluator.getInstance();
+        const newBadges = await badgeEvaluator.evaluateAllBadges({
+          userId: data.userId,
+          userProfile,
+          actionType: event,
+          actionData: data,
+          timestamp: new Date()
+        });
+
+        // Trigger badge celebrations
+        for (const badgeResult of newBadges) {
+          await this.trigger('BADGE_EARNED', {
+            userId: data.userId,
+            badge: badgeResult.badge,
+            xpAwarded: badgeResult.xpAwarded
+          });
+        }
       }
 
       // Publish real-time updates
@@ -258,8 +294,19 @@ export class GamificationEventManager {
 
       case 'STREAK_MILESTONE':
         xpSource = 'STREAK_BONUS';
-        xpAmount = XPCalculator.calculateStreakBonus(data.streak);
-        description = `${data.streak}-day streak bonus`;
+        xpAmount = data.xpBonusEarned || XPCalculator.calculateStreakBonus(data.streakCount);
+        description = `${data.streakCount}-day streak bonus`;
+        break;
+
+      case 'BADGE_EARNED':
+        // XP already awarded by badge evaluator, skip
+        return;
+
+      case 'CHALLENGE_COMPLETED':
+        xpSource = 'CHALLENGE_COMPLETE';
+        xpAmount = data.xpReward || XPCalculator.getXPForSource('CHALLENGE_COMPLETE');
+        sourceId = data.challengeId;
+        description = `Completed challenge: ${data.challengeName}`;
         break;
 
       default:
