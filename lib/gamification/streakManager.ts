@@ -1,426 +1,369 @@
-// Streak Management System for TechRec Gamification
+// Streak Manager - Activity Streak Tracking System
+// Manages daily activity streaks and streak-based rewards
 
 import { PrismaClient } from '@prisma/client';
-import { XPCalculator } from './xpCalculator';
 
 const prisma = new PrismaClient();
 
-/**
- * Streak management system with gentle pressure and safety nets
- * Encourages consistency without creating unhealthy pressure
- */
+export interface StreakData {
+  currentStreak: number;
+  longestStreak: number;
+  lastActivityDate: Date | null;
+  isActiveToday: boolean;
+  streakMultiplier: number;
+}
+
+export interface StreakUpdateResult {
+  previousStreak: number;
+  newStreak: number;
+  streakBroken: boolean;
+  streakExtended: boolean;
+  multiplierChanged: boolean;
+  xpBonusEarned: number;
+}
+
 export class StreakManager {
+  private static instance: StreakManager;
   
-  /**
-   * Update user's daily streak with smart logic
-   * Handles consecutive days, same day, and streak breaks gracefully
-   */
-  static async updateDailyStreak(userId: string): Promise<{
-    streak: number;
-    streakBroken: boolean;
-    bonusAwarded: boolean;
-    bonusXP: number;
-  }> {
-    try {
-      const user = await prisma.developer.findUnique({
-        where: { id: userId },
-        select: { streak: true, lastActivityDate: true }
-      });
+  private constructor() {}
 
-      if (!user) {
-        throw new Error('User not found');
-      }
-
-      const now = new Date();
-      const today = this.getDateOnly(now);
-      const lastActivity = user.lastActivityDate ? this.getDateOnly(user.lastActivityDate) : null;
-      
-      let newStreak = 1;
-      let streakBroken = false;
-      let bonusAwarded = false;
-      let bonusXP = 0;
-
-      if (lastActivity) {
-        const daysDiff = this.getDaysDifference(lastActivity, today);
-
-        if (daysDiff === 0) {
-          // Same day - maintain current streak
-          newStreak = user.streak;
-        } else if (daysDiff === 1) {
-          // Consecutive day - increment streak
-          newStreak = user.streak + 1;
-        } else if (daysDiff === 2) {
-          // One day missed - apply "grace period" for weekends/busy days
-          newStreak = Math.max(1, user.streak - 1); // Soft reset, don't go below 1
-          streakBroken = daysDiff > 2; // Only mark as broken if more than 1 day gap
-        } else {
-          // Multiple days missed - reset streak
-          newStreak = 1;
-          streakBroken = true;
-        }
-      }
-
-      // Award streak milestone bonuses
-      if (newStreak > user.streak && this.isStreakMilestone(newStreak)) {
-        bonusXP = XPCalculator.calculateStreakBonus(newStreak);
-        bonusAwarded = bonusXP > 0;
-      }
-
-      // Update user's streak and last activity
-      await prisma.developer.update({
-        where: { id: userId },
-        data: {
-          streak: newStreak,
-          lastActivityDate: now
-        }
-      });
-
-      // Award bonus XP if milestone reached
-      if (bonusAwarded) {
-        await prisma.$transaction(async (tx) => {
-          await tx.developer.update({
-            where: { id: userId },
-            data: { totalXP: { increment: bonusXP } }
-          });
-
-          await tx.xPTransaction.create({
-            data: {
-              developerId: userId,
-              amount: bonusXP,
-              source: 'STREAK_BONUS',
-              description: `${newStreak}-day streak milestone bonus`
-            }
-          });
-        });
-      }
-
-      return {
-        streak: newStreak,
-        streakBroken,
-        bonusAwarded,
-        bonusXP
-      };
-
-    } catch (error) {
-      console.error('Error updating daily streak:', error);
-      return {
-        streak: 1,
-        streakBroken: false,
-        bonusAwarded: false,
-        bonusXP: 0
-      };
+  public static getInstance(): StreakManager {
+    if (!StreakManager.instance) {
+      StreakManager.instance = new StreakManager();
     }
+    return StreakManager.instance;
   }
 
   /**
-   * Check if streak number is a milestone worthy of bonus
+   * Record user activity and update streak
    */
-  private static isStreakMilestone(streak: number): boolean {
-    // Award bonuses at: 3, 7, 14, 30, 60, 90 days, then every 30 days
-    if (streak === 3 || streak === 7 || streak === 14 || streak === 30 || 
-        streak === 60 || streak === 90) {
-      return true;
-    }
+  public async recordActivity(userId: string, activityType: string = 'general'): Promise<StreakUpdateResult> {
+    const now = new Date();
+    const today = this.getDateOnly(now);
     
-    // Every 30 days after 90
-    if (streak > 90 && streak % 30 === 0) {
-      return true;
-    }
-    
-    return false;
-  }
-
-  /**
-   * Get date only (without time) for accurate day comparison
-   */
-  private static getDateOnly(date: Date): Date {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  }
-
-  /**
-   * Calculate difference in days between two dates
-   */
-  private static getDaysDifference(date1: Date, date2: Date): number {
-    const timeDiff = date2.getTime() - date1.getTime();
-    return Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-  }
-
-  /**
-   * Get streak statistics for a user
-   */
-  static async getStreakStats(userId: string): Promise<{
-    currentStreak: number;
-    longestStreak: number;
-    totalActiveDays: number;
-    streakRank: number;
-    nextMilestone: { days: number; bonus: number } | null;
-  }> {
-    try {
-      const user = await prisma.developer.findUnique({
-        where: { id: userId },
-        select: { streak: true }
-      });
-
-      if (!user) {
-        return {
-          currentStreak: 0,
-          longestStreak: 0,
-          totalActiveDays: 0,
-          streakRank: 0,
-          nextMilestone: null
-        };
-      }
-
-      // Calculate longest streak from XP transactions (login history)
-      const longestStreak = await this.calculateLongestStreak(userId);
-      
-      // Count total days with activity
-      const totalActiveDays = await this.countTotalActiveDays(userId);
-      
-      // Get user's streak rank compared to other users
-      const streakRank = await this.calculateStreakRank(userId, user.streak);
-      
-      // Calculate next milestone
-      const nextMilestone = this.getNextStreakMilestone(user.streak);
-
-      return {
-        currentStreak: user.streak,
-        longestStreak,
-        totalActiveDays,
-        streakRank,
-        nextMilestone
-      };
-
-    } catch (error) {
-      console.error('Error getting streak stats:', error);
-      return {
-        currentStreak: 0,
-        longestStreak: 0,
-        totalActiveDays: 0,
-        streakRank: 0,
-        nextMilestone: null
-      };
-    }
-  }
-
-  /**
-   * Calculate user's longest streak from activity history
-   */
-  private static async calculateLongestStreak(userId: string): Promise<number> {
-    // Get all daily login transactions
-    const loginTransactions = await prisma.xPTransaction.findMany({
-      where: {
-        developerId: userId,
-        source: 'DAILY_LOGIN'
-      },
-      orderBy: { earnedAt: 'asc' },
-      select: { earnedAt: true }
-    });
-
-    if (loginTransactions.length === 0) return 0;
-
-    let longestStreak = 1;
-    let currentStreak = 1;
-    
-    for (let i = 1; i < loginTransactions.length; i++) {
-      const prevDate = this.getDateOnly(loginTransactions[i - 1].earnedAt);
-      const currDate = this.getDateOnly(loginTransactions[i].earnedAt);
-      const daysDiff = this.getDaysDifference(prevDate, currDate);
-
-      if (daysDiff === 1) {
-        currentStreak++;
-        longestStreak = Math.max(longestStreak, currentStreak);
-      } else {
-        currentStreak = 1;
-      }
-    }
-
-    return longestStreak;
-  }
-
-  /**
-   * Count total days with any activity
-   */
-  private static async countTotalActiveDays(userId: string): Promise<number> {
-    const uniqueDays = await prisma.xPTransaction.findMany({
-      where: { developerId: userId },
-      select: { earnedAt: true },
-      distinct: ['earnedAt']
-    });
-
-    // Group by date to count unique days
-    const uniqueDates = new Set(
-      uniqueDays.map(transaction => 
-        this.getDateOnly(transaction.earnedAt).toDateString()
-      )
-    );
-
-    return uniqueDates.size;
-  }
-
-  /**
-   * Calculate user's streak rank among all users
-   */
-  private static async calculateStreakRank(userId: string, userStreak: number): Promise<number> {
-    const usersWithHigherStreak = await prisma.developer.count({
-      where: { 
-        streak: { gt: userStreak },
-        isDeleted: false
-      }
-    });
-
-    return usersWithHigherStreak + 1;
-  }
-
-  /**
-   * Get next streak milestone and bonus
-   */
-  private static getNextStreakMilestone(currentStreak: number): { days: number; bonus: number } | null {
-    const milestones = [3, 7, 14, 30, 60, 90];
-    
-    // Find next milestone
-    for (const milestone of milestones) {
-      if (currentStreak < milestone) {
-        return {
-          days: milestone,
-          bonus: XPCalculator.calculateStreakBonus(milestone)
-        };
-      }
-    }
-    
-    // For streaks beyond 90 days, next milestone is every 30 days
-    if (currentStreak >= 90) {
-      const nextMilestone = Math.ceil((currentStreak + 1) / 30) * 30;
-      return {
-        days: nextMilestone,
-        bonus: XPCalculator.calculateStreakBonus(nextMilestone)
-      };
-    }
-    
-    return null;
-  }
-
-  /**
-   * Get streak leaderboard (top 10 users)
-   */
-  static async getStreakLeaderboard(): Promise<Array<{
-    rank: number;
-    streak: number;
-    isCurrentUser: boolean;
-    anonymousId: string;
-  }>> {
-    const topUsers = await prisma.developer.findMany({
-      where: { 
-        isDeleted: false,
-        streak: { gt: 0 }
-      },
-      orderBy: { streak: 'desc' },
-      take: 10,
-      select: { id: true, streak: true }
-    });
-
-    return topUsers.map((user, index) => ({
-      rank: index + 1,
-      streak: user.streak,
-      isCurrentUser: false, // Will be set by caller
-      anonymousId: this.generateAnonymousId(user.id)
-    }));
-  }
-
-  /**
-   * Generate anonymous identifier for leaderboards
-   */
-  private static generateAnonymousId(userId: string): string {
-    // Generate consistent but anonymous identifier
-    const hash = userId.slice(-6).toUpperCase();
-    return `DEV${hash}`;
-  }
-
-  /**
-   * Check if user should receive streak freeze (grace period)
-   * Helps maintain streaks during weekends or holidays
-   */
-  static async checkStreakFreeze(userId: string): Promise<{
-    hasFreeze: boolean;
-    freezesRemaining: number;
-    canUseFreeze: boolean;
-  }> {
-    // In a full implementation, you might track freeze usage
-    // For now, provide a simple weekend grace period
-    
+    // Get current user streak data
     const user = await prisma.developer.findUnique({
       where: { id: userId },
-      select: { lastActivityDate: true, streak: true }
+      select: {
+        streak: true,
+        longestStreak: true,
+        lastActivityDate: true
+      }
     });
 
-    if (!user?.lastActivityDate) {
-      return { hasFreeze: false, freezesRemaining: 0, canUseFreeze: false };
+    if (!user) {
+      throw new Error('User not found');
     }
 
-    const lastActivity = user.lastActivityDate;
-    const dayOfWeek = lastActivity.getDay(); // 0 = Sunday, 6 = Saturday
+    const currentStreak = user.streak || 0;
+    const longestStreak = user.longestStreak || 0;
+    const lastActivityDate = user.lastActivityDate;
     
-    // Weekend grace period (Friday-Sunday)
-    const isWeekend = dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0;
+    // Calculate new streak
+    const streakResult = this.calculateNewStreak(currentStreak, lastActivityDate, today);
     
+    // Update user record
+    const newLongestStreak = Math.max(longestStreak, streakResult.newStreak);
+    
+    await prisma.developer.update({
+      where: { id: userId },
+      data: {
+        streak: streakResult.newStreak,
+        longestStreak: newLongestStreak,
+        lastActivityDate: now
+      }
+    });
+
+    // Award streak bonus XP if applicable
+    let xpBonusEarned = 0;
+    if (streakResult.streakExtended) {
+      xpBonusEarned = this.calculateStreakBonus(streakResult.newStreak);
+      
+      if (xpBonusEarned > 0) {
+        await this.awardStreakBonus(userId, streakResult.newStreak, xpBonusEarned);
+      }
+    }
+
+    // Record streak milestone if achieved
+    await this.checkStreakMilestones(userId, streakResult.newStreak, currentStreak);
+
     return {
-      hasFreeze: isWeekend,
-      freezesRemaining: isWeekend ? 1 : 0,
-      canUseFreeze: isWeekend && user.streak >= 7 // Only for established streaks
+      previousStreak: currentStreak,
+      newStreak: streakResult.newStreak,
+      streakBroken: streakResult.streakBroken,
+      streakExtended: streakResult.streakExtended,
+      multiplierChanged: this.getStreakMultiplier(currentStreak) !== this.getStreakMultiplier(streakResult.newStreak),
+      xpBonusEarned
     };
   }
 
   /**
-   * Reset streak manually (for testing or admin purposes)
+   * Get current streak data for user
    */
-  static async resetStreak(userId: string): Promise<void> {
+  public async getStreakData(userId: string): Promise<StreakData> {
+    const user = await prisma.developer.findUnique({
+      where: { id: userId },
+      select: {
+        streak: true,
+        longestStreak: true,
+        lastActivityDate: true
+      }
+    });
+
+    if (!user) {
+      return {
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActivityDate: null,
+        isActiveToday: false,
+        streakMultiplier: 1.0
+      };
+    }
+
+    const today = this.getDateOnly(new Date());
+    const lastActivityDay = user.lastActivityDate ? this.getDateOnly(user.lastActivityDate) : null;
+    const isActiveToday = lastActivityDay ? this.isSameDay(today, lastActivityDay) : false;
+
+    return {
+      currentStreak: user.streak || 0,
+      longestStreak: user.longestStreak || 0,
+      lastActivityDate: user.lastActivityDate,
+      isActiveToday,
+      streakMultiplier: this.getStreakMultiplier(user.streak || 0)
+    };
+  }
+
+  /**
+   * Check if user needs streak recovery (missed yesterday)
+   */
+  public async checkStreakRecovery(userId: string): Promise<{
+    canRecover: boolean;
+    recoveryDeadline: Date | null;
+    recoveryStreak: number;
+  }> {
+    const user = await prisma.developer.findUnique({
+      where: { id: userId },
+      select: {
+        streak: true,
+        lastActivityDate: true
+      }
+    });
+
+    if (!user || !user.lastActivityDate) {
+      return { canRecover: false, recoveryDeadline: null, recoveryStreak: 0 };
+    }
+
+    const now = new Date();
+    const lastActivity = this.getDateOnly(user.lastActivityDate);
+    const yesterday = this.getDateOnly(new Date(now.getTime() - 24 * 60 * 60 * 1000));
+    const dayBeforeYesterday = this.getDateOnly(new Date(now.getTime() - 48 * 60 * 60 * 1000));
+
+    // Can recover if last activity was day before yesterday
+    const canRecover = this.isSameDay(lastActivity, dayBeforeYesterday);
+    
+    if (canRecover) {
+      // Recovery deadline is end of today
+      const recoveryDeadline = new Date(now);
+      recoveryDeadline.setHours(23, 59, 59, 999);
+      
+      return {
+        canRecover: true,
+        recoveryDeadline,
+        recoveryStreak: user.streak || 0
+      };
+    }
+
+    return { canRecover: false, recoveryDeadline: null, recoveryStreak: 0 };
+  }
+
+  /**
+   * Perform streak recovery (premium feature)
+   */
+  public async performStreakRecovery(userId: string): Promise<{
+    success: boolean;
+    newStreak: number;
+    cost: number;
+  }> {
+    const recovery = await this.checkStreakRecovery(userId);
+    
+    if (!recovery.canRecover) {
+      return { success: false, newStreak: 0, cost: 0 };
+    }
+
+    // Calculate recovery cost (could be XP, premium currency, etc.)
+    const cost = this.calculateRecoveryCost(recovery.recoveryStreak);
+    
+    // For now, just restore the streak
+    const now = new Date();
     await prisma.developer.update({
       where: { id: userId },
-      data: { 
-        streak: 0,
-        lastActivityDate: null
+      data: {
+        lastActivityDate: now
+      }
+    });
+
+    return {
+      success: true,
+      newStreak: recovery.recoveryStreak,
+      cost
+    };
+  }
+
+  // === PRIVATE HELPER METHODS ===
+
+  private calculateNewStreak(
+    currentStreak: number, 
+    lastActivityDate: Date | null, 
+    today: Date
+  ): { newStreak: number; streakBroken: boolean; streakExtended: boolean } {
+    if (!lastActivityDate) {
+      // First activity ever
+      return { newStreak: 1, streakBroken: false, streakExtended: true };
+    }
+
+    const lastActivityDay = this.getDateOnly(lastActivityDate);
+    const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+
+    if (this.isSameDay(today, lastActivityDay)) {
+      // Already active today, no change
+      return { newStreak: currentStreak, streakBroken: false, streakExtended: false };
+    }
+
+    if (this.isSameDay(yesterday, lastActivityDay)) {
+      // Consecutive day, extend streak
+      return { newStreak: currentStreak + 1, streakBroken: false, streakExtended: true };
+    }
+
+    // Streak broken, start over
+    return { newStreak: 1, streakBroken: true, streakExtended: true };
+  }
+
+  private getStreakMultiplier(streak: number): number {
+    if (streak >= 100) return 3.0;
+    if (streak >= 50) return 2.5;
+    if (streak >= 30) return 2.0;
+    if (streak >= 14) return 1.5;
+    if (streak >= 7) return 1.2;
+    if (streak >= 3) return 1.1;
+    return 1.0;
+  }
+
+  private calculateStreakBonus(streak: number): number {
+    // Award bonus XP for streak milestones
+    if (streak % 100 === 0) return 500; // Century milestone
+    if (streak % 50 === 0) return 300;  // 50-day milestone
+    if (streak % 30 === 0) return 200;  // Monthly milestone
+    if (streak % 14 === 0) return 100;  // Bi-weekly milestone
+    if (streak % 7 === 0) return 50;    // Weekly milestone
+    return 0;
+  }
+
+  private async awardStreakBonus(userId: string, streak: number, xpAmount: number): Promise<void> {
+    await prisma.xPTransaction.create({
+      data: {
+        developerId: userId,
+        amount: xpAmount,
+        source: 'STREAK_BONUS',
+        sourceId: `streak_${streak}`,
+        description: `${streak}-day streak bonus`,
+        earnedAt: new Date()
       }
     });
   }
 
-  /**
-   * Get streak motivation message based on current streak
-   */
-  static getStreakMotivation(streak: number): {
-    message: string;
-    nextGoal: string;
-    emoji: string;
-  } {
-    if (streak === 0) {
-      return {
-        message: "Start your career development streak today!",
-        nextGoal: "Complete any activity to begin",
-        emoji: "🚀"
-      };
-    } else if (streak < 3) {
-      return {
-        message: `${streak} day${streak > 1 ? 's' : ''} strong! Keep building momentum.`,
-        nextGoal: "Reach 3 days for your first streak bonus",
-        emoji: "💪"
-      };
-    } else if (streak < 7) {
-      return {
-        message: `${streak} days of consistent growth! You're developing great habits.`,
-        nextGoal: "Reach 7 days for a bigger bonus",
-        emoji: "🔥"
-      };
-    } else if (streak < 30) {
-      return {
-        message: `${streak} day streak! You're on fire! Your consistency is paying off.`,
-        nextGoal: "Reach 30 days for a major milestone",
-        emoji: "⚡"
-      };
-    } else {
-      return {
-        message: `${streak} day streak! You're a consistency champion!`,
-        nextGoal: "Keep going - you're building career-changing habits",
-        emoji: "🏆"
-      };
+  private async checkStreakMilestones(userId: string, newStreak: number, oldStreak: number): Promise<void> {
+    const milestones = [7, 14, 30, 50, 100, 200, 365];
+    
+    for (const milestone of milestones) {
+      if (newStreak >= milestone && oldStreak < milestone) {
+        // Crossed milestone, trigger badge evaluation or special event
+        console.log(`User ${userId} achieved ${milestone}-day streak milestone`);
+        // Could trigger badge evaluation here
+      }
     }
+  }
+
+  private calculateRecoveryCost(streak: number): number {
+    // Cost increases with streak value
+    return Math.min(Math.floor(streak * 10), 500);
+  }
+
+  private getDateOnly(date: Date): Date {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  private isSameDay(date1: Date, date2: Date): boolean {
+    return date1.getTime() === date2.getTime();
+  }
+
+  /**
+   * Get streak leaderboard data
+   */
+  public async getStreakLeaderboard(limit: number = 10): Promise<Array<{
+    rank: number;
+    streak: number;
+    longestStreak: number;
+    isCurrentUser?: boolean;
+  }>> {
+    const leaders = await prisma.developer.findMany({
+      where: {
+        streak: { gt: 0 }
+      },
+      orderBy: { streak: 'desc' },
+      take: limit,
+      select: {
+        id: true,
+        streak: true,
+        longestStreak: true
+      }
+    });
+
+    return leaders.map((leader, index) => ({
+      rank: index + 1,
+      streak: leader.streak || 0,
+      longestStreak: leader.longestStreak || 0
+    }));
+  }
+
+  /**
+   * Get user's streak rank
+   */
+  public async getUserStreakRank(userId: string): Promise<{
+    currentRank: number | null;
+    longestRank: number | null;
+    percentile: number;
+  }> {
+    const user = await prisma.developer.findUnique({
+      where: { id: userId },
+      select: { streak: true, longestStreak: true }
+    });
+
+    if (!user) {
+      return { currentRank: null, longestRank: null, percentile: 0 };
+    }
+
+    // Get current streak rank
+    const currentRank = await prisma.developer.count({
+      where: {
+        streak: { gt: user.streak || 0 }
+      }
+    }) + 1;
+
+    // Get longest streak rank
+    const longestRank = await prisma.developer.count({
+      where: {
+        longestStreak: { gt: user.longestStreak || 0 }
+      }
+    }) + 1;
+
+    // Calculate percentile
+    const totalUsers = await prisma.developer.count();
+    const percentile = totalUsers > 0 ? ((totalUsers - currentRank + 1) / totalUsers) * 100 : 0;
+
+    return {
+      currentRank,
+      longestRank,
+      percentile: Math.round(percentile)
+    };
   }
 }

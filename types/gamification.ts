@@ -23,9 +23,16 @@ export interface BadgeDefinition {
   icon: string; // Emoji or icon identifier
   category: BadgeCategory;
   tier: BadgeTier;
-  criteria: BadgeCriteria;
+  requirements: BadgeRequirement;
   xpReward: number;
-  isSecret: boolean;
+  rarity: 'COMMON' | 'UNCOMMON' | 'RARE' | 'EPIC' | 'LEGENDARY';
+  isHidden: boolean;
+}
+
+export interface BadgeRequirement {
+  type: string;
+  threshold: number;
+  data: Record<string, any>;
 }
 
 export interface UserBadgeWithDetails {
@@ -199,7 +206,9 @@ export type GamificationEventType =
   | 'DAILY_LOGIN'
   | 'ACHIEVEMENT_UNLOCKED'
   | 'CHALLENGE_COMPLETED'
-  | 'STREAK_MILESTONE';
+  | 'STREAK_MILESTONE'
+  | 'BADGE_EARNED'
+  | 'LEVEL_UP';
 
 // API response interfaces
 export interface GamificationProfileResponse {
@@ -219,7 +228,7 @@ export interface XPAwardResponse {
 }
 
 // Constants for XP calculations
-export const XP_REWARDS: Record<XPSource, number> = {
+export const XP_REWARDS: Record<string, number> = {
   PROFILE_UPDATE: 15,
   CV_UPLOAD: 25,
   CV_ANALYSIS: 50,
@@ -228,7 +237,9 @@ export const XP_REWARDS: Record<XPSource, number> = {
   SKILL_ADD: 10,
   ACHIEVEMENT_ADD: 20,
   DAILY_LOGIN: 5,
-  STREAK_BONUS: 25
+  STREAK_BONUS: 25,
+  CHALLENGE_COMPLETE: 50,
+  BADGE_EARNED: 0 // XP is handled by badge definition
 };
 
 // Tier thresholds for profile progression
