@@ -2,6 +2,83 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Git Commit Strategy (CRITICAL - Apply Consistently)
+
+### Core Principles
+- **Commit frequently** - Small, focused commits are better than large ones
+- **Self-contained changes** - Each commit should represent a complete, logical unit of work
+- **Clear commit messages** - Use conventional commit format for consistency
+- **Atomic commits** - One concern per commit (don't mix features with fixes)
+- **Clean history** - Maintain readable project evolution for debugging and rollbacks
+
+### Commit Frequency Guidelines
+- **After completing each function or method** - Don't accumulate multiple functions
+- **After fixing each bug or issue** - One fix per commit
+- **After adding each test case** - Test commits separate from implementation  
+- **After each documentation update** - Keep docs in sync with code changes
+- **Before switching contexts** - Commit current work before starting something new
+- **Maximum 1-2 hours of work per commit** - Never let commits grow too large
+
+### Commit Message Format
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+- `feat:` - New feature or functionality
+- `fix:` - Bug fix or error correction
+- `refactor:` - Code restructuring without changing functionality
+- `perf:` - Performance improvements
+- `test:` - Adding or modifying tests
+- `docs:` - Documentation changes
+- `style:` - Code formatting, no logic changes
+- `chore:` - Maintenance tasks, build changes
+
+**Scopes (for this project):**
+- `gamification` - Gamification system changes
+- `auth` - Authentication related changes
+- `cv-analysis` - CV analysis features
+- `ui` - User interface components
+- `api` - Backend API changes
+- `db` - Database schema or queries
+
+### Examples of Good Commits
+```bash
+feat(gamification): add XP fraud prevention validation
+fix(cv-analysis): resolve race condition in analysis status updates
+refactor(auth): extract middleware validation logic
+perf(gamification): optimize badge evaluation query performance
+test(api): add integration tests for XP award endpoints
+docs(readme): update setup instructions for Redis
+```
+
+### When to Commit
+✅ **DO commit when:**
+- A single function is complete and tested
+- A bug is fixed and verified
+- A component is implemented and working
+- Documentation is updated for recent changes
+- A refactoring is complete and tests pass
+- Performance optimization is measurable
+
+❌ **DON'T commit when:**
+- Code doesn't compile or has syntax errors
+- Tests are failing (unless committing the failing test first)
+- Mixing multiple unrelated changes
+- Work is incomplete or partially implemented
+- Temporary debugging code is included
+
+### Emergency Situations
+- If you need to switch contexts urgently, commit with `WIP:` prefix
+- Always return to complete WIP commits before final delivery
+- Use `git stash` for very temporary context switches
+
+**This strategy is MANDATORY and should be applied to ALL future work on this codebase.**
+
 ## Project Overview
 
 This is a tech recruitment platform built with Next.js 15, featuring AI-powered CV analysis, role matching, and content generation. The application serves both developers looking for opportunities and companies seeking talent.
