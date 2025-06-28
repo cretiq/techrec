@@ -101,6 +101,10 @@ export class GamificationEventManager {
         }
       }
 
+      // Invalidate user caches when gamification data changes
+      const { invalidateUserCaches } = await import('./queryOptimizer');
+      await invalidateUserCaches(data.userId);
+
       // Publish real-time updates
       await this.publishGamificationUpdate(data.userId, event, data);
 
@@ -244,6 +248,10 @@ export class GamificationEventManager {
           updatedUser
         };
       });
+
+      // Invalidate user caches after XP award
+      const { invalidateUserCaches } = await import('./queryOptimizer');
+      await invalidateUserCaches(award.userId);
 
       return {
         success: true,

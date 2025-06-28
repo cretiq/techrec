@@ -192,12 +192,9 @@ export class BadgeEvaluator {
   }
 
   private async evaluateCVAnalysisCount(userId: string, threshold: number): Promise<boolean> {
-    const count = await prisma.cVAnalysis.count({
-      where: { 
-        developerId: userId,
-        status: 'COMPLETED'
-      }
-    });
+    // Use query optimizer for cached CV analysis count
+    const { getCachedCVAnalysisCount } = await import('./queryOptimizer');
+    const count = await getCachedCVAnalysisCount(userId, 'COMPLETED');
     return count >= threshold;
   }
 
@@ -234,28 +231,17 @@ export class BadgeEvaluator {
   }
 
   private async evaluateApplicationsSubmitted(userId: string, threshold: number): Promise<boolean> {
-    const count = await prisma.application.count({
-      where: { developerId: userId }
-    });
-    return count >= threshold;
+    // Use query optimizer for cached application stats
+    const { getCachedApplicationStats } = await import('./queryOptimizer');
+    const stats = await getCachedApplicationStats(userId);
+    return stats.total >= threshold;
   }
 
   private async evaluateDailyApplications(userId: string, threshold: number): Promise<boolean> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const count = await prisma.application.count({
-      where: {
-        developerId: userId,
-        createdAt: {
-          gte: today,
-          lt: tomorrow
-        }
-      }
-    });
-    return count >= threshold;
+    // Use query optimizer for cached application stats
+    const { getCachedApplicationStats } = await import('./queryOptimizer');
+    const stats = await getCachedApplicationStats(userId);
+    return stats.today >= threshold;
   }
 
   private async evaluateApplicationQuality(userId: string, threshold: number, minApplications: number): Promise<boolean> {
