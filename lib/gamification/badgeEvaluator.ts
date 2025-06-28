@@ -3,6 +3,7 @@
 
 import { BadgeDefinition, UserGamificationProfile, BadgeRequirement } from '@/types/gamification';
 import { BADGE_DEFINITIONS } from './badgeDefinitions';
+import { getContextualBadgeIds } from './eventBadgeMapping';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -36,7 +37,7 @@ export class BadgeEvaluator {
   }
 
   /**
-   * Evaluate all badges for a user after an action
+   * Evaluate relevant badges for a user after an action (PERFORMANCE OPTIMIZED)
    */
   public async evaluateAllBadges(context: BadgeEvaluationContext): Promise<BadgeAwardResult[]> {
     const results: BadgeAwardResult[] = [];
@@ -45,8 +46,23 @@ export class BadgeEvaluator {
     const existingBadges = await this.getUserBadges(context.userId);
     const existingBadgeIds = new Set(existingBadges.map(b => b.badgeId));
 
-    // Check each badge definition
-    for (const badgeDefinition of BADGE_DEFINITIONS) {
+    // PERFORMANCE OPTIMIZATION: Only evaluate badges relevant to this event
+    const relevantBadgeIds = getContextualBadgeIds(context.actionType as any, {
+      isWeekend: this.isWeekend(),
+      hasRecentActivity: this.hasRecentActivity(context),
+      currentLevel: context.userProfile.currentLevel,
+      currentStreak: context.userProfile.streak
+    });
+
+    // Filter badge definitions to only relevant ones
+    const relevantBadges = BADGE_DEFINITIONS.filter(badge => 
+      relevantBadgeIds.includes(badge.id)
+    );
+
+    console.log(`[BadgeEvaluator] Evaluating ${relevantBadges.length} relevant badges (${relevantBadgeIds.join(', ')}) instead of ${BADGE_DEFINITIONS.length} total badges`);
+
+    // Check each relevant badge definition
+    for (const badgeDefinition of relevantBadges) {
       // Skip if user already has this badge
       if (existingBadgeIds.has(badgeDefinition.id)) continue;
 
@@ -420,5 +436,28 @@ export class BadgeEvaluator {
     // This would implement logic to show progress toward badges
     // For now, return empty array
     return [];
+  }
+
+  // === HELPER METHODS FOR CONTEXT EVALUATION ===
+
+  /**
+   * Check if current time is weekend
+   */
+  private isWeekend(): boolean {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    return dayOfWeek === 0 || dayOfWeek === 6; // Sunday = 0, Saturday = 6
+  }
+
+  /**
+   * Check if user has recent activity (within last 7 days)
+   */
+  private hasRecentActivity(context: BadgeEvaluationContext): boolean {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    return context.userProfile.lastActivityDate ? 
+      new Date(context.userProfile.lastActivityDate) > sevenDaysAgo : 
+      false;
   }
 }
