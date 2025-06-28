@@ -35,66 +35,81 @@ export class StreakManager {
   }
 
   /**
-   * Record user activity and update streak
+   * Record user activity and update streak (ATOMIC - prevents race conditions)
    */
   public async recordActivity(userId: string, activityType: string = 'general'): Promise<StreakUpdateResult> {
     const now = new Date();
     const today = this.getDateOnly(now);
     
-    // Get current user streak data
-    const user = await prisma.developer.findUnique({
-      where: { id: userId },
-      select: {
-        streak: true,
-        longestStreak: true,
-        lastActivityDate: true
+    // Use database transaction to prevent race conditions
+    return await prisma.$transaction(async (tx) => {
+      // Lock user record for update to prevent concurrent modifications
+      const user = await tx.developer.findUnique({
+        where: { id: userId },
+        select: {
+          streak: true,
+          longestStreak: true,
+          lastActivityDate: true
+        }
+      });
+
+      if (!user) {
+        throw new Error('User not found');
       }
-    });
 
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const currentStreak = user.streak || 0;
-    const longestStreak = user.longestStreak || 0;
-    const lastActivityDate = user.lastActivityDate;
-    
-    // Calculate new streak
-    const streakResult = this.calculateNewStreak(currentStreak, lastActivityDate, today);
-    
-    // Update user record
-    const newLongestStreak = Math.max(longestStreak, streakResult.newStreak);
-    
-    await prisma.developer.update({
-      where: { id: userId },
-      data: {
-        streak: streakResult.newStreak,
-        longestStreak: newLongestStreak,
-        lastActivityDate: now
-      }
-    });
-
-    // Award streak bonus XP if applicable
-    let xpBonusEarned = 0;
-    if (streakResult.streakExtended) {
-      xpBonusEarned = this.calculateStreakBonus(streakResult.newStreak);
+      const currentStreak = user.streak || 0;
+      const longestStreak = user.longestStreak || 0;
+      const lastActivityDate = user.lastActivityDate;
       
-      if (xpBonusEarned > 0) {
-        await this.awardStreakBonus(userId, streakResult.newStreak, xpBonusEarned);
+      // Calculate new streak
+      const streakResult = this.calculateNewStreak(currentStreak, lastActivityDate, today);
+      
+      // Skip update if already active today (prevents duplicate streak awards)
+      if (!streakResult.streakExtended && streakResult.newStreak === currentStreak) {
+        return {
+          previousStreak: currentStreak,
+          newStreak: streakResult.newStreak,
+          streakBroken: false,
+          streakExtended: false,
+          multiplierChanged: false,
+          xpBonusEarned: 0
+        };
       }
-    }
+      
+      // Update user record atomically
+      const newLongestStreak = Math.max(longestStreak, streakResult.newStreak);
+      
+      await tx.developer.update({
+        where: { id: userId },
+        data: {
+          streak: streakResult.newStreak,
+          longestStreak: newLongestStreak,
+          lastActivityDate: now
+        }
+      });
 
-    // Record streak milestone if achieved
-    await this.checkStreakMilestones(userId, streakResult.newStreak, currentStreak);
+      // Award streak bonus XP if applicable (within same transaction)
+      let xpBonusEarned = 0;
+      if (streakResult.streakExtended) {
+        xpBonusEarned = this.calculateStreakBonus(streakResult.newStreak);
+        
+        if (xpBonusEarned > 0) {
+          await this.awardStreakBonusAtomic(tx, userId, streakResult.newStreak, xpBonusEarned);
+        }
+      }
 
-    return {
-      previousStreak: currentStreak,
-      newStreak: streakResult.newStreak,
-      streakBroken: streakResult.streakBroken,
-      streakExtended: streakResult.streakExtended,
-      multiplierChanged: this.getStreakMultiplier(currentStreak) !== this.getStreakMultiplier(streakResult.newStreak),
-      xpBonusEarned
-    };
+      // Record streak milestone if achieved
+      await this.checkStreakMilestones(userId, streakResult.newStreak, currentStreak);
+
+      return {
+        previousStreak: currentStreak,
+        newStreak: streakResult.newStreak,
+        streakBroken: streakResult.streakBroken,
+        streakExtended: streakResult.streakExtended,
+        multiplierChanged: this.getStreakMultiplier(currentStreak) !== this.getStreakMultiplier(streakResult.newStreak),
+        xpBonusEarned
+      };
+    });
   }
 
   /**
@@ -177,36 +192,73 @@ export class StreakManager {
   }
 
   /**
-   * Perform streak recovery (premium feature)
+   * Perform streak recovery (premium feature) - ATOMIC operation
    */
   public async performStreakRecovery(userId: string): Promise<{
     success: boolean;
     newStreak: number;
     cost: number;
   }> {
-    const recovery = await this.checkStreakRecovery(userId);
-    
-    if (!recovery.canRecover) {
-      return { success: false, newStreak: 0, cost: 0 };
-    }
+    return await prisma.$transaction(async (tx) => {
+      // Re-check recovery eligibility within transaction
+      const user = await tx.developer.findUnique({
+        where: { id: userId },
+        select: {
+          streak: true,
+          lastActivityDate: true,
+          totalXP: true
+        }
+      });
 
-    // Calculate recovery cost (could be XP, premium currency, etc.)
-    const cost = this.calculateRecoveryCost(recovery.recoveryStreak);
-    
-    // For now, just restore the streak
-    const now = new Date();
-    await prisma.developer.update({
-      where: { id: userId },
-      data: {
-        lastActivityDate: now
+      if (!user || !user.lastActivityDate) {
+        return { success: false, newStreak: 0, cost: 0 };
       }
-    });
 
-    return {
-      success: true,
-      newStreak: recovery.recoveryStreak,
-      cost
-    };
+      const now = new Date();
+      const lastActivity = this.getDateOnly(user.lastActivityDate);
+      const dayBeforeYesterday = this.getDateOnly(new Date(now.getTime() - 48 * 60 * 60 * 1000));
+
+      // Verify recovery is still possible
+      if (!this.isSameDay(lastActivity, dayBeforeYesterday)) {
+        return { success: false, newStreak: 0, cost: 0 };
+      }
+
+      // Calculate recovery cost
+      const cost = this.calculateRecoveryCost(user.streak || 0);
+      
+      // Check if user has enough XP (if using XP as cost)
+      if (user.totalXP < cost) {
+        return { success: false, newStreak: 0, cost };
+      }
+
+      // Perform recovery: update last activity to yesterday to maintain streak
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      await tx.developer.update({
+        where: { id: userId },
+        data: {
+          lastActivityDate: yesterday,
+          totalXP: { decrement: cost } // Deduct recovery cost
+        }
+      });
+
+      // Log the recovery transaction
+      await tx.xPTransaction.create({
+        data: {
+          developerId: userId,
+          amount: -cost,
+          source: 'STREAK_RECOVERY',
+          sourceId: `recovery_${user.streak}`,
+          description: `Streak recovery for ${user.streak}-day streak`,
+          earnedAt: new Date()
+        }
+      });
+
+      return {
+        success: true,
+        newStreak: user.streak || 0,
+        cost
+      };
+    });
   }
 
   // === PRIVATE HELPER METHODS ===
@@ -267,6 +319,47 @@ export class StreakManager {
         sourceId: `streak_${streak}`,
         description: `${streak}-day streak bonus`,
         earnedAt: new Date()
+      }
+    });
+  }
+
+  /**
+   * Award streak bonus within transaction (prevents race conditions)
+   */
+  private async awardStreakBonusAtomic(tx: any, userId: string, streak: number, xpAmount: number): Promise<void> {
+    // Check for existing bonus to prevent duplicates
+    const existingBonus = await tx.xPTransaction.findFirst({
+      where: {
+        developerId: userId,
+        source: 'STREAK_BONUS',
+        sourceId: `streak_${streak}`,
+        createdAt: {
+          gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // Within last 24 hours
+        }
+      }
+    });
+
+    if (existingBonus) {
+      console.log(`Streak bonus ${streak} already awarded to user ${userId}, skipping duplicate`);
+      return;
+    }
+
+    await tx.xPTransaction.create({
+      data: {
+        developerId: userId,
+        amount: xpAmount,
+        source: 'STREAK_BONUS',
+        sourceId: `streak_${streak}`,
+        description: `${streak}-day streak bonus`,
+        earnedAt: new Date()
+      }
+    });
+
+    // Also update user's total XP within the same transaction
+    await tx.developer.update({
+      where: { id: userId },
+      data: {
+        totalXP: { increment: xpAmount }
       }
     });
   }
