@@ -4,6 +4,7 @@ import { PrismaClient, XPSource } from '@prisma/client';
 import { XPCalculator } from './xpCalculator';
 import { BadgeEvaluator } from './badgeEvaluator';
 import { StreakManager } from './streakManager';
+import { validateGamificationAuth, AuthContext, GamificationAuthError } from './authMiddleware';
 import { XPAward, GamificationEvent, GamificationEventType } from '@/types/gamification';
 
 const prisma = new PrismaClient();
@@ -38,10 +39,17 @@ export class GamificationEventManager {
   }
 
   /**
-   * Trigger gamification event with automatic XP calculation and badge checking
+   * Trigger gamification event with authentication and automatic XP calculation
    */
-  async trigger(event: GamificationEventType, data: any): Promise<void> {
+  async trigger(event: GamificationEventType, data: any, request?: Request): Promise<void> {
+    let authContext: AuthContext | null = null;
+    
     try {
+      // SECURITY: Validate authentication and authorization
+      authContext = await validateGamificationAuth(event, data, request);
+      
+      console.log(`[GamificationEvents] Authenticated trigger: ${event} for user ${authContext.userId}`);
+
       // Execute all registered handlers for this event
       const handlers = this.eventListeners.get(event) || [];
       await Promise.all(handlers.map(handler => handler(data)));
@@ -97,8 +105,28 @@ export class GamificationEventManager {
       await this.publishGamificationUpdate(data.userId, event, data);
 
     } catch (error) {
-      console.error(`Error processing gamification event ${event}:`, error);
-      // Don't throw - gamification failures shouldn't break core functionality
+      // Handle authentication and security errors differently
+      if (error instanceof GamificationAuthError) {
+        console.error(`[GamificationSecurity] ${error.code}: ${error.message}`, error.context);
+        
+        // Log security events for monitoring
+        if (authContext) {
+          const middleware = await import('./authMiddleware');
+          middleware.GamificationAuthMiddleware.getInstance().logSecurityEvent(
+            error.code === 'UNAUTHORIZED' ? 'AUTH_FAILURE' :
+            error.code === 'RATE_LIMITED' ? 'RATE_LIMIT' :
+            error.code === 'INVALID_DATA' ? 'INVALID_DATA' : 'SUSPICIOUS_ACTIVITY',
+            authContext,
+            { event, error: error.message, data }
+          );
+        }
+        
+        // Re-throw security errors to notify the caller
+        throw error;
+      } else {
+        console.error(`Error processing gamification event ${event}:`, error);
+        // Don't throw non-security errors - gamification failures shouldn't break core functionality
+      }
     }
   }
 
