@@ -143,11 +143,11 @@ export class XPCalculator {
   ): { isValid: boolean; reason?: string } {
     const maxAmount = this.getXPForSource(source);
     
-    // Check if amount exceeds maximum for source
-    if (amount > maxAmount * 2) { // Allow some flexibility for bonuses
+    // Check if amount exceeds maximum for source (STRICT validation - no flexibility)
+    if (amount > maxAmount) {
       return {
         isValid: false,
-        reason: `XP amount ${amount} exceeds maximum ${maxAmount * 2} for source ${source}`
+        reason: `XP amount ${amount} exceeds maximum ${maxAmount} for source ${source}`
       };
     }
     
