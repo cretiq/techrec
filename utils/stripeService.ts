@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { randomBytes } from 'crypto';
 import { configService, SubscriptionTierConfig } from './configService';
 
 // Initialize Stripe

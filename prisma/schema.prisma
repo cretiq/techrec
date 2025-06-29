@@ -199,13 +199,6 @@ model Developer {
   totalPointsUsed      Int              @default(0)   // Lifetime points usage
   totalPointsEarned    Int              @default(0)   // Lifetime points earned
   pointsResetDate      DateTime?                      // When monthly points reset
-  
-  // Add constraint: points can't be negative
-  @@check([pointsUsed >= 0])
-  @@check([pointsEarned >= 0])
-  @@check([monthlyPoints >= 0])
-  @@check([totalPointsUsed >= 0])
-  @@check([totalPointsEarned >= 0])
 
   // Relations
   developerSkills DeveloperSkill[]
@@ -247,8 +240,6 @@ model Developer {
   @@index([subscriptionTier, currentLevel]) // For tier-specific level rankings
   @@index([subscriptionTier, streak]) // For tier-specific streak rankings
   @@index([pointsResetDate, subscriptionTier]) // For points reset queries
-  @@index([customerId]) // For Stripe customer lookups
-  @@index([subscriptionId]) // For Stripe subscription lookups
   
   @@map("Developer")
 }

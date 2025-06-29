@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Star, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui-daisy/card';
 import { Badge } from '@/components/ui-daisy/badge';
-import { UserGamificationProfile, ProfileTier } from '@/types/gamification';
+import { UserGamificationProfile } from '@/types/gamification';
+import { SubscriptionTier } from '@prisma/client';
 import { XPCalculator } from '@/lib/gamification/xpCalculator';
 
 interface LevelProgressBarProps {
@@ -15,37 +16,37 @@ interface LevelProgressBarProps {
   animated?: boolean;
 }
 
-// Tier color mappings for visual consistency
-const tierColors: Record<ProfileTier, { bg: string; border: string; text: string; glow: string }> = {
-  BRONZE: {
-    bg: 'from-orange-400/20 to-orange-600/20',
-    border: 'border-orange-400/30',
-    text: 'text-orange-600',
-    glow: 'shadow-orange-400/20'
-  },
-  SILVER: {
-    bg: 'from-gray-400/20 to-gray-600/20',
+// Subscription tier color mappings for visual consistency
+const tierColors: Record<SubscriptionTier, { bg: string; border: string; text: string; glow: string }> = {
+  FREE: {
+    bg: 'from-gray-400/20 to-gray-500/20',
     border: 'border-gray-400/30',
     text: 'text-gray-600',
     glow: 'shadow-gray-400/20'
   },
-  GOLD: {
-    bg: 'from-yellow-400/20 to-yellow-600/20',
-    border: 'border-yellow-400/30',
-    text: 'text-yellow-600',
-    glow: 'shadow-yellow-400/20'
-  },
-  PLATINUM: {
-    bg: 'from-blue-400/20 to-blue-600/20',
+  BASIC: {
+    bg: 'from-blue-400/20 to-blue-500/20',
     border: 'border-blue-400/30',
     text: 'text-blue-600',
     glow: 'shadow-blue-400/20'
   },
-  DIAMOND: {
-    bg: 'from-purple-400/20 to-purple-600/20',
+  STARTER: {
+    bg: 'from-green-400/20 to-green-500/20',
+    border: 'border-green-400/30',
+    text: 'text-green-600',
+    glow: 'shadow-green-400/20'
+  },
+  PRO: {
+    bg: 'from-purple-400/20 to-purple-500/20',
     border: 'border-purple-400/30',
     text: 'text-purple-600',
     glow: 'shadow-purple-400/20'
+  },
+  EXPERT: {
+    bg: 'from-orange-400/20 to-orange-500/20',
+    border: 'border-orange-400/30',
+    text: 'text-orange-600',
+    glow: 'shadow-orange-400/20'
   }
 };
 
@@ -55,9 +56,9 @@ export function LevelProgressBar({
   className = '',
   animated = true 
 }: LevelProgressBarProps) {
-  const { totalXP, currentLevel, levelProgress, tier, nextLevelXP, currentLevelXP } = userProfile;
+  const { totalXP, currentLevel, levelProgress, subscriptionTier, nextLevelXP, currentLevelXP } = userProfile;
   
-  const tierStyle = tierColors[tier];
+  const tierStyle = tierColors[subscriptionTier];
   const levelInfo = XPCalculator.getLevelInfo(currentLevel);
   const nextMilestone = XPCalculator.getNextMilestone(totalXP);
   
@@ -81,10 +82,10 @@ export function LevelProgressBar({
               transition={{ duration: 0.2 }}
               data-testid="gamification-level-icon"
             >
-              {tier === 'DIAMOND' && <Star className="w-5 h-5 text-purple-600" />}
-              {tier === 'PLATINUM' && <Zap className="w-5 h-5 text-blue-600" />}
-              {tier === 'GOLD' && <Trophy className="w-5 h-5 text-yellow-600" />}
-              {(tier === 'SILVER' || tier === 'BRONZE') && <Trophy className={`w-5 h-5 ${tierStyle.text}`} />}
+              {subscriptionTier === 'EXPERT' && <Star className="w-5 h-5 text-orange-600" />}
+              {subscriptionTier === 'PRO' && <Zap className="w-5 h-5 text-purple-600" />}
+              {subscriptionTier === 'STARTER' && <Trophy className="w-5 h-5 text-green-600" />}
+              {(subscriptionTier === 'BASIC' || subscriptionTier === 'FREE') && <Trophy className={`w-5 h-5 ${tierStyle.text}`} />}
               
               {/* Tier glow effect */}
               <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${tierStyle.bg} opacity-50 blur-md -z-10`} />
@@ -98,9 +99,9 @@ export function LevelProgressBar({
                 <Badge 
                   variant="outline" 
                   className={`${tierStyle.border} ${tierStyle.text} bg-gradient-to-r ${tierStyle.bg}`}
-                  data-testid={`gamification-tier-badge-${tier.toLowerCase()}`}
+                  data-testid={`gamification-tier-badge-${subscriptionTier.toLowerCase()}`}
                 >
-                  {tier.charAt(0) + tier.slice(1).toLowerCase()}
+                  {subscriptionTier.charAt(0) + subscriptionTier.slice(1).toLowerCase()}
                 </Badge>
               </div>
               <p className="text-sm text-base-content/70" data-testid="gamification-level-subtitle">
@@ -257,8 +258,8 @@ export function LevelProgressBar({
 
 // Compact version for sidebar use
 export function CompactLevelProgress({ userProfile, className = '' }: LevelProgressBarProps) {
-  const { totalXP, currentLevel, levelProgress, tier } = userProfile;
-  const tierStyle = tierColors[tier];
+  const { totalXP, currentLevel, levelProgress, subscriptionTier } = userProfile;
+  const tierStyle = tierColors[subscriptionTier];
   
   return (
     <div 
