@@ -271,6 +271,50 @@ export class StripeService {
       throw error;
     }
   }
+
+  // Utility methods
+  private generateIdempotencyKey(operation: string, ...identifiers: string[]): string {
+    // Create deterministic idempotency key based on operation and identifiers
+    const baseString = [operation, ...identifiers].join('-');
+    const hash = randomBytes(16).toString('hex');
+    const timestamp = Math.floor(Date.now() / 1000); // Unix timestamp for uniqueness
+    
+    // Format: operation-hash-timestamp (max 255 chars for Stripe)
+    return `${operation}-${hash}-${timestamp}`.substring(0, 255);
+  }
+
+  private generateDeterministicKey(operation: string, ...identifiers: string[]): string {
+    // For operations that need to be truly idempotent (same input = same key)
+    const crypto = require('crypto');
+    const baseString = [operation, ...identifiers].join('-');
+    const hash = crypto.createHash('sha256').update(baseString).digest('hex').substring(0, 32);
+    return `${operation}-${hash}`;
+  }
+
+  // Enhanced webhook signature verification
+  public constructEventWithReplayProtection(payload: string | Buffer, signature: string): {
+    event: Stripe.Event;
+    isReplay: boolean;
+  } {
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+    
+    try {
+      const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      
+      // Check for replay attacks (events older than 10 minutes)
+      const eventAge = (Date.now() / 1000) - event.created;
+      const isReplay = eventAge > 600; // 10 minutes
+      
+      if (isReplay) {
+        console.warn(`Potential replay attack detected for event ${event.id}, age: ${eventAge}s`);
+      }
+      
+      return { event, isReplay };
+    } catch (error) {
+      console.error('Failed to construct webhook event:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance
