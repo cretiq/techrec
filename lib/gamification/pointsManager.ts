@@ -86,6 +86,95 @@ export class PointsManager {
   }
 
   /**
+   * Atomic points spending with race condition protection
+   */
+  static async spendPointsAtomic(
+    prisma: any,
+    userId: string,
+    spendType: PointsSpendType,
+    sourceId?: string,
+    metadata?: Record<string, any>
+  ): Promise<{
+    success: boolean;
+    pointsSpent?: number;
+    newBalance?: number;
+    transaction?: any;
+    error?: string;
+  }> {
+    try {
+      return await prisma.$transaction(async (tx: any) => {
+        // Get current user state inside transaction
+        const user = await tx.developer.findUnique({
+          where: { id: userId },
+          select: {
+            subscriptionTier: true,
+            monthlyPoints: true,
+            pointsUsed: true,
+            pointsEarned: true,
+          },
+        });
+
+        if (!user) {
+          throw new Error('User not found');
+        }
+
+        // Calculate effective cost
+        const effectiveCost = await this.getEffectiveCost(spendType, user.subscriptionTier);
+        
+        // Check balance
+        const available = this.calculateAvailablePoints(
+          user.monthlyPoints,
+          user.pointsUsed,
+          user.pointsEarned
+        );
+
+        if (available < effectiveCost) {
+          throw new Error(`Insufficient points: need ${effectiveCost}, have ${available}`);
+        }
+
+        // Atomically spend points
+        const updatedUser = await tx.developer.update({
+          where: { id: userId },
+          data: { pointsUsed: { increment: effectiveCost } },
+        });
+
+        // Create transaction record
+        const transaction = await tx.pointsTransaction.create({
+          data: {
+            developerId: userId,
+            amount: -effectiveCost,
+            spendType,
+            sourceId,
+            description: `${spendType.toLowerCase().replace('_', ' ')} action`,
+            metadata,
+          },
+        });
+
+        const newBalance = this.calculateAvailablePoints(
+          updatedUser.monthlyPoints,
+          updatedUser.pointsUsed,
+          updatedUser.pointsEarned
+        );
+
+        return {
+          success: true,
+          pointsSpent: effectiveCost,
+          newBalance,
+          transaction,
+        };
+      }, {
+        isolationLevel: 'Serializable',
+        timeout: 10000,
+      });
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
    * Validate points spending attempt
    */
   static async validatePointsSpend(spend: PointsSpend): Promise<{ isValid: boolean; reason?: string }> {
