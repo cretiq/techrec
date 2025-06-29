@@ -1,0 +1,232 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { PrismaClient, PointsSpendType } from '@prisma/client';
+import { PointsManager, PointsSpend } from '@/lib/gamification/pointsManager';
+import { configService } from '@/utils/configService';
+
+const prisma = new PrismaClient();
+
+// GET /api/gamification/points - Get user's points balance and history
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getServerSession();
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const developer = await prisma.developer.findUnique({
+      where: { email: session.user.email },
+      select: {
+        id: true,
+        subscriptionTier: true,
+        monthlyPoints: true,
+        pointsUsed: true,
+        pointsEarned: true,
+        pointsResetDate: true,
+        pointsTransactions: {
+          orderBy: { createdAt: 'desc' },
+          take: 20, // Last 20 transactions
+          select: {
+            id: true,
+            amount: true,
+            source: true,
+            spendType: true,
+            description: true,
+            createdAt: true,
+            metadata: true,
+          },
+        },
+      },
+    });
+
+    if (!developer) {
+      return NextResponse.json({ error: 'Developer not found' }, { status: 404 });
+    }
+
+    // Check if points reset is needed
+    const resetNeeded = PointsManager.isPointsResetNeeded(developer.pointsResetDate);
+    
+    if (resetNeeded) {
+      // Reset monthly points allocation
+      const tierConfig = await configService.getSubscriptionTier(developer.subscriptionTier);
+      await prisma.developer.update({
+        where: { id: developer.id },
+        data: {
+          monthlyPoints: tierConfig.monthlyPoints,
+          pointsUsed: 0,
+          pointsEarned: 0,
+          pointsResetDate: PointsManager.getNextResetDate(),
+        },
+      });
+
+      // Return updated balance
+      const available = PointsManager.calculateAvailablePoints(tierConfig.monthlyPoints, 0, 0);
+      
+      return NextResponse.json({
+        balance: {
+          monthly: tierConfig.monthlyPoints,
+          used: 0,
+          earned: 0,
+          available,
+          resetDate: PointsManager.getNextResetDate(),
+        },
+        tier: developer.subscriptionTier,
+        transactions: [],
+        resetOccurred: true,
+      });
+    }
+
+    const available = PointsManager.calculateAvailablePoints(
+      developer.monthlyPoints,
+      developer.pointsUsed,
+      developer.pointsEarned
+    );
+
+    const response = {
+      balance: {
+        monthly: developer.monthlyPoints,
+        used: developer.pointsUsed,
+        earned: developer.pointsEarned,
+        available,
+        resetDate: developer.pointsResetDate,
+      },
+      tier: developer.subscriptionTier,
+      transactions: developer.pointsTransactions,
+      resetOccurred: false,
+    };
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Points GET error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+// POST /api/gamification/points - Spend points for an action
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession();
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { action, sourceId, metadata } = await request.json();
+    
+    if (!action) {
+      return NextResponse.json({ error: 'Missing action type' }, { status: 400 });
+    }
+
+    const validActions: PointsSpendType[] = [
+      'JOB_QUERY',
+      'COVER_LETTER',
+      'OUTREACH_MESSAGE',
+      'CV_SUGGESTION',
+      'BULK_APPLICATION',
+      'PREMIUM_ANALYSIS'
+    ];
+
+    if (!validActions.includes(action)) {
+      return NextResponse.json({ error: 'Invalid action type' }, { status: 400 });
+    }
+
+    const developer = await prisma.developer.findUnique({
+      where: { email: session.user.email },
+      select: {
+        id: true,
+        subscriptionTier: true,
+        monthlyPoints: true,
+        pointsUsed: true,
+        pointsEarned: true,
+      },
+    });
+
+    if (!developer) {
+      return NextResponse.json({ error: 'Developer not found' }, { status: 404 });
+    }
+
+    // Check if user can afford the action
+    const balance = {
+      monthly: developer.monthlyPoints,
+      used: developer.pointsUsed,
+      earned: developer.pointsEarned,
+      available: PointsManager.calculateAvailablePoints(
+        developer.monthlyPoints,
+        developer.pointsUsed,
+        developer.pointsEarned
+      ),
+      resetDate: null,
+      tier: developer.subscriptionTier,
+    };
+
+    const affordability = await PointsManager.canAffordAction(action, balance);
+    
+    if (!affordability.canAfford) {
+      return NextResponse.json({
+        error: 'Insufficient points',
+        required: affordability.cost,
+        available: balance.available,
+        shortfall: affordability.shortfall,
+      }, { status: 402 }); // Payment Required
+    }
+
+    // Get effective cost with tier efficiency bonus
+    const effectiveCost = await PointsManager.getEffectiveCost(action, developer.subscriptionTier);
+    
+    // Create spend record
+    const spend: PointsSpend = {
+      userId: developer.id,
+      amount: effectiveCost,
+      spendType: action,
+      sourceId,
+      description: `${action.toLowerCase().replace('_', ' ')} action`,
+      metadata,
+    };
+
+    // Validate and process the spend
+    const validation = await PointsManager.validatePointsSpend(spend);
+    if (!validation.isValid) {
+      return NextResponse.json({ error: validation.reason }, { status: 400 });
+    }
+
+    // Perform the transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Deduct points from user
+      const updatedUser = await tx.developer.update({
+        where: { id: developer.id },
+        data: { pointsUsed: { increment: effectiveCost } },
+      });
+
+      // Create points transaction record
+      const transaction = await tx.pointsTransaction.create({
+        data: {
+          developerId: developer.id,
+          amount: -effectiveCost, // Negative for spending
+          spendType: action,
+          sourceId,
+          description: spend.description,
+          metadata,
+        },
+      });
+
+      const newBalance = PointsManager.calculateAvailablePoints(
+        updatedUser.monthlyPoints,
+        updatedUser.pointsUsed,
+        updatedUser.pointsEarned
+      );
+
+      return { transaction, newBalance, pointsSpent: effectiveCost };
+    });
+
+    return NextResponse.json({
+      success: true,
+      pointsSpent: result.pointsSpent,
+      newBalance: result.newBalance,
+      transaction: result.transaction,
+      savingsFromTier: affordability.cost - effectiveCost,
+    });
+
+  } catch (error) {
+    console.error('Points POST error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

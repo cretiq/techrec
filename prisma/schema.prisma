@@ -51,12 +51,33 @@ enum ProjectStatus {
 }
 
 // Gamification enums
-enum ProfileTier {
-  BRONZE    // 0-199 XP
-  SILVER    // 200-499 XP  
-  GOLD      // 500-999 XP
-  PLATINUM  // 1000-1999 XP
-  DIAMOND   // 2000+ XP
+// ProfileTier enum removed - using subscription tiers instead
+
+// Subscription tiers
+enum SubscriptionTier {
+  FREE
+  BASIC
+  STARTER
+  PRO
+  EXPERT
+}
+
+enum PointsSource {
+  SUBSCRIPTION_MONTHLY  // Monthly allocation
+  ACHIEVEMENT_BONUS     // Bonus from achievements
+  STREAK_BONUS         // Bonus from streaks
+  LEVEL_BONUS          // Bonus from level ups
+  PROMOTIONAL          // Promotional rewards
+  ADMIN_GRANTED        // Admin-granted points
+}
+
+enum PointsSpendType {
+  JOB_QUERY           // Job search queries
+  COVER_LETTER        // Cover letter generation
+  OUTREACH_MESSAGE    // Outreach message generation
+  CV_SUGGESTION       // AI CV suggestions
+  BULK_APPLICATION    // Bulk application features
+  PREMIUM_ANALYSIS    // Premium CV analysis
 }
 
 enum BadgeCategory {
@@ -160,9 +181,24 @@ model Developer {
   totalXP         Int       @default(0)
   currentLevel    Int       @default(1)
   levelProgress   Float     @default(0.0) // 0.0 to 1.0
-  tier            ProfileTier @default(BRONZE)
   streak          Int       @default(0)
   lastActivityDate DateTime?
+
+  // Subscription fields
+  subscriptionTier     SubscriptionTier @default(FREE)
+  subscriptionStatus   String           @default("active") // active, cancelled, expired, past_due
+  subscriptionId       String?          // Stripe subscription ID
+  customerId           String?          // Stripe customer ID
+  subscriptionStart    DateTime?
+  subscriptionEnd      DateTime?
+  
+  // Points system
+  monthlyPoints        Int              @default(0)   // Points allocated this month
+  pointsUsed           Int              @default(0)   // Points spent this month
+  pointsEarned         Int              @default(0)   // Bonus points earned this month
+  totalPointsUsed      Int              @default(0)   // Lifetime points usage
+  totalPointsEarned    Int              @default(0)   // Lifetime points earned
+  pointsResetDate      DateTime?                      // When monthly points reset
 
   // Relations
   developerSkills DeveloperSkill[]
@@ -186,6 +222,7 @@ model Developer {
   xpTransactions  XPTransaction[]
   dailyChallenges DailyChallenge[]
   gamePreferences GamePreferences?
+  pointsTransactions PointsTransaction[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -670,127 +707,40 @@ model LeaderboardEntry {
   @@map("LeaderboardEntry")
 }
 
-// model User {
-//   id              String           @id @default(cuid()) @map("_id")
-//   name            String?
-//   email           String?          @unique
-//   emailVerified   DateTime?
-//   image           String?
-//   accounts        Account[]
-//   sessions        Session[]
-//   githubProfile   GitHubProfile?
-//   createdAt       DateTime         @default(now())
-//   updatedAt       DateTime         @updatedAt
+model PointsTransaction {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId String    @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  
+  amount      Int       // Positive for earning, negative for spending
+  source      PointsSource
+  spendType   PointsSpendType?
+  sourceId    String?   // Reference to CV, role, application, etc.
+  description String
+  metadata    Json?     // Additional context data
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([developerId, createdAt])
+  @@index([source])
+  @@index([spendType])
+  @@map("PointsTransaction")
+}
 
-//   @@map("users")
-// }
-
-// model Account {
-//   id                String  @id @default(cuid()) @map("_id")
-//   userId            String
-//   type              String
-//   provider          String
-//   providerAccountId String
-//   refresh_token     String?
-//   access_token      String?
-//   expires_at        Int?
-//   token_type        String?
-//   scope             String?
-//   id_token          String?
-//   session_state     String?
-//   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   @@unique([provider, providerAccountId])
-//   @@map("accounts")
-// }
-
-// model Session {
-//   id           String   @id @default(cuid()) @map("_id")
-//   sessionToken String   @unique
-//   userId       String
-//   expires      DateTime
-//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   @@map("sessions")
-// }
-
-// model GitHubProfile {
-//   id                String           @id @default(cuid()) @map("_id")
-//   userId            String           @unique
-//   user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   accessToken       String
-//   refreshToken      String?
-//   tokenExpiresAt    DateTime?
-//   username          String
-//   avatarUrl         String?
-//   profileUrl        String
-//   lastSyncedAt      DateTime         @default(now())
-//   overallScore      Float            @default(0)
-//   repositoryCount   Int              @default(0)
-//   contributionCount Int              @default(0)
-//   languageStats     Json?
-//   createdAt         DateTime         @default(now())
-//   updatedAt         DateTime         @updatedAt
-//   analyses          AnalysisHistory[]
-//   improvementPlans  ImprovementPlan[]
-//   repositories      RepositoryAnalysis[]
-
-//   @@map("github_profiles")
-// }
-
-// model RepositoryAnalysis {
-//   id                String           @id @default(cuid()) @map("_id")
-//   githubProfileId   String
-//   githubProfile     GitHubProfile    @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
-//   repositoryName    String
-//   repositoryUrl     String
-//   description       String?
-//   stars            Int              @default(0)
-//   forks            Int              @default(0)
-//   watchers         Int              @default(0)
-//   language         String?
-//   topics           String[]
-//   readmeScore      Float            @default(0)
-//   codeQualityScore Float            @default(0)
-//   testCoverage     Float            @default(0)
-//   documentationScore Float          @default(0)
-//   lastUpdated      DateTime
-//   createdAt        DateTime         @default(now())
-//   updatedAt        DateTime         @updatedAt
-
-//   @@map("repository_analyses")
-// }
-
-// model AnalysisHistory {
-//   id              String         @id @default(cuid()) @map("_id")
-//   githubProfileId String
-//   githubProfile   GitHubProfile  @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
-//   timestamp       DateTime       @default(now())
-//   overallScore    Float
-//   metrics         Json
-//   recommendations Json
-//   completedTasks  String[]
-//   createdAt       DateTime       @default(now())
-//   updatedAt       DateTime       @updatedAt
-
-//   @@map("analysis_histories")
-// }
-
-// model ImprovementPlan {
-//   id              String         @id @default(cuid()) @map("_id")
-//   githubProfileId String
-//   githubProfile   GitHubProfile  @relation(fields: [githubProfileId], references: [id], onDelete: Cascade)
-//   title           String
-//   description     String
-//   priority        Int            @default(0)
-//   difficulty      Int            @default(0)
-//   status          String         @default("pending")
-//   dueDate         DateTime?
-//   completedAt     DateTime?
-//   resources       String[]
-//   targetMetrics   Json
-//   createdAt       DateTime       @default(now())
-//   updatedAt       DateTime       @updatedAt
-
-//   @@map("improvement_plans")
-// } 
+model ConfigurationSettings {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  key         String    @unique // e.g., 'points-costs-v1', 'xp-rewards-v1'
+  version     String    // Version identifier
+  config      Json      // The actual configuration data
+  isActive    Boolean   @default(true)
+  description String?   // Human-readable description
+  
+  effectiveDate DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([key, isActive])
+  @@index([effectiveDate])
+  @@map("ConfigurationSettings")
+}

@@ -1,11 +1,13 @@
 // Gamification Event Management System for TechRec Platform
 
-import { PrismaClient, XPSource } from '@prisma/client';
+import { PrismaClient, XPSource, PointsSource } from '@prisma/client';
 import { XPCalculator } from './xpCalculator';
+import { PointsManager, PointsAward } from './pointsManager';
 import { BadgeEvaluator } from './badgeEvaluator';
 import { StreakManager } from './streakManager';
 import { validateGamificationAuth, AuthContext, GamificationAuthError } from './authMiddleware';
 import { XPAward, GamificationEvent, GamificationEventType } from '@/types/gamification';
+import { configService } from '@/utils/configService';
 
 const prisma = new PrismaClient();
 
@@ -56,6 +58,9 @@ export class GamificationEventManager {
 
       // Award XP based on event type
       await this.processXPAward(event, data);
+      
+      // Award bonus points for certain achievements
+      await this.processPointsAward(event, data);
 
       // Update streak if applicable and get current profile
       let userProfile = null;
@@ -141,7 +146,6 @@ export class GamificationEventManager {
     success: boolean;
     xpAwarded: number;
     newLevel?: number;
-    newTier?: string;
     error?: string;
   }> {
     try {
@@ -183,7 +187,7 @@ export class GamificationEventManager {
       // Calculate time multiplier for consistency bonus
       const user = await prisma.developer.findUnique({
         where: { id: award.userId },
-        select: { lastActivityDate: true, totalXP: true, currentLevel: true, tier: true }
+        select: { lastActivityDate: true, totalXP: true, currentLevel: true, subscriptionTier: true }
       });
 
       if (!user) {
@@ -219,24 +223,22 @@ export class GamificationEventManager {
           }
         });
 
-        // Calculate new level and tier
+        // Calculate new level
         const profileUpdate = XPCalculator.calculateUserProfile(
           updatedUser.totalXP,
           updatedUser.streak,
           updatedUser.lastActivityDate
         );
 
-        // Update level and tier if changed
+        // Update level if changed
         const levelChanged = profileUpdate.currentLevel !== user.currentLevel;
-        const tierChanged = profileUpdate.tier !== user.tier;
 
-        if (levelChanged || tierChanged) {
+        if (levelChanged) {
           await tx.developer.update({
             where: { id: award.userId },
             data: {
               currentLevel: profileUpdate.currentLevel,
-              levelProgress: profileUpdate.levelProgress,
-              tier: profileUpdate.tier
+              levelProgress: profileUpdate.levelProgress
             }
           });
         }
@@ -244,7 +246,6 @@ export class GamificationEventManager {
         return {
           xpAwarded: finalAmount,
           newLevel: levelChanged ? profileUpdate.currentLevel : undefined,
-          newTier: tierChanged ? profileUpdate.tier : undefined,
           updatedUser
         };
       });
@@ -256,8 +257,7 @@ export class GamificationEventManager {
       return {
         success: true,
         xpAwarded: result.xpAwarded,
-        newLevel: result.newLevel,
-        newTier: result.newTier
+        newLevel: result.newLevel
       };
 
     } catch (error) {
@@ -268,6 +268,151 @@ export class GamificationEventManager {
         error: 'Database error occurred'
       };
     }
+  }
+
+  /**
+   * Award bonus points for achievements with validation
+   */
+  async awardPoints(award: PointsAward): Promise<{
+    success: boolean;
+    pointsAwarded: number;
+    newBalance: number;
+    error?: string;
+  }> {
+    try {
+      // Validate points award
+      const validation = PointsManager.validatePointsAward(award);
+
+      if (!validation.isValid) {
+        return {
+          success: false,
+          pointsAwarded: 0,
+          newBalance: 0,
+          error: validation.reason
+        };
+      }
+
+      // Get current user points data
+      const user = await prisma.developer.findUnique({
+        where: { id: award.userId },
+        select: { 
+          monthlyPoints: true, 
+          pointsUsed: true, 
+          pointsEarned: true,
+          subscriptionTier: true
+        }
+      });
+
+      if (!user) {
+        return {
+          success: false,
+          pointsAwarded: 0,
+          newBalance: 0,
+          error: 'User not found'
+        };
+      }
+
+      // Get subscription tier XP multiplier for bonus calculation
+      const xpMultiplier = await PointsManager.getXPMultiplier(user.subscriptionTier);
+      const bonusAmount = Math.round(award.amount * xpMultiplier);
+
+      // Perform database transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // Award bonus points to user
+        const updatedUser = await tx.developer.update({
+          where: { id: award.userId },
+          data: { 
+            pointsEarned: { increment: bonusAmount }
+          }
+        });
+
+        // Create points transaction record
+        await tx.pointsTransaction.create({
+          data: {
+            developerId: award.userId,
+            amount: bonusAmount,
+            source: award.source,
+            sourceId: award.sourceId,
+            description: award.description,
+            metadata: award.metadata
+          }
+        });
+
+        const newBalance = PointsManager.calculateAvailablePoints(
+          updatedUser.monthlyPoints,
+          updatedUser.pointsUsed,
+          updatedUser.pointsEarned
+        );
+
+        return { pointsAwarded: bonusAmount, newBalance };
+      });
+
+      return {
+        success: true,
+        pointsAwarded: result.pointsAwarded,
+        newBalance: result.newBalance
+      };
+
+    } catch (error) {
+      console.error('Error awarding points:', error);
+      return {
+        success: false,
+        pointsAwarded: 0,
+        newBalance: 0,
+        error: 'Database error occurred'
+      };
+    }
+  }
+
+  /**
+   * Process bonus points award based on event type
+   */
+  private async processPointsAward(event: GamificationEventType, data: any): Promise<void> {
+    let pointsSource: PointsSource;
+    let pointsAmount: number;
+    let sourceId: string | undefined;
+    let description: string;
+
+    // Only award bonus points for special achievements
+    switch (event) {
+      case 'STREAK_MILESTONE':
+        if (data.streakCount >= 7) {
+          pointsSource = 'STREAK_BONUS';
+          pointsAmount = Math.min(Math.floor(data.streakCount / 7) * 2, 10); // 2 points per week, max 10
+          description = `${data.streakCount}-day streak bonus points`;
+        } else {
+          return; // No points for short streaks
+        }
+        break;
+
+      case 'BADGE_EARNED':
+        pointsSource = 'ACHIEVEMENT_BONUS';
+        pointsAmount = 5; // 5 bonus points per badge
+        sourceId = data.badge?.id;
+        description = `Badge achievement bonus: ${data.badge?.name}`;
+        break;
+
+      case 'CHALLENGE_COMPLETED':
+        pointsSource = 'ACHIEVEMENT_BONUS';
+        pointsAmount = 3; // 3 bonus points per challenge
+        sourceId = data.challengeId;
+        description = `Challenge completion bonus: ${data.challengeName}`;
+        break;
+
+      default:
+        // Most events don't award bonus points
+        return;
+    }
+
+    // Award the bonus points
+    await this.awardPoints({
+      userId: data.userId,
+      amount: pointsAmount,
+      source: pointsSource,
+      sourceId,
+      description,
+      metadata: { event, originalData: data }
+    });
   }
 
   /**
@@ -477,7 +622,11 @@ export class GamificationEventManager {
         totalXP: true,
         currentLevel: true,
         levelProgress: true,
-        tier: true,
+        subscriptionTier: true,
+        monthlyPoints: true,
+        pointsUsed: true,
+        pointsEarned: true,
+        pointsResetDate: true,
         streak: true,
         lastActivityDate: true,
         userBadges: {
@@ -500,7 +649,14 @@ export class GamificationEventManager {
       totalXP: user.totalXP,
       currentLevel: profileCalc.currentLevel,
       levelProgress: profileCalc.levelProgress,
-      tier: profileCalc.tier,
+      subscriptionTier: user.subscriptionTier,
+      points: {
+        monthly: user.monthlyPoints,
+        used: user.pointsUsed,
+        earned: user.pointsEarned,
+        available: PointsManager.calculateAvailablePoints(user.monthlyPoints, user.pointsUsed, user.pointsEarned),
+        resetDate: user.pointsResetDate,
+      },
       streak: user.streak,
       lastActivityDate: user.lastActivityDate,
       badges: user.userBadges,

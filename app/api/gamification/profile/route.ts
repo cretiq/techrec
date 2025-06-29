@@ -4,7 +4,8 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
-import { XPCalculator } from '@/lib/gamification/xpCalculator';
+import { gamificationEvents } from '@/lib/gamification/eventManager';
+import { PointsManager } from '@/lib/gamification/pointsManager';
 
 const prisma = new PrismaClient();
 
@@ -12,82 +13,80 @@ export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = session.user.id;
-
-    // Get or create user gamification data
-    let user = await prisma.developer.findUnique({
-      where: { id: userId },
+    // Get user gamification data
+    const user = await prisma.developer.findUnique({
+      where: { email: session.user.email },
       select: {
+        id: true,
         totalXP: true,
         currentLevel: true,
         levelProgress: true,
-        tier: true,
+        subscriptionTier: true,
+        monthlyPoints: true,
+        pointsUsed: true,
+        pointsEarned: true,
+        pointsResetDate: true,
         streak: true,
         lastActivityDate: true,
         userBadges: {
           include: { badge: true },
           orderBy: { earnedAt: 'desc' }
+        },
+        pointsTransactions: {
+          orderBy: { createdAt: 'desc' },
+          take: 10,
+          select: {
+            id: true,
+            amount: true,
+            source: true,
+            spendType: true,
+            description: true,
+            createdAt: true
+          }
         }
       }
     });
 
-    // If user doesn't exist or has no gamification data, initialize it
+    // If user doesn't exist, return error
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Calculate current profile state
-    const profileCalc = XPCalculator.calculateUserProfile(
-      user.totalXP,
-      user.streak,
-      user.lastActivityDate
-    );
+    // Use the enhanced gamification profile from event manager
+    const gamificationProfile = await gamificationEvents.getUserProfile(user.id);
+    
+    if (!gamificationProfile) {
+      return NextResponse.json({ error: 'Failed to get gamification profile' }, { status: 500 });
+    }
 
-    // Create response data
-    const gamificationProfile = {
-      totalXP: user.totalXP,
-      currentLevel: profileCalc.currentLevel,
-      levelProgress: profileCalc.levelProgress,
-      tier: profileCalc.tier,
-      streak: user.streak,
-      lastActivityDate: user.lastActivityDate,
-      badges: user.userBadges.map(ub => ({
-        badge: ub.badge,
-        earnedAt: ub.earnedAt
-      })),
-      nextLevelXP: profileCalc.nextLevelXP,
-      currentLevelXP: profileCalc.currentLevelXP
-    };
-
-    // Mock some recent transactions and challenges for demo
-    const recentTransactions = [
-      {
-        id: '1',
-        amount: 50,
-        source: 'CV_ANALYSIS',
-        description: 'Completed CV analysis',
-        earnedAt: new Date()
+    // Get recent XP transactions
+    const recentXPTransactions = await prisma.xPTransaction.findMany({
+      where: { developerId: user.id },
+      orderBy: { earnedAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        amount: true,
+        source: true,
+        description: true,
+        earnedAt: true
       }
-    ];
+    });
 
-    const activeChallenges = [
-      {
-        id: '1',
-        title: 'Profile Polish',
-        description: 'Update 2 sections of your profile',
-        type: 'PROFILE_UPDATE',
-        targetValue: 2,
-        currentProgress: 0,
-        xpReward: 50,
-        difficulty: 'Easy',
+    // Get active challenges
+    const activeChallenges = await prisma.dailyChallenge.findMany({
+      where: {
+        developerId: user.id,
         completedAt: null,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
-      }
-    ];
+        expiresAt: { gt: new Date() }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5
+    });
 
     const availableBadges = [
       {
@@ -103,7 +102,8 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       profile: gamificationProfile,
-      recentTransactions,
+      recentXPTransactions,
+      recentPointsTransactions: user.pointsTransactions,
       activeChallenges,
       availableBadges,
       notifications: []

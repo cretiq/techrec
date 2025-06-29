@@ -24,6 +24,7 @@
     "create:companies-roles": "tsx scripts/create-companies-roles.ts",
     "delete:collections": "tsx scripts/delete-collections.ts",
     "migrate:skills": "tsx scripts/migrate-skills.ts",
+    "init:config": "tsx scripts/init-config.ts",
     "list": "node scripts/dev.js list",
     "generate": "node scripts/dev.js generate",
     "parse-prd": "node scripts/dev.js parse-prd"
@@ -74,6 +75,7 @@
     "@reduxjs/toolkit": "^2.7.0",
     "@types/pdfjs-dist": "^2.10.378",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/stripe": "^8.0.416",
     "ajv": "^8.17.1",
     "arctic": "^3.6.0",
     "autoprefixer": "^10.4.20",
@@ -139,6 +141,7 @@
     "recharts": "2.15.0",
     "redux-persist": "^6.0.0",
     "sonner": "^1.7.4",
+    "stripe": "^18.2.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",

@@ -1,9 +1,8 @@
 // XP Calculation Engine for TechRec Gamification System
 
-import { ProfileTier, XPSource } from '@prisma/client';
+import { XPSource } from '@prisma/client';
 import { 
   XP_REWARDS, 
-  TIER_THRESHOLDS, 
   LEVEL_SYSTEM, 
   UserGamificationProfile 
 } from '@/types/gamification';
@@ -60,16 +59,7 @@ export class XPCalculator {
     return Math.min(Math.max(progressXP / requiredXP, 0), 1);
   }
 
-  /**
-   * Determine profile tier based on total XP
-   */
-  static calculateTier(totalXP: number): ProfileTier {
-    if (totalXP >= TIER_THRESHOLDS.DIAMOND) return 'DIAMOND';
-    if (totalXP >= TIER_THRESHOLDS.PLATINUM) return 'PLATINUM';
-    if (totalXP >= TIER_THRESHOLDS.GOLD) return 'GOLD';
-    if (totalXP >= TIER_THRESHOLDS.SILVER) return 'SILVER';
-    return 'BRONZE';
-  }
+  // Tier calculation removed - using subscription tiers instead
 
   /**
    * Get XP award amount for a specific source
@@ -115,17 +105,15 @@ export class XPCalculator {
     totalXP: number,
     streak: number,
     lastActivityDate: Date | null
-  ): Pick<UserGamificationProfile, 'currentLevel' | 'levelProgress' | 'tier' | 'nextLevelXP' | 'currentLevelXP'> {
+  ): Pick<UserGamificationProfile, 'currentLevel' | 'levelProgress' | 'nextLevelXP' | 'currentLevelXP'> {
     const currentLevel = this.calculateLevel(totalXP);
     const levelProgress = this.calculateLevelProgress(totalXP, currentLevel);
-    const tier = this.calculateTier(totalXP);
     const currentLevelXP = this.getXPForLevel(currentLevel);
     const nextLevelXP = this.getXPForLevel(currentLevel + 1);
     
     return {
       currentLevel,
       levelProgress,
-      tier,
       currentLevelXP,
       nextLevelXP
     };
@@ -213,62 +201,23 @@ export class XPCalculator {
    * Calculate next milestone information
    */
   static getNextMilestone(totalXP: number): {
-    type: 'level' | 'tier';
+    type: 'level';
     target: number;
     xpNeeded: number;
     description: string;
   } {
     const currentLevel = this.calculateLevel(totalXP);
-    const currentTier = this.calculateTier(totalXP);
-    
     const nextLevelXP = this.getXPForLevel(currentLevel + 1);
-    const nextTierXP = this.getNextTierThreshold(currentTier);
     
-    // Determine which milestone is closer
-    if (nextTierXP && nextTierXP < nextLevelXP) {
-      return {
-        type: 'tier',
-        target: nextTierXP,
-        xpNeeded: nextTierXP - totalXP,
-        description: `Reach ${this.getNextTierName(currentTier)} tier`
-      };
-    } else {
-      return {
-        type: 'level',
-        target: nextLevelXP,
-        xpNeeded: nextLevelXP - totalXP,
-        description: `Reach level ${currentLevel + 1}`
-      };
-    }
+    return {
+      type: 'level',
+      target: nextLevelXP,
+      xpNeeded: nextLevelXP - totalXP,
+      description: `Reach level ${currentLevel + 1}`
+    };
   }
 
-  /**
-   * Get next tier threshold
-   */
-  private static getNextTierThreshold(currentTier: ProfileTier): number | null {
-    switch (currentTier) {
-      case 'BRONZE': return TIER_THRESHOLDS.SILVER;
-      case 'SILVER': return TIER_THRESHOLDS.GOLD;
-      case 'GOLD': return TIER_THRESHOLDS.PLATINUM;
-      case 'PLATINUM': return TIER_THRESHOLDS.DIAMOND;
-      case 'DIAMOND': return null; // Max tier
-      default: return TIER_THRESHOLDS.SILVER;
-    }
-  }
-
-  /**
-   * Get next tier name
-   */
-  private static getNextTierName(currentTier: ProfileTier): string {
-    switch (currentTier) {
-      case 'BRONZE': return 'Silver';
-      case 'SILVER': return 'Gold';
-      case 'GOLD': return 'Platinum';
-      case 'PLATINUM': return 'Diamond';
-      case 'DIAMOND': return 'Diamond'; // Max tier
-      default: return 'Silver';
-    }
-  }
+  // Tier-related methods removed - using subscription tiers instead
 
   /**
    * Get level title and benefits
