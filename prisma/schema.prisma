@@ -184,21 +184,28 @@ model Developer {
   streak          Int       @default(0)
   lastActivityDate DateTime?
 
-  // Subscription fields
+  // Subscription fields with constraints
   subscriptionTier     SubscriptionTier @default(FREE)
   subscriptionStatus   String           @default("active") // active, cancelled, expired, past_due
-  subscriptionId       String?          // Stripe subscription ID
-  customerId           String?          // Stripe customer ID
+  subscriptionId       String?          @unique // Stripe subscription ID - must be unique
+  customerId           String?          @unique // Stripe customer ID - must be unique  
   subscriptionStart    DateTime?
   subscriptionEnd      DateTime?
   
-  // Points system
+  // Points system with constraints
   monthlyPoints        Int              @default(0)   // Points allocated this month
-  pointsUsed           Int              @default(0)   // Points spent this month
+  pointsUsed           Int              @default(0)   // Points spent this month  
   pointsEarned         Int              @default(0)   // Bonus points earned this month
   totalPointsUsed      Int              @default(0)   // Lifetime points usage
   totalPointsEarned    Int              @default(0)   // Lifetime points earned
   pointsResetDate      DateTime?                      // When monthly points reset
+  
+  // Add constraint: points can't be negative
+  @@check([pointsUsed >= 0])
+  @@check([pointsEarned >= 0])
+  @@check([monthlyPoints >= 0])
+  @@check([totalPointsUsed >= 0])
+  @@check([totalPointsEarned >= 0])
 
   // Relations
   developerSkills DeveloperSkill[]
@@ -227,9 +234,22 @@ model Developer {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  @@index([totalXP])      // For leaderboards
-  @@index([currentLevel]) // For level-based queries
-  @@index([streak])       // For streak tracking
+  // Gamification indexes
+  @@index([totalXP])
+  @@index([currentLevel])
+  @@index([streak])
+  
+  // Subscription and points indexes
+  @@index([subscriptionTier])
+  @@index([subscriptionStatus])
+  @@index([pointsResetDate])
+  @@index([subscriptionTier, totalXP]) // For tier-specific leaderboards
+  @@index([subscriptionTier, currentLevel]) // For tier-specific level rankings
+  @@index([subscriptionTier, streak]) // For tier-specific streak rankings
+  @@index([pointsResetDate, subscriptionTier]) // For points reset queries
+  @@index([customerId]) // For Stripe customer lookups
+  @@index([subscriptionId]) // For Stripe subscription lookups
+  
   @@map("Developer")
 }
 
@@ -719,12 +739,23 @@ model PointsTransaction {
   description String
   metadata    Json?     // Additional context data
   
+  // Audit fields for fraud detection
+  ipAddress   String?   // IP address of the request
+  userAgent   String?   // User agent for tracking
+  sessionId   String?   // Session identifier
+  
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   
+  // Performance indexes for points transactions
   @@index([developerId, createdAt])
+  @@index([developerId, source])
+  @@index([developerId, spendType])
   @@index([source])
   @@index([spendType])
+  @@index([createdAt]) // For time-based queries
+  @@index([developerId, amount]) // For balance calculations
+  
   @@map("PointsTransaction")
 }
 
