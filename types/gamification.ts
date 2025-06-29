@@ -1,13 +1,20 @@
 // Gamification Types for TechRec Platform
 
-import { ProfileTier, BadgeCategory, BadgeTier, XPSource } from '@prisma/client';
+import { SubscriptionTier, BadgeCategory, BadgeTier, XPSource } from '@prisma/client';
 
 // Core gamification profile interface
 export interface UserGamificationProfile {
   totalXP: number;
   currentLevel: number;
   levelProgress: number; // 0.0 to 1.0
-  tier: ProfileTier;
+  subscriptionTier: SubscriptionTier;
+  points?: {
+    monthly: number;
+    used: number;
+    earned: number;
+    available: number;
+    resetDate: Date | null;
+  };
   streak: number;
   lastActivityDate: Date | null;
   badges: UserBadgeWithDetails[];
@@ -112,7 +119,7 @@ export interface LeaderboardEntry {
   xp: number;
   displayName: string; // Anonymous identifier
   isCurrentUser: boolean;
-  tier: ProfileTier;
+  subscriptionTier: SubscriptionTier;
 }
 
 export interface AnonymousLeaderboard {
@@ -242,13 +249,19 @@ export const XP_REWARDS: Record<string, number> = {
   BADGE_EARNED: 0 // XP is handled by badge definition
 };
 
-// Tier thresholds for profile progression
-export const TIER_THRESHOLDS: Record<ProfileTier, number> = {
-  BRONZE: 0,
-  SILVER: 200,
-  GOLD: 500,
-  PLATINUM: 1000,
-  DIAMOND: 2000
+// Level thresholds for progression (ProfileTier removed)
+// These are now informational only - subscription tiers handle access control
+export const LEGACY_LEVEL_THRESHOLDS: Record<string, number> = {
+  NEWCOMER: 0,
+  APPRENTICE: 100,
+  DEVELOPER: 250,
+  PROFESSIONAL: 450,
+  EXPERT: 700,
+  SPECIALIST: 1500,
+  SENIOR: 2500,
+  LEAD: 4000,
+  PRINCIPAL: 6000,
+  ARCHITECT: 8500
 };
 
 // Level progression configuration (exponential growth)
@@ -275,7 +288,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     icon: '👤',
     category: 'PROFILE_COMPLETION',
     tier: 'BRONZE',
-    criteria: { type: 'profile_completeness', threshold: 100 },
+    requirements: { type: 'profile_completeness', threshold: 100, data: {} },
     xpReward: 100,
     isSecret: false
   },
@@ -288,7 +301,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     icon: '🚀',
     category: 'CV_IMPROVEMENT',
     tier: 'SILVER',
-    criteria: { type: 'suggestions_accepted', threshold: 10 },
+    requirements: { type: 'suggestions_accepted', threshold: 10, data: {} },
     xpReward: 200,
     isSecret: false
   },
@@ -301,7 +314,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     icon: '⚡',
     category: 'APPLICATION_SUCCESS',
     tier: 'GOLD',
-    criteria: { type: 'applications_submitted', threshold: 25 },
+    requirements: { type: 'applications_submitted', threshold: 25, data: {} },
     xpReward: 500,
     isSecret: false
   },
@@ -314,7 +327,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     icon: '🔥',
     category: 'ENGAGEMENT',
     tier: 'BRONZE',
-    criteria: { type: 'login_streak', threshold: 7 },
+    requirements: { type: 'login_streak', threshold: 7, data: {} },
     xpReward: 150,
     isSecret: false
   },
@@ -327,7 +340,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     icon: '🎯',
     category: 'SKILL_MASTERY',
     tier: 'SILVER',
-    criteria: { type: 'skill_count', threshold: 15 },
+    requirements: { type: 'skill_count', threshold: 15, data: {} },
     xpReward: 300,
     isSecret: false
   }
