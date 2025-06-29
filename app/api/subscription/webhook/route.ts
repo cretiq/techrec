@@ -17,7 +17,37 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const event = stripeService.constructEvent(body, signature);
+    const { event, isReplay } = stripeService.constructEventWithReplayProtection(body, signature);
+    
+    // Reject replay attacks
+    if (isReplay) {
+      console.warn(`Rejecting replay attack for event ${event.id}`);
+      return NextResponse.json({ error: 'Event too old' }, { status: 400 });
+    }
+
+    // Check if we've already processed this event (idempotency)
+    const existingWebhook = await prisma.webhookEvent?.findUnique({
+      where: { eventId: event.id },
+    }).catch(() => null); // Ignore if table doesn't exist yet
+
+    if (existingWebhook) {
+      console.log(`Event ${event.id} already processed, returning success`);
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
+    // Record webhook event for idempotency (if table exists)
+    try {
+      await prisma.webhookEvent?.create({
+        data: {
+          eventId: event.id,
+          eventType: event.type,
+          processedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      // Ignore if webhook table doesn't exist yet
+      console.log('Webhook event table not found, proceeding without idempotency record');
+    }
 
     switch (event.type) {
       case 'customer.subscription.created':
