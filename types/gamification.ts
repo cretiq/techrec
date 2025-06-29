@@ -290,7 +290,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'BRONZE',
     requirements: { type: 'profile_completeness', threshold: 100, data: {} },
     xpReward: 100,
-    isSecret: false
+    isHidden: false
   },
   
   // CV Improvement Badges
@@ -303,7 +303,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'SILVER',
     requirements: { type: 'suggestions_accepted', threshold: 10, data: {} },
     xpReward: 200,
-    isSecret: false
+    isHidden: false
   },
   
   // Application Success Badges
@@ -316,7 +316,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'GOLD',
     requirements: { type: 'applications_submitted', threshold: 25, data: {} },
     xpReward: 500,
-    isSecret: false
+    isHidden: false
   },
   
   // Engagement Badges
@@ -329,7 +329,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'BRONZE',
     requirements: { type: 'login_streak', threshold: 7, data: {} },
     xpReward: 150,
-    isSecret: false
+    isHidden: false
   },
   
   // Skill Mastery Badges
@@ -342,6 +342,6 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'SILVER',
     requirements: { type: 'skill_count', threshold: 15, data: {} },
     xpReward: 300,
-    isSecret: false
+    isHidden: false
   }
 ];

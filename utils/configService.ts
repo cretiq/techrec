@@ -150,7 +150,7 @@ export class ConfigService {
         },
       });
 
-      const costs = config?.config as PointsCosts || DEFAULT_POINTS_COSTS;
+      const costs = (config?.config as unknown as PointsCosts) || DEFAULT_POINTS_COSTS;
       
       // Cache the result
       if (this.redis) {
@@ -225,7 +225,7 @@ export class ConfigService {
         },
       });
 
-      const rewards = config?.config as XPRewards || DEFAULT_XP_REWARDS;
+      const rewards = (config?.config as unknown as XPRewards) || DEFAULT_XP_REWARDS;
       
       // Cache the result
       if (this.redis) {
@@ -300,7 +300,7 @@ export class ConfigService {
         },
       });
 
-      const tiers = config?.config as SubscriptionTiers || DEFAULT_SUBSCRIPTION_TIERS;
+      const tiers = (config?.config as unknown as SubscriptionTiers) || DEFAULT_SUBSCRIPTION_TIERS;
       
       // Cache the result
       if (this.redis) {
@@ -335,7 +335,7 @@ export class ConfigService {
         data: {
           key: 'subscription-tiers',
           version: `v${Date.now()}`,
-          config: updatedTiers,
+          config: updatedTiers as any,
           description: description || 'Subscription tiers updated',
           effectiveDate: new Date(),
         },
@@ -405,7 +405,7 @@ export class ConfigService {
             data: {
               key: config.key,
               version: 'v1.0',
-              config: config.config,
+              config: config.config as any,
               description: config.description,
               effectiveDate: new Date(),
             },
