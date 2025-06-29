@@ -129,6 +129,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid action type' }, { status: 400 });
     }
 
+    // Get effective cost with tier efficiency bonus first
     const developer = await prisma.developer.findUnique({
       where: { email: session.user.email },
       select: {
@@ -144,35 +145,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Developer not found' }, { status: 404 });
     }
 
-    // Check if user can afford the action
-    const balance = {
-      monthly: developer.monthlyPoints,
-      used: developer.pointsUsed,
-      earned: developer.pointsEarned,
-      available: PointsManager.calculateAvailablePoints(
-        developer.monthlyPoints,
-        developer.pointsUsed,
-        developer.pointsEarned
-      ),
-      resetDate: null,
-      tier: developer.subscriptionTier,
-    };
-
-    const affordability = await PointsManager.canAffordAction(action, balance);
-    
-    if (!affordability.canAfford) {
-      return NextResponse.json({
-        error: 'Insufficient points',
-        required: affordability.cost,
-        available: balance.available,
-        shortfall: affordability.shortfall,
-      }, { status: 402 }); // Payment Required
-    }
-
-    // Get effective cost with tier efficiency bonus
     const effectiveCost = await PointsManager.getEffectiveCost(action, developer.subscriptionTier);
     
-    // Create spend record
+    // Create spend record for validation
     const spend: PointsSpend = {
       userId: developer.id,
       amount: effectiveCost,
@@ -182,21 +157,47 @@ export async function POST(request: NextRequest) {
       metadata,
     };
 
-    // Validate and process the spend
+    // Validate the spend first
     const validation = await PointsManager.validatePointsSpend(spend);
     if (!validation.isValid) {
       return NextResponse.json({ error: validation.reason }, { status: 400 });
     }
 
-    // Perform the transaction
+    // ATOMIC TRANSACTION: Check balance and spend points in single operation
     const result = await prisma.$transaction(async (tx) => {
-      // Deduct points from user
+      // Re-fetch user data inside transaction for latest state
+      const currentUser = await tx.developer.findUnique({
+        where: { id: developer.id },
+        select: {
+          monthlyPoints: true,
+          pointsUsed: true,
+          pointsEarned: true,
+          subscriptionTier: true,
+        },
+      });
+
+      if (!currentUser) {
+        throw new Error('Developer not found in transaction');
+      }
+
+      // Check affordability inside transaction with current data
+      const currentAvailable = PointsManager.calculateAvailablePoints(
+        currentUser.monthlyPoints,
+        currentUser.pointsUsed,
+        currentUser.pointsEarned
+      );
+
+      if (currentAvailable < effectiveCost) {
+        throw new Error(`Insufficient points: need ${effectiveCost}, have ${currentAvailable}`);
+      }
+
+      // Atomically deduct points
       const updatedUser = await tx.developer.update({
         where: { id: developer.id },
         data: { pointsUsed: { increment: effectiveCost } },
       });
 
-      // Create points transaction record
+      // Create audit trail
       const transaction = await tx.pointsTransaction.create({
         data: {
           developerId: developer.id,
@@ -204,7 +205,19 @@ export async function POST(request: NextRequest) {
           spendType: action,
           sourceId,
           description: spend.description,
-          metadata,
+          metadata: {
+            ...metadata,
+            costCalculation: {
+              baseCost: await PointsManager.getPointsCost(action),
+              effectiveCost,
+              tier: developer.subscriptionTier,
+              timestamp: new Date().toISOString(),
+            },
+          },
+          // Audit fields for fraud detection
+          ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
+          userAgent: request.headers.get('user-agent'),
+          sessionId: request.headers.get('x-session-id'),
         },
       });
 
@@ -215,18 +228,53 @@ export async function POST(request: NextRequest) {
       );
 
       return { transaction, newBalance, pointsSpent: effectiveCost };
+    }, {
+      isolationLevel: 'Serializable', // Highest isolation to prevent race conditions
+      timeout: 10000, // 10 second timeout
     });
+
+    // Calculate savings for response
+    const baseCost = await PointsManager.getPointsCost(action);
+    const savings = baseCost - effectiveCost;
 
     return NextResponse.json({
       success: true,
       pointsSpent: result.pointsSpent,
       newBalance: result.newBalance,
-      transaction: result.transaction,
-      savingsFromTier: affordability.cost - effectiveCost,
+      transaction: {
+        id: result.transaction.id,
+        amount: result.transaction.amount,
+        description: result.transaction.description,
+        createdAt: result.transaction.createdAt,
+      },
+      savingsFromTier: savings,
+      baseCost,
+      effectiveCost,
     });
 
   } catch (error) {
     console.error('Points POST error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    
+    // Handle specific transaction errors
+    if (error instanceof Error) {
+      if (error.message.includes('Insufficient points')) {
+        return NextResponse.json({ 
+          error: 'Insufficient points',
+          details: error.message,
+        }, { status: 402 });
+      }
+      
+      if (error.message.includes('timeout') || error.message.includes('deadlock')) {
+        return NextResponse.json({ 
+          error: 'Transaction conflict, please try again',
+          retryable: true,
+        }, { status: 409 });
+      }
+    }
+    
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      retryable: false,
+    }, { status: 500 });
   }
 }
