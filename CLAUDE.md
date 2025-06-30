@@ -319,6 +319,20 @@ Examples:
 - Maintain backward compatibility
 - Extend existing functionality rather than replace
 
+### **Core Implementation Mandate**
+
+When implementing new features or modifying existing ones, you must adhere to the following core principles to ensure consistency, maintainability, and architectural integrity.
+
+**1. Analyze and Adhere:**
+*   **Analyze First:** Before writing any code, thoroughly analyze the existing codebase. Identify established architectural patterns, state management conventions, and UI component usage.
+*   **Strictly Adhere to the Design System:** Exclusively use components from the established UI library (`daisyUI`). Do not introduce custom styling or one-off components. The new feature must be visually indistinguishable from the existing interface.
+*   **Integrate with Centralized State:** Connect to the existing state management solution (Redux) by reusing established selectors and dispatching existing actions. Do not duplicate state or introduce new state management logic for existing data domains.
+
+**2. Structure and Implement:**
+*   **Encapsulate Logic:** Build new features within self-contained, single-responsibility components.
+*   **Preserve Layout Integrity:** Integrate new components into the existing layout structure without modifying core layout rules. Ensure changes are additive and do not cause regressions in responsiveness or visual organization.
+*   **Prioritize Clarity:** Write clean, readable, and maintainable code that aligns with project-wide best practices.
+
 ---
 
 ## 📚 DOCUMENTATION STANDARDS
