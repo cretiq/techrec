@@ -1,34 +1,76 @@
-# CLAUDE.md
+# CLAUDE.md - Project Guidelines & Context
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides comprehensive guidance for Claude Code when working with the TechRec repository.
 
-## Git Commit Strategy (CRITICAL - Apply Consistently)
+---
+
+## 🎯 PROJECT OVERVIEW
+
+### Core Platform
+**TechRec** is a comprehensive AI-powered tech recruitment platform with sophisticated gamification, built with:
+- **Frontend**: Next.js 15+ with TypeScript, TailwindCSS 4, DaisyUI components
+- **Backend**: Next.js API routes with Prisma ORM, MongoDB, Redis caching
+- **AI Integration**: Dual provider system (OpenAI + Google Gemini)
+- **Payments**: Stripe integration for subscription management
+- **Gamification**: XP progression + subscription-based points economy
+
+### Key Features
+- Multi-stage CV analysis with ATS scoring and actionable feedback
+- AI-powered cover letter and outreach message generation
+- Batch application workflows with progress tracking
+- Comprehensive gamification system with achievements and streaks
+- Subscription tiers with points-based premium features
+- Real-time state management with Redux persistence
+
+---
+
+## 🚨 CRITICAL WORKFLOWS & NON-NEGOTIABLES
+
+### Gamification System Management
+**⚠️ MANDATORY PROCESS**: For ANY gamification-related work:
+1. **ALWAYS read** `@GAMIFICATION_STRATEGY.md` first
+2. **IMMEDIATELY update** the documentation after any gamification changes
+3. Follow the dual-progression architecture (XP levels + subscription tiers)
+4. Maintain consistency with existing point costs and XP rewards
+
+### Testing Requirements
+**⚠️ MANDATORY**: Every interactive element MUST include comprehensive `data-testid` attributes:
+```tsx
+// ✅ Required pattern for all components
+<Button data-testid="profile-experience-add-button">Add Experience</Button>
+<TableRow data-testid={`cv-management-row-cv-item-${cv.id}`}>
+<Input data-testid="profile-info-input-name" />
+```
+
+---
+
+## 📋 GIT COMMIT STRATEGY (APPLY CONSISTENTLY)
 
 ### Core Principles
-- **Commit frequently** - Small, focused commits are better than large ones
-- **Self-contained changes** - Each commit should represent a complete, logical unit of work
-- **Clear commit messages** - Use conventional commit format for consistency
-- **Atomic commits** - One concern per commit (don't mix features with fixes)
-- **Clean history** - Maintain readable project evolution for debugging and rollbacks
+- **Commit frequently**: Small, focused commits over large ones
+- **Self-contained changes**: Each commit = complete, logical unit of work
+- **Clear messaging**: Conventional commit format always
+- **Atomic commits**: One concern per commit (never mix features with fixes)
+- **Clean history**: Maintain readable project evolution
 
 ### Commit Frequency Guidelines
-- **After completing each function or method** - Don't accumulate multiple functions
-- **After fixing each bug or issue** - One fix per commit
-- **After adding each test case** - Test commits separate from implementation  
-- **After each documentation update** - Keep docs in sync with code changes
-- **Before switching contexts** - Commit current work before starting something new
-- **Maximum 1-2 hours of work per commit** - Never let commits grow too large
+- ✅ After completing each function or method
+- ✅ After fixing each bug or issue (one fix per commit)
+- ✅ After adding each test case (separate from implementation)
+- ✅ After each documentation update
+- ✅ Before switching contexts
+- ⚠️ **Maximum 1-2 hours of work per commit**
 
 ### Commit Message Format
 ```
 <type>(<scope>): <description>
 
-[optional body]
+[optional body explaining why, not what]
 
-[optional footer]
+[optional footer with breaking changes/closes issues]
 ```
 
-**Types:**
+#### Commit Types
 - `feat:` - New feature or functionality
 - `fix:` - Bug fix or error correction
 - `refactor:` - Code restructuring without changing functionality
@@ -38,31 +80,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `style:` - Code formatting, no logic changes
 - `chore:` - Maintenance tasks, build changes
 
-**Scopes (for this project):**
-- `gamification` - Gamification system changes
-- `auth` - Authentication related changes
-- `cv-analysis` - CV analysis features
-- `ui` - User interface components
-- `api` - Backend API changes
-- `db` - Database schema or queries
+#### Scopes (Project-Specific)
+- `gamification` - Gamification system (XP, points, achievements, streaks)
+- `subscription` - Stripe integration and subscription management
+- `cv-analysis` - CV parsing, analysis, and improvement features
+- `auth` - Authentication and authorization
+- `ui` - User interface components and styling
+- `api` - Backend API endpoints and logic
+- `db` - Database schema, migrations, or queries
 
-### Examples of Good Commits
+### Commit Examples
 ```bash
-feat(gamification): add XP fraud prevention validation
+feat(gamification): implement atomic points spending with race condition protection
 fix(cv-analysis): resolve race condition in analysis status updates
-refactor(auth): extract middleware validation logic
-perf(gamification): optimize badge evaluation query performance
-test(api): add integration tests for XP award endpoints
-docs(readme): update setup instructions for Redis
+refactor(auth): extract middleware validation logic to separate module
+perf(gamification): optimize leaderboard queries with strategic indexing
+test(subscription): add integration tests for Stripe webhook handling
+docs(gamification): update strategy document with implemented features
 ```
 
 ### When to Commit
 ✅ **DO commit when:**
-- A single function is complete and tested
-- A bug is fixed and verified
-- A component is implemented and working
+- Function/method is complete and tested
+- Bug is fixed and verified
+- Component is implemented and working
 - Documentation is updated for recent changes
-- A refactoring is complete and tests pass
+- Refactoring is complete and tests pass
 - Performance optimization is measurable
 
 ❌ **DON'T commit when:**
@@ -73,545 +116,285 @@ docs(readme): update setup instructions for Redis
 - Temporary debugging code is included
 
 ### Emergency Situations
-- If you need to switch contexts urgently, commit with `WIP:` prefix
+- Use `WIP:` prefix for urgent context switches
 - Always return to complete WIP commits before final delivery
 - Use `git stash` for very temporary context switches
 
-**This strategy is MANDATORY and should be applied to ALL future work on this codebase.**
+---
 
-## Project Overview
-
-This is a tech recruitment platform built with Next.js 15, featuring AI-powered CV analysis, role matching, and content generation. The application serves both developers looking for opportunities and companies seeking talent.
-
-### Key Features
-- **AI-Powered CV Analysis**: Multi-stage analysis with ATS scoring, content quality assessment, and actionable feedback
-- **Multi-Role Applications**: Apply to multiple positions simultaneously with batch cover letter generation
-- **Smart Content Generation**: AI-generated cover letters, outreach messages, and CV optimizations
-- **Visual Design System**: Modern UI with glass morphism, gradient animations, and responsive components
-- **Real-time Updates**: Live progress tracking for analysis and generation tasks
-- **Persistent State**: User preferences and generated content preserved across sessions
-
-## Key Architecture
+## 🏗️ ARCHITECTURE & DEVELOPMENT PATTERNS
 
 ### Technology Stack
-- **Next.js 15.2.4** with App Router architecture
-- **TypeScript** for type safety
-- **MongoDB** with Prisma ORM (6.6.0)
-- **Redis** for caching (ioredis)
-- **AWS S3** for file storage
-- **Redux Toolkit** for state management
-- **TailwindCSS 4** with DaisyUI components
-- **Framer Motion** for animations and transitions
+- **Frontend Framework**: Next.js 15.2+ with App Router
+- **Language**: TypeScript (strict mode)
+- **Styling**: TailwindCSS 4 + DaisyUI components
+- **Database**: MongoDB with Prisma ORM (6.6.0)
+- **Caching**: Redis (ioredis) for configuration and performance
+- **State Management**: Redux Toolkit with persistence
+- **Payments**: Stripe with webhook security
+- **Animations**: Framer Motion for smooth transitions
+- **Authentication**: NextAuth.js with OAuth providers
 
 ### AI Integration
-The project uses a flexible AI provider system that can switch between:
-- **OpenAI** (GPT models)
-- **Google Gemini**
+**Dual Provider System** (`utils/aiProviderSelector.ts`):
+- **OpenAI**: GPT models for analysis and generation
+- **Google Gemini**: Alternative provider with automatic fallback
+- **Usage**: CV analysis, cover letter generation, content optimization
 
-AI provider selection is handled via `utils/aiProviderSelector.ts`. Both providers are used for:
-- CV analysis and parsing
-- Cover letter generation
-- Outreach message generation
-- Content optimization
+### Database Architecture
+**Key Models** (see `prisma/schema.prisma`):
+- `Developer`: User profiles with gamification fields
+- `XPTransaction`: XP earning and awarding history
+- `PointsTransaction`: Points spending and earning tracking
+- `UserBadge`: Achievement and badge management
+- `DailyChallenge`: Challenge system for engagement
+- `SubscriptionTier`: FREE, BASIC, STARTER, PRO, EXPERT
 
-### Authentication & Security
-- **NextAuth.js** with Google and GitHub OAuth providers
-- JWT-based session management
-- **Middleware-based route protection** (`middleware.ts`)
-  - Protected routes: `/developer/*`, `/company/*`, `/assessments/*`
-  - Custom sign-in page: `/auth/signin`
-  - Token validation on all protected routes
-- Role-based access (Developer/Company user types)
-- MongoDB session adapter for persistent authentication
+### State Management Patterns
+**Redux Slices with Persistence**:
+- `userSlice`: Authentication state (persisted)
+- `analysisSlice`: CV analysis results (persisted, 24h expiry)
+- `gamificationSlice`: XP, points, achievements (persisted)
+- `selectedRolesSlice`: Multi-role application state (persisted)
+- `coverLettersSlice`: Generated content cache (persisted)
 
-### Data Architecture Patterns
+---
 
-**Dual Data Source Strategy**: The platform maintains separate data sources for different user workflows:
+## 🎨 UI/UX DEVELOPMENT GUIDELINES
 
-1. **Profile Data** (`InternalExperience`, `InternalEducation`, etc.)
-   - Source: Manual user input via profile forms
-   - API: `/api/developer/me/profile`
-   - Purpose: Comprehensive, curated professional information
-   - Features: Rich metadata (tech stack, team size, achievements)
+### Component Architecture
+**Migration Pattern**: Custom components → DaisyUI
+- **Legacy**: Custom shadcn/ui components in `/components/ui/`
+- **Current**: DaisyUI components in `/components/ui-daisy/`
+- **Integration**: Gradual migration maintaining existing functionality
 
-2. **CV Analysis Data** (`ExperienceItem`, `EducationItem`, etc.) 
-   - Source: AI extraction from uploaded CV documents
-   - API: CV analysis endpoints
-   - Purpose: Document analysis and improvement suggestions
-   - Features: Basic structured data with AI insights
-
-**Key Considerations**:
-- Data sources are intentionally separate (manual vs AI-extracted)
-- Users may see different information in Profile vs CV Analysis sections
-- Consider implementing sync/import functionality for data reconciliation
-- Always clarify data source context when displaying information
-
-## Common Development Commands
-
-```bash
-# Development
-npm run dev                    # Start development server (port 3000)
-npm run build                  # Build production bundle
-npm run start                  # Start production server
-
-# Code Quality
-npm run lint                   # Run ESLint
-npm run test                   # Run Jest tests
-npm run test:watch            # Run tests in watch mode
-
-# Database
-npx prisma migrate dev         # Run database migrations
-npx prisma generate           # Generate Prisma client
-npx prisma db push           # Push schema changes
-npx prisma studio            # Open Prisma Studio GUI
-
-# Seeding & Data Management
-npm run seed                  # Run database seeding
-npm run seed:roles           # Seed roles data
-npm run seed:companies       # Seed companies and roles
-```
-
-## Project Structure
-
-### API Routes (`/app/api/`)
-RESTful API endpoints following the pattern `/api/[resource]/[id]/[action]`:
-- `/api/cv/` - CV upload, parsing, and management
-- `/api/cv-analysis/` - AI-powered CV analysis with retry and versioning
-- `/api/roles/` - Job role management and searching
-- `/api/developers/` - Developer profiles and applications
-- `/api/companies/` - Company management
-- `/api/generate-*` - AI content generation endpoints
-
-### Key Services & Utilities
-- **CV Parser** (`utils/cv-parser/`) - Handles PDF/DOCX parsing with multiple fallback strategies
-- **CV Analyzer** (`utils/cv-analyzer/`) - Multi-stage analysis including ATS scoring, content quality, and impact assessment
-- **S3 Storage** (`utils/s3Storage.ts`) - File upload/download with proper error handling
-- **Analysis Service** (`utils/analysisService.ts`) - Orchestrates CV analysis workflow with caching
-- **AI Provider Selector** (`utils/aiProviderSelector.ts`) - Intelligent switching between OpenAI and Gemini based on availability
-
-### State Management
-Redux store with feature slices and persistence:
-- `userSlice` - User authentication state (persisted)
-- `analysisSlice` - CV analysis results (persisted)
-- `selectedRolesSlice` - Role selection for multi-role applications (persisted)
-- `coverLettersSlice` - Generated cover letters cache (persisted)
-- `uiSlice` - UI state management (persisted)
-- `analyticsSlice` - Analytics data
-- `suggestionsSlice` - AI-powered CV improvement suggestions (new)
-- `outreachMessagesSlice` - Generated outreach messages cache (persisted)
-
-**Redux Persistence Configuration**
-- User preferences and data persist across sessions
-- Analysis results cached with 24-hour expiry
-- Selected roles maintained for batch operations
-- Generated content preserved during navigation
-
-### UI Component System
-The project is migrating from custom components to DaisyUI:
-- Custom shadcn/ui components in `/components/ui/`
-- DaisyUI components in `/components/ui-daisy/`
-- Shared components use Radix UI primitives
-- Theme support with dark/light modes via next-themes
-- Glass morphism effects and gradient animations throughout
-
-**Key UI Components**
-- **AnimatedBackground** - Parallax blob animations with glass morphism
-- **HeroSection** - Gradient hero sections with optional animations
-- **FeatureCard** - Cards with gradient glows and hover effects
-- **TrustIndicator** - Trust badges for social proof
-- **Enhanced Badge** - Gradient variants with pulse animations
-- **Enhanced Button** - Gradient variants and elevation effects
-- **OrbitalLoader** - Sophisticated loading animation with spinning ring and orbital dots
-- **ProfileInfoCard, ExperienceCard, SkillsCard** - Glass morphism profile components
-- **CVList** - Table with fixed column layouts and skeleton loading states
-- **SuggestionManager** - AI-powered CV improvement suggestions with section-based targeting
-- **SuggestionOverlay** - Interactive suggestion display with accept/decline functionality
-- **AIAssistanceButton** - Centralized AI assistance triggering with loading states
-
-**Component Migration Patterns**
+### Design System
+**Glass Morphism Theme**:
 ```tsx
-// ❌ Radix UI pattern (shadcn/ui)
-<Select value={value} onValueChange={setValue}>
-  <SelectTrigger>
-    <SelectValue placeholder="Select..." />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="option1">Option 1</SelectItem>
-  </SelectContent>
-</Select>
-
-// ✅ DaisyUI pattern (native HTML)
-<Select value={value} onChange={(e) => setValue(e.target.value)}>
-  <option value="option1">Option 1</option>
-</Select>
-
-// ✅ DaisyUI Tabs pattern (with URL state)
-<Tabs defaultValue={activeTab} onValueChange={handleTabChange}>
-  <TabsList>
-    <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-  </TabsList>
-  <TabsContent value="tab1">Content</TabsContent>
-</Tabs>
-```
-
-**Glass Morphism Patterns**
-```tsx
-// ✅ Standard glass morphism card pattern
+// ✅ Standard glass morphism pattern
 <Card variant="transparent" className="bg-base-100/60 backdrop-blur-sm border border-base-300/50">
 
 // ✅ Glass form inputs
 <Input className="bg-base-100/50 backdrop-blur-sm border border-base-300/50 focus:ring-2 focus:ring-primary/20" />
-
-// ✅ Glass table container
-<div className="bg-base-100/30 backdrop-blur-sm border border-base-300/50 rounded-lg overflow-hidden">
 ```
 
-**Animation System Patterns**
+**Animation Standards**:
+- **Loading**: Sophisticated orbital loaders over simple spinners
+- **Hover Effects**: Include movement (`translate-x-1`), shadow, and background changes
+- **Transitions**: Use `transition-all duration-200` for smooth multi-property changes
+- **Progress**: Animated progress bars with shimmer effects
+
+### Component Requirements
+**Essential Patterns**:
 ```tsx
-// ✅ Orbital loader animation (sophisticated multi-element system)
-<motion.div
-  className="absolute inset-0 border-2 border-primary/30 rounded-full"
-  animate={{ rotate: 360 }}
-  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-/>
-// Add orbital dots with different rotation speeds for complexity
-<motion.div
-  className="absolute top-0 left-1/2 w-2 h-2 bg-primary rounded-full"
-  animate={{ rotate: 360 }}
-  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-  style={{ transformOrigin: '0 16px' }}
-/>
-
-// ✅ Enhanced hover effects with movement
-<button className="hover:bg-base-200/60 hover:translate-x-1 hover:shadow-sm transition-all duration-200">
-
-// ✅ Interactive card hover animations
-<motion.button
-  whileHover={{ scale: 1.02 }}
-  whileTap={{ scale: 0.98 }}
-  className="hover:translate-y-[-1px] hover:shadow-md"
->
-
-// ✅ Skeleton loading with consistent sizing
-<div className="h-4 w-32 bg-base-300/30 rounded animate-pulse" />
-```
-
-**Cross-Component Communication Pattern**
-```tsx
-// ✅ Decoupled component events
-// Sender component:
-window.dispatchEvent(new CustomEvent('expandAllSections'));
-
-// Receiver component:
-useEffect(() => {
-  const handleExpandAll = () => setOpenSections(allSections);
-  window.addEventListener('expandAllSections', handleExpandAll);
-  return () => window.removeEventListener('expandAllSections', handleExpandAll);
-}, [allSections]);
-```
-
-**Table Layout Best Practices**
-```tsx
-// ✅ Fixed column layouts prevent width flickering
+// ✅ Fixed table layouts prevent width flickering
 <Table className="table-fixed w-full">
   <TableHead className="w-[40%] min-w-[200px]">Filename</TableHead>
-  <TableHead className="w-[25%] min-w-[140px]">Uploaded</TableHead>
-  // Apply same width classes to all TableCell elements
 </Table>
+
+// ✅ Cross-component communication
+window.dispatchEvent(new CustomEvent('expandAllSections'));
+
+// ✅ Comprehensive test coverage
+<Button data-testid={`action-button-${action}-${id}`}>
 ```
 
-**CSS Classes & Animations**
-- `magical-glow`, `sparkle-loader`, `pulse-ring` - Loading and emphasis effects
-- `hero-gradient`, `hero-gradient-dark` - Gradient backgrounds
-- `glass`, `glass-dark` - Glass morphism effects
-- `animate-blob`, `animate-fade-in-up` - Animation utilities
-- `cursor-pointer` - Essential for clickable non-button elements
-- `transition-all duration-200` - Smooth multi-property transitions
+---
 
-## Development Workflow
+## 🔧 API & BACKEND PATTERNS
 
-### CV Analysis Flow
-1. User uploads CV (PDF/DOCX) → S3 storage
+### API Route Structure
+**RESTful Patterns**:
+```
+/api/[resource]/[id]/[action]
+- /api/cv/ - CV upload and management
+- /api/cv-analysis/ - AI-powered analysis with retry/versioning
+- /api/gamification/ - XP, points, achievements, challenges
+- /api/subscription/ - Stripe integration and webhooks
+- /api/generate-* - AI content generation endpoints
+```
+
+### Security Patterns
+**Gamification Protection**:
+- Atomic transactions with serializable isolation
+- Server-side validation of all point costs
+- Rate limiting on expensive operations
+- Audit trails for all transactions
+
+**Stripe Integration Security**:
+- Webhook signature verification
+- Replay attack protection (10-minute tolerance)
+- Idempotency keys for all operations
+- Customer ID validation and constraints
+
+### Performance Optimization
+**Caching Strategy**:
+```typescript
+// Configuration caching (24-hour TTL)
+const config = await redis.get('config:subscription-tiers');
+
+// Leaderboard caching (1-hour TTL)
+const leaderboard = await redis.get(`leaderboard:${tier}:${period}`);
+```
+
+**Database Indexing**:
+```javascript
+// Strategic indexes for gamification
+db.developers.createIndex({ "totalXP": -1 })
+db.developers.createIndex({ "subscriptionTier": 1, "totalXP": -1 })
+```
+
+---
+
+## 📊 DEVELOPMENT WORKFLOWS
+
+### User Experience Patterns
+**CV Analysis Flow**:
+1. User uploads CV → S3 storage
 2. File parsed using LangChain or custom parsers
-3. Structured data analyzed across multiple dimensions:
-   - ATS compatibility
-   - Content quality
-   - Formatting assessment
-   - Impact measurement
+3. Multi-dimensional analysis (ATS, content quality, formatting, impact)
 4. Results cached in Redis (24-hour TTL)
-5. Analysis can be retried or versioned
-6. Results persisted in Redux for seamless navigation
+5. Gamification updates (XP awards, achievement checks)
 
-### Multi-Role Application Flow
-1. Users search and filter available roles
-2. Select multiple roles for batch operations
-3. Generate cover letters for all selected roles
-4. Track generation progress with real-time updates
-5. Access generated content from writing assistant
-6. Export or apply to roles with personalized content
+**Subscription Tier Flow**:
+1. User selects tier upgrade
+2. Stripe customer/subscription creation
+3. Webhook handling for subscription updates
+4. Points allocation and efficiency bonus calculation
+5. Database updates with atomic transactions
 
-### Role Search Features
-- Integration with RapidAPI for expanded job listings
-- Advanced filtering with result limits
-- Bulk selection capabilities
-- URL state management for shareable searches
-- Animated loading states and transitions
+### Error Handling Patterns
+**Common Issues & Solutions**:
+- **Infinite API calls**: Check useEffect dependencies for unstable references
+- **Form control errors**: Ensure controlled components have both `value` and `onChange`
+- **Redux persistence**: Add necessary fields to persist whitelist
+- **ID mismatches**: Check CV ID vs Analysis ID in URL/store mapping
 
-### AI Suggestions System
-**Architecture**: Section-based improvement suggestions with persistent user interactions
-1. **SuggestionManager** - Component-level management for specific CV sections
-2. **SuggestionsSlice** - Redux state management with persistence
-3. **API Integration** - `/api/cv-improvement-gemini` endpoint for AI analysis
-4. **User Interaction Tracking** - Accept/decline status with timestamps
-5. **Section Targeting** - Granular suggestions for experience, education, skills, etc.
-
-**Key Features**:
-- **Real-time generation** from CV analysis data
-- **Persistent user decisions** across sessions  
-- **Section-based visibility** controls
-- **Bulk operations** for accepting/declining multiple suggestions
-- **Provider-agnostic** design (OpenAI/Gemini compatibility)
-- **Cache integration** with 24-hour TTL
-
-### Task Management (Task Master)
-The project uses Task Master for structured development:
+### Development Commands
 ```bash
-task-master list              # View all tasks
-task-master next             # Show next task to work on
-task-master show <id>        # View task details
-task-master set-status --id=<id> --status=done  # Mark task complete
+# Development
+npm run dev                    # Development server (port 3000)
+npm run build                  # Production build
+npm run lint                   # ESLint
+npm run test                   # Jest tests
+
+# Database
+npx prisma migrate dev         # Run migrations
+npx prisma generate           # Generate client
+npx prisma db push           # Push schema changes
+npx prisma studio            # GUI
+
+# Seeding
+npm run seed                  # Database seeding
+npm run seed:roles           # Seed roles data
 ```
 
-See `/scripts/README-task-master.md` for comprehensive Task Master documentation.
+---
 
-### Testing Approach
-- Jest for unit tests
-- React Testing Library for component tests
-- AWS SDK mocking for S3 operations
-- Test files alongside source files (`.test.ts` or `.test.tsx`)
+## 🧪 TESTING STRATEGY
 
-### Debugging & Troubleshooting
+### Testing Requirements
+**Mandatory Coverage**:
+- ✅ ALL buttons, links, and interactive elements
+- ✅ ALL form inputs, selects, and textareas
+- ✅ ALL table headers, rows, and cells
+- ✅ ALL loading states and skeleton components
+- ✅ ALL conditional UI elements (badges, status indicators)
 
-**Common React Issues**
-- **Infinite API calls**: Check useEffect dependencies for unstable references
-- **Form control errors**: "You provided a `value` prop without an `onChange` handler" - ensure controlled components have both `value` and `onChange`
-- **Component library mismatch**: Verify you're using the correct API for DaisyUI vs Radix UI components
+**Test ID Naming Convention**:
+```
+Format: {page/section}-{component}-{element}-{identifier?}
 
-**Redux Persistence Issues**
-- **"Loading..." stuck after refresh**: Check if all necessary Redux state fields are in the persist whitelist
-- **Status field not persisted**: Add 'status' to the whitelist in store.ts to maintain state across refreshes
-- **REHYDRATE handling**: Ensure analysisSlice handles rehydration properly when data exists but status is 'idle'
+Examples:
+- profile-experience-card
+- cv-management-table-header-filename
+- gamification-level-progress-bar
+- subscription-tier-badge-expert
+```
 
-**ID Mismatch Issues (CV Analysis)**
-- **Problem**: CVManagementPage shows "Loading..." when analysisIdFromStore !== analysisIdFromUrl
-- **Root Cause**: The URL might contain a CV ID while the store has the analysis ID from the API response
-- **Solution**: Updated the conditional logic to check for data existence rather than strict ID matching
-- **Key Files**: 
-  - `/app/developer/cv-management/page.tsx` (line 340) - Conditional rendering logic
-  - `/components/cv/CVList.tsx` - Ensure it passes the correct analysisId
-  - `/lib/features/analysisSlice.ts` - Handles ID mapping from API response
-- **API Response Structure**: 
-  ```javascript
-  {
-    id: "analysis-id",        // This is what goes in Redux store
-    cvId: "cv-id",           // This might be in the URL
-    analysisResult: {...},   // The actual analysis data
-  }
-  ```
-- **Debugging Tips**:
-  - Check console logs for ID values: `URL ID: xxx, Store ID: yyy`
-  - Verify which ID is being passed in the URL (CV vs Analysis)
-  - Ensure CVList passes `cv.analysisId` not `cv.id` to the Improve button
+### Quality Assurance
+**Code Quality Standards**:
+- Clean, reusable, and scalable code
+- Follow existing patterns and conventions
+- Maintain backward compatibility
+- Extend existing functionality rather than replace
 
-**Performance Issues**
-- Multiple rapid API calls often indicate useEffect dependency issues
-- Use browser dev tools Network tab to identify API call patterns
-- Look for console warnings about controlled vs uncontrolled components
+---
 
-**Development Tools**
-- Use `console.log` strategically in useEffect to trace dependency changes
-- Browser React DevTools to inspect component state and props
-- Next.js development server provides detailed error logging
+## 📚 DOCUMENTATION STANDARDS
 
-## Environment Variables
+### File Organization
+**Key Documentation Files**:
+- `CLAUDE.md` - This file (project guidelines)
+- `GAMIFICATION_STRATEGY.md` - Comprehensive gamification documentation
+- `README.md` - Project setup and overview
+- `/scripts/README-task-master.md` - Task management documentation
 
-Required in `.env.local`:
+### Documentation Requirements
+**When to Update Documentation**:
+- After any gamification-related changes (update `GAMIFICATION_STRATEGY.md`)
+- After adding new API endpoints or significant features
+- After architectural changes or new patterns
+- When onboarding information becomes outdated
+
+---
+
+## ⚡ QUICK REFERENCE
+
+### Essential File Locations
+```
+📁 Key Directories:
+├── app/api/                   # API routes
+├── components/                # UI components
+│   ├── ui/                   # Legacy shadcn components
+│   ├── ui-daisy/            # DaisyUI components
+│   └── gamification/        # Gamification UI
+├── lib/features/             # Redux slices
+├── lib/gamification/         # Gamification logic
+├── utils/                    # Utility services
+├── prisma/                   # Database schema
+└── types/                    # TypeScript definitions
+```
+
+### Environment Variables Required
 ```bash
-# Database
-MONGODB_URI=             # MongoDB connection string
+# Database & Caching
+MONGODB_URI=              # MongoDB connection
+REDIS_URL=               # Redis connection
 
 # Authentication
-NEXTAUTH_URL=           # Your app URL
-NEXTAUTH_SECRET=        # Random secret for JWT
-
-# OAuth Providers
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GITHUB_ID=
-GITHUB_SECRET=
+NEXTAUTH_URL=            # App URL
+NEXTAUTH_SECRET=         # JWT secret
+GOOGLE_CLIENT_ID=        # OAuth provider
+GITHUB_ID=              # OAuth provider
 
 # AI Providers
-OPENAI_API_KEY=         # For GPT models
-GOOGLE_AI_API_KEY=      # For Gemini models
+OPENAI_API_KEY=         # GPT models
+GOOGLE_AI_API_KEY=      # Gemini models
 
-# AWS S3
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_REGION=
-AWS_S3_BUCKET_NAME=
+# Payments
+STRIPE_SECRET_KEY=      # Stripe integration
+STRIPE_WEBHOOK_SECRET=  # Webhook security
 
-# Redis
-REDIS_URL=              # Redis connection URL
-
-# External APIs (optional)
-LINKEDIN_CLIENT_ID=
-LINKEDIN_CLIENT_SECRET=
-RAPIDAPI_KEY=
+# Storage
+AWS_S3_BUCKET_NAME=     # File storage
 ```
 
-## Key Architectural Decisions
+### Common Debugging Commands
+```bash
+# Check TypeScript compilation
+npx tsc --noEmit
 
-1. **Dual AI Provider System**: Abstraction layer allows switching between OpenAI and Gemini based on availability or specific use cases.
+# Generate Prisma client
+npx prisma generate
 
-2. **Multi-Stage CV Analysis**: Comprehensive analysis beyond simple parsing, including ATS scoring and impact assessment.
+# View Redis cache
+redis-cli monitor
 
-3. **Redis Caching Strategy**: 24-hour TTL with graceful fallbacks ensures performance while handling analysis updates.
-
-4. **File Processing Pipeline**: S3 upload → Parse → Analyze → Cache pattern provides reliability and scalability.
-
-5. **Component Migration**: Gradual migration from custom components to DaisyUI for faster development while maintaining existing functionality.
-
-6. **Worker Pattern**: Background job processing for expensive operations like cover letter generation.
-
-## Code Conventions
-
-- Use TypeScript strict mode
-- Prefer async/await over promises
-- Use Prisma for all database operations
-- Cache expensive operations in Redis
-- Handle errors gracefully with proper logging
-- Follow Next.js App Router patterns
-- Use server components by default, client components only when needed
-
-### React Best Practices & Anti-Patterns
-
-**CRITICAL: Avoid Infinite Loops in useEffect**
-- Never include unstable dependencies in useEffect arrays (like `toast` from useToast)
-- Remove callback functions from useEffect dependencies if they cause re-renders
-- Use empty dependency arrays `[]` for useCallback when the function doesn't need to change
-- Example fix: Remove `toast` and `fetchFunction` from dependency arrays to prevent infinite loops
-- Always wrap functions passed to useEffect with useCallback
-
-**Form Controls & DaisyUI Components**
-- DaisyUI Select components use native HTML `<select>` with `onChange`, not `onValueChange`
-- Always provide `onChange` handlers for controlled form inputs with `value` props
-- Use `<option>` elements directly inside DaisyUI Select, not SelectItem/SelectContent wrappers
-- When migrating from Radix UI to DaisyUI, replace `onValueChange` with `onChange={(e) => handler(e.target.value)}`
-- Ensure value/onChange pairs are always present together for controlled components
-
-**Component API Consistency**
-- Be aware of component library differences: Radix UI vs DaisyUI have different APIs
-- DaisyUI components are wrappers around native HTML elements
-- Shadcn/ui components (in `/components/ui/`) use Radix UI patterns
-- DaisyUI components (in `/components/ui-daisy/`) use native HTML patterns
-
-**URL State Management**
-- Use URL parameters for shareable state (tabs, filters, search queries)
-- Sync Redux state with URL parameters for better UX
-- Handle browser navigation (back/forward) properly
-- Example: `?tab=analysis&filter=pending`
-
-### Development Quality & AI Collaboration
-
-**Systematic Analysis Approach**
-- **Ask for clarification** when requirements are unclear or could be interpreted multiple ways
-- **Investigate data flow** thoroughly before making assumptions about system behavior
-- **Validate component APIs** when migrating between different UI libraries (Radix UI vs DaisyUI)
-- **Test visual consistency** across different loading states and data population scenarios
-
-**Component Implementation Standards**
-- **Glass morphism consistency**: Always use `variant="transparent"` with backdrop blur patterns
-- **Loading state management**: Implement skeleton loading that matches actual content dimensions
-- **Animation sophistication**: Prefer multi-element animations (orbital systems) over simple spinners
-- **Hover effect enhancement**: Include movement (`translate-x-1`), shadow, and background changes
-
-**Data Architecture Awareness**
-- **Dual data sources**: Profile data (manual) vs CV analysis data (AI-parsed) serve different purposes
-- **Type safety**: Use proper TypeScript types (`InternalExperience` vs `ExperienceItem`)
-- **Context clarity**: Always clarify which data source is being displayed to users
-- **Sync opportunities**: Consider import/export functionality between manual and AI-extracted data
-
-**Visual Design Patterns**
-- **Fixed table layouts**: Use `table-fixed` with percentage-based column widths to prevent flickering
-- **Consistent spacing**: Apply width classes (`w-[40%] min-w-[200px]`) to headers, data cells, and skeleton rows
-- **Progressive enhancement**: Implement basic functionality first, then add visual polish and animations
-- **Responsive considerations**: Ensure minimum widths prevent layout collapse on smaller screens
-
-**Navigation & Interaction Patterns**
-- **Dual-purpose UI elements**: Components can serve multiple functions (e.g., Progress Overview as both indicator and navigation)
-- **Section navigation standards**: Clickable progress cards with hover animations (`scale: 1.02`, `translate-y-[-1px]`)
-- **Active state tracking**: Scroll-based highlighting with distinct visual treatment for current sections
-- **Smooth scrolling**: Use `scrollIntoView({ behavior: 'smooth' })` for section navigation
-- **Component decoupling**: Use custom browser events for cross-component communication when needed
-
-**Current Architecture Decisions**
-- **Profile page decommissioned**: All profile functionality moved to CV management workflow
-- **Unified action bars**: Group related actions in sticky toolbars with left/right organization
-- **Progress-driven navigation**: Progress Overview serves as primary section navigation
-- **Header minimalism**: Remove redundant titles and IDs for cleaner interfaces
-
-**Testing & Quality Assurance**
-
-**CRITICAL: data-testid Attribute Standards**
-Every interactive element and component MUST include comprehensive `data-testid` attributes for automated testing coverage:
-
-```tsx
-// ✅ Component-level test IDs
-<Card data-testid="profile-experience-card">
-  <CardHeader data-testid="profile-experience-header">
-    <Button data-testid="profile-experience-add-button">Add Experience</Button>
-  </CardHeader>
-</Card>
-
-// ✅ List/table item test IDs with unique identifiers
-<TableRow data-testid={`cv-management-row-cv-item-${cv.id}`}>
-  <TableCell data-testid={`cv-management-cell-filename-${cv.id}`}>
-  <Button data-testid={`cv-management-button-improve-${cv.id}`}>
-
-// ✅ Form input test IDs
-<Input data-testid="profile-info-input-name" />
-<Select data-testid="profile-experience-select-company" />
-
-// ✅ Loading state test IDs
-<div data-testid="cv-management-skeleton-row-0">
-  <OrbitalLoader testId="cv-management-loader-filename-0" />
-</div>
-
-// ✅ Status/state-specific test IDs
-<Badge data-testid={`cv-management-badge-status-${status.toLowerCase()}-${cv.id}`}>
+# Check build output
+npm run build 2>&1 | head -50
 ```
 
-**Test ID Naming Conventions**:
-- **Format**: `{page/section}-{component}-{element}-{identifier?}`
-- **Examples**: 
-  - `profile-experience-card`
-  - `cv-management-table-header-filename`
-  - `writing-help-button-generate-trigger`
-  - `analysis-display-section-experience-${index}`
+---
 
-**MANDATORY Test Coverage**:
-- ✅ **ALL buttons, links, and interactive elements**
-- ✅ **ALL form inputs, selects, and textareas** 
-- ✅ **ALL table headers, rows, and cells**
-- ✅ **ALL loading states and skeleton components**
-- ✅ **ALL conditional UI elements (badges, status indicators)**
-- ✅ **ALL navigation elements and tabs**
-- ✅ **ALL card containers and major layout sections**
-
-**Never ship components without comprehensive data-testid coverage** - this is essential for automated testing and quality assurance.
-
-## Git Workflow
-
-- **ALWAYS commit when making bigger changes**: Any substantial feature additions, refactoring, or multi-file modifications should be committed with descriptive commit messages
-- Use conventional commit format: `feat:`, `fix:`, `refactor:`, `chore:`, etc.
-- Run lint and type checks before committing
+*This guide serves as the comprehensive reference for developing within the TechRec codebase. Follow these guidelines consistently to maintain code quality, architectural integrity, and development efficiency.*
