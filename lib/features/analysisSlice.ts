@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { REHYDRATE } from 'redux-persist';
 import type { RootState } from '../store';
 import { CvAnalysisData, CvImprovementSuggestion } from '@/types/cv'; // Import relevant types
 import { set } from 'lodash'; // For applying suggestions
@@ -171,7 +170,6 @@ export const analysisSlice = createSlice({
     },
     // Action to clear the current analysis state
     clearAnalysis: (state) => {
-      console.log('[analysisSlice Reducer] clearAnalysis - Resetting state.');
       // Return initialState instead of modifying state directly for a full reset
       return initialState;
     },
@@ -180,7 +178,6 @@ export const analysisSlice = createSlice({
     builder
       // Fetch Analysis By ID handlers
       .addCase(fetchAnalysisById.pending, (state, action) => {
-        console.log('[analysisSlice Reducer] fetchAnalysisById.pending - Setting status to loading for ID:', action.meta.arg);
         state.status = 'loading';
         state.error = null;
         state.analysisData = null; // Clear previous data while loading
@@ -189,7 +186,6 @@ export const analysisSlice = createSlice({
         state.currentAnalysisId = null;
       })
       .addCase(fetchAnalysisById.fulfilled, (state, action) => {
-        console.log('[analysisSlice Reducer] fetchAnalysisById.fulfilled - Received Payload:', action.payload);
         const payload = action.payload;
         if (payload && payload.id) {
           // Combine analysisResult and cv into the state.analysisData
@@ -200,16 +196,12 @@ export const analysisSlice = createSlice({
             ...analysisResultData,
             cv: cvData
           } as CvAnalysisData; // Assert the combined type
-          console.log('[analysisSlice Reducer] Combined data before setting state:', combinedData);
 
           state.status = 'succeeded';
           state.currentAnalysisId = payload.id;
           state.analysisData = combinedData;
           state.originalData = combinedData ? JSON.parse(JSON.stringify(combinedData)) : null;
           
-          // Log state AFTER update for debugging
-          const stateToLog = { ...state };
-          console.log('[analysisSlice Reducer] State AFTER fulfilled update:', stateToLog);
         }
       })
       .addCase(fetchAnalysisById.rejected, (state, action) => {
@@ -219,24 +211,20 @@ export const analysisSlice = createSlice({
       })
       // Fetch Suggestions handlers
       .addCase(fetchSuggestions.pending, (state) => {
-        console.log('[analysisSlice Reducer] fetchSuggestions.pending - Setting status to suggesting.');
         state.status = 'suggesting';
         state.error = null; // Clear previous errors
       })
       .addCase(fetchSuggestions.fulfilled, (state, action) => {
-        console.log('[analysisSlice Reducer] fetchSuggestions.fulfilled - Suggestions received.');
         state.status = 'succeeded'; // Back to succeeded after suggestions load
         state.suggestions = action.payload;
       })
       .addCase(fetchSuggestions.rejected, (state, action) => {
-        console.log('[analysisSlice Reducer] fetchSuggestions.rejected - Failed to get suggestions.');
         state.status = 'failed'; // Or back to 'succeeded' if suggestions are optional?
         state.error = action.payload as string ?? action.error.message ?? 'Failed to fetch suggestions';
         state.suggestions = []; // Clear suggestions on error
       })
       // Fetch Latest Analysis handlers
       .addCase(fetchLatestAnalysis.pending, (state) => {
-        console.log('[analysisSlice Reducer] fetchLatestAnalysis.pending - Setting status to loading.');
         state.status = 'loading';
         state.error = null;
         state.analysisData = null;
@@ -245,7 +233,6 @@ export const analysisSlice = createSlice({
         state.currentAnalysisId = null;
       })
       .addCase(fetchLatestAnalysis.fulfilled, (state, action) => {
-        console.log('[analysisSlice Reducer] fetchLatestAnalysis.fulfilled - Received latest analysis:', action.payload);
         const payload = action.payload;
         if (payload && payload.id) {
           const analysisResultData = payload.analysisResult || {};
@@ -263,18 +250,15 @@ export const analysisSlice = createSlice({
         }
       })
       .addCase(fetchLatestAnalysis.rejected, (state, action) => {
-        console.log('[analysisSlice Reducer] fetchLatestAnalysis.rejected - Setting status to failed.');
         state.status = 'failed';
         state.error = action.payload as string ?? action.error.message ?? 'Failed to fetch latest analysis';
       })
       // Save Analysis Version handlers
       .addCase(saveAnalysisVersion.pending, (state) => {
-        console.log('[analysisSlice Reducer] saveAnalysisVersion.pending - Setting status to loading.');
         state.status = 'loading';
         state.error = null;
       })
       .addCase(saveAnalysisVersion.fulfilled, (state, action) => {
-        console.log('[analysisSlice Reducer] saveAnalysisVersion.fulfilled - New version saved:', action.payload);
         const payload = action.payload;
         if (payload && payload.analysisId) {
           // Update the current analysis ID to the new version
@@ -287,26 +271,8 @@ export const analysisSlice = createSlice({
         }
       })
       .addCase(saveAnalysisVersion.rejected, (state, action) => {
-        console.log('[analysisSlice Reducer] saveAnalysisVersion.rejected - Failed to save version.');
         state.status = 'failed';
         state.error = action.payload as string ?? action.error.message ?? 'Failed to save analysis version';
-      })
-      // Handle Redux Persist REHYDRATE action
-      .addCase(REHYDRATE, (state, action: any) => {
-        console.log('[analysisSlice Reducer] REHYDRATE - Handling rehydration');
-        if (action.payload && action.payload.analysis) {
-          const rehydratedState = action.payload.analysis;
-          // If we have analysis data but status is 'idle', set it to 'succeeded'
-          if (rehydratedState.analysisData && rehydratedState.status === 'idle') {
-            console.log('[analysisSlice Reducer] REHYDRATE - Setting status to succeeded because data exists');
-            return {
-              ...rehydratedState,
-              status: 'succeeded' as AnalysisStatus
-            };
-          }
-          return rehydratedState;
-        }
-        return state;
       });
   },
 });
