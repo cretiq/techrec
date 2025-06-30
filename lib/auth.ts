@@ -1,7 +1,10 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from 'next-auth/providers/github'
+import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '../prisma/prisma'
+import { getUserByEmail } from './dal/users'
+import bcrypt from 'bcrypt'
 
 // Extend the built-in session types
 declare module 'next-auth' {
@@ -32,6 +35,43 @@ export const authOptions: NextAuthOptions = {
         },
       },
     }),
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "user@example.com" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const user = await getUserByEmail(credentials.email);
+
+        if (!user || !user.hashedPassword) {
+          // User not found or is an OAuth user without a password
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+
+        if (isPasswordValid) {
+          // Any object returned will be saved in `user` property of the JWT
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: null, // Credentials users don't have an image from a provider
+          };
+        } else {
+          // Password incorrect
+          return null;
+        }
+      }
+    })
   ],
   callbacks: {
     async signIn({ user, account }) {
@@ -77,6 +117,9 @@ export const authOptions: NextAuthOptions = {
           console.error('Error storing GitHub token:', error)
           return false
         }
+      } else if (account?.provider === 'credentials') {
+        // For credentials, the user object already has the correct ID from authorize()
+        return true
       }
       return false
     },
