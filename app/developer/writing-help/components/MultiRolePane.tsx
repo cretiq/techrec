@@ -1,9 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import {  Card, CardContent  } from '@/components/ui-daisy/card';
+import {  Card, CardContent, CardHeader, CardTitle, CardDescription  } from '@/components/ui-daisy/card';
+import {  Button  } from '@/components/ui-daisy/button';
 import { motion } from "framer-motion";
+import { X } from "lucide-react";
+import { useDispatch } from 'react-redux';
 import { Role } from "@/types/role";
+import { toggleRoleSelection } from '@/lib/features/selectedRolesSlice';
+import { AppDispatch } from '@/lib/store';
 import { CoverLetterCreator } from "./cover-letter-creator";
 import { OutreachMessageGenerator } from "./outreach-message-generator";
 import { CVOptimizer } from "./cv-optimizer";
@@ -21,10 +26,39 @@ export function MultiRolePane({
     generationTrigger, 
     onGenerationComplete 
 }: MultiRolePaneProps) {
+    const dispatch = useDispatch<AppDispatch>();
     const paneId = `pane-${role.id}`;
 
+    const handleRemoveRole = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        dispatch(toggleRoleSelection(role));
+    };
+
     return (
-        <Card className="" data-testid={`write-multirole-card-${role.id}`}>
+        <Card className="relative" data-testid={`write-multirole-card-${role.id}`}>
+            <CardHeader className="pb-2 relative">
+                <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                        <CardTitle className="line-clamp-1" data-testid={`write-multirole-title-${role.id}`}>
+                            {role.title}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-1" data-testid={`write-multirole-company-${role.id}`}>
+                            {role.company?.name || 'Unknown Company'}
+                        </CardDescription>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleRemoveRole}
+                        className="flex-shrink-0 h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10"
+                        aria-label="Remove role"
+                        title="Remove role"
+                        data-testid={`write-multirole-remove-button-${role.id}`}
+                    >
+                        <X className="h-4 w-4" />
+                    </Button>
+                </div>
+            </CardHeader>
             <motion.div
                 key="content"
                 id={paneId}
