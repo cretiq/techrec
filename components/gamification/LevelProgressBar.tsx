@@ -58,7 +58,7 @@ export function LevelProgressBar({
 }: LevelProgressBarProps) {
   const { totalXP, currentLevel, levelProgress, subscriptionTier, nextLevelXP, currentLevelXP } = userProfile;
   
-  const tierStyle = tierColors[subscriptionTier];
+  const tierStyle = tierColors[subscriptionTier || 'FREE'];
   const levelInfo = XPCalculator.getLevelInfo(currentLevel);
   const nextMilestone = XPCalculator.getNextMilestone(totalXP);
   
@@ -82,10 +82,10 @@ export function LevelProgressBar({
               transition={{ duration: 0.2 }}
               data-testid="gamification-level-icon"
             >
-              {subscriptionTier === 'EXPERT' && <Star className="w-5 h-5 text-orange-600" />}
-              {subscriptionTier === 'PRO' && <Zap className="w-5 h-5 text-purple-600" />}
-              {subscriptionTier === 'STARTER' && <Trophy className="w-5 h-5 text-green-600" />}
-              {(subscriptionTier === 'BASIC' || subscriptionTier === 'FREE') && <Trophy className={`w-5 h-5 ${tierStyle.text}`} />}
+              {(subscriptionTier || 'FREE') === 'EXPERT' && <Star className="w-5 h-5 text-orange-600" />}
+              {(subscriptionTier || 'FREE') === 'PRO' && <Zap className="w-5 h-5 text-purple-600" />}
+              {(subscriptionTier || 'FREE') === 'STARTER' && <Trophy className="w-5 h-5 text-green-600" />}
+              {((subscriptionTier || 'FREE') === 'BASIC' || (subscriptionTier || 'FREE') === 'FREE') && <Trophy className={`w-5 h-5 ${tierStyle.text}`} />}
               
               {/* Tier glow effect */}
               <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${tierStyle.bg} opacity-50 blur-md -z-10`} />
@@ -99,9 +99,9 @@ export function LevelProgressBar({
                 <Badge 
                   variant="outline" 
                   className={`${tierStyle.border} ${tierStyle.text} bg-gradient-to-r ${tierStyle.bg}`}
-                  data-testid={`gamification-tier-badge-${subscriptionTier.toLowerCase()}`}
+                  data-testid={`gamification-tier-badge-${(subscriptionTier || 'FREE').toLowerCase()}`}
                 >
-                  {subscriptionTier.charAt(0) + subscriptionTier.slice(1).toLowerCase()}
+                  {(subscriptionTier || 'FREE').charAt(0) + (subscriptionTier || 'FREE').slice(1).toLowerCase()}
                 </Badge>
               </div>
               <p className="text-sm text-base-content/70" data-testid="gamification-level-subtitle">
@@ -259,7 +259,7 @@ export function LevelProgressBar({
 // Compact version for sidebar use
 export function CompactLevelProgress({ userProfile, className = '' }: LevelProgressBarProps) {
   const { totalXP, currentLevel, levelProgress, subscriptionTier } = userProfile;
-  const tierStyle = tierColors[subscriptionTier];
+  const tierStyle = tierColors[subscriptionTier || 'FREE'];
   
   return (
     <div 
