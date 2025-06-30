@@ -1,598 +1,787 @@
-# Gamification Strategy for TechRec Platform
+# TechRec Gamification System - Technical Documentation
 
 ## Executive Summary
 
-This comprehensive gamification strategy transforms TechRec's existing sophisticated progress tracking into an engaging career advancement game. By building on the platform's strong foundations—multi-dimensional CV scoring, AI-powered improvements, and batch application workflows—we'll create a system that motivates consistent engagement while maintaining focus on real career outcomes.
+TechRec implements a comprehensive subscription-based gamification system that combines XP progression, achievement tracking, streak mechanics, and a points-based economy. The system is built on a dual-tier architecture where **XP levels** provide intrinsic motivation and social recognition, while **subscription tiers** enable premium features through a points-based economy.
 
-**Core Philosophy**: Gamify the journey to career success, not just platform engagement.
+**Core Philosophy**: Gamify career advancement through sustainable engagement that rewards both consistent platform usage and real professional development.
 
-## 1. User Journey Analysis
+## Architecture Overview
 
-### Current User Experience Strengths
-- **Sophisticated Progress Tracking**: 0-100% completion across CV sections (Contact, Summary, Skills, Experience, Education)
-- **AI-Powered Optimization**: Real-time suggestions with accept/decline tracking
-- **Batch Processing**: Multi-role applications with progress visualization
-- **State Persistence**: User preferences and data maintained across sessions
-- **Visual Polish**: Glass morphism UI with smooth animations and transitions
+### Dual-Progression System
 
-### Identified Pain Points & Opportunities
-1. **Motivation Gaps**: No rewards for consistency or milestone achievements
-2. **Progress Stagnation**: Static completion percentages without growth incentive
-3. **AI Underutilization**: Sophisticated suggestion system lacks engagement mechanics
-4. **Application Optimization**: No feedback loop for improving application success rates
-5. **Long-term Engagement**: Missing elements to retain users beyond initial profile creation
+The gamification system operates on two complementary progression tracks:
 
-## 2. Gamification Framework Design
+1. **XP-Based Levels** (1-30+): Free progression system for all users
+   - Earned through platform activities (CV uploads, applications, profile updates)
+   - Provides social recognition and unlocks achievements
+   - Powers leaderboards and peer comparison
+   - Enhanced by subscription tier multipliers
 
-### 2.1 Core Mechanics
+2. **Subscription-Based Points Economy**: Premium resource management
+   - Monthly point allocations based on subscription tier
+   - Consumed for premium actions (job queries, AI suggestions, cover letters)
+   - Efficiency bonuses for higher tiers (better points-to-value ratio)
+   - Bonus points earned through achievements and streaks
 
-#### **Profile Power Score (Enhanced Scoring System)**
-Replaces static 0-100% completion with dynamic scoring:
+### Technology Stack
 
-```typescript
-interface ProfilePowerScore {
-  totalScore: number;        // 0-1000 points
-  level: number;            // 1-50 levels
-  tier: ProfileTier;        // Bronze, Silver, Gold, Platinum, Diamond
-  breakdown: {
-    completeness: number;   // Base completion score (0-400)
-    quality: number;        // AI-assessed content quality (0-300)
-    optimization: number;   // AI suggestions implemented (0-200)
-    freshness: number;      // Recent updates bonus (0-100)
-  };
-  nextLevelThreshold: number;
-  improvementSuggestions: string[];
+- **Backend**: Next.js 15.2+ API routes with Prisma ORM
+- **Database**: MongoDB with strategic indexing for gamification queries
+- **Caching**: Redis for configuration and leaderboard performance
+- **State Management**: Redux with persistence for user progress
+- **Payments**: Stripe integration with webhook security
+- **Real-time Updates**: Event-driven architecture for instant feedback
+
+## Database Schema & Architecture
+
+### Core Gamification Models
+
+```prisma
+model Developer {
+  // Existing user fields...
+  
+  // XP and Level System
+  totalXP              Int              @default(0)
+  currentLevel         Int              @default(1)
+  streak               Int              @default(0)
+  lastActivityDate     DateTime?
+
+  // Subscription System
+  subscriptionTier     SubscriptionTier @default(FREE)
+  subscriptionStatus   String           @default("active")
+  subscriptionId       String?          @unique
+  customerId           String?          @unique
+  subscriptionStart    DateTime?
+  subscriptionEnd      DateTime?
+  
+  // Points Economy
+  monthlyPoints        Int              @default(0)
+  pointsUsed           Int              @default(0)
+  pointsEarned         Int              @default(0)
+  totalPointsUsed      Int              @default(0)
+  totalPointsEarned    Int              @default(0)
+  pointsResetDate      DateTime?
+
+  // Relations
+  userBadges           UserBadge[]
+  xpTransactions       XPTransaction[]
+  pointsTransactions   PointsTransaction[]
+  dailyChallenges      DailyChallenge[]
+  gamePreferences      GamePreferences?
+
+  // Performance Indexes
+  @@index([totalXP])
+  @@index([currentLevel])
+  @@index([subscriptionTier])
+  @@index([subscriptionTier, totalXP])     // Tier-specific leaderboards
+  @@index([pointsResetDate, subscriptionTier])
 }
 
-enum ProfileTier {
-  BRONZE = 'Bronze',      // 0-199 points
-  SILVER = 'Silver',      // 200-399 points  
-  GOLD = 'Gold',          // 400-599 points
-  PLATINUM = 'Platinum',  // 600-799 points
-  DIAMOND = 'Diamond'     // 800-1000 points
+enum SubscriptionTier {
+  FREE
+  BASIC
+  STARTER
+  PRO
+  EXPERT
+}
+
+model XPTransaction {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  developerId  String    @db.ObjectId
+  amount       Int
+  source       XPSource
+  sourceId     String?
+  description  String
+  earnedAt     DateTime  @default(now())
+  
+  developer    Developer @relation(fields: [developerId], references: [id])
+  
+  @@index([developerId])
+  @@index([earnedAt])
+  @@index([source])
+}
+
+model PointsTransaction {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  developerId  String         @db.ObjectId
+  amount       Int            // Negative for spending, positive for earning
+  source       PointsSource?  // For earning transactions
+  spendType    PointsSpendType? // For spending transactions
+  sourceId     String?
+  description  String
+  metadata     Json?
+  createdAt    DateTime       @default(now())
+  
+  developer    Developer      @relation(fields: [developerId], references: [id])
+  
+  @@index([developerId])
+  @@index([createdAt])
+  @@index([spendType])
+}
+
+model UserBadge {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  developerId  String         @db.ObjectId
+  badgeId      String
+  earnedAt     DateTime       @default(now())
+  progress     Float          @default(1.0)
+  
+  developer    Developer      @relation(fields: [developerId], references: [id])
+  
+  @@index([developerId])
+  @@index([badgeId])
+  @@unique([developerId, badgeId])
+}
+
+model DailyChallenge {
+  id               String              @id @default(auto()) @map("_id") @db.ObjectId
+  developerId      String              @db.ObjectId
+  title            String
+  description      String
+  type             ChallengeType
+  targetValue      Int
+  currentProgress  Int                 @default(0)
+  xpReward         Int
+  pointsReward     Int                 @default(0)
+  difficulty       ChallengeDifficulty
+  completedAt      DateTime?
+  expiresAt        DateTime
+  createdAt        DateTime            @default(now())
+  
+  developer        Developer           @relation(fields: [developerId], references: [id])
+  
+  @@index([developerId])
+  @@index([expiresAt])
+  @@index([completedAt])
 }
 ```
 
-#### **Achievement System**
-Building on existing progress tracking:
+### Enums and Types
 
-**Profile Builder Achievements**
-- 🏠 **"Contact Master"** - Complete all contact information fields
-- 📝 **"Story Teller"** - Write compelling summary (200+ chars + AI approved)
-- 🎯 **"Skill Collector"** - Add 10+ relevant skills
-- 💼 **"Experience Expert"** - Add detailed work history with quantified achievements
-- 🎓 **"Education Elite"** - Complete education section with relevant details
+```prisma
+enum XPSource {
+  CV_UPLOADED
+  CV_ANALYSIS_COMPLETED
+  CV_IMPROVEMENT_APPLIED
+  APPLICATION_SUBMITTED
+  PROFILE_SECTION_UPDATED
+  SKILL_ADDED
+  DAILY_LOGIN
+  ACHIEVEMENT_UNLOCKED
+  CHALLENGE_COMPLETED
+  STREAK_MILESTONE
+  BADGE_EARNED
+  LEVEL_UP
+}
 
-**AI Collaboration Achievements**
-- 🤖 **"AI Whisperer"** - Accept first AI suggestion
-- ⚡ **"Optimization Enthusiast"** - Accept 10+ AI suggestions
-- 🔄 **"Iteration Master"** - Complete 3+ CV analysis cycles
-- 🎨 **"Content Creator"** - Generate 5+ cover letters
-- 🚀 **"Suggestion Seeker"** - Request AI analysis 5+ times
+enum PointsSource {
+  ACHIEVEMENT_BONUS
+  STREAK_BONUS
+  LEVEL_BONUS
+  PROMOTIONAL
+}
 
-**Application Performance Achievements**
-- 📤 **"Multi-Applier"** - Apply to 5+ roles in one session
-- 🎯 **"Precision Applicant"** - Achieve 20%+ interview rate
-- 📈 **"Success Optimizer"** - Improve application metrics over time
-- 💌 **"Personal Touch"** - Generate custom cover letters for 10+ applications
-- 🏆 **"Interview Getter"** - Receive 3+ interview invitations
-
-**Consistency & Engagement Achievements**
-- 🔥 **"Streak Starter"** - 7-day login streak
-- ⚡ **"Momentum Builder"** - 30-day login streak
-- 🌟 **"Platform Pro"** - 90-day active user
-- 📊 **"Progress Tracker"** - Complete daily goal 7 days in a row
-- 🎖️ **"Career Champion"** - Achieve Diamond tier profile
-
-### 2.2 Engagement Mechanics
-
-#### **Daily Challenges & Goals System**
-Integrated with existing workflows:
-
-```typescript
-interface DailyChallenge {
-  id: string;
-  title: string;
-  description: string;
-  type: ChallengeType;
-  targetValue: number;
-  currentProgress: number;
-  rewards: Reward[];
-  expiresAt: Date;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+enum PointsSpendType {
+  JOB_QUERY
+  COVER_LETTER
+  OUTREACH_MESSAGE
+  CV_SUGGESTION
+  PREMIUM_ANALYSIS
+  ADVANCED_SEARCH
 }
 
 enum ChallengeType {
-  PROFILE_UPDATE = 'profile_update',
-  AI_INTERACTION = 'ai_interaction', 
-  APPLICATION_ACTIVITY = 'application_activity',
-  SKILL_DEVELOPMENT = 'skill_development',
-  CONTENT_GENERATION = 'content_generation'
+  PROFILE_UPDATE
+  AI_INTERACTION
+  APPLICATION_ACTIVITY
+  SKILL_DEVELOPMENT
+  CONTENT_GENERATION
+  STREAK_MAINTENANCE
+}
+
+enum ChallengeDifficulty {
+  Easy
+  Medium
+  Hard
 }
 ```
 
-**Sample Daily Challenges**:
-- 📝 **Profile Polish**: Update 2 sections of your profile (+50 points)
-- 🤖 **AI Advisor**: Accept 3 AI suggestions (+75 points)
-- 🎯 **Application Focus**: Apply to 2 relevant roles (+100 points)
-- ⚡ **Quick Win**: Complete 1 suggested improvement (+25 points)
-- 📊 **Progress Push**: Increase overall score by 5% (+125 points)
+## Backend Architecture
 
-#### **Streak System**
-Building on existing state persistence:
+### Core Services
+
+#### ConfigService (`utils/configService.ts`)
+Dynamic configuration management with Redis caching:
 
 ```typescript
-interface StreakData {
-  loginStreak: number;
-  lastLoginDate: Date;
-  profileUpdateStreak: number;
-  aiInteractionStreak: number;
-  applicationStreak: number;
-  streakRewards: StreakReward[];
+export interface SubscriptionTierConfig {
+  price: number;
+  monthlyPoints: number;
+  xpMultiplier: number;
+  features: string[];
+}
+
+export interface PointsCosts {
+  JOB_QUERY: number;
+  COVER_LETTER: number;
+  OUTREACH_MESSAGE: number;
+  CV_SUGGESTION: number;
+  PREMIUM_ANALYSIS: number;
+  ADVANCED_SEARCH: number;
+}
+
+export class ConfigService {
+  // Singleton pattern with Redis caching
+  async getSubscriptionTiers(): Promise<SubscriptionTiers>
+  async getPointsCosts(): Promise<PointsCosts>
+  async getXPRewards(): Promise<XPRewards>
+  async updateConfiguration(key: string, config: any): Promise<void>
 }
 ```
 
-**Streak Rewards**:
-- 🔥 **7 days**: Profile visibility boost (featured in search)
-- ⚡ **14 days**: Premium AI analysis (advanced insights)
-- 🌟 **30 days**: Custom profile badge
-- 🏆 **60 days**: Priority customer support
-- 💎 **90 days**: Exclusive career consultation session
+**Features:**
+- Redis caching with 24-hour TTL
+- Database fallback for configuration
+- Version control for config changes
+- Real-time updates without deployment
 
-### 2.3 Social & Competitive Elements
-
-#### **Anonymous Performance Comparison**
-Leveraging existing analytics without compromising privacy:
+#### PointsManager (`lib/gamification/pointsManager.ts`)
+Atomic points management with race condition protection:
 
 ```typescript
-interface PeerComparison {
-  userPercentile: number;        // "Better than X% of similar profiles"
-  industryBenchmark: number;     // Average score for user's industry
-  improvementPotential: number;  // Points to reach top 25%
-  anonymizedSuccessStories: SuccessStory[];
+export class PointsManager {
+  // Core point calculations
+  static calculateAvailablePoints(monthly: number, used: number, earned: number): number
+  static async getPointsCost(action: PointsSpendType): Promise<number>
+  static async getEffectiveCost(spendType: PointsSpendType, tier: SubscriptionTier): Promise<number>
+  
+  // Atomic operations with transaction isolation
+  static async spendPointsAtomic(
+    prisma: any,
+    userId: string,
+    spendType: PointsSpendType,
+    sourceId?: string,
+    metadata?: Record<string, any>
+  ): Promise<PointsSpendResult>
+  
+  // Tier efficiency bonuses
+  static async getPointsEfficiencyMultiplier(tier: SubscriptionTier): Promise<number>
+  
+  // Validation and security
+  static async validatePointsSpend(spend: PointsSpend): Promise<{ isValid: boolean; reason?: string }>
+  static validatePointsAward(award: PointsAward): { isValid: boolean; reason?: string }
 }
 ```
 
-#### **Leaderboard System**
-Monthly rankings with privacy protection:
+**Key Features:**
+- Serializable transaction isolation prevents race conditions
+- Tier-based efficiency bonuses (Expert tier gets 20% better value)
+- Comprehensive validation against manipulation
+- Audit trail for all transactions
 
-- **Profile Quality Leaders** (Diamond tier users)
-- **AI Optimization Champions** (Most suggestions implemented)
-- **Application All-Stars** (Best application success rates)
-- **Community Contributors** (Most helpful to platform improvement)
-
-#### **Success Story Integration**
-Anonymous case studies showing gamification impact:
+#### EventManager (`lib/gamification/eventManager.ts`)
+Event-driven architecture for XP and points awarding:
 
 ```typescript
-interface SuccessStory {
-  id: string;
-  profileTierBefore: ProfileTier;
-  profileTierAfter: ProfileTier;
-  timeToImprovement: number; // days
-  keyActions: string[];      // "Implemented 12 AI suggestions", "Updated weekly for 4 weeks"
-  outcome: string;          // "Increased interview rate by 40%"
-  industry: string;         // For relevance
+export class EventManager {
+  // XP awarding with subscription tier multipliers
+  static async awardXP(event: XPAward): Promise<XPAwardResponse>
+  
+  // Badge evaluation and unlocking
+  static async evaluateBadges(userId: string): Promise<BadgeDefinition[]>
+  
+  // Challenge progress tracking
+  static async updateChallengeProgress(userId: string, event: GamificationEvent): Promise<void>
+  
+  // Streak management with bonus calculations
+  static async updateStreak(userId: string): Promise<{ newStreak: number; bonusXP?: number }>
 }
 ```
 
-## 3. Enhanced User Experience Design
+### API Endpoints
 
-### 3.1 Visual Enhancements
-
-#### **Achievement Badge Display**
-Integrated into existing ProfileScoringSidebar:
-
-```tsx
-// Enhanced badge system with tier-based styling
-<div className="flex flex-wrap gap-2 mt-4">
-  {achievements.map(achievement => (
-    <motion.div
-      key={achievement.id}
-      whileHover={{ scale: 1.05 }}
-      className={`
-        inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium
-        ${achievement.tier === 'gold' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : ''}
-        ${achievement.tier === 'silver' ? 'bg-gray-100 text-gray-800 border border-gray-200' : ''}
-        ${achievement.tier === 'bronze' ? 'bg-orange-100 text-orange-800 border border-orange-200' : ''}
-      `}
-      data-testid={`achievement-badge-${achievement.id}`}
-    >
-      <span className="text-lg">{achievement.emoji}</span>
-      <span>{achievement.title}</span>
-    </motion.div>
-  ))}
-</div>
-```
-
-#### **Progress Celebration Animations**
-Building on existing Framer Motion setup:
-
-```tsx
-// Milestone celebration component
-<AnimatePresence>
-  {showCelebration && (
-    <motion.div
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0, opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm"
-    >
-      <motion.div
-        initial={{ y: 50 }}
-        animate={{ y: 0 }}
-        className="bg-white rounded-2xl p-8 text-center shadow-2xl"
-      >
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: 2 }}
-          className="text-6xl mb-4"
-        >
-          🏆
-        </motion.div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Congratulations!</h2>
-        <p className="text-gray-600">{celebrationMessage}</p>
-      </motion.div>
-    </motion.div>
-  )}
-</AnimatePresence>
-```
-
-### 3.2 Dashboard Integration
-
-#### **Gamification Dashboard Widget**
-New component for developer dashboard:
-
-```tsx
-interface GamificationDashboardProps {
-  profileScore: ProfilePowerScore;
-  todaysChallenges: DailyChallenge[];
-  streakData: StreakData;
-  recentAchievements: Achievement[];
-  peerComparison: PeerComparison;
-}
-
-// Integrated into existing dashboard layout
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <div className="lg:col-span-2">
-    <GamificationOverview {...gamificationProps} />
-  </div>
-  <div className="space-y-6">
-    <ProfileScoringSidebar />
-    <QuickActions />
-  </div>
-</div>
-```
-
-## 4. Technical Implementation Strategy
-
-### 4.1 Database Schema Extensions
-
-#### **New Collections/Models**
+#### Gamification Core APIs
 
 ```typescript
-// Achievements system
-interface Achievement {
-  id: string;
-  userId: string;
-  achievementType: string;
-  unlockedAt: Date;
-  progress: number;
-  metadata: Record<string, any>;
-}
+// XP and Level Management
+GET    /api/gamification/profile          // Get user's complete gamification profile
+POST   /api/gamification/award-xp        // Award XP for user actions
+GET    /api/gamification/leaderboard     // Get tier-specific leaderboards
 
-// User gamification data
-interface UserGamification {
-  userId: string;
-  profileScore: ProfilePowerScore;
-  streakData: StreakData;
-  dailyChallenges: DailyChallenge[];
-  lifetimeStats: {
-    totalPointsEarned: number;
-    achievementsUnlocked: number;
-    aiSuggestionsAccepted: number;
-    applicationsSubmitted: number;
-    loginDays: number;
-  };
-  preferences: {
-    showComparisons: boolean;
-    challengeReminders: boolean;
-    achievementNotifications: boolean;
-  };
-}
+// Points Economy
+GET    /api/gamification/points          // Get user's points balance
+POST   /api/gamification/points          // Spend points for actions
+GET    /api/gamification/points/history  // Get points transaction history
 
-// Leaderboard entries
-interface LeaderboardEntry {
-  id: string;
-  userId: string;
-  category: string;
-  score: number;
-  rank: number;
-  period: string; // 'weekly', 'monthly', 'all-time'
-  metadata: Record<string, any>;
-}
+// Achievements and Badges
+GET    /api/gamification/badges          // Get user's earned badges
+POST   /api/gamification/badges/check    // Check for new badge eligibility
+GET    /api/gamification/badges/available // Get all available badges
+
+// Challenges and Streaks
+GET    /api/gamification/challenges      // Get active daily challenges
+POST   /api/gamification/challenges/complete // Complete a challenge
+GET    /api/gamification/streak          // Get current streak information
+
+// Configuration (Admin)
+GET    /api/admin/config                 // Get current configuration
+POST   /api/admin/config                 // Update configuration
 ```
 
-#### **Existing Model Extensions**
+#### Subscription Management APIs
 
 ```typescript
-// Extend existing User model
-interface User {
-  // ... existing fields
-  gamification: {
-    profileScore: number;
-    level: number;
-    tier: ProfileTier;
-    joinedAt: Date;
-    lastActiveAt: Date;
-  };
-}
+// Stripe Integration
+POST   /api/subscription/create          // Create new subscription
+PUT    /api/subscription/update          // Update subscription tier
+DELETE /api/subscription/cancel          // Cancel subscription
+POST   /api/subscription/webhook         // Stripe webhook handler
 
-// Extend CV analysis tracking
-interface CVAnalysis {
-  // ... existing fields
-  gamificationEvents: {
-    pointsAwarded: number;
-    achievementsUnlocked: string[];
-    challengesCompleted: string[];
-  };
-}
+// Subscription Info
+GET    /api/subscription/tiers           // Get available subscription tiers
+GET    /api/subscription/usage           // Get user's usage statistics
 ```
 
-### 4.2 API Endpoints
+### Stripe Integration
 
-#### **New Gamification API Routes**
+#### StripeService (`utils/stripeService.ts`)
+Comprehensive payment processing with security:
 
 ```typescript
-// /api/gamification/profile-score
-POST /api/gamification/profile-score/calculate
-GET  /api/gamification/profile-score/history
-
-// /api/gamification/achievements
-GET  /api/gamification/achievements/user
-POST /api/gamification/achievements/unlock
-GET  /api/gamification/achievements/available
-
-// /api/gamification/challenges  
-GET  /api/gamification/challenges/daily
-POST /api/gamification/challenges/complete
-GET  /api/gamification/challenges/history
-
-// /api/gamification/leaderboards
-GET  /api/gamification/leaderboards/:category
-GET  /api/gamification/leaderboards/user-rank
-
-// /api/gamification/streaks
-GET  /api/gamification/streaks/current
-POST /api/gamification/streaks/update
-
-// /api/gamification/peer-comparison
-GET  /api/gamification/peer-comparison
-```
-
-#### **Integration Points with Existing APIs**
-
-```typescript
-// Enhance existing CV analysis API
-// /api/cv-analysis/:id
-{
-  // ... existing response
-  gamificationData: {
-    pointsEarned: number;
-    newAchievements: Achievement[];
-    scoreImprovement: number;
-    nextMilestone: string;
-  }
-}
-
-// Enhance suggestion acceptance API
-// /api/suggestions/accept
-{
-  // ... existing response  
-  gamificationUpdate: {
-    pointsEarned: number;
-    streakUpdated: boolean;
-    challengeProgress: DailyChallenge[];
-  }
+export class StripeService {
+  // Customer management
+  async createCustomer(params: CreateCustomerParams): Promise<Stripe.Customer>
+  async getCustomer(customerId: string): Promise<Stripe.Customer | null>
+  
+  // Subscription lifecycle
+  async createSubscription(params: CreateSubscriptionParams): Promise<Stripe.Subscription>
+  async updateSubscription(subscriptionId: string, updates: Partial<Stripe.SubscriptionUpdateParams>): Promise<Stripe.Subscription>
+  async cancelSubscription(subscriptionId: string, immediately?: boolean): Promise<Stripe.Subscription>
+  
+  // Security features
+  constructEventWithReplayProtection(payload: string, signature: string): { event: Stripe.Event; isReplay: boolean }
+  private generateIdempotencyKey(operation: string, ...identifiers: string[]): string
 }
 ```
 
-### 4.3 Redux State Management Integration
+**Security Features:**
+- Webhook replay attack protection (10-minute age limit)
+- Idempotency keys for all operations
+- Customer ID validation and unique constraints
+- Subscription metadata validation
 
-#### **New Gamification Slice**
+## Frontend Architecture
+
+### Redux State Management
+
+#### Gamification Slice (`lib/features/gamificationSlice.ts`)
 
 ```typescript
 interface GamificationState {
-  profileScore: ProfilePowerScore | null;
-  achievements: Achievement[];
-  dailyChallenges: DailyChallenge[];
-  streakData: StreakData | null;
-  leaderboards: Record<string, LeaderboardEntry[]>;
-  peerComparison: PeerComparison | null;
-  celebratingAchievement: Achievement | null;
+  profile: UserGamificationProfile | null;
+  badges: UserBadgeWithDetails[];
+  challenges: DailyChallenge[];
+  leaderboard: LeaderboardEntry[];
+  streak: {
+    current: number;
+    lastUpdated: string | null;
+    bonusEarned: number;
+  };
+  points: {
+    monthly: number;
+    used: number;
+    earned: number;
+    available: number;
+    resetDate: string | null;
+  };
   isLoading: boolean;
   lastUpdated: string | null;
 }
 
-// Persistence configuration
+// Persistent state for seamless UX
 const gamificationPersistConfig = {
   key: 'gamification',
   storage,
-  whitelist: ['profileScore', 'achievements', 'streakData', 'dailyChallenges']
+  whitelist: ['profile', 'badges', 'challenges', 'streak', 'points']
 };
 ```
 
-#### **Integration with Existing Slices**
+#### Integration with Existing Slices
 
 ```typescript
-// Enhance analysisSlice to trigger gamification updates
-const analysisSlice = createSlice({
-  // ... existing configuration
-  extraReducers: (builder) => {
-    builder.addCase(completeAnalysis.fulfilled, (state, action) => {
-      // ... existing logic
-      // Trigger gamification calculation
-      dispatch(calculateProfileScore());
-      dispatch(checkAchievements());
-    });
+// analysisSlice integration
+export const completeAnalysis = createAsyncThunk(
+  'analysis/complete',
+  async (analysisId: string, { dispatch }) => {
+    const result = await api.completeAnalysis(analysisId);
+    
+    // Trigger gamification updates
+    dispatch(awardXP({ source: 'CV_ANALYSIS_COMPLETED', amount: 50 }));
+    dispatch(checkBadges());
+    dispatch(updateChallengeProgress({ type: 'AI_INTERACTION' }));
+    
+    return result;
   }
-});
+);
 ```
 
-## 5. Implementation Roadmap
+### UI Components
 
-### Phase 1: Foundation (Weeks 1-2) 🚀 **QUICK WINS**
+#### LevelProgressBar (`components/gamification/LevelProgressBar.tsx`)
+Sophisticated progress visualization with tier-specific styling:
 
-#### **Week 1: Enhanced Progress System**
-- [ ] Implement ProfilePowerScore calculation algorithm
-- [ ] Create dynamic tier system (Bronze → Diamond)
-- [ ] Enhance existing ProfileScoringSidebar with new scoring
-- [ ] Add basic achievement tracking (5 core achievements)
+```tsx
+export function LevelProgressBar({ userProfile }: LevelProgressBarProps) {
+  const { totalXP, currentLevel, levelProgress, subscriptionTier } = userProfile;
+  const tierStyle = tierColors[subscriptionTier];
+  
+  return (
+    <Card variant="transparent" className="bg-base-100/60 backdrop-blur-sm">
+      <CardContent className="p-4 space-y-4">
+        {/* Level and Tier Display */}
+        <div className="flex items-center justify-between">
+          <motion.div className={`p-2 rounded-full bg-gradient-to-br ${tierStyle.bg}`}>
+            {subscriptionTier === 'EXPERT' && <Star className="w-5 h-5 text-orange-600" />}
+            {subscriptionTier === 'PRO' && <Zap className="w-5 h-5 text-purple-600" />}
+            {/* ... tier-specific icons */}
+          </motion.div>
+          
+          <Badge variant="outline" className={`${tierStyle.border} ${tierStyle.text}`}>
+            {subscriptionTier.charAt(0) + subscriptionTier.slice(1).toLowerCase()}
+          </Badge>
+        </div>
+        
+        {/* Animated Progress Bar */}
+        <motion.div
+          className="h-3 bg-gradient-to-r from-primary/80 to-primary rounded-full"
+          initial={{ width: 0 }}
+          animate={{ width: `${levelProgress * 100}%` }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+        >
+          {/* Shimmer effect */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            animate={{ x: ['100%', '-100%'] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </motion.div>
+      </CardContent>
+    </Card>
+  );
+}
+```
 
-#### **Week 2: Visual Enhancements**
-- [ ] Design and implement achievement badge system
-- [ ] Create milestone celebration animations
-- [ ] Add progress comparison tooltips
-- [ ] Integrate gamification dashboard widget
+**Features:**
+- Subscription tier-specific color schemes and icons
+- Smooth animations with Framer Motion
+- Glass morphism design consistency
+- Comprehensive `data-testid` attributes for testing
 
-**Expected Impact**: Immediate user engagement boost through enhanced visual feedback
+#### PointsBalance (`components/gamification/PointsBalance.tsx`)
+Real-time points tracking with usage visualization:
 
-### Phase 2: Core Engagement (Weeks 3-6) 🎯 **CORE FEATURES**
+```tsx
+export function PointsBalance({ pointsData, subscriptionTier }: PointsBalanceProps) {
+  const { monthly, used, earned, available, resetDate } = pointsData;
+  const usagePercentage = (used / monthly) * 100;
+  
+  return (
+    <Card className="bg-gradient-to-br from-primary/5 to-primary/10">
+      <CardContent className="p-4">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-lg font-semibold">{available}</span>
+          <Badge variant={available > 10 ? 'default' : 'destructive'}>
+            {available} points remaining
+          </Badge>
+        </div>
+        
+        {/* Usage visualization */}
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-primary rounded-full h-2 transition-all duration-300"
+            style={{ width: `${usagePercentage}%` }}
+          />
+        </div>
+        
+        {/* Points breakdown */}
+        <div className="mt-3 text-sm text-gray-600">
+          <div>Monthly: {monthly} | Used: {used} | Earned: {earned}</div>
+          <div>Resets: {formatDate(resetDate)}</div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+```
 
-#### **Week 3-4: Achievement System**
-- [ ] Implement complete achievement framework (20+ achievements)
-- [ ] Create achievement unlock logic and notifications
-- [ ] Add achievement progress tracking to existing workflows
-- [ ] Build achievement gallery/collection view
+### Integration Points
 
-#### **Week 5-6: Daily Challenges & Streaks**
-- [ ] Implement daily challenge generation system
-- [ ] Create streak tracking and rewards
-- [ ] Add challenge progress indicators to dashboard
-- [ ] Build challenge completion celebration flows
+#### CV Analysis Integration
+```tsx
+// In CVAnalysisDisplay component
+const handleSuggestionAccept = async (suggestionId: string) => {
+  // Existing suggestion logic
+  await acceptSuggestion(suggestionId);
+  
+  // Gamification integration
+  dispatch(awardXP({ 
+    source: 'CV_IMPROVEMENT_APPLIED', 
+    sourceId: suggestionId,
+    amount: 15 
+  }));
+  
+  dispatch(updateChallengeProgress({ 
+    type: 'AI_INTERACTION',
+    increment: 1
+  }));
+};
+```
 
-**Expected Impact**: Sustained daily engagement and retention improvement
+#### Application Workflow Integration
+```tsx
+// In application submission flow
+const handleBatchApplication = async (roleIds: string[]) => {
+  for (const roleId of roleIds) {
+    // Check points availability
+    const canAfford = await checkPointsAvailability('COVER_LETTER');
+    if (!canAfford.success) {
+      showUpgradeModal();
+      continue;
+    }
+    
+    // Spend points and proceed
+    await spendPoints('COVER_LETTER', roleId);
+    await generateCoverLetter(roleId);
+  }
+  
+  // Award XP for batch completion
+  dispatch(awardXP({ 
+    source: 'APPLICATION_SUBMITTED', 
+    amount: roleIds.length * 25 
+  }));
+};
+```
 
-### Phase 3: Social & Advanced Features (Weeks 7-10) 🏆 **ADVANCED FEATURES**
+## User Experience Flow
 
-#### **Week 7-8: Peer Comparison & Analytics**
-- [ ] Build anonymous peer comparison system
-- [ ] Create industry benchmark calculations
-- [ ] Implement success story collection and display
-- [ ] Add performance trend analysis
+### New User Onboarding
 
-#### **Week 9-10: Leaderboards & Community**
-- [ ] Create monthly leaderboard system
-- [ ] Build community recognition features
-- [ ] Add success story sharing (anonymous)
-- [ ] Implement advanced analytics dashboard
+1. **Initial Registration**
+   - User starts at Level 1 with FREE subscription tier
+   - Receives welcome XP bonus (100 XP)
+   - Unlocks first achievement: "Welcome to TechRec"
 
-**Expected Impact**: Community building and long-term platform loyalty
+2. **Profile Building Phase**
+   - Each profile section completion awards XP (15-50 XP per section)
+   - Real-time level progression feedback
+   - Achievement unlocks for major milestones
 
-## 6. Success Metrics & Analytics
+3. **First CV Analysis**
+   - Consumes 1 point from FREE tier allocation (5 points/month)
+   - Awards 50 XP for completion
+   - Introduces AI suggestion system
+   - Unlocks "AI Collaborator" achievement
 
-### 6.1 Key Performance Indicators
+### Subscription Tier Progression
 
-#### **Engagement Metrics**
-- **Daily Active Users (DAU)**: Target 40% increase
-- **Session Duration**: Target 25% increase
-- **Feature Adoption**: Track achievement unlock rates
-- **Retention**: 7-day, 30-day, 90-day cohort analysis
+#### FREE Tier (Default)
+- **Monthly Points**: 5
+- **XP Multiplier**: 1.0x
+- **Point Efficiency**: 1.0x (standard costs)
+- **Features**: Basic CV analysis, limited cover letters
 
-#### **Platform-Specific Metrics**
-- **Profile Completion Rates**: Track progression through tiers
-- **AI Suggestion Acceptance**: Target 30% increase
-- **Application Submission**: Track batch application usage
-- **CV Analysis Frequency**: Monitor repeat analysis behavior
+#### BASIC Tier ($9.99/month)
+- **Monthly Points**: 25
+- **XP Multiplier**: 1.2x
+- **Point Efficiency**: 0.95x (5% discount)
+- **Features**: Enhanced analysis, batch applications
 
-#### **User Satisfaction Metrics**
-- **NPS Score**: Quarterly user satisfaction surveys
-- **Feature Usefulness**: Rate gamification features 1-5
-- **Career Outcome Correlation**: Track job search success vs. engagement
+#### STARTER Tier ($19.99/month)
+- **Monthly Points**: 75
+- **XP Multiplier**: 1.5x
+- **Point Efficiency**: 0.90x (10% discount)
+- **Features**: Premium insights, unlimited cover letters
 
-### 6.2 A/B Testing Strategy
+#### PRO Tier ($39.99/month)
+- **Monthly Points**: 200
+- **XP Multiplier**: 2.0x
+- **Point Efficiency**: 0.85x (15% discount)
+- **Features**: Advanced analytics, priority support
 
-#### **Phase 1 Tests**
-- **Profile Score Display**: Traditional % vs. Tier system
-- **Achievement Notifications**: Immediate vs. batched
-- **Progress Animation**: Subtle vs. celebratory
+#### EXPERT Tier ($79.99/month)
+- **Monthly Points**: 500
+- **XP Multiplier**: 2.5x
+- **Point Efficiency**: 0.80x (20% discount)
+- **Features**: Unlimited everything, personal consultation
 
-#### **Phase 2 Tests**
-- **Challenge Difficulty**: Easy vs. medium default difficulty
-- **Streak Rewards**: Points vs. feature unlocks
-- **Peer Comparison**: Show vs. hide by default
+### Daily Engagement Loop
 
-## 7. Risk Mitigation & User Experience Considerations
+1. **Login Streak Recognition**
+   - Streak counter visible in header
+   - Bonus XP for consecutive days (2-25 XP)
+   - Streak milestones unlock special badges
 
-### 7.1 Potential Risks
+2. **Daily Challenge System**
+   - 1-3 challenges generated based on user activity
+   - Difficulty scales with user level
+   - Completion awards XP and bonus points
 
-#### **Over-Gamification Risk**
-- **Mitigation**: Maintain career outcome focus; gamification enhances, doesn't replace core value
-- **Monitoring**: Track correlation between gamification engagement and job search success
+3. **Progress Feedback**
+   - Real-time XP notifications
+   - Level-up celebrations with confetti animations
+   - Achievement unlock modals with tier-specific styling
 
-#### **User Fatigue Risk**
-- **Mitigation**: Graduated difficulty; optional participation; meaningful rewards
-- **Monitoring**: Monitor engagement drop-off patterns; adjust challenge frequency
+## Performance & Scalability
 
-#### **Privacy Concerns**
-- **Mitigation**: Anonymous leaderboards; opt-in social features; transparent data usage
-- **Monitoring**: User feedback on privacy comfort levels
+### Database Optimization
 
-### 7.2 User Experience Principles
+#### Strategic Indexing
+```javascript
+// High-performance indexes for gamification queries
+db.developers.createIndex({ "totalXP": -1 })                    // Leaderboards
+db.developers.createIndex({ "subscriptionTier": 1, "totalXP": -1 }) // Tier leaderboards
+db.developers.createIndex({ "currentLevel": 1 })                // Level-based queries
+db.developers.createIndex({ "pointsResetDate": 1, "subscriptionTier": 1 }) // Points reset
 
-#### **Career-First Design**
-- All gamification elements must clearly connect to career advancement
-- Achievements should correlate with industry best practices
-- Challenges should build genuinely valuable professional assets
+// Transaction history optimization
+db.xpTransactions.createIndex({ "developerId": 1, "earnedAt": -1 })
+db.pointsTransactions.createIndex({ "developerId": 1, "createdAt": -1 })
+```
 
-#### **Respectful Implementation**
-- Optional participation in all social features
-- Professional tone and imagery throughout
-- No manipulative or exploitative mechanics
+#### Query Optimization
+- Leaderboard queries limited to top 100 with pagination
+- User rank calculation using efficient aggregation pipelines
+- Points balance calculated in application layer to reduce DB load
 
-#### **Accessibility & Inclusion**
-- Achievement systems accessible to users regardless of background
-- Multiple paths to success (not just technical skill-based)
-- Cultural sensitivity in language and imagery
+### Caching Strategy
 
-## 8. Future Expansion Opportunities
+#### Redis Implementation
+```typescript
+// Configuration caching (24-hour TTL)
+const config = await redis.get('config:subscription-tiers');
+if (!config) {
+  const dbConfig = await prisma.configurationSettings.findFirst({
+    where: { key: 'subscription-tiers' }
+  });
+  await redis.setex('config:subscription-tiers', 86400, JSON.stringify(dbConfig));
+}
 
-### 8.1 Advanced AI Integration
+// Leaderboard caching (1-hour TTL)
+const leaderboard = await redis.get(`leaderboard:${tier}:${period}`);
+if (!leaderboard) {
+  const data = await calculateLeaderboard(tier, period);
+  await redis.setex(`leaderboard:${tier}:${period}`, 3600, JSON.stringify(data));
+}
+```
 
-#### **Personalized Challenge Generation**
-- AI-generated daily challenges based on user's career goals
-- Dynamic difficulty adjustment based on user performance
-- Industry-specific achievement paths
+### Security Measures
 
-#### **Success Prediction Modeling**
-- Correlate gamification engagement with job search outcomes
-- Provide personalized improvement recommendations
-- Predict optimal application timing and strategies
+#### Points Economy Protection
+- Atomic transactions with serializable isolation
+- Server-side validation of all point costs
+- Rate limiting on expensive operations
+- Audit trails for all point transactions
 
-### 8.2 Community Features
+#### Stripe Integration Security
+- Webhook signature verification
+- Replay attack protection (10-minute tolerance)
+- Idempotency keys for all operations
+- Customer ID validation and constraints
 
-#### **Peer Learning Network**
-- Anonymous skill-sharing between users
-- Community challenges and goals
-- Mentorship matching based on achievement levels
+## Analytics & Monitoring
 
-#### **Integration Partnerships**
+### Key Metrics Tracking
+
+#### Engagement Metrics
+```typescript
+interface EngagementAnalytics {
+  dailyActiveUsers: number;
+  averageSessionDuration: number;
+  xpEarnedPerSession: number;
+  challengeCompletionRate: number;
+  streakRetentionRate: number;
+  badgeUnlockFrequency: number;
+}
+```
+
+#### Revenue Metrics
+```typescript
+interface RevenueAnalytics {
+  subscriptionTierDistribution: Record<SubscriptionTier, number>;
+  averagePointsUsagePerTier: Record<SubscriptionTier, number>;
+  churnRateByTier: Record<SubscriptionTier, number>;
+  upgradeConversionRates: number;
+  pointsEfficiencyUtilization: number;
+}
+```
+
+#### Career Outcome Correlation
+```typescript
+interface OutcomeAnalytics {
+  jobSuccessRateByLevel: Record<number, number>;
+  applicationQualityByTier: Record<SubscriptionTier, number>;
+  cvImprovementByEngagement: number[];
+  interviewRateByXP: number[];
+}
+```
+
+### Dashboard Integration
+
+Administrative dashboard tracks:
+- Real-time user activity and XP distribution
+- Subscription tier conversion funnels
+- Points economy health (burn rate, utilization)
+- Achievement unlock patterns and badge effectiveness
+- Challenge completion rates and difficulty adjustment needs
+
+## Future Enhancements
+
+### Advanced AI Integration
+- Personalized challenge generation based on career goals
+- Dynamic difficulty adjustment using ML models
+- Predictive analytics for optimal upgrade timing
+- AI-powered peer matching for collaborative challenges
+
+### Community Features
+- Anonymous peer comparison with industry benchmarks
+- Collaborative challenges for team-based objectives
+- Mentorship program integration with level-based matching
+- Success story sharing with outcome tracking
+
+### Integration Opportunities
 - GitHub contribution tracking for developers
 - LinkedIn skill assessment integration
-- Industry certification progress tracking
-
-## Conclusion
-
-This gamification strategy transforms TechRec from a CV improvement tool into a comprehensive career advancement game. By building on existing strengths—sophisticated AI integration, comprehensive progress tracking, and modern UI design—we create an engagement system that motivates users toward genuine career success.
-
-The phased implementation approach allows for rapid wins while building toward advanced community features. With careful attention to user experience principles and career-first design, this gamification system will drive both engagement and meaningful professional outcomes.
-
-**Next Steps**: 
-1. Review and refine this strategy with stakeholders
-2. Begin Phase 1 implementation with enhanced progress system
-3. Set up analytics infrastructure to track success metrics
-4. Plan user research sessions to validate gamification concepts
+- Industry certification progress monitoring
+- Calendar integration for consistent activity reminders
 
 ---
 
-*This document serves as the foundation for implementing engaging, career-focused gamification that respects users' professional goals while creating sustainable platform engagement.*
+## Implementation Status
+
+### ✅ Completed Core Features
+- [x] Complete database schema with optimized indexing
+- [x] Subscription tier management with Stripe integration
+- [x] Points economy with atomic transaction handling
+- [x] XP progression system with level calculations
+- [x] Achievement framework with badge tracking
+- [x] Streak management with bonus calculations
+- [x] Redis caching for configuration and performance
+- [x] Frontend components with subscription tier styling
+- [x] Security measures and validation systems
+
+### 🚧 In Progress
+- [ ] Advanced leaderboard system with tier segmentation
+- [ ] Daily challenge generation and management
+- [ ] Enhanced analytics dashboard
+- [ ] Mobile-responsive gamification components
+
+### 📋 Planned Enhancements
+- [ ] AI-powered personalized challenges
+- [ ] Community features and peer comparison
+- [ ] Advanced achievement categories
+- [ ] Integration with external platforms
+
+---
+
+*This documentation serves as the definitive technical reference for TechRec's gamification system, covering architecture, implementation details, and operational procedures for the subscription-based engagement platform.*
