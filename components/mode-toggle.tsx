@@ -6,15 +6,16 @@ import { useTheme } from "next-themes"
 
 import {  Button  } from '@/components/ui-daisy/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+  Dropdown,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+  DropdownSeparator,
+} from "@/components/ui-daisy/dropdown"
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
 
   // Popular DaisyUI themes for quick access
   const popularThemes = [
@@ -26,7 +27,13 @@ export function ModeToggle() {
     { name: "corporate", icon: Palette, label: "Corporate" },
   ];
 
+  // Prevent hydration mismatch by only rendering after mount
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const getCurrentIcon = () => {
+    if (!mounted) return Sun; // Default icon during SSR
     if (theme === "dark") return Moon;
     if (theme === "light") return Sun;
     return Palette;
@@ -35,8 +42,8 @@ export function ModeToggle() {
   const CurrentIcon = getCurrentIcon();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <Dropdown end>
+      <DropdownTrigger asChild>
         <Button 
           variant="outline" 
           size="icon"
@@ -44,33 +51,33 @@ export function ModeToggle() {
           <CurrentIcon className="h-[1.2rem] w-[1.2rem] transition-all" />
           <span className="sr-only">Toggle theme</span>
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      </DropdownTrigger>
+      <DropdownContent className="w-48">
         {popularThemes.map((themeItem) => {
           const IconComponent = themeItem.icon;
           return (
-            <DropdownMenuItem 
+            <DropdownItem 
               key={themeItem.name}
               onClick={() => setTheme(themeItem.name)}
-              className={theme === themeItem.name ? "bg-primary/10" : ""}
+              className={mounted && theme === themeItem.name ? "active" : ""}
             >
               <IconComponent className="mr-2 h-4 w-4" />
               {themeItem.label}
-              {theme === themeItem.name && (
+              {mounted && theme === themeItem.name && (
                 <span className="ml-auto text-xs opacity-60">✓</span>
               )}
-            </DropdownMenuItem>
+            </DropdownItem>
           );
         })}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownSeparator />
+        <DropdownItem onClick={() => setTheme("system")}>
           <Palette className="mr-2 h-4 w-4" />
           System
-          {theme === "system" && (
+          {mounted && theme === "system" && (
             <span className="ml-auto text-xs opacity-60">✓</span>
           )}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownItem>
+      </DropdownContent>
+    </Dropdown>
   )
 } 
