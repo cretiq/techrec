@@ -17,6 +17,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { toggleRoleSelection, selectIsRoleSelected, selectSelectedRolesCount, setSelectedRoles, clearRoleSelection, selectSelectedRoles } from '@/lib/features/selectedRolesSlice'
 import { RootState, AppDispatch } from '@/lib/store'
 import { cn } from "@/lib/utils"
+import SelectedRolesList from '@/components/roles/SelectedRolesList'
 
 interface SavedRole {
   roleId: string
@@ -283,6 +284,7 @@ export default function RolesSearch2Page() {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Section */}
         <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up" data-testid="role-search-container-filters">
+          <SelectedRolesList />
           <div className="bg-base-100/60 backdrop-blur-sm rounded-lg shadow-lg p-6 sticky top-8 border border-base-200" data-testid="role-search-card-filters">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Filters (RapidAPI)</h2>
