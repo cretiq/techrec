@@ -1,6 +1,5 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { userLoggedOut } from './features/metaSlice';
 // Import the user reducer
 import userReducer from './features/userSlice';
 // Import the analysis reducer
@@ -19,110 +18,49 @@ import outreachMessagesReducer from './features/outreachMessagesSlice';
 import suggestionsReducer from './features/suggestionsSlice';
 // Import the gamification reducer
 import gamificationReducer from './features/gamificationSlice';
-// Import reducers here when they are created
-// import rootReducer from './rootReducer'; // Example
 
-// Configure persist for each reducer that needs persistence
-const userPersistConfig = {
-  key: 'user',
-  storage,
-  whitelist: ['isAuthenticated', 'userData'] // Only persist these fields
+// Combine all reducers - no persistence needed as session-based auth handles state
+const combinedReducer = combineReducers({
+  user: userReducer,
+  analysis: analysisReducer,
+  ui: uiReducer,
+  selectedRoles: selectedRolesReducer,
+  coverLetters: coverLettersReducer,
+  outreachMessages: outreachMessagesReducer,
+  suggestions: suggestionsReducer,
+  gamification: gamificationReducer,
+  analytics: analyticsReducer,
+});
+
+/**
+ * Root reducer that handles global state reset on user logout.
+ * When userLoggedOut action is dispatched, it resets all state to initial values
+ * to prevent data leakage between user sessions.
+ */
+const rootReducer = (
+  state: ReturnType<typeof combinedReducer> | undefined, 
+  action: { type: string; payload?: any }
+) => {
+  if (action.type === userLoggedOut.type) {
+    // Reset all state to initial values by passing undefined state
+    return combinedReducer(undefined, action);
+  }
+  return combinedReducer(state, action);
 };
-
-const analysisPersistConfig = {
-  key: 'analysis',
-  storage,
-  whitelist: ['analysisData', 'originalData', 'currentAnalysisId', 'status', 'suggestions'] // Persist analysis data and status
-};
-
-const uiPersistConfig = {
-  key: 'ui',
-  storage,
-  whitelist: ['isSidebarOpen'] // Only persist UI preferences
-};
-
-// Persist config for selected roles
-const selectedRolesPersistConfig = {
-    key: 'selectedRoles',
-    storage,
-    whitelist: ['selectedRoles'] // Persist the selected roles (full objects)
-};
-
-// Persist config for cover letters
-const coverLettersPersistConfig = {
-    key: 'coverLetters',
-    storage,
-    whitelist: ['coverLetters'] // Persist all cover letters
-};
-
-// Persist config for outreach messages
-const outreachMessagesPersistConfig = {
-    key: 'outreachMessages',
-    storage,
-    whitelist: ['messages'] // Persist all outreach messages
-};
-
-// Persist config for suggestions
-const suggestionsPersistConfig = {
-    key: 'suggestions',
-    storage,
-    whitelist: ['suggestions', 'summary', 'suggestionStatuses', 'isVisible', 'sectionVisibility', 'lastFetched'] // Persist suggestions and user interactions
-};
-
-// Persist config for gamification
-const gamificationPersistConfig = {
-    key: 'gamification',
-    storage,
-    whitelist: ['userProfile', 'earnedBadges', 'dailyChallenges', 'showAnimations', 'soundEnabled', 'notificationsEnabled', 'lastUpdated'] // Persist core gamification data and settings
-};
-
-// Create persisted reducers
-const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
-const persistedAnalysisReducer = persistReducer(analysisPersistConfig, analysisReducer);
-const persistedUiReducer = persistReducer(uiPersistConfig, uiReducer);
-// Create persisted reducer for selected roles
-const persistedSelectedRolesReducer = persistReducer(selectedRolesPersistConfig, selectedRolesReducer);
-// Create persisted reducer for cover letters
-const persistedCoverLettersReducer = persistReducer(coverLettersPersistConfig, coverLettersReducer);
-// Create persisted reducer for outreach messages
-const persistedOutreachMessagesReducer = persistReducer(outreachMessagesPersistConfig, outreachMessagesReducer);
-// Create persisted reducer for suggestions
-const persistedSuggestionsReducer = persistReducer(suggestionsPersistConfig, suggestionsReducer);
-// Create persisted reducer for gamification
-const persistedGamificationReducer = persistReducer(gamificationPersistConfig, gamificationReducer);
 
 export const store = configureStore({
-  reducer: {
-    // Add the persisted reducers to the store
-    user: persistedUserReducer,
-    analysis: persistedAnalysisReducer,
-    ui: persistedUiReducer,
-    // Add the new selected roles reducer
-    selectedRoles: persistedSelectedRolesReducer,
-    // Add the cover letters reducer
-    coverLetters: persistedCoverLettersReducer,
-    // Add the outreach messages reducer
-    outreachMessages: persistedOutreachMessagesReducer,
-    // Add the suggestions reducer
-    suggestions: persistedSuggestionsReducer,
-    // Add the gamification reducer
-    gamification: persistedGamificationReducer,
-    // Analytics doesn't need persistence
-    analytics: analyticsReducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        // Remove redux-persist specific ignored actions
+        ignoredActions: [],
       },
     }),
   // Enable Redux DevTools extension support
   devTools: process.env.NODE_ENV !== 'production',
 });
 
-export const persistor = persistStore(store);
-
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
