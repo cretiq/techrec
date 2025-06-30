@@ -1,0 +1,477 @@
+[
+  {
+    "id": "1782786480",
+    "date_posted": "2025-06-30T00:12:38",
+    "date_created": "2025-06-30T00:34:33.455611",
+    "title": "MEAN Stack Developer",
+    "organization": "Lensa",
+    "organization_url": "https://www.linkedin.com/company/lensa",
+    "date_validthrough": "2025-07-30T00:12:38",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "Tampa",
+          "addressRegion": "FL",
+          "streetAddress": null
+        },
+        "latitude": 27.947424,
+        "longitude": -82.45878
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": null,
+    "employment_type": [
+      "CONTRACTOR"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/mean-stack-developer-at-lensa-4259231689",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+    "cities_derived": [
+      "Tampa"
+    ],
+    "regions_derived": [
+      "Florida"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "Tampa, Florida, United States"
+    ],
+    "timezones_derived": [
+      "America/New_York"
+    ],
+    "lats_derived": [
+      27.9945
+    ],
+    "lngs_derived": [
+      -82.4447
+    ],
+    "remote_derived": false,
+    "recruiter_name": null,
+    "recruiter_title": null,
+    "recruiter_url": null,
+    "linkedin_org_employees": 246,
+    "linkedin_org_url": "https://lensa.com",
+    "linkedin_org_size": "51-200 employees",
+    "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+    "linkedin_org_industry": "Internet Publishing",
+    "linkedin_org_followers": 91003,
+    "linkedin_org_headquarters": "West Chester, Pennsylvania",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2015",
+    "linkedin_org_specialties": [
+      "Recruitment",
+      "eRecruitment",
+      "Online Recruitment",
+      "Talent Acquisition HR Platform",
+      "Hiring platform",
+      "Job search",
+      "Jobs",
+      "Employment",
+      "and job advertising"
+    ],
+    "linkedin_org_locations": [
+      "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+      "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+    ],
+    "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Entry level",
+    "directapply": false,
+    "linkedin_org_slug": "lensa",
+    "no_jb_schema": null,
+    "external_apply_url": "https://lensa.com/cgw/c909802444b34b6da7aacead2d9c7b27tjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+  },
+  {
+    "id": "1782782237",
+    "date_posted": "2025-06-30T00:12:30",
+    "date_created": "2025-06-30T00:33:00.753885",
+    "title": "Angular Developer",
+    "organization": "Lensa",
+    "organization_url": "https://www.linkedin.com/company/lensa",
+    "date_validthrough": "2025-07-30T00:12:30",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "Kansas City",
+          "addressRegion": "MO",
+          "streetAddress": null
+        },
+        "latitude": 39.099792,
+        "longitude": -94.57856
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": {
+        "@type": "QuantitativeValue",
+        "minValue": 40,
+        "maxValue": 71,
+        "unitText": "HOUR"
+      }
+    },
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/angular-developer-at-lensa-4259230836",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+    "cities_derived": [
+      "Kansas City"
+    ],
+    "regions_derived": [
+      "Missouri"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "Kansas City, Missouri, United States"
+    ],
+    "timezones_derived": [
+      "America/Chicago"
+    ],
+    "lats_derived": [
+      39.1238
+    ],
+    "lngs_derived": [
+      -94.5541
+    ],
+    "remote_derived": false,
+    "recruiter_name": null,
+    "recruiter_title": null,
+    "recruiter_url": null,
+    "linkedin_org_employees": 246,
+    "linkedin_org_url": "https://lensa.com",
+    "linkedin_org_size": "51-200 employees",
+    "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+    "linkedin_org_industry": "Internet Publishing",
+    "linkedin_org_followers": 91003,
+    "linkedin_org_headquarters": "West Chester, Pennsylvania",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2015",
+    "linkedin_org_specialties": [
+      "Recruitment",
+      "eRecruitment",
+      "Online Recruitment",
+      "Talent Acquisition HR Platform",
+      "Hiring platform",
+      "Job search",
+      "Jobs",
+      "Employment",
+      "and job advertising"
+    ],
+    "linkedin_org_locations": [
+      "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+      "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+    ],
+    "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Mid-Senior level",
+    "directapply": false,
+    "linkedin_org_slug": "lensa",
+    "no_jb_schema": null,
+    "external_apply_url": "https://lensa.com/cgw/2680ac0e9b394ff0b4aa1d191147f0e3tjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+  },
+  {
+    "id": "1782787280",
+    "date_posted": "2025-06-30T00:12:23",
+    "date_created": "2025-06-30T00:34:48.984687",
+    "title": "Angular Developer",
+    "organization": "Lensa",
+    "organization_url": "https://www.linkedin.com/company/lensa",
+    "date_validthrough": "2025-07-30T00:12:23",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "Irving",
+          "addressRegion": "TX",
+          "streetAddress": null
+        },
+        "latitude": 32.813877,
+        "longitude": -96.949936
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": {
+        "@type": "QuantitativeValue",
+        "minValue": 50,
+        "maxValue": 65,
+        "unitText": "HOUR"
+      }
+    },
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/angular-developer-at-lensa-4259231829",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+    "cities_derived": [
+      "Irving"
+    ],
+    "regions_derived": [
+      "Texas"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "Irving, Texas, United States"
+    ],
+    "timezones_derived": [
+      "America/Chicago"
+    ],
+    "lats_derived": [
+      32.8583
+    ],
+    "lngs_derived": [
+      -96.9702
+    ],
+    "remote_derived": false,
+    "recruiter_name": null,
+    "recruiter_title": null,
+    "recruiter_url": null,
+    "linkedin_org_employees": 246,
+    "linkedin_org_url": "https://lensa.com",
+    "linkedin_org_size": "51-200 employees",
+    "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+    "linkedin_org_industry": "Internet Publishing",
+    "linkedin_org_followers": 91003,
+    "linkedin_org_headquarters": "West Chester, Pennsylvania",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2015",
+    "linkedin_org_specialties": [
+      "Recruitment",
+      "eRecruitment",
+      "Online Recruitment",
+      "Talent Acquisition HR Platform",
+      "Hiring platform",
+      "Job search",
+      "Jobs",
+      "Employment",
+      "and job advertising"
+    ],
+    "linkedin_org_locations": [
+      "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+      "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+    ],
+    "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Mid-Senior level",
+    "directapply": false,
+    "linkedin_org_slug": "lensa",
+    "no_jb_schema": null,
+    "external_apply_url": "https://lensa.com/cgw/a14e5e326ed34484877c2b8b8499accdtjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+  },
+  {
+    "id": "1782782235",
+    "date_posted": "2025-06-30T00:12:12",
+    "date_created": "2025-06-30T00:33:00.720111",
+    "title": "UI (Angular) Developer",
+    "organization": "Lensa",
+    "organization_url": "https://www.linkedin.com/company/lensa",
+    "date_validthrough": "2025-07-30T00:12:12",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "Linthicum Heights",
+          "addressRegion": "MD",
+          "streetAddress": null
+        },
+        "latitude": 39.195045,
+        "longitude": -76.68526
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": null,
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/ui-angular-developer-at-lensa-4259231927",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+    "cities_derived": null,
+    "regions_derived": [
+      "Maryland"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "Maryland, United States"
+    ],
+    "timezones_derived": [
+      "America/New_York"
+    ],
+    "lats_derived": [
+      38.9706
+    ],
+    "lngs_derived": [
+      -76.5047
+    ],
+    "remote_derived": false,
+    "recruiter_name": null,
+    "recruiter_title": null,
+    "recruiter_url": null,
+    "linkedin_org_employees": 246,
+    "linkedin_org_url": "https://lensa.com",
+    "linkedin_org_size": "51-200 employees",
+    "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+    "linkedin_org_industry": "Internet Publishing",
+    "linkedin_org_followers": 91003,
+    "linkedin_org_headquarters": "West Chester, Pennsylvania",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2015",
+    "linkedin_org_specialties": [
+      "Recruitment",
+      "eRecruitment",
+      "Online Recruitment",
+      "Talent Acquisition HR Platform",
+      "Hiring platform",
+      "Job search",
+      "Jobs",
+      "Employment",
+      "and job advertising"
+    ],
+    "linkedin_org_locations": [
+      "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+      "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+    ],
+    "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Mid-Senior level",
+    "directapply": false,
+    "linkedin_org_slug": "lensa",
+    "no_jb_schema": null,
+    "external_apply_url": "https://lensa.com/cgw/e40b30c16bd5490eb695c2f643ec9bbftjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+  },
+  {
+    "id": "1782761449",
+    "date_posted": "2025-06-30T00:12:00",
+    "date_created": "2025-06-30T00:23:21.742013",
+    "title": "Front End Angular Developer",
+    "organization": "Lensa",
+    "organization_url": "https://www.linkedin.com/company/lensa",
+    "date_validthrough": "2025-07-30T00:12:00",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "Merrimack",
+          "addressRegion": "NH",
+          "streetAddress": null
+        },
+        "latitude": 42.866955,
+        "longitude": -71.49544
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": {
+        "@type": "QuantitativeValue",
+        "minValue": 67733,
+        "maxValue": 108811,
+        "unitText": "YEAR"
+      }
+    },
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/front-end-angular-developer-at-lensa-4259233751",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+    "cities_derived": [
+      "Merrimack"
+    ],
+    "regions_derived": [
+      "New Hampshire"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "Merrimack, New Hampshire, United States"
+    ],
+    "timezones_derived": [
+      "America/New_York"
+    ],
+    "lats_derived": [
+      42.8547
+    ],
+    "lngs_derived": [
+      -71.5188
+    ],
+    "remote_derived": false,
+    "recruiter_name": null,
+    "recruiter_title": null,
+    "recruiter_url": null,
+    "linkedin_org_employees": 246,
+    "linkedin_org_url": "https://lensa.com",
+    "linkedin_org_size": "51-200 employees",
+    "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+    "linkedin_org_industry": "Internet Publishing",
+    "linkedin_org_followers": 90976,
+    "linkedin_org_headquarters": "West Chester, Pennsylvania",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2015",
+    "linkedin_org_specialties": [
+      "Recruitment",
+      "eRecruitment",
+      "Online Recruitment",
+      "Talent Acquisition HR Platform",
+      "Hiring platform",
+      "Job search",
+      "Jobs",
+      "Employment",
+      "and job advertising"
+    ],
+    "linkedin_org_locations": [
+      "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+      "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+    ],
+    "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Mid-Senior level",
+    "directapply": false,
+    "linkedin_org_slug": "lensa",
+    "no_jb_schema": null,
+    "external_apply_url": "https://lensa.com/cgw/2d96f1b658de4500a0260677ccaaf685tjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+  }
+]

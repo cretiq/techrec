@@ -1,0 +1,453 @@
+[
+  {
+    "id": "1783300278",
+    "date_posted": "2025-06-30T06:07:49",
+    "date_created": "2025-06-30T06:21:30.276841",
+    "title": "Senior Embedded Software Engineer",
+    "organization": "Jobs via Dice",
+    "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+    "date_validthrough": "2025-07-30T06:07:49",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "Schaumburg",
+          "addressRegion": "IL",
+          "streetAddress": null
+        },
+        "latitude": 42.026245,
+        "longitude": -88.0697
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": null,
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/senior-embedded-software-engineer-at-jobs-via-dice-4257909428",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+    "cities_derived": [
+      "Schaumburg"
+    ],
+    "regions_derived": [
+      "Illinois"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "Schaumburg, Illinois, United States"
+    ],
+    "timezones_derived": [
+      "America/Chicago"
+    ],
+    "lats_derived": [
+      42.0308
+    ],
+    "lngs_derived": [
+      -88.0838
+    ],
+    "remote_derived": false,
+    "recruiter_name": null,
+    "recruiter_title": null,
+    "recruiter_url": null,
+    "linkedin_org_employees": 9,
+    "linkedin_org_url": "https://www.dice.com",
+    "linkedin_org_size": "1 employee",
+    "linkedin_org_slogan": "Dice: Where tech connects.™",
+    "linkedin_org_industry": "Software Development",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "",
+    "linkedin_org_type": "Public Company",
+    "linkedin_org_foundeddate": "",
+    "linkedin_org_specialties": [
+      ""
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it's a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it's a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You'll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company's culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Mid-Senior level",
+    "directapply": false,
+    "linkedin_org_slug": "jobs-via-dice",
+    "no_jb_schema": null,
+    "external_apply_url": "https://click.appcast.io/t/DZn59Xqi7ibV_7VGTtbYAZBxqoJNV85hyHyHfjcp5JA="
+  },
+  {
+    "id": "1783301287",
+    "date_posted": "2025-06-30T06:07:49",
+    "date_created": "2025-06-30T06:21:53.687959",
+    "title": "Software Developer",
+    "organization": "Jobs via Dice",
+    "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+    "date_validthrough": "2025-07-30T06:07:49",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "Grand Island",
+          "addressRegion": "NE",
+          "streetAddress": null
+        },
+        "latitude": 40.92003,
+        "longitude": -98.35141
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": {
+        "@type": "QuantitativeValue",
+        "minValue": 50000,
+        "maxValue": 95000,
+        "unitText": "YEAR"
+      }
+    },
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/software-developer-at-jobs-via-dice-4257913208",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+    "cities_derived": [
+      "Grand Island"
+    ],
+    "regions_derived": [
+      "Nebraska"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "Grand Island, Nebraska, United States"
+    ],
+    "timezones_derived": [
+      "America/Chicago"
+    ],
+    "lats_derived": [
+      40.9218
+    ],
+    "lngs_derived": [
+      -98.3586
+    ],
+    "remote_derived": false,
+    "recruiter_name": null,
+    "recruiter_title": null,
+    "recruiter_url": null,
+    "linkedin_org_employees": 9,
+    "linkedin_org_url": "https://www.dice.com",
+    "linkedin_org_size": "1 employee",
+    "linkedin_org_slogan": "Dice: Where tech connects.™",
+    "linkedin_org_industry": "Software Development",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "",
+    "linkedin_org_type": "Public Company",
+    "linkedin_org_foundeddate": "",
+    "linkedin_org_specialties": [
+      ""
+    ],
+    "linkedin_org_locations": [],
+    "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it's a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it's a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You'll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company's culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Entry level",
+    "directapply": false,
+    "linkedin_org_slug": "jobs-via-dice",
+    "no_jb_schema": null,
+    "external_apply_url": "https://click.appcast.io/t/Cpr505q8kSR8QRJPoSBfw5NA0svPfJrgjIzexe0t8_4="
+  },
+  {
+    "id": "1783287368",
+    "date_posted": "2025-06-30T06:01:24",
+    "date_created": "2025-06-30T06:05:37.513857",
+    "title": "Frontend Software Engineer - London (Typescript / Vue)",
+    "organization": "Mayflower Recruitment Ltd",
+    "organization_url": "https://www.linkedin.com/company/mayflower-recruitment-limited",
+    "date_validthrough": "2025-07-30T06:01:24",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "GB",
+          "addressLocality": "London Area",
+          "addressRegion": null,
+          "streetAddress": null
+        },
+        "latitude": 51.51649,
+        "longitude": -0.128427
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": {
+      "@type": "MonetaryAmount",
+      "currency": "GBP",
+      "value": {
+        "@type": "QuantitativeValue",
+        "minValue": 55000,
+        "maxValue": 65000,
+        "unitText": "YEAR"
+      }
+    },
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://uk.linkedin.com/jobs/view/frontend-software-engineer-london-typescript-vue-at-mayflower-recruitment-ltd-4256441409",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "uk.linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/C4D0BAQGaaJIA5SYxZg/company-logo_200_200/company-logo_200_200/0/1630543350986/mayflower_recruitment_limited_logo?e=2147483647&v=beta&t=6lwwQ_Y8d83OzTOfyxPQL2tfd1g3PwYRJnwv0jX-ar8",
+    "cities_derived": null,
+    "regions_derived": [
+      "London, City of"
+    ],
+    "countries_derived": [
+      "United Kingdom"
+    ],
+    "locations_derived": [
+      "London, City of, United Kingdom"
+    ],
+    "timezones_derived": [
+      "Europe/London"
+    ],
+    "lats_derived": [
+      51.5072
+    ],
+    "lngs_derived": [
+      -0.1275
+    ],
+    "remote_derived": false,
+    "recruiter_name": "Shawn Donovan",
+    "recruiter_title": "Director Mayflower Recruitment",
+    "recruiter_url": "https://uk.linkedin.com/in/shdonovan",
+    "linkedin_org_employees": 4,
+    "linkedin_org_url": "http://www.mayflowerltd.com/home.htm",
+    "linkedin_org_size": "2-10 employees",
+    "linkedin_org_slogan": "Sailing the waves of Recruitment",
+    "linkedin_org_industry": "Staffing and Recruiting",
+    "linkedin_org_followers": 34420,
+    "linkedin_org_headquarters": "Reading, BERKSHIRE",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "2010",
+    "linkedin_org_specialties": [
+      "recruitment",
+      "talent",
+      "headhunting",
+      "technology",
+      "and engineering"
+    ],
+    "linkedin_org_locations": [
+      "89-91 Basingstoke Rd, Reading, BERKSHIRE RG2 0HA, GB"
+    ],
+    "linkedin_org_description": "MAYFLOWER RECRUITMENT LIMITED is a staffing and recruiting company based out of 89-90 Basingstoke Rd, Reading, BERKSHIRE, United Kingdom.",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Associate",
+    "directapply": true,
+    "linkedin_org_slug": "mayflower-recruitment-limited",
+    "no_jb_schema": null,
+    "external_apply_url": null
+  },
+  {
+    "id": "1783284815",
+    "date_posted": "2025-06-30T05:59:53",
+    "date_created": "2025-06-30T06:04:46.097944",
+    "title": "ERP Developer 3 (1414)- PeopleSoft FSCM",
+    "organization": "Connect Tech+Talent",
+    "organization_url": "https://www.linkedin.com/company/connecttechandtalent",
+    "date_validthrough": "2025-07-30T05:59:53",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "Austin",
+          "addressRegion": "TX",
+          "streetAddress": null
+        },
+        "latitude": 30.264978,
+        "longitude": -97.7466
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": null,
+    "employment_type": [
+      "CONTRACTOR"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/erp-developer-3-1414-peoplesoft-fscm-at-connect-tech%2Btalent-4257912169",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQF882XMgbkv7g/company-logo_200_200/company-logo_200_200/0/1665567754887/connecttel_logo?e=2147483647&v=beta&t=E81J6P7h-u8XWzLyAcLkak1euMil4sbJ_dB7ADWTPZ8",
+    "cities_derived": [
+      "Austin"
+    ],
+    "regions_derived": [
+      "Texas"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "Austin, Texas, United States"
+    ],
+    "timezones_derived": [
+      "America/Chicago"
+    ],
+    "lats_derived": [
+      30.3005
+    ],
+    "lngs_derived": [
+      -97.7522
+    ],
+    "remote_derived": false,
+    "recruiter_name": "Vignesh Ayyasamy",
+    "recruiter_title": "Senior Manager - Talent Sourcing",
+    "recruiter_url": "https://www.linkedin.com/in/vignesh-ayyasamy-90034733",
+    "linkedin_org_employees": 42,
+    "linkedin_org_url": "https://www.connecttechtalent.com/",
+    "linkedin_org_size": "11-50 employees",
+    "linkedin_org_slogan": null,
+    "linkedin_org_industry": "Software Development",
+    "linkedin_org_followers": 133545,
+    "linkedin_org_headquarters": "Austin, Texas",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "1996",
+    "linkedin_org_specialties": [
+      "software",
+      "firmware",
+      "embedded systems",
+      "staffing",
+      "deliverables",
+      ".net",
+      "java",
+      "application development",
+      "pl/sql",
+      "data warehouse",
+      "business intelligence",
+      "semiconductor",
+      "state government",
+      "utility",
+      "energy",
+      "React",
+      "Node",
+      "UI/UX",
+      "and SQL/NoSQL"
+    ],
+    "linkedin_org_locations": [
+      "11824 Jollyville Rd., Suite 302, Austin, Texas 78759, US"
+    ],
+    "linkedin_org_description": "Connect Tech+Talent brings together highly qualified technology professionals with great companies. Our mission is to help companies and individuals be successful. We believe that we make a difference in the lives of our clients by connecting them with the right talent and technology to ensure the success of their projects. \n\nFor candidates, we know that one job can make a huge impact on a person's life. We want to connect you with the employer and role that will help you reach your goals.\n\nOur 27+ years of expertise in hiring top tech talent, along with our proven screening process, allow us to match the right candidates to each role. Our candidates are 2x more likely to be selected and we typically fill positions within 2 weeks.\n\nAre you a company looking to hire?\nConnect with a hiring expert here: https://www.connecttechtalent.com/contact/ \n\nAre you looking for your next move in tech? \nBrowse our job listings here: https://www.linkedin.com/company/connecttechandtalent/jobs/",
+    "linkedin_org_recruitment_agency_derived": true,
+    "seniority": "Mid-Senior level",
+    "directapply": true,
+    "linkedin_org_slug": "connecttechandtalent",
+    "no_jb_schema": null,
+    "external_apply_url": null
+  },
+  {
+    "id": "1783285529",
+    "date_posted": "2025-06-30T05:58:53",
+    "date_created": "2025-06-30T06:05:02.202722",
+    "title": ".NET Developer - Manager",
+    "organization": "PwC",
+    "organization_url": "https://www.linkedin.com/company/pwc",
+    "date_validthrough": "2025-07-30T05:58:53",
+    "locations_raw": [
+      {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "US",
+          "addressLocality": "California",
+          "addressRegion": "United States",
+          "streetAddress": null
+        },
+        "latitude": 37.25467,
+        "longitude": -119.61727
+      }
+    ],
+    "location_type": null,
+    "location_requirements_raw": null,
+    "salary_raw": {
+      "@type": "MonetaryAmount",
+      "currency": "USD",
+      "value": {
+        "@type": "QuantitativeValue",
+        "minValue": 99000,
+        "maxValue": 232000,
+        "unitText": "YEAR"
+      }
+    },
+    "employment_type": [
+      "FULL_TIME"
+    ],
+    "url": "https://www.linkedin.com/jobs/view/net-developer-manager-at-pwc-4257910109",
+    "source_type": "jobboard",
+    "source": "linkedin",
+    "source_domain": "linkedin.com",
+    "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQFVfAbYbmcpvA/company-logo_200_200/B4EZaB6j58H0AI-/0/1745936334912/pwc_logo?e=2147483647&v=beta&t=AZ371jrBpz0f1_o-juZo_WSpZRTfFDYlXTGejFHG1k4",
+    "cities_derived": null,
+    "regions_derived": [
+      "California"
+    ],
+    "countries_derived": [
+      "United States"
+    ],
+    "locations_derived": [
+      "California, United States"
+    ],
+    "timezones_derived": [
+      "America/Los_Angeles"
+    ],
+    "lats_derived": [
+      38.5677
+    ],
+    "lngs_derived": [
+      -121.4685
+    ],
+    "remote_derived": false,
+    "recruiter_name": null,
+    "recruiter_title": null,
+    "recruiter_url": null,
+    "linkedin_org_employees": 284637,
+    "linkedin_org_url": "https://www.pwc.com/gx/en",
+    "linkedin_org_size": "10,001+ employees",
+    "linkedin_org_slogan": null,
+    "linkedin_org_industry": "Professional Services",
+    "linkedin_org_followers": null,
+    "linkedin_org_headquarters": "",
+    "linkedin_org_type": "Privately Held",
+    "linkedin_org_foundeddate": "",
+    "linkedin_org_specialties": [
+      "Assurance",
+      "Tax",
+      "and Advisory"
+    ],
+    "linkedin_org_locations": [
+      "Paseo de la Castellana, 259B, Madrid, Community of Madrid 28046, ES",
+      "2001 Ross Ave, Dallas, TX 75201, US",
+      "1800 Tysons Blvd, McLean, VA 22102, US",
+      "3400 Forest Dr, Columbia, SC 29204, US"
+    ],
+    "linkedin_org_description": "At PwC, we help clients drive their companies to the leading edge. We're a tech-forward, people-empowered network with more than 370,000 people in 149 countries. Across audit and assurance, tax and legal, deals and consulting we help build, accelerate and sustain momentum. Find out more at www.pwc.com.\n\nPwC: Audit and assurance, consulting and tax services\nPwC refers to the PwC network and/or one or more of its member firms, each of which is a separate legal entity. Content on this page has been prepared for general information only and is not intended to be relied upon as accounting, tax or professional advice. Please reach out to your advisors for specific advice.",
+    "linkedin_org_recruitment_agency_derived": false,
+    "seniority": "Mid-Senior level",
+    "directapply": false,
+    "linkedin_org_slug": "pwc",
+    "no_jb_schema": null,
+    "external_apply_url": "https://ad.doubleclick.net/ddm/clk/438405794;254302458;m?https://jobs.us.pwc.com/job/-/-/932/80488464496?utm_source=linkedin.com&utm_campaign=core_media&utm_medium=social_media&utm_content=job_posting&ss=paid"
+  }
+]
