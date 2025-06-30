@@ -4,6 +4,7 @@
 
 import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SignUpSchema } from '@/lib/validations/auth';
 import { z } from 'zod';
@@ -15,6 +16,7 @@ type SignUpFormInputs = z.infer<typeof SignUpSchema>;
 
 export function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -40,6 +42,7 @@ export function SignUpForm() {
 
       toast.success('Registration successful! Please sign in.');
       reset();
+      router.push('/auth/signin');
     } catch (error) {
       toast.error((error as Error).message);
     } finally {
