@@ -51,12 +51,6 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
                           <ul className="menu p-2 shadow-lg bg-base-100 rounded-lg border border-base-300">
                             <li><Link href="/developer/cv-management" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-cv-management-trigger">CV Management</Link></li>
                             <li><Link href="/developer/roles/search" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-role-search-trigger">Role Search</Link></li>
-                            {session && (
-                              <>
-                                <li><Link href="/developer/cv-management" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-profile-trigger">My Profile & CV</Link></li>
-                                <li><Link href="/developer/applications" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-applications-trigger">Applications</Link></li>
-                              </>
-                            )}
                           </ul>
                         </div>
                       </div>
