@@ -4,14 +4,14 @@ import * as React from "react"
 import { Moon, Sun, Palette } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import {  Button  } from '@/components/ui-daisy/button'
+import { Button } from '@/components/ui-daisy/button'
 import {
-  Dropdown,
-  DropdownContent,
-  DropdownItem,
-  DropdownTrigger,
-  DropdownSeparator,
-} from "@/components/ui-daisy/dropdown"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme()
@@ -42,21 +42,22 @@ export function ModeToggle() {
   const CurrentIcon = getCurrentIcon();
 
   return (
-    <Dropdown end>
-      <DropdownTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <Button 
-          variant="outline" 
-          size="icon"
+          variant="ghost" 
+          size="sm"
+          className="px-2"
         >
-          <CurrentIcon className="h-[1.2rem] w-[1.2rem] transition-all" />
+          <CurrentIcon className="h-4 w-4 transition-all" />
           <span className="sr-only">Toggle theme</span>
         </Button>
-      </DropdownTrigger>
-      <DropdownContent className="w-48">
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
         {popularThemes.map((themeItem) => {
           const IconComponent = themeItem.icon;
           return (
-            <DropdownItem 
+            <DropdownMenuItem 
               key={themeItem.name}
               onClick={() => setTheme(themeItem.name)}
               className={mounted && theme === themeItem.name ? "active" : ""}
@@ -66,18 +67,18 @@ export function ModeToggle() {
               {mounted && theme === themeItem.name && (
                 <span className="ml-auto text-xs opacity-60">✓</span>
               )}
-            </DropdownItem>
+            </DropdownMenuItem>
           );
         })}
-        <DropdownSeparator />
-        <DropdownItem onClick={() => setTheme("system")}>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => setTheme("system")}>
           <Palette className="mr-2 h-4 w-4" />
           System
           {mounted && theme === "system" && (
             <span className="ml-auto text-xs opacity-60">✓</span>
           )}
-        </DropdownItem>
-      </DropdownContent>
-    </Dropdown>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 } 
