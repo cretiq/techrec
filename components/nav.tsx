@@ -150,12 +150,6 @@ export function UserNav() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" data-testid="nav-dropdown-account-menu">
-          <DropdownMenuItem asChild>
-            <Link href="/developer/cv-management" className="flex items-center" data-testid="nav-dropdown-profile-trigger">
-              <User className="mr-2 h-4 w-4" />
-              <span>My Profile & CV</span>
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuItem 
             onClick={handleLogout}
             className="flex items-center text-red-600 focus:text-red-600"
