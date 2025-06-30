@@ -171,6 +171,7 @@ model Developer {
   name            String
   title           String?
   about           String?
+  hashedPassword  String?   // Password hash for email/password authentication
   isDeleted       Boolean   @default(false)
   deletedAt       DateTime?
 
