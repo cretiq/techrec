@@ -33,6 +33,11 @@ const initializeRedisClient = (): Promise<Redis> => {
     console.log('[Redis] initializeRedisClient: Creating new connection promise.');
     clientReadyPromise = new Promise((resolve, reject) => {
         const redisUrl = process.env.REDIS_URL;
+        // Decide whether the connection should use TLS.
+        // 1. If the URL scheme is "rediss://" we always use TLS.
+        // 2. Otherwise the optional environment flag REDIS_USE_TLS="true" can force TLS.
+        const useTLS = (redisUrl?.startsWith('rediss://')) || process.env.REDIS_USE_TLS === 'true';
+
         const redisOptions: RedisOptions = {
             // Using ioredis default retryStrategy by removing the custom one.
             // Default is exponential backoff, typically up to 10 times or ~12.8 seconds.
@@ -41,7 +46,7 @@ const initializeRedisClient = (): Promise<Redis> => {
             connectTimeout: 10000, // Added: 10 seconds for initial connection
             showFriendlyErrorStack: process.env.NODE_ENV === 'development', // For better debugging
             enableOfflineQueue: true, // Explicitly set, though it's the default
-            tls: {}, // <<< --- ADD THIS LINE TO ENABLE TLS
+            ...(useTLS ? { tls: {} } : {}),
         };
 
         let tempClient: Redis; // Temporary client instance for this initialization attempt
