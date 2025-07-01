@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { InternalProfile, InternalSkill } from "@/types/types";
+import { InternalProfile } from "@/types/types";
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
@@ -24,20 +24,42 @@ interface JobSourceInfo {
   source?: string
 }
 
+type RequestType = "coverLetter" | "outreach"
+
 interface CoverLetterRequestData {
   developerProfile: InternalProfile
   roleInfo: RoleInfo
   companyInfo: CompanyInfo
-  jobSourceInfo: JobSourceInfo
+  jobSourceInfo?: JobSourceInfo
+  hiringManager?: string
+  achievements?: string[]
+  requestType?: RequestType
+  tone?: "formal" | "friendly" | "enthusiastic"
 }
 
 export async function POST(req: Request) {
     console.log("Generating cover letter with Gemini")
   try {
     const data: CoverLetterRequestData = await req.json()
-    // console.log("Data received:", JSON.stringify(data, null, 2))
-    const { developerProfile, roleInfo, companyInfo, jobSourceInfo } = data
 
+    // Destructure with defaults
+    const {
+      developerProfile,
+      roleInfo,
+      companyInfo,
+      jobSourceInfo = {},
+      hiringManager,
+      achievements: providedAchievements,
+      requestType = "coverLetter",
+      tone = "formal",
+    } = data
+
+    // Import helper utils dynamically (avoids circular in edge runtimes)
+    const { pickCoreSkills, rankRoleKeywords, deriveAchievements } = await import("@/utils/coverLetter")
+
+    const keywords = rankRoleKeywords(roleInfo)
+    const coreSkills = pickCoreSkills(developerProfile.skills)
+    const achievements = deriveAchievements(developerProfile, providedAchievements)
 
     console.log("-".repeat(40));
     console.log("DEVELOPER PROFILE DATA");
@@ -66,58 +88,41 @@ export async function POST(req: Request) {
       )
     }
 
-    const prompt = `
-Generate a professional and compelling cover letter for a software developer applying for a specific role. The goal is to capture the hiring manager's attention and secure an interview.
+    const prompt = `SYSTEM:
+You are an elite career-coach copywriter who crafts concise, metrics-driven ${requestType === "coverLetter" ? "cover letters" : "outreach messages"} with a ${tone} yet professional voice.
 
-The letter is for the position of ${roleInfo.title} at ${companyInfo.name}.
+USER:
+<HEADER>
+Name: ${developerProfile.name} | Email: ${developerProfile.profileEmail ?? developerProfile.email} | Phone: ${developerProfile.contactInfo?.phone ?? "N/A"}
 
-Here is information about the company:
-${companyInfo.name ? `Address the letter to ${companyInfo.name}.` : ''}
-${companyInfo.location ? `The company is located in ${companyInfo.location}.` : ''}
-${companyInfo.remote ? `The company is a remote position.` : ''}
-${companyInfo.attractionPoints ? `The company is known for ${companyInfo.attractionPoints.join(', ')}.` : ''}
+<COMPANY>
+Name: ${companyInfo.name}
+Location: ${companyInfo.location ?? "N/A"}
+Fact: "${companyInfo.attractionPoints?.[0] ?? ""}"
 
-Here is information about the job:
-${roleInfo.title ? `The job is for a ${roleInfo.title}.` : ''}
-${roleInfo.description ? `The job description is: ${roleInfo.description}.` : ''}
-${roleInfo.requirements ? `The requirements for the job are: ${roleInfo.requirements.join(', ')}.` : ''}
-${roleInfo.skills ? `The skills required for the job are: ${roleInfo.skills.join(', ')}.` : ''}
+<ROLE>
+Title: ${roleInfo.title}
+TopKeywords: ${keywords.join(", ")}
 
-Here is information about the applicant:
-${developerProfile.name ? `Name: ${developerProfile.name}` : ''}
-${developerProfile.profileEmail ? `Email: ${developerProfile.profileEmail}` : ''}
-${developerProfile.contactInfo?.phone ? `Phone: ${developerProfile.contactInfo?.phone}` : ''}
-${developerProfile.contactInfo?.linkedin ? `LinkedIn: ${developerProfile.contactInfo?.linkedin}` : ''}
-${developerProfile.contactInfo?.github ? `GitHub: ${developerProfile.contactInfo?.github}` : ''}
-${developerProfile.contactInfo?.website ? `Website: ${developerProfile.contactInfo?.website}` : ''}
+<APPLICANT SNAPSHOT>
+Professional Title: ${developerProfile.title ?? "Software Developer"}
+CoreSkills: ${coreSkills.join(", ")}
+KeyAchievements:
+${achievements.map((a) => `- ${a}`).join("\n")}
 
-${developerProfile.name}'s Skills:
-${developerProfile.skills.map((skill: InternalSkill) => `- ${skill.name} (${skill.level})`).join('\n')}
+<TASK>
+Write a ${requestType === "coverLetter" ? "200-250-word cover letter" : "120-150-word outreach message"} that follows this structure:
+1. Greeting: "Dear ${hiringManager ?? "Hiring Team"},".
+2. Hook: cite role title + single company fact.
+3. Proof: weave achievements & 3 keywords naturally.
+4. Alignment: explain how skills solve company need.
+5. CTA & sign-off.
 
-${jobSourceInfo.source ? `Mention where you saw the job posting: ${jobSourceInfo.source}.` : ''}
-
-  ---
-Please follow these guidelines when drafting the cover letter:
-
-1. Start with a personalized greeting addressed to a specific individual or team (e.g., "Dear [Hiring Manager Name]").
-2. In the opening paragraph, mention the role title and express genuine enthusiasm for this position at [Company Name].
-3. Tailor the letter by referencing one or two specific company details (e.g., mission, recent project, or value) to demonstrate your research and alignment.
-4. Highlight 2–3 key achievements or experiences, using concrete metrics (e.g., "increased API performance by 40%").
-5. Integrate 3–4 important keywords or requirements from the job posting to pass automated screening.
-6. Weave a concise story that shows how your skills directly solved a problem or added value, avoiding jargon and clichés.
-7. Maintain an authentic, first‑person voice throughout; let your personality shine in a professional tone.
-8. Keep the total length between 200–300 words (approximately one page) to ensure readability.
-9. Use clear, logical structure—short paragraphs, one‑inch margins, and a header with your contact info.
-10. Close with a strong call to action, thanking the reader and expressing your eagerness to discuss how you can contribute.
-
-Important notes:
-    - Do not lie
-    - Do not make up skills
-    - Do not make up experience
-    - Do not make up metrics
-    - Always use information that you can find and make out of information that is provided in the request
-
-Please generate only the final cover letter text without restating these instructions.
+Rules:
+• First-person, no clichés, no invented data.
+• Address the named person exactly.
+• Within specified word count.
+• Output ONLY the final letter text (no markdown, no extra commentary).
 `
 
     console.log("=".repeat(80));
@@ -133,13 +138,21 @@ Please generate only the final cover letter text without restating these instruc
                 temperature: 0.5,
                 topK: 40,
                 topP: 0.8,
-                maxOutputTokens: 2048,
+                maxOutputTokens: 512,
             },
         });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const letterContent = response.text();
+        let letterContent = response.text();
+
+        // Basic guard: trim to ~260 words for cover letters
+        if (requestType === "coverLetter") {
+          const words = letterContent.split(/\s+/);
+          if (words.length > 260) {
+            letterContent = words.slice(0, 260).join(" ") + "...";
+          }
+        }
 
         if (!letterContent) {
             throw new Error("Gemini response did not contain letter content.");
