@@ -36,13 +36,28 @@ export async function POST(req: Request) {
     console.log("Generating cover letter")
   try {
     const data: CoverLetterRequestData = await req.json()
-    console.log("Data received:", JSON.stringify(data, null, 2))
+    // console.log("Data received:", JSON.stringify(data, null, 2))
     const { developerProfile, roleInfo, companyInfo, jobSourceInfo } = data
 
-    console.log("developerProfile", developerProfile)
-    console.log("roleInfo", roleInfo)
-    console.log("companyInfo", companyInfo)
-    console.log("jobSourceInfo", jobSourceInfo)
+    console.log("-".repeat(40));
+    console.log("DEVELOPER PROFILE DATA");
+    console.log("-".repeat(40));
+    console.log("[generate-cover-letter] DeveloperProfile:", JSON.stringify(developerProfile, null, 2))
+    
+    console.log("-".repeat(40));
+    console.log("ROLE INFORMATION");
+    console.log("-".repeat(40));
+    console.log("[generate-cover-letter] RoleInfo:", JSON.stringify(roleInfo, null, 2))
+    
+    console.log("-".repeat(40));
+    console.log("COMPANY INFORMATION");
+    console.log("-".repeat(40));
+    console.log("[generate-cover-letter] CompanyInfo:", JSON.stringify(companyInfo, null, 2))
+    
+    console.log("-".repeat(40));
+    console.log("JOB SOURCE INFORMATION");
+    console.log("-".repeat(40));
+    console.log("[generate-cover-letter] JobSourceInfo:", JSON.stringify(jobSourceInfo, null, 2))
 
     if (!roleInfo || !companyInfo || !developerProfile) {
       return NextResponse.json(
@@ -119,6 +134,9 @@ Important notes:
 Please generate only the final cover letter text without restating these instructions.
 `
 
+    console.log("=".repeat(80));
+    console.log("COVER LETTER GENERATION REQUEST");
+    console.log("=".repeat(80));
     console.log("Generated Prompt:", prompt) // Log the final prompt for debugging
 
     const completion = await openai.chat.completions.create({
