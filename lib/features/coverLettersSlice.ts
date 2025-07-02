@@ -1,17 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-
-interface CoverLetterData {
-  roleId: string;
-  letter: string;
-  generatedAt: string;
-  jobSource?: string;
-  companyAttractionPoints: string[];
-}
-
-interface CoverLettersState {
-  coverLetters: Record<string, CoverLetterData>; // Key is roleId
-}
+import { CoverLetterData, CoverLettersState, CoverLetterTone, RequestType } from '@/types/coverLetter';
 
 const initialState: CoverLettersState = {
   coverLetters: {},
@@ -44,6 +33,24 @@ export const coverLettersSlice = createSlice({
         state.coverLetters[roleId].companyAttractionPoints = attractionPoints;
       }
     },
+    updateCoverLetterTone: (state, action: PayloadAction<{ roleId: string; tone: CoverLetterTone }>) => {
+      const { roleId, tone } = action.payload;
+      if (state.coverLetters[roleId]) {
+        state.coverLetters[roleId].tone = tone;
+      }
+    },
+    updateCoverLetterRequestType: (state, action: PayloadAction<{ roleId: string; requestType: RequestType }>) => {
+      const { roleId, requestType } = action.payload;
+      if (state.coverLetters[roleId]) {
+        state.coverLetters[roleId].requestType = requestType;
+      }
+    },
+    updateCoverLetterHiringManager: (state, action: PayloadAction<{ roleId: string; hiringManager: string }>) => {
+      const { roleId, hiringManager } = action.payload;
+      if (state.coverLetters[roleId]) {
+        state.coverLetters[roleId].hiringManager = hiringManager;
+      }
+    },
   },
 });
 
@@ -53,7 +60,10 @@ export const {
   removeCoverLetter, 
   clearAllCoverLetters,
   updateCoverLetterJobSource,
-  updateCoverLetterAttractionPoints
+  updateCoverLetterAttractionPoints,
+  updateCoverLetterTone,
+  updateCoverLetterRequestType,
+  updateCoverLetterHiringManager
 } = coverLettersSlice.actions;
 
 // Export selectors

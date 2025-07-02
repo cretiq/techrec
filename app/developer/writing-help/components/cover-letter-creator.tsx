@@ -6,17 +6,23 @@ import { Button } from '@/components/ui-daisy/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui-daisy/card'
 import { Badge } from '@/components/ui-daisy/badge'
 import { Textarea } from "@/components/ui-daisy/textarea"
-import { Label } from "@/components/ui/label"
+// Removed legacy Label import to use daisyUI native labels
 import { Input } from '@/components/ui-daisy/input'
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '@/lib/store'
-import { setCoverLetter, selectCoverLetter, updateCoverLetterJobSource, updateCoverLetterAttractionPoints } from '@/lib/features/coverLettersSlice'
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, Briefcase, FileText, CheckCircle2, ChevronRight, ChevronDown } from "lucide-react"
+import { 
+  setCoverLetter, 
+  selectCoverLetter, 
+  updateCoverLetterAttractionPoints
+} from '@/lib/features/coverLettersSlice'
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
+import { CoverLetterTone, RequestType } from "@/types/coverLetter"
+import { CoverLetterPersonalization } from "./cover-letter-personalization"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 
@@ -57,6 +63,9 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
     "Innovative products in the tech space",
     "Strong company culture and values"
   ]
+  const tone = existingCoverLetter?.tone || "formal"
+  const requestType = existingCoverLetter?.requestType || "coverLetter"
+  const hiringManager = existingCoverLetter?.hiringManager || ""
   
   const { toast } = useToast()
 
@@ -150,9 +159,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
     dispatch(updateCoverLetterAttractionPoints({ roleId: role.id, attractionPoints: updatedPoints }))
   }
 
-  const handleJobSourceChange = (newJobSource: string) => {
-    dispatch(updateCoverLetterJobSource({ roleId: role.id, jobSource: newJobSource }))
-  }
+  // Personalization handlers moved to CoverLetterPersonalization component
 
   const handleRegenerate = () => {
     // Reset trigger tracking to allow manual regeneration
@@ -191,6 +198,9 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         jobSourceInfo: {
           source: jobSource || undefined
         },
+        tone,
+        requestType,
+        hiringManager: hiringManager || undefined,
       }
 
       console.log("Sending request data:", JSON.stringify(requestData, null, 2))
@@ -217,7 +227,13 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         letter: data.letter,
         generatedAt: new Date().toISOString(),
         jobSource: jobSource || undefined,
-        companyAttractionPoints
+        companyAttractionPoints,
+        tone,
+        requestType,
+        hiringManager: hiringManager || undefined,
+        provider: data.provider,
+        cached: data.cached,
+        fallback: data.fallback
       }))
       
       // Trigger fade-in animation
@@ -413,46 +429,30 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   className="overflow-hidden"
                 >
-                <CardContent className={cn("space-y-6", isMultiRoleMode ? "pt-4" : "pt-6")}>
-            {/* Job Source Input */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-2"
-            >
-              <Label htmlFor="jobSource" className="text-sm font-medium flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-primary" />
-                How did you find this job?
-                <Badge variant="secondary" size="sm" className="ml-auto">Optional</Badge>
-              </Label>
-              <div className="relative">
-                <Input
-                  id="jobSource"
-                  placeholder="e.g., LinkedIn, Company Website, Referral from John"
-                  value={jobSource}
-                  onChange={(e) => handleJobSourceChange(e.target.value)}
-                  className="bg-base-100/70 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all pl-10 rounded-lg"
-                  data-testid="write-coverletter-input-job-source"
-                />
-                <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/40" />
-              </div>
-            </motion.div>
+                <CardContent>
+                  <CoverLetterPersonalization
+                    roleId={role.id}
+                    tone={tone}
+                    requestType={requestType}
+                    hiringManager={hiringManager}
+                    jobSource={jobSource}
+                    isMultiRoleMode={isMultiRoleMode}
+                  />
             
             {/* Achievements Section */}
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.15 }}
               className="space-y-3"
             >
-              <Label className="text-sm font-medium flex items-center gap-2">
+              <label className="text-sm font-medium flex items-center gap-2">
                 <Award className="h-4 w-4 text-primary" />
                 Your Key Achievements
                 <Badge variant="secondary" size="sm" className="ml-auto bg-primary/20 text-primary">
                   {developerProfile?.achievements?.length || 0}
                 </Badge>
-              </Label>
+              </label>
               <div 
                 className="bg-base-100/40 backdrop-blur-sm rounded-lg p-4 border border-base-300/50 shadow-inner"
                 data-testid="write-coverletter-container-achievements"
@@ -537,16 +537,16 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.175 }}
               className="space-y-3"
             >
-              <Label className="text-sm font-medium flex items-center gap-2">
+              <label className="text-sm font-medium flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
                 Why {role.company.name}?
                 <Badge variant="secondary" size="sm" className="ml-auto bg-primary/20 text-primary">
                   {companyAttractionPoints.length}
                 </Badge>
-              </Label>
+              </label>
               <div 
                 className="bg-base-100/40 backdrop-blur-sm rounded-lg p-4 border border-base-300/50 shadow-inner"
                 data-testid="write-coverletter-container-attraction-points"
