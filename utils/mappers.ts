@@ -69,6 +69,11 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
 
   // Basic mapping for RoleType
   const mapRoleType = (): RoleType | string => {
+    // Handle null employment_type and ensure it's an array
+    if (!apiJob.employment_type || !Array.isArray(apiJob.employment_type) || apiJob.employment_type.length === 0) {
+      return 'Unknown Type';
+    }
+    
     // Since employment_type is now an array, we'll use the first type if available
     const type = apiJob.employment_type[0]?.toUpperCase().replace('-', '_');
     if (type && type in RoleType) {

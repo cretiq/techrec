@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import mockJobResponse from './rapidapi_job_response_example_v3.json'
+import mockJobResponse from './rapidapi_job_response_example_v4.json'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
