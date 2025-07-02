@@ -104,49 +104,57 @@ export async function GET(request: Request) {
       })
     }
 
-    // FOR DEVELOPMENT: Return mock data with simulated headers
-    // This simulates the actual API response structure while avoiding real API calls
+    // PRODUCTION MODE: Check for API key to determine mode
+    const apiKey = process.env.RAPIDAPI_KEY
+    const isDevelopment = !apiKey || apiKey.trim() === ''
 
-    // Simulate usage headers for development
-    const mockHeaders = new Headers()
-    mockHeaders.set('x-ratelimit-jobs-limit', '10000')
-    mockHeaders.set('x-ratelimit-jobs-remaining', '9950')
-    mockHeaders.set('x-ratelimit-requests-limit', '1000')
-    mockHeaders.set('x-ratelimit-requests-remaining', '985')
-    mockHeaders.set('x-ratelimit-jobs-reset', '86400')
-
-    // Update usage tracking with mock headers
-    cacheManager.updateUsage(mockHeaders)
-
-    // Cache the mock response
-    cacheManager.cacheResponse(normalizedParams, mockJobResponse, mockHeaders)
-
-    // Create response with usage headers
-    const response = NextResponse.json(mockJobResponse)
-    response.headers.set('X-Cache-Status', 'MISS')
-    response.headers.set('X-API-Mode', 'DEVELOPMENT')
-    
-    // Forward the usage headers
-    mockHeaders.forEach((value, key) => {
-      if (key.startsWith('x-ratelimit-')) {
-        response.headers.set(key, value)
-      }
+    console.log('Environment check:', { 
+      hasApiKey: !!apiKey, 
+      keyLength: apiKey?.length || 0,
+      isDevelopment,
+      envKeys: Object.keys(process.env).filter(key => key.includes('RAPID')),
+      apiKeyPreview: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined'
     })
 
-    console.log('Returned mock response with simulated API usage tracking')
-    return response
+    if (isDevelopment) {
+      // DEVELOPMENT MODE: Return mock data with simulated headers
+      console.log('Running in DEVELOPMENT mode (no RAPIDAPI_KEY found or empty)')
+      
+      // Simulate usage headers for development
+      const mockHeaders = new Headers()
+      mockHeaders.set('x-ratelimit-jobs-limit', '10000')
+      mockHeaders.set('x-ratelimit-jobs-remaining', '9950')
+      mockHeaders.set('x-ratelimit-requests-limit', '1000')
+      mockHeaders.set('x-ratelimit-requests-remaining', '985')
+      mockHeaders.set('x-ratelimit-jobs-reset', '86400')
 
-    /* 
-    // PRODUCTION CODE (currently commented for development):
-    // This would be uncommented when ready to use real API
+      // Update usage tracking with mock headers
+      cacheManager.updateUsage(mockHeaders)
+
+      // Cache the mock response
+      cacheManager.cacheResponse(normalizedParams, mockJobResponse, mockHeaders)
+
+      // Create response with usage headers
+      const response = NextResponse.json(mockJobResponse)
+      response.headers.set('X-Cache-Status', 'MISS')
+      response.headers.set('X-API-Mode', 'DEVELOPMENT')
+      
+      // Forward the usage headers
+      mockHeaders.forEach((value, key) => {
+        if (key.startsWith('x-ratelimit-')) {
+          response.headers.set(key, value)
+        }
+      })
+
+      console.log('Returned mock response with simulated API usage tracking')
+      return response
+    }
+
+    // PRODUCTION MODE: Make real API calls
+    console.log('Running in PRODUCTION mode with real API calls')
     
     const baseUrl = 'https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d'
-    const apiKey = process.env.RAPIDAPI_KEY
     const apiHost = 'linkedin-job-search-api.p.rapidapi.com'
-
-    if (!apiKey) {
-      throw new Error('RAPIDAPI_KEY environment variable not configured')
-    }
 
     // Build query string from normalized parameters
     const queryParams = new URLSearchParams()
@@ -158,6 +166,9 @@ export async function GET(request: Request) {
 
     const apiUrl = `${baseUrl}?${queryParams.toString()}`
     
+    console.log('Making PRODUCTION API call to:', apiUrl)
+    console.log('Estimated credit consumption:', consumption)
+
     const apiResponse = await fetch(apiUrl, {
       method: 'GET',
       headers: {
@@ -169,10 +180,28 @@ export async function GET(request: Request) {
     if (!apiResponse.ok) {
       const errorText = await apiResponse.text()
       console.error(`RapidAPI Error: ${apiResponse.status} - ${errorText}`)
-      throw new Error(`RapidAPI request failed: ${apiResponse.status}`)
+      
+      // Provide detailed error information
+      if (apiResponse.status === 429) {
+        throw new Error('Rate limit exceeded - please wait before making more requests')
+      } else if (apiResponse.status === 401) {
+        throw new Error('Invalid API key - check RAPIDAPI_KEY environment variable')
+      } else if (apiResponse.status === 400) {
+        throw new Error(`Bad request parameters: ${errorText}`)
+      } else {
+        throw new Error(`RapidAPI request failed: ${apiResponse.status} - ${errorText}`)
+      }
     }
 
     const result = await apiResponse.json()
+    
+    // Validate API response structure
+    if (!Array.isArray(result)) {
+      console.warn('API response is not an array:', result)
+      throw new Error('Invalid API response format - expected array of jobs')
+    }
+
+    console.log(`PRODUCTION API success: received ${result.length} jobs`)
 
     // Update usage tracking
     cacheManager.updateUsage(apiResponse.headers)
@@ -193,7 +222,6 @@ export async function GET(request: Request) {
     })
 
     return response
-    */
 
   } catch (error: any) {
     console.error('Internal Server Error in RapidAPI search:', error)

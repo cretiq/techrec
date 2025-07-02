@@ -35,13 +35,14 @@ interface LocationRequirement {
 
 // Represents the structure of a single job object expected from the RapidAPI LinkedIn endpoint
 export interface RapidApiJob {
+  // Core job fields
   id: string;
   date_posted: string;
   date_created: string;
   title: string;
   organization: string;
   organization_url: string;
-  date_validthrough: string;
+  date_validthrough: string | null;
   locations_raw: Place[];
   location_type: string | null;
   location_requirements_raw: LocationRequirement[] | null;
@@ -52,6 +53,11 @@ export interface RapidApiJob {
   source: string;
   source_domain: string;
   organization_logo: string;
+  
+  // Job description (optional)
+  description_text?: string | null;
+  
+  // Derived location fields
   cities_derived: string[] | null;
   regions_derived: string[] | null;
   countries_derived: string[];
@@ -60,9 +66,19 @@ export interface RapidApiJob {
   lats_derived: number[];
   lngs_derived: number[];
   remote_derived: boolean;
+  
+  // Seniority (missing from original interface)
+  seniority: string | null;
+  
+  // DirectApply field (missing from original interface)
+  directapply: boolean;
+  
+  // Recruiter information
   recruiter_name: string | null;
   recruiter_title: string | null;
   recruiter_url: string | null;
+  
+  // LinkedIn organization fields
   linkedin_org_employees: number | null;
   linkedin_org_url: string;
   linkedin_org_size: string;
@@ -76,4 +92,27 @@ export interface RapidApiJob {
   linkedin_org_locations: string[];
   linkedin_org_description: string;
   linkedin_org_recruitment_agency_derived: boolean;
+  linkedin_org_slug: string;
+  
+  // AI-enriched fields (BETA features)
+  ai_salary_currency?: string | null;
+  ai_salary_value?: number | null;
+  ai_salary_minvalue?: number | null;
+  ai_salary_maxvalue?: number | null;
+  ai_salary_unittext?: string | null;
+  ai_benefits?: string[] | null;
+  ai_experience_level?: string | null;
+  ai_work_arrangement?: string | null;
+  ai_work_arrangement_office_days?: number | null;
+  ai_remote_location?: string[] | null;
+  ai_remote_location_derived?: string[] | null;
+  ai_key_skills?: string[] | null;
+  ai_hiring_manager_name?: string | null;
+  ai_hiring_manager_email_address?: string | null;
+  ai_core_responsibilities?: string | null;
+  ai_requirements_summary?: string | null;
+  ai_working_hours?: number | null;
+  ai_employment_type?: string[] | null;
+  ai_job_language?: string | null;
+  ai_visa_sponsorship?: boolean | null;
 }
