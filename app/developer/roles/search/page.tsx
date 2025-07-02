@@ -3,21 +3,30 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
-import {  Input  } from '@/components/ui-daisy/input'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Slider } from "@/components/ui/slider"
-import { Label } from "@/components/ui/label"
-import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, X, Code, BarChart, Bookmark, BookmarkCheck, Send, Plus, PenTool, Check } from "lucide-react"
+import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, PenTool, Check, Bookmark, BookmarkCheck } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
 import { Role } from "@/types/role"
-import { formatJobType, mapRapidApiJobToRole } from "@/utils/mappers"
+import { formatJobType } from "@/utils/mappers"
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleRoleSelection, selectIsRoleSelected, selectSelectedRolesCount, setSelectedRoles, clearRoleSelection, selectSelectedRoles } from '@/lib/features/selectedRolesSlice'
+import { 
+  searchRoles, 
+  selectRoles, 
+  selectRolesLoading, 
+  selectRolesError,
+  selectCanMakeRequest,
+  selectNextRequestTime,
+  clearError
+} from '@/lib/features/rolesSlice'
 import { RootState, AppDispatch } from '@/lib/store'
 import { cn } from "@/lib/utils"
 import SelectedRolesList from '@/components/roles/SelectedRolesList'
+import AdvancedFilters from '@/components/roles/AdvancedFilters'
+import ApiUsageDashboard from '@/components/roles/ApiUsageDashboard'
+import type { SearchParameters } from '@/lib/api/rapidapi-cache'
 
 interface SavedRole {
   roleId: string
@@ -27,18 +36,20 @@ interface SavedRole {
 
 export default function RolesSearch2Page() {
   const { data: session, status } = useSession()
-  const [roles, setRoles] = useState<Role[]>([])
   const [savedRoles, setSavedRoles] = useState<SavedRole[]>([])
-  const [loading, setLoading] = useState(false)
+  const [currentFilters, setCurrentFilters] = useState<SearchParameters>({
+    limit: 10
+  })
   const { toast } = useToast()
   const router = useRouter()
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedLocation, setSelectedLocation] = useState("all")
-  const [selectedJobType, setSelectedJobType] = useState<string>("all")
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([])
-  const [activeFilters, setActiveFilters] = useState(0)
-  const [searchLimit, setSearchLimit] = useState([10]) // Default limit of 10 results
   const dispatch = useDispatch<AppDispatch>()
+
+  // Redux state
+  const roles = useSelector(selectRoles)
+  const loading = useSelector(selectRolesLoading)
+  const error = useSelector(selectRolesError)
+  const canMakeRequest = useSelector(selectCanMakeRequest)
+  const nextRequestTime = useSelector(selectNextRequestTime)
   const selectedRoles = useSelector(selectSelectedRoles)
   const selectedCount = useSelector(selectSelectedRolesCount)
 
@@ -55,48 +66,41 @@ export default function RolesSearch2Page() {
     if (status === 'authenticated') {
       console.log("[RolesSearch2Page] User authenticated, fetching initial data")
       fetchSavedRoles()
-      fetchRoles() // Trigger initial search
+      // DO NOT trigger automatic search - user must explicitly search
     }
   }, [status])
 
-  const fetchRoles = async () => {
-    setLoading(true)
-    try {
-      const queryParams = new URLSearchParams({
-        title: searchTerm || 'Software Engineer',
-        location: selectedLocation === 'all' ? 'United States' : selectedLocation,
-        limit: searchLimit[0].toString(),
-      });
-      
-      const apiUrl = `/api/rapidapi/search?${queryParams.toString()}`;
-
-      const response = await fetch(apiUrl)
-    
-        if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response' }))
-        throw new Error(errorData.error || `Failed to fetch roles: ${response.status}`)
-        }
-
-        const jobs = await response.json()
-
-        const mappedRoles = jobs.map(mapRapidApiJobToRole)
-
-
-        setRoles(mappedRoles)
-
-    } catch (error: any) {
-        console.error('[RolesSearch2Page] Error fetching roles:', error)
-        toast({
-        title: 'Error Loading Roles',
-        description: error.message || 'Failed to load roles data.',
+  // Clear errors when component unmounts or when error changes
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: 'Search Error',
+        description: error,
         variant: 'destructive',
-        })
-        setRoles([]) // Clear roles on error
-    } finally {
-        console.log("[RolesSearch2Page] Finished fetching roles")
-        setLoading(false)
+      })
+      dispatch(clearError())
     }
+  }, [error, dispatch, toast])
+
+  const handleSearch = () => {
+    if (!canMakeRequest && nextRequestTime) {
+      const timeRemaining = Math.ceil((nextRequestTime - Date.now()) / 1000 / 60)
+      toast({
+        title: 'Rate Limited',
+        description: `Please wait ${timeRemaining} more minutes before searching again.`,
+        variant: 'destructive',
+      })
+      return
     }
+
+    console.log("[RolesSearch2Page] Triggering search with filters:", currentFilters)
+    dispatch(searchRoles(currentFilters))
+  }
+
+  const handleFiltersChange = (filters: SearchParameters) => {
+    console.log("[RolesSearch2Page] Filters changed:", filters)
+    setCurrentFilters(filters)
+  }
 
   const fetchSavedRoles = async () => {
     console.log("[RolesSearch2Page] Starting to fetch saved roles")
@@ -140,50 +144,14 @@ export default function RolesSearch2Page() {
     }
   }
 
+  // All roles are already filtered by the API based on search parameters
   const filteredRoles = roles.filter((role) => {
     if (!role) {
       console.warn("[RolesSearch2Page] Found undefined role in filter")
       return false
     }
-
-    const searchTermLower = searchTerm.toLowerCase()
-    const matchesSearch =
-      searchTerm === "" ||
-      role.title?.toLowerCase().includes(searchTermLower) ||
-      role.company?.name?.toLowerCase().includes(searchTermLower) ||
-      role.location?.toLowerCase().includes(searchTermLower) ||
-      role.requirements?.some((req) => req?.toLowerCase().includes(searchTermLower)) ||
-      role.skills?.some((skill) => skill?.name?.toLowerCase().includes(searchTermLower))
-
-    const matchesLocation = selectedLocation === "all" || role.location === selectedLocation
-    const matchesJobType = selectedJobType === "all" || String(role.type) === selectedJobType
-
-    const roleSkillNames = role.skills?.map(s => s?.name).filter(Boolean) as string[] || []
-    const combinedSkills = [...(role.requirements || []), ...roleSkillNames]
-    const matchesSkills = selectedSkills.length === 0 || selectedSkills.every((skill) => combinedSkills.some(rs => rs?.toLowerCase() === skill?.toLowerCase()))
-
-    return matchesSearch && matchesLocation && matchesJobType && matchesSkills
+    return true
   })
-
-  React.useEffect(() => {
-    let count = 0
-    if (searchTerm) count++
-    if (selectedLocation !== "all") count++
-    if (selectedJobType !== "all") count++
-    if (selectedSkills.length > 0) count++
-    setActiveFilters(count)
-  }, [searchTerm, selectedLocation, selectedJobType, selectedSkills])
-
-  const clearFilters = () => {
-    setSearchTerm("")
-    setSelectedLocation("all")
-    setSelectedJobType("all")
-    setSelectedSkills([])
-  }
-
-  const toggleSkill = (skill: string) => {
-    setSelectedSkills((prev) => (prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]))
-  }
 
   const handleSaveToggleRole = async (roleId: string) => {
     if (!session?.user) {
@@ -280,106 +248,28 @@ export default function RolesSearch2Page() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8" data-testid="role-search-container-main">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Filters Section */}
-        <div className="w-full lg:w-1/4 space-y-6 animate-fade-in-up" data-testid="role-search-container-filters">
+    <div className="container mx-auto px-4 py-8 max-w-7xl" data-testid="role-search-container-main">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Left Sidebar - Selected Roles & Usage Dashboard */}
+        <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-sidebar">
           <SelectedRolesList />
-          <div className="bg-base-100/60 backdrop-blur-sm rounded-lg shadow-lg p-6 sticky top-8 border border-base-200" data-testid="role-search-card-filters">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Filters (RapidAPI)</h2>
-              {activeFilters > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="text-xs text-primary hover:bg-primary/10 h-auto p-1"
-                  data-testid="role-search-button-clear-filters-trigger"
-                >
-                  Clear ({activeFilters})
-                </Button>
-              )}
-            </div>
-            <div className="space-y-4">
-              {/* Search Input */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search roles (e.g., Engineer)..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-base-100/80 backdrop-blur-sm"
-                  data-testid="role-search-input-keyword"
-                />
-              </div>
-
-              {/* Location Filter */}
-              <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-                <Label>Location</Label>
-                <Input
-                  placeholder="Location (e.g., United States)"
-                  value={selectedLocation === 'all' ? '' : selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value || 'all')}
-                  className="bg-base-100/80 backdrop-blur-sm"
-                  data-testid="role-search-input-location"
-                />
-              </div>
-
-              {/* Results Limit Slider */}
-              <div className="space-y-3 p-4 rounded-lg bg-primary/10 backdrop-blur-sm border border-primary/20" data-testid="role-search-container-limit-slider">
-                <div className="flex justify-between items-center">
-                  <Label className="text-sm font-medium text-primary">Results Limit</Label>
-                  <div className="px-2 py-1 bg-primary/20 rounded-full text-xs font-bold text-primary" data-testid="role-search-display-limit-value">
-                    {searchLimit[0]}
-                  </div>
-                </div>
-                <Slider
-                  value={searchLimit}
-                  onValueChange={setSearchLimit}
-                  min={1}
-                  max={20}
-                  step={1}
-                  className="w-full slider-enhanced"
-                  data-testid="role-search-input-limit-slider"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>1</span>
-                  <span>20</span>
-                </div>
-              </div>
-
-              {/* Search Button */}
-              <Button 
-                className="w-full magical-glow" 
-                onClick={fetchRoles}
-                disabled={loading}
-                variant="gradient"
-                data-testid="role-search-button-search-trigger"
-              >
-                {loading ? (
-                  <div className="sparkle-loader pulse-ring animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current mr-2" />
-                ) : (
-                  <Search className="h-4 w-4 mr-2" />
-                )}
-                Search Roles
-              </Button>
-
-              {/* Job Type Filter - May not be directly filterable via this API */}
-              {/* <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>...</div> */}
-
-              {/* Skills Filter - May not be directly filterable via this API */}
-              {/* <Accordion type="single" collapsible ...>...</Accordion> */}
-
-              {/* Add Custom Role Button - Keep? Or remove for this page? */}
-              {/* <Button ...> Add Custom Role </Button> */}
-            </div>
-          </div>
+          <ApiUsageDashboard />
         </div>
 
-        {/* Roles Grid */}
-        <div className="w-full lg:w-3/4" data-testid="role-search-container-results">
+        {/* Center - Advanced Filters */}
+        <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-filters">
+          <AdvancedFilters 
+            onFiltersChange={handleFiltersChange}
+            onSearch={handleSearch}
+            loading={loading}
+            disabled={!canMakeRequest}
+          />
+        </div>
+
+        {/* Right Side - Results Grid */}
+        <div className="lg:col-span-2 space-y-6" data-testid="role-search-container-results">
           {/* Action Buttons Bar */}
-          <div className="mb-4 flex flex-wrap justify-between items-center gap-2" data-testid="role-search-container-actions">
+          <div className="flex flex-wrap justify-between items-center gap-2" data-testid="role-search-container-actions">
             {/* Bulk Selection Buttons */}
             {!loading && filteredRoles.length > 0 && (
               <div className="flex gap-2" data-testid="role-search-container-bulk-actions">
@@ -423,22 +313,52 @@ export default function RolesSearch2Page() {
               </Button>
             )}
           </div>
+
+          {/* Loading State */}
           {loading && (
-            <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4" data-testid="role-search-container-loading">
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4" data-testid="role-search-container-loading">
               <div className="sparkle-loader pulse-ring animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" data-testid="role-search-spinner-search-loading"></div>
-              <div className="text-sm text-muted-foreground animate-pulse" data-testid="role-search-text-loading-message">Searching for amazing opportunities...</div>
+              <div className="text-sm text-muted-foreground animate-pulse" data-testid="role-search-text-loading-message">
+                Searching for amazing opportunities...
+              </div>
+              <div className="text-xs text-muted-foreground" data-testid="role-search-text-loading-subtitle">
+                Results are cached for improved performance
+              </div>
             </div>
           )}
+
+          {/* No Results State */}
           {!loading && filteredRoles.length === 0 && (
-            <Card className="md:col-span-2 xl:col-span-3 text-center p-8 bg-base-100/60 backdrop-blur-sm animate-fade-in-up" data-testid="role-search-card-no-results">
+            <Card className="text-center p-8 bg-base-100/60 backdrop-blur-sm animate-fade-in-up" data-testid="role-search-card-no-results">
               <CardHeader>
-                <CardTitle>No Roles Found</CardTitle>
-                <CardDescription>Try adjusting your search terms or filters.</CardDescription>
+                <CardTitle>Ready to Search for Roles</CardTitle>
+                <CardDescription>
+                  Use the advanced filters to search for job opportunities. Configure your search parameters and click the search button to get started.
+                </CardDescription>
               </CardHeader>
+              <CardContent>
+                <Button 
+                  onClick={handleSearch}
+                  disabled={!canMakeRequest}
+                  variant="default"
+                  size="lg"
+                  data-testid="role-search-button-start-search"
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Start Searching
+                </Button>
+                {!canMakeRequest && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Rate limited - please wait before searching
+                  </p>
+                )}
+              </CardContent>
             </Card>
           )}
+
+          {/* Results Grid */}
           {!loading && filteredRoles.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" data-testid="role-search-container-roles-grid">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4" data-testid="role-search-container-roles-grid">
               {filteredRoles.map((role, index) => (
                 <RoleCardWrapper
                   key={role.id}
