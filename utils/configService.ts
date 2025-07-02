@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { Redis } from 'ioredis';
+import { getReadyRedisClient } from '../lib/redis';
+import type { Redis } from 'ioredis';
 
 // Types for configuration
 export interface PointsCosts {
@@ -103,20 +104,27 @@ export class ConfigService {
   private static instance: ConfigService;
   private prisma: PrismaClient;
   private redis: Redis | null = null;
+  private redisInitialized = false;
   private readonly CACHE_TTL = 300; // 5 minutes cache
   private readonly CACHE_PREFIX = 'config:';
 
   private constructor() {
     this.prisma = new PrismaClient();
-    
-    // Initialize Redis if available
-    if (process.env.REDIS_URL) {
+    // Redis will be initialized on first use via getRedisClient()
+  }
+
+  private async getRedisClient(): Promise<Redis | null> {
+    if (!this.redisInitialized) {
       try {
-        this.redis = new Redis(process.env.REDIS_URL);
+        this.redis = await getReadyRedisClient();
+        this.redisInitialized = true;
       } catch (error) {
         console.warn('Redis connection failed, falling back to database only:', error);
+        this.redis = null;
+        this.redisInitialized = true; // Don't retry every time
       }
     }
+    return this.redis;
   }
 
   public static getInstance(): ConfigService {
@@ -132,8 +140,9 @@ export class ConfigService {
     
     try {
       // Try cache first
-      if (this.redis) {
-        const cached = await this.redis.get(cacheKey);
+      const redis = await this.getRedisClient();
+      if (redis) {
+        const cached = await redis.get(cacheKey);
         if (cached) {
           return JSON.parse(cached);
         }
@@ -153,8 +162,8 @@ export class ConfigService {
       const costs = (config?.config as unknown as PointsCosts) || DEFAULT_POINTS_COSTS;
       
       // Cache the result
-      if (this.redis) {
-        await this.redis.setex(cacheKey, this.CACHE_TTL, JSON.stringify(costs));
+      if (redis) {
+        await redis.setex(cacheKey, this.CACHE_TTL, JSON.stringify(costs));
       }
 
       return costs;
@@ -192,8 +201,9 @@ export class ConfigService {
       });
 
       // Clear cache
-      if (this.redis) {
-        await this.redis.del(`${this.CACHE_PREFIX}points-costs`);
+      const redis = await this.getRedisClient();
+      if (redis) {
+        await redis.del(`${this.CACHE_PREFIX}points-costs`);
       }
     } catch (error) {
       console.error('Failed to update points costs:', error);
@@ -207,8 +217,9 @@ export class ConfigService {
     
     try {
       // Try cache first
-      if (this.redis) {
-        const cached = await this.redis.get(cacheKey);
+      const redis = await this.getRedisClient();
+      if (redis) {
+        const cached = await redis.get(cacheKey);
         if (cached) {
           return JSON.parse(cached);
         }
@@ -228,8 +239,8 @@ export class ConfigService {
       const rewards = (config?.config as unknown as XPRewards) || DEFAULT_XP_REWARDS;
       
       // Cache the result
-      if (this.redis) {
-        await this.redis.setex(cacheKey, this.CACHE_TTL, JSON.stringify(rewards));
+      if (redis) {
+        await redis.setex(cacheKey, this.CACHE_TTL, JSON.stringify(rewards));
       }
 
       return rewards;
@@ -267,8 +278,9 @@ export class ConfigService {
       });
 
       // Clear cache
-      if (this.redis) {
-        await this.redis.del(`${this.CACHE_PREFIX}xp-rewards`);
+      const redis = await this.getRedisClient();
+      if (redis) {
+        await redis.del(`${this.CACHE_PREFIX}xp-rewards`);
       }
     } catch (error) {
       console.error('Failed to update XP rewards:', error);
@@ -282,8 +294,9 @@ export class ConfigService {
     
     try {
       // Try cache first
-      if (this.redis) {
-        const cached = await this.redis.get(cacheKey);
+      const redis = await this.getRedisClient();
+      if (redis) {
+        const cached = await redis.get(cacheKey);
         if (cached) {
           return JSON.parse(cached);
         }
@@ -303,8 +316,8 @@ export class ConfigService {
       const tiers = (config?.config as unknown as SubscriptionTiers) || DEFAULT_SUBSCRIPTION_TIERS;
       
       // Cache the result
-      if (this.redis) {
-        await this.redis.setex(cacheKey, this.CACHE_TTL, JSON.stringify(tiers));
+      if (redis) {
+        await redis.setex(cacheKey, this.CACHE_TTL, JSON.stringify(tiers));
       }
 
       return tiers;
@@ -342,8 +355,9 @@ export class ConfigService {
       });
 
       // Clear cache
-      if (this.redis) {
-        await this.redis.del(`${this.CACHE_PREFIX}subscription-tiers`);
+      const redis = await this.getRedisClient();
+      if (redis) {
+        await redis.del(`${this.CACHE_PREFIX}subscription-tiers`);
       }
     } catch (error) {
       console.error('Failed to update subscription tiers:', error);
@@ -420,9 +434,8 @@ export class ConfigService {
 
   // Cleanup method
   public async disconnect(): Promise<void> {
-    if (this.redis) {
-      await this.redis.quit();
-    }
+    // No need to disconnect Redis here since we're using the centralized client
+    // The main Redis client will handle its own lifecycle
     await this.prisma.$disconnect();
   }
 }

@@ -2,18 +2,14 @@
 // Implements caching, query batching, and performance monitoring
 
 import { PrismaClient } from '@prisma/client';
-import { Redis } from 'ioredis';
+import { getReadyRedisClient } from '../redis';
+import type { Redis } from 'ioredis';
 
 const prisma = new PrismaClient();
 
-// Redis client for caching (assume it's configured elsewhere)
+// Use centralized Redis client instead of creating separate connection
 let redis: Redis | null = null;
-try {
-  redis = new Redis(process.env.REDIS_URL);
-} catch (error) {
-  console.warn('Redis not available, falling back to in-memory cache');
-  redis = null;
-}
+let redisInitialized = false;
 
 // In-memory cache fallback
 const memoryCache = new Map<string, { data: any; expiry: number }>();
@@ -397,6 +393,18 @@ export class GamificationQueryOptimizer {
 
   private async getFromCache(key: string): Promise<any> {
     try {
+      // Initialize Redis client if not already done
+      if (!redisInitialized) {
+        try {
+          redis = await getReadyRedisClient();
+          redisInitialized = true;
+        } catch (error) {
+          console.warn('Redis not available, falling back to in-memory cache');
+          redis = null;
+          redisInitialized = true; // Don't retry every time
+        }
+      }
+
       if (redis) {
         const cached = await redis.get(key);
         return cached ? JSON.parse(cached) : null;
@@ -418,6 +426,18 @@ export class GamificationQueryOptimizer {
 
   private async setCache(key: string, value: any, ttlSeconds: number): Promise<void> {
     try {
+      // Initialize Redis client if not already done
+      if (!redisInitialized) {
+        try {
+          redis = await getReadyRedisClient();
+          redisInitialized = true;
+        } catch (error) {
+          console.warn('Redis not available, falling back to in-memory cache');
+          redis = null;
+          redisInitialized = true; // Don't retry every time
+        }
+      }
+
       if (redis) {
         await redis.setex(key, ttlSeconds, JSON.stringify(value));
       } else {
