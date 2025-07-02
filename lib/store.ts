@@ -18,6 +18,8 @@ import outreachMessagesReducer from './features/outreachMessagesSlice';
 import suggestionsReducer from './features/suggestionsSlice';
 // Import the gamification reducer
 import gamificationReducer from './features/gamificationSlice';
+// Import the roles reducer
+import rolesReducer from './features/rolesSlice';
 
 // Combine all reducers - no persistence needed as session-based auth handles state
 const combinedReducer = combineReducers({
@@ -30,6 +32,7 @@ const combinedReducer = combineReducers({
   suggestions: suggestionsReducer,
   gamification: gamificationReducer,
   analytics: analyticsReducer,
+  roles: rolesReducer,
 });
 
 /**

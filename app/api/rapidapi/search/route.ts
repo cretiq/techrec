@@ -1,60 +1,209 @@
 import { NextResponse } from 'next/server'
 import mockJobResponse from './rapidapi_job_response_example_v4.json'
+import RapidApiCacheManager, { type SearchParameters } from '@/lib/api/rapidapi-cache'
+import RapidApiValidator from '@/lib/api/rapidapi-validator'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
+  const cacheManager = RapidApiCacheManager.getInstance()
+  const validator = RapidApiValidator.getInstance()
 
-  const limit = searchParams.get('limit') || '3'
-  const offset = searchParams.get('offset') || '0'
-  const titleFilter = searchParams.get('title') || 'Software Engineer' // Default search term
-  const locationFilter = searchParams.get('location') || 'United States' // Default location
+  // Extract all possible parameters from URL
+  const params: SearchParameters = {
+    limit: parseInt(searchParams.get('limit') || '10'),
+    offset: parseInt(searchParams.get('offset') || '0'),
+    title_filter: searchParams.get('title') || searchParams.get('title_filter'),
+    location_filter: searchParams.get('location') || searchParams.get('location_filter'),
+    type_filter: searchParams.get('type_filter'),
+    seniority_filter: searchParams.get('seniority_filter'),
+    description_filter: searchParams.get('description_filter'),
+    remote: searchParams.get('remote'),
+    agency: searchParams.get('agency'),
+    date_filter: searchParams.get('date_filter'),
+    external_apply_url: searchParams.get('external_apply_url'),
+    directapply: searchParams.get('directapply'),
+    employees_lte: searchParams.get('employees_lte') ? parseInt(searchParams.get('employees_lte')!) : undefined,
+    employees_gte: searchParams.get('employees_gte') ? parseInt(searchParams.get('employees_gte')!) : undefined,
+    order: searchParams.get('order'),
+    include_ai: searchParams.get('include_ai'),
+    ai_work_arrangement_filter: searchParams.get('ai_work_arrangement_filter'),
+    ai_has_salary: searchParams.get('ai_has_salary'),
+    ai_experience_level_filter: searchParams.get('ai_experience_level_filter'),
+    ai_visa_sponsorship_filter: searchParams.get('ai_visa_sponsorship_filter'),
+    description_type: searchParams.get('description_type'),
+  }
 
-    // // Encode parameters with proper space encoding and quotes
-    // const baseUrl = 'https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d'
-    // const encodedTitle = encodeURIComponent(`"${titleFilter}"`).replace(/\+/g, '%20')
-    // const encodedLocation = encodeURIComponent(`"${locationFilter}"`).replace(/\+/g, '%20')
+  // Remove undefined values
+  Object.keys(params).forEach(key => {
+    if (params[key as keyof SearchParameters] === undefined || params[key as keyof SearchParameters] === null) {
+      delete params[key as keyof SearchParameters]
+    }
+  })
+
+  try {
+    // Validate parameters
+    const validation = validator.validateSearchParameters(params)
+    if (!validation.valid) {
+      console.error('Parameter validation failed:', validation.errors)
+      return NextResponse.json(
+        { 
+          error: 'Invalid search parameters',
+          details: validation.errors,
+          warnings: validation.warnings
+        },
+        { status: 400 }
+      )
+    }
+
+    // Log validation warnings if any
+    if (validation.warnings.length > 0) {
+      console.warn('Parameter validation warnings:', validation.warnings)
+    }
+
+    // Use normalized parameters
+    const normalizedParams = validation.normalizedParams
+
+    // Check cache first
+    const cachedResponse = cacheManager.getCachedResponse(normalizedParams)
+    if (cachedResponse) {
+      console.log('Returning cached response for parameters:', normalizedParams)
+      
+      // Add cache metadata to response headers
+      const response = NextResponse.json(cachedResponse.data)
+      response.headers.set('X-Cache-Status', 'HIT')
+      response.headers.set('X-Cache-Age', Math.floor(cachedResponse.age / 1000).toString())
+      response.headers.set('X-Cache-Timestamp', new Date(cachedResponse.timestamp).toISOString())
+      
+      return response
+    }
+
+    // Check if we can make a request (credit limits)
+    const creditCheck = cacheManager.canMakeRequest(normalizedParams)
+    if (!creditCheck.allowed) {
+      console.error('API request blocked due to credit limits:', creditCheck.reason)
+      return NextResponse.json(
+        { 
+          error: 'API request blocked',
+          reason: creditCheck.reason,
+          suggestion: 'Please try again later or reduce the search limit'
+        },
+        { status: 429 }
+      )
+    }
+
+    // Get current usage for logging
+    const currentUsage = cacheManager.getCurrentUsage()
+    const consumption = cacheManager.calculateCreditConsumption(normalizedParams)
     
-    // // Construct the URL with all parameters
-    // const urlString = `${baseUrl}?limit=${limit}&offset=${offset}&title_filter=${encodedTitle}&location_filter=${encodedLocation}`
-  
-    // // TODO: Replace hardcoded keys with environment variables for security
-    // const apiKey = '9fa34e3b7cmsh745fe1b093c64adp1d29c6jsn1769025d5f92'
-    // const apiHost = 'linkedin-job-search-api.p.rapidapi.com'
-  
-    // const options = {
-    //   method: 'GET',
-    //   headers: {
-    //     'x-rapidapi-key': apiKey,
-    //     'x-rapidapi-host': apiHost,
-    //   },
-    // }
-  
-    // console.log('Making API request with URL:', urlString)
-  
-    // try {
-    //   const response = await fetch(urlString, options)
-  
-    //   if (!response.ok) {
-    //     // Log the error response from RapidAPI for debugging
-    //     const errorText = await response.text()
-    //     console.error(`RapidAPI Error: ${response.status} - ${errorText}`)
-    //     return NextResponse.json(
-    //       { error: `Failed to fetch jobs from RapidAPI: ${response.status}` },
-    //       { status: response.status }
-    //     )
-    //   }
-  
-    //   const result = await response.json()
-    //   return NextResponse.json(result)
-  
-    // } catch (error: any) {
-    //   console.error('Internal Server Error fetching from RapidAPI:', error)
-    //   return NextResponse.json(
-    //     { error: `Internal Server Error: ${error.message}` },
-    //     { status: 500 }
-    //   )
-    // }
-  // Return mock data instead of making API call
+    console.log('Making API request with normalized parameters:', normalizedParams)
+    console.log('Estimated credit consumption:', consumption)
+    if (currentUsage) {
+      console.log('Current API usage:', {
+        jobsRemaining: currentUsage.jobsRemaining,
+        requestsRemaining: currentUsage.requestsRemaining
+      })
+    }
 
-  return NextResponse.json(mockJobResponse)
+    // FOR DEVELOPMENT: Return mock data with simulated headers
+    // This simulates the actual API response structure while avoiding real API calls
+
+    // Simulate usage headers for development
+    const mockHeaders = new Headers()
+    mockHeaders.set('x-ratelimit-jobs-limit', '10000')
+    mockHeaders.set('x-ratelimit-jobs-remaining', '9950')
+    mockHeaders.set('x-ratelimit-requests-limit', '1000')
+    mockHeaders.set('x-ratelimit-requests-remaining', '985')
+    mockHeaders.set('x-ratelimit-jobs-reset', '86400')
+
+    // Update usage tracking with mock headers
+    cacheManager.updateUsage(mockHeaders)
+
+    // Cache the mock response
+    cacheManager.cacheResponse(normalizedParams, mockJobResponse, mockHeaders)
+
+    // Create response with usage headers
+    const response = NextResponse.json(mockJobResponse)
+    response.headers.set('X-Cache-Status', 'MISS')
+    response.headers.set('X-API-Mode', 'DEVELOPMENT')
+    
+    // Forward the usage headers
+    mockHeaders.forEach((value, key) => {
+      if (key.startsWith('x-ratelimit-')) {
+        response.headers.set(key, value)
+      }
+    })
+
+    console.log('Returned mock response with simulated API usage tracking')
+    return response
+
+    /* 
+    // PRODUCTION CODE (currently commented for development):
+    // This would be uncommented when ready to use real API
+    
+    const baseUrl = 'https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d'
+    const apiKey = process.env.RAPIDAPI_KEY
+    const apiHost = 'linkedin-job-search-api.p.rapidapi.com'
+
+    if (!apiKey) {
+      throw new Error('RAPIDAPI_KEY environment variable not configured')
+    }
+
+    // Build query string from normalized parameters
+    const queryParams = new URLSearchParams()
+    Object.entries(normalizedParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams.append(key, value.toString())
+      }
+    })
+
+    const apiUrl = `${baseUrl}?${queryParams.toString()}`
+    
+    const apiResponse = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'x-rapidapi-key': apiKey,
+        'x-rapidapi-host': apiHost,
+      },
+    })
+
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text()
+      console.error(`RapidAPI Error: ${apiResponse.status} - ${errorText}`)
+      throw new Error(`RapidAPI request failed: ${apiResponse.status}`)
+    }
+
+    const result = await apiResponse.json()
+
+    // Update usage tracking
+    cacheManager.updateUsage(apiResponse.headers)
+
+    // Cache the response
+    cacheManager.cacheResponse(normalizedParams, result, apiResponse.headers)
+
+    // Create response with usage headers
+    const response = NextResponse.json(result)
+    response.headers.set('X-Cache-Status', 'MISS')
+    response.headers.set('X-API-Mode', 'PRODUCTION')
+    
+    // Forward important headers
+    apiResponse.headers.forEach((value, key) => {
+      if (key.startsWith('x-ratelimit-')) {
+        response.headers.set(key, value)
+      }
+    })
+
+    return response
+    */
+
+  } catch (error: any) {
+    console.error('Internal Server Error in RapidAPI search:', error)
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      },
+      { status: 500 }
+    )
+  }
 } 
