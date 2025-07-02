@@ -36,18 +36,32 @@ export const formatJobType = (type: RoleType | string | undefined): string => {
 
 // Maps a job from the RapidAPI response to the internal Role interface
 export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
-  // Helper to format salary
+  // Helper to format salary with comprehensive null safety
   const formatSalary = (): string => {
-    if (!apiJob.salary_raw) return 'Not Specified';
+    // Check if salary_raw exists and has the expected structure
+    if (!apiJob.salary_raw || !apiJob.salary_raw.value) {
+      // Check for AI-extracted salary as fallback
+      if (apiJob.ai_salary_minvalue && apiJob.ai_salary_maxvalue) {
+        const currency = apiJob.ai_salary_currency || '$';
+        const unit = apiJob.ai_salary_unittext || 'year';
+        return `${currency}${apiJob.ai_salary_minvalue.toLocaleString()} - ${currency}${apiJob.ai_salary_maxvalue.toLocaleString()} / ${unit.toLowerCase()}`;
+      } else if (apiJob.ai_salary_value) {
+        const currency = apiJob.ai_salary_currency || '$';
+        const unit = apiJob.ai_salary_unittext || 'year';
+        return `${currency}${apiJob.ai_salary_value.toLocaleString()} / ${unit.toLowerCase()}`;
+      }
+      return 'Not Specified';
+    }
     
     const { minValue, maxValue, unitText } = apiJob.salary_raw.value;
     
+    // Safely handle potentially undefined values
     if (minValue && maxValue) {
-      return `$${minValue.toLocaleString()} - $${maxValue.toLocaleString()} / ${unitText.toLowerCase()}`.trim();
+      return `$${minValue.toLocaleString()} - $${maxValue.toLocaleString()} / ${(unitText || 'year').toLowerCase()}`.trim();
     } else if (minValue) {
-      return `From $${minValue.toLocaleString()} / ${unitText.toLowerCase()}`.trim();
+      return `From $${minValue.toLocaleString()} / ${(unitText || 'year').toLowerCase()}`.trim();
     } else if (maxValue) {
-      return `Up to $${maxValue.toLocaleString()} / ${unitText.toLowerCase()}`.trim();
+      return `Up to $${maxValue.toLocaleString()} / ${(unitText || 'year').toLowerCase()}`.trim();
     }
     return 'Not Specified';
   };
@@ -61,11 +75,25 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     }));
   };
 
-  // Map company data
-  const mapCompany = (): CompanySummary => ({
-    id: apiJob.organization_url, // Use organization URL as ID
-    name: apiJob.organization,
-  });
+  // Map company data with safe ID generation
+  const mapCompany = (): CompanySummary => {
+    // Generate a safe ID from organization URL or fallback to organization name
+    let companyId: string;
+    try {
+      // Try to use organization URL as ID, but ensure it's valid
+      companyId = apiJob.organization_url && apiJob.organization_url.trim() 
+        ? apiJob.organization_url 
+        : `org-${(apiJob.organization || 'unknown').toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+    } catch {
+      // Fallback to safe string generation
+      companyId = `org-${(apiJob.organization || 'unknown').toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+    }
+    
+    return {
+      id: companyId,
+      name: apiJob.organization || 'Unknown Company',
+    };
+  };
 
   // Basic mapping for RoleType
   const mapRoleType = (): RoleType | string => {
@@ -82,26 +110,47 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     return apiJob.employment_type[0] || 'Unknown Type';
   };
 
-  // Get the primary location string
+  // Get the primary location string with safe array access
   const getPrimaryLocation = (): string => {
-    if (apiJob.locations_derived && apiJob.locations_derived.length > 0) {
-      return apiJob.locations_derived[0];
+    // Try locations_derived first
+    if (apiJob.locations_derived && Array.isArray(apiJob.locations_derived) && apiJob.locations_derived.length > 0) {
+      const location = apiJob.locations_derived[0];
+      if (location && typeof location === 'string' && location.trim()) {
+        return location.trim();
+      }
     }
+    
+    // Fallback to constructing location from derived fields
+    const parts: string[] = [];
+    if (apiJob.cities_derived && Array.isArray(apiJob.cities_derived) && apiJob.cities_derived.length > 0) {
+      parts.push(apiJob.cities_derived[0]);
+    }
+    if (apiJob.regions_derived && Array.isArray(apiJob.regions_derived) && apiJob.regions_derived.length > 0) {
+      parts.push(apiJob.regions_derived[0]);
+    }
+    if (apiJob.countries_derived && Array.isArray(apiJob.countries_derived) && apiJob.countries_derived.length > 0) {
+      parts.push(apiJob.countries_derived[0]);
+    }
+    
+    if (parts.length > 0) {
+      return parts.join(', ');
+    }
+    
     return 'Location Not Specified';
   };
 
   return {
-    id: apiJob.id,
-    title: apiJob.title,
-    description: apiJob.linkedin_org_description || 'No description available.',
+    id: apiJob.id || `job-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    title: apiJob.title || 'Job Title Not Available',
+    description: apiJob.description_text || apiJob.linkedin_org_description || 'No description available.',
     requirements: apiJob.linkedin_org_specialties || [],
     skills: mapSkills(),
     company: mapCompany(),
     location: getPrimaryLocation(),
     salary: formatSalary(),
     type: mapRoleType(),
-    remote: apiJob.remote_derived,
-    visaSponsorship: false, // Not available in the API response
-    url: apiJob.url,
+    remote: Boolean(apiJob.remote_derived),
+    visaSponsorship: Boolean(apiJob.ai_visa_sponsorship), // Use AI field if available
+    url: apiJob.url || '',
   };
 }; 
