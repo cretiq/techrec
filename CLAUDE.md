@@ -374,7 +374,11 @@ When implementing new features or modifying existing ones, you must adhere to th
 ```bash
 # Database & Caching
 MONGODB_URI=              # MongoDB connection
-REDIS_URL=               # Redis connection
+REDIS_URL=               # Redis connection (redis:// or rediss:// for TLS)
+REDIS_USE_TLS=true       # Force TLS (overrides URL scheme detection)
+REDIS_TLS_STRICT=false   # Allow self-signed certificates (dev/staging)
+REDIS_DEBUG=false        # Enable Redis debug logging
+DISABLE_REDIS_CACHE=true # Disable caching entirely (development)
 
 # Authentication
 NEXTAUTH_URL=            # App URL

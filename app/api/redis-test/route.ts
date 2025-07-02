@@ -3,7 +3,8 @@ import { setCache, getCache } from '@/lib/redis';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
-const TEST_CACHE_PREFIX = 'redis_test:';
+// Use environment variable for cache prefix, fallback to default
+const TEST_CACHE_PREFIX = process.env.REDIS_CACHE_PREFIX || 'redis_test:';
 const DEFAULT_TEST_KEY = `${TEST_CACHE_PREFIX}my_test_key`;
 
 // POST /api/redis-test
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     await setCache(key, value, ttl);
     console.log(`[API /redis-test POST] Successfully called setCache for key: ${key}`);
     
-    return NextResponse.json({ message: 'Test value set in cache', key, value, ttl });
+    return NextResponse.json({ message: 'Test value set in cache', key, value, ttl, cachePrefix: TEST_CACHE_PREFIX });
 
   } catch (error: any) {
     console.error(`[API /redis-test POST] Error setting cache:`, error);
@@ -57,10 +58,10 @@ export async function GET(request: Request) {
 
     if (cachedValue !== null) {
       console.log(`[API /redis-test GET] Cache HIT for key: ${keyToGet}. Value:`, cachedValue);
-      return NextResponse.json({ message: 'Test value retrieved from cache', key: keyToGet, value: cachedValue, fromCache: true });
+      return NextResponse.json({ message: 'Test value retrieved from cache', key: keyToGet, value: cachedValue, fromCache: true, cachePrefix: TEST_CACHE_PREFIX });
     } else {
       console.log(`[API /redis-test GET] Cache MISS for key: ${keyToGet}.`);
-      return NextResponse.json({ message: 'Test value not found in cache (miss)', key: keyToGet, value: null, fromCache: false });
+      return NextResponse.json({ message: 'Test value not found in cache (miss)', key: keyToGet, value: null, fromCache: false, cachePrefix: TEST_CACHE_PREFIX });
     }
 
   } catch (error: any) {
