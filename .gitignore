@@ -55,5 +55,7 @@ tasks/
 .history/
 .cursor/
 
+codefetch/
+
 # Exclude .env.example files
 !.env.example 
