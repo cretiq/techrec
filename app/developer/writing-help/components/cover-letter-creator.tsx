@@ -18,6 +18,8 @@ import {
   updateCoverLetterAttractionPoints
 } from '@/lib/features/coverLettersSlice'
 import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown } from "lucide-react"
+import { ApplicationActionButton } from "@/components/roles/ApplicationActionButton"
+import { ApplicationBadge } from "@/components/roles/ApplicationBadge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
@@ -868,6 +870,40 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                       </div>
                     </div>
                   </motion.div>
+
+                  {/* Application Routing Section */}
+                  {role.applicationInfo && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="relative overflow-hidden p-4 bg-primary/10 backdrop-blur-sm rounded-lg border border-primary/30 shadow-md"
+                    >
+                      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary" />
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <p className="text-sm font-semibold text-primary">
+                              Ready to Apply?
+                            </p>
+                          </div>
+                          <p className="text-xs text-primary/80">
+                            Apply directly to {role.company.name} for {role.title}
+                          </p>
+                          {role.applicationInfo.recruiter && (
+                            <p className="text-xs text-primary/70 mt-1">
+                              Recruiter: {role.applicationInfo.recruiter.name} - {role.applicationInfo.recruiter.title}
+                            </p>
+                          )}
+                        </div>
+                        <ApplicationActionButton
+                          applicationInfo={role.applicationInfo}
+                          className="flex-shrink-0"
+                          data-testid="cover-letter-application-button"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

@@ -4,6 +4,8 @@ import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter 
 import {  Badge  } from '@/components/ui-daisy/badge'
 import {  Button  } from '@/components/ui-daisy/button'
 import { MapPin, Briefcase, Clock, Building, Code, BarChart } from "lucide-react"
+import { ApplicationActionButton } from "@/components/roles/ApplicationActionButton"
+import { ApplicationBadge } from "@/components/roles/ApplicationBadge"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { formatJobType } from "@/utils/format"
@@ -72,22 +74,50 @@ export function RoleContextCard({ role, activeDocument }: RoleContextCardProps) 
           </div>
         </CardContent>
         <CardFooter className="pt-4 mt-auto">
-          <div className="flex justify-between items-center w-full">
-            <div className="flex gap-2">
-              <div className="flex flex-col gap-2 w-full">
-                <div className="text-md font-semibold">{role.salary}</div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => router.push(`/developer/writing-help?roleId=${role.id}`)}
-                    className="gap-1"
-                  >
-                    <BarChart className="h-4 w-4" /> Progress
-                  </Button>
+          <div className="flex flex-col gap-3 w-full">
+            <div className="flex justify-between items-center w-full">
+              <div className="flex gap-2">
+                <div className="flex flex-col gap-2 w-full">
+                  <div className="text-md font-semibold">{role.salary}</div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push(`/developer/writing-help?roleId=${role.id}`)}
+                      className="gap-1"
+                    >
+                      <BarChart className="h-4 w-4" /> Progress
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
+            
+            {/* Application Routing Section */}
+            {role.applicationInfo && role.applicationInfo.applicationUrl && (
+              <div className="flex items-center justify-between gap-2 p-3 bg-base-100/60 backdrop-blur-sm rounded-lg border border-base-300/50">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-base-content">Apply Now</span>
+                    <ApplicationBadge 
+                      applicationInfo={role.applicationInfo}
+                      className="text-xs"
+                      data-testid="role-context-application-badge"
+                    />
+                  </div>
+                  {role.applicationInfo.recruiter && (
+                    <p className="text-xs text-base-content/70">
+                      Contact: {role.applicationInfo.recruiter.name}
+                    </p>
+                  )}
+                </div>
+                <ApplicationActionButton
+                  applicationInfo={role.applicationInfo}
+                  className="flex-shrink-0"
+                  data-testid="role-context-application-button"
+                />
+              </div>
+            )}
           </div>
         </CardFooter>
       </Card>
