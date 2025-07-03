@@ -18,6 +18,7 @@
 - ✅ Enhanced company filtering (descriptions, specialties, names, industries) → **Moved to Feature Request #3**
 - ✅ Multiple RapidAPI endpoint selection (7 days, 24h, hourly) → **Moved to Feature Request #4**
 - ✅ Cover letter application routing with Easy Apply detection → **Moved to Feature Request #5**
+- ✅ Multi-role card UI improvement with collapsible personalization → **Moved to Feature Request #6**
 
 ### Immediate Next Features (This Sprint)
 - [ ] **Developer-Role Matching Score System**
@@ -25,10 +26,6 @@
   - Help developers focus on roles they're most likely to get
   - Requires skill matching algorithm and enhanced developer profiles
 
-- [ ] **Smart Application Routing & Easy Apply Detection**
-  - Show LinkedIn Easy Apply vs external application status
-  - Display recruiter and hiring manager contact information  
-  - Guide users to optimal application method with one-click routing
 
 
 - [ ] **Cover Letter Application Routing**
@@ -121,60 +118,6 @@
 
 ---
 
-### Feature Request #2: Smart Application Routing & Easy Apply Detection
-**Status:** Planning Phase  
-**Priority:** High
-
-**Goal:** Enable developers to quickly identify the easiest application method for each role and be directly routed to the optimal application pathway, reducing friction in the job application process.
-
-**User Story:** As a developer, I want to see whether a job has LinkedIn Easy Apply or requires external application, and be guided to the right place to submit my application/cover letter, so that I can apply faster and more efficiently.
-
-**Success Metrics:** 
-- Increase in application click-through rates
-- Reduced time spent navigating to application pages
-- Higher user satisfaction with application process
-- Improved conversion from viewing roles to applying
-
-**Available Backend Data (✅ Already Implemented):**
-- `directapply` (boolean) - LinkedIn Easy Apply availability 
-- `url` - Job posting URL for application
-- `external_apply_url` filter parameter - External application filtering
-- `recruiter_name`, `recruiter_title`, `recruiter_url` - Recruiter contact information
-- `ai_hiring_manager_name`, `ai_hiring_manager_email_address` - AI-extracted hiring manager details
-
-**Technical Approach:** 
-- **Frontend Enhancement:** Extend Role interface with application-related fields
-- **Mapper Extension:** Update mapRapidApiJobToRole to include directapply, recruiter, and hiring manager data
-- **UI Components:** Create application status badges, contact cards, and action buttons
-- **Smart Routing:** Implement logic to route users to optimal application method
-- **Filter Enhancement:** Add Easy Apply filter options to search interface
-
-**Acceptance Criteria:**
-- [ ] Display clear "Easy Apply" vs "External Application" badges on role cards
-- [ ] Show recruiter contact information when available
-- [ ] Display hiring manager contact details when extracted by AI
-- [ ] Provide one-click routing to correct application page/URL
-- [ ] Add filter option to search specifically for Easy Apply jobs
-- [ ] Indicate whether external application opens new tab/window
-- [ ] Show application method prominently in role detail view
-
-**Questions to Resolve:**
-- [ ] Should we prioritize Easy Apply jobs in search results by default?
-- [ ] How prominent should recruiter/hiring manager contact information be?
-- [ ] Should applications open in new tabs or redirect in same window?
-- [ ] Do we want to track application click-through rates for analytics?
-- [ ] Should we show warnings for external applications ("This takes you to company website")?
-- [ ] How do we handle cases where both Easy Apply and external URLs are available?
-
-**Dependencies:**
-- [ ] Extended Role type definition with application fields (`ApplicationInfo` interface)
-- [ ] Enhanced `utils/mappers.ts` to map application data
-- [ ] New UI components: `ApplicationBadge`, `RecruiterCard`, `ApplicationActionButton`
-- [ ] Updated search filters component to include Easy Apply option
-
----
-
----
 
 ### Feature Request #4: Multiple RapidAPI Endpoint Selection
 **Status:** Planning Phase  
@@ -328,10 +271,10 @@
     **RATIONALE**: New tab approach eliminates need for navigation warnings
 
 **Dependencies:**
-- [ ] Feature Request #2 (Smart Application Routing) components must be implemented first
+- [x] Feature Request #2 (Smart Application Routing) components must be implemented first ✅ **COMPLETED**
 - [ ] Cover letter page must have access to complete role data including application fields
-- [ ] ApplicationBadge and ApplicationActionButton components must be exported for reuse
-- [ ] Role data structure must include application-related fields in cover letter context
+- [x] ApplicationBadge and ApplicationActionButton components must be exported for reuse ✅ **AVAILABLE**
+- [x] Role data structure must include application-related fields in cover letter context ✅ **AVAILABLE**
 
 **Implementation Phases:**
 - **Phase 1 (1 week)**: Add application button to cover letter page with basic routing
@@ -358,6 +301,115 @@
 - Builds upon Feature Request #2 (Smart Application Routing & Easy Apply Detection)
 - Complements existing cover letter generation workflow
 - Potential integration with application tracking features
+
+---
+
+### Feature Request #6: Multi-Role Card UI Improvement with Collapsible Personalization
+**Status:** Ready for Implementation  
+**Priority:** Medium
+
+**Goal:** Reduce visual clutter and redundancy in multi-role cards by eliminating duplicate role/company information and making the personalization section collapsible, creating a more streamlined and space-efficient interface for handling multiple role applications.
+
+**User Story:** As a developer working on multiple role applications, I want a more compact card design where role information isn't duplicated and personalization settings can be collapsed when not needed, so that I can efficiently work with multiple roles without excessive scrolling or visual noise.
+
+**Success Metrics:** 
+- Reduced vertical space usage per role card by ~30-40%
+- Improved user satisfaction with multi-role workflow
+- Decreased time spent scrolling through multiple role cards
+- Better focus on actual content (cover letters, CV optimization) vs. UI chrome
+
+**Technical Approach:** 
+- **Header Optimization:** Minimal header with role title, company name, and remove button only
+- **Overlay/Dropdown Pattern:** Personalization section expands as overlay without affecting layout
+- **Preview Mode:** Always show Tone & Style + Hiring Manager Name when collapsed
+- **Modal-like Interaction:** Dimmed background when expanded, click outside to close
+- **Smooth Animations:** Snappy overlay appearance with shadow and background dimming effects
+- **No Layout Shift:** Expansion happens over existing content without moving other elements
+
+**Current Implementation Issues:**
+- Role title and company name appear in both header (`CardTitle`/`CardDescription`) and personalization section
+- Personalization section takes up significant vertical space even when not actively being edited
+- Multiple role cards create excessive scrolling due to expanded sections
+- Visual hierarchy is unclear between identification and interaction areas
+
+**Acceptance Criteria:**
+- [ ] Remove duplicate role/company information from personalization section
+- [ ] Implement overlay/dropdown pattern for personalization section
+- [ ] Show Tone & Style + Hiring Manager Name preview when collapsed (always visible)
+- [ ] Add expand/collapse indicator (chevron or similar) to trigger overlay
+- [ ] Maintain minimal header with title, company, and remove button only
+- [ ] Default to collapsed state for new role cards
+- [ ] Implement dimmed background overlay when personalization is expanded
+- [ ] Add click outside to close functionality
+- [ ] Smooth animations: overlay slide-in, background dimming, shadow appearance
+- [ ] No layout shift - overlay expands over existing content without moving other elements
+- [ ] Ensure accessibility (ARIA labels, keyboard navigation, focus management)
+- [ ] Maintain existing functionality when personalization is expanded
+- [ ] Snappy animation timing (fast but smooth, ~200-300ms)
+- [ ] Update data-testid attributes to maintain test coverage
+
+**Design Considerations:**
+- **UI/UX:** Clean, minimal header with essential information only
+- **Accessibility:** Proper ARIA attributes for collapsible sections, keyboard navigation
+- **Mobile:** Responsive design that works well on smaller screens
+- **Performance:** Smooth animations without impacting scroll performance
+- **Consistency:** Follow established design patterns from other collapsible components
+
+**Questions to Resolve:**
+- [x] Should personalization sections default to collapsed or expanded state?
+    **✅ DECISION**: Collapsed by default
+    **RATIONALE**: Reduces visual clutter and allows focus on multiple roles
+- [x] Do we want to persist expand/collapse state in localStorage or just session?
+    **✅ DECISION**: Session only (no persistence needed)
+    **RATIONALE**: Overlay pattern closes automatically, no need for persistence
+- [x] Should there be a "expand all" / "collapse all" button for multiple roles?
+    **✅ DECISION**: Not necessary
+    **RATIONALE**: Overlay pattern handles one role at a time efficiently
+- [x] How minimal should the header be? (Just title + company, or include additional info?)
+    **✅ DECISION**: Title + Company + Remove button only
+    **RATIONALE**: Clean, minimal identification without duplication
+- [x] Should we animate the content height changes or use display:none for better performance?
+    **✅ DECISION**: Overlay/dropdown pattern with smooth animations
+    **RATIONALE**: Expands over content without affecting layout, more elegant UX
+- [x] Do we want to show a preview of personalization settings when collapsed?
+    **✅ DECISION**: Show Tone & Style + Hiring Manager Name preview always
+    **RATIONALE**: Provides context without expanding, matches wireframe design
+- [x] Should the expand/collapse state be per-tab (cv, cover-letter, outreach) or global per role?
+    **✅ DECISION**: Per-role overlay that closes on outside click
+    **RATIONALE**: Overlay pattern naturally handles single-role interaction
+
+**Dependencies:**
+- [ ] Framer Motion (already in project) for smooth animations
+- [ ] Existing MultiRolePane component structure
+- [ ] Current personalization components (CoverLetterCreator, OutreachMessageGenerator, CVOptimizer)
+- [ ] Existing test suite coverage for multi-role functionality
+
+**Estimated Timeline:** 1-2 weeks
+**Implementation Phases:** 
+- Phase 1: Remove duplicate information and create collapsible structure
+- Phase 2: Implement smooth animations and state management
+- Phase 3: Polish, accessibility, and testing
+
+**Technical Implementation Details:**
+- **Component Structure:** Add overlay wrapper with backdrop for modal-like behavior
+- **Animation:** Use Framer Motion's `AnimatePresence` and `motion.div` for overlay slide-in and backdrop dimming
+- **State Management:** Add `isExpanded` state with click outside handler using useRef/useEffect
+- **Icons:** Use Lucide React chevron icons for expand/collapse indicators
+- **Styling:** Overlay positioning (absolute/fixed), backdrop blur/dimming, shadow effects with TailwindCSS
+- **Preview Components:** Always visible Tone & Style + Hiring Manager Name in collapsed state
+- **No Layout Impact:** Overlay positioned to not affect surrounding content flow
+
+**Files to Modify:**
+- `app/developer/writing-help/components/MultiRolePane.tsx` - Main component structure
+- `app/developer/writing-help/components/cover-letter-creator.tsx` - Remove duplicate role info
+- `app/developer/writing-help/components/outreach-message-generator.tsx` - Remove duplicate role info
+- `app/developer/writing-help/components/cv-optimizer.tsx` - Remove duplicate role info
+- Related test files for updated component behavior
+
+**Related Features:**
+- Complements existing multi-role selection workflow
+- Improves upon current writing help interface
+- Potential foundation for similar collapsible patterns elsewhere in the app
 
 ---
 
@@ -787,6 +839,13 @@
 ---
 
 ## 📋 Recently Completed Features
+
+### ✅ Feature Request #2: Smart Application Routing & Easy Apply Detection
+**Completed:** July 3, 2025
+**Goal:** Enable developers to quickly identify the easiest application method for each role and be directly routed to the optimal application pathway, reducing friction in the job application process
+**Impact:** Impact to be measured
+**Key Learnings:** Implementation completed as planned
+**Implementation Notes:** Implemented comprehensive application routing with Easy Apply detection, recruiter contact information display, and smart routing logic. Created ApplicationActionButton, ApplicationBadge, and RecruiterCard components with full RapidAPI integration and advanced filtering capabilities.
 
 ### ✅ Feature Request #3: Enhanced Company Filtering
 **Completed:** January 3, 2025
