@@ -17,6 +17,11 @@ export async function GET(request: Request) {
     type_filter: searchParams.get('type_filter'),
     seniority_filter: searchParams.get('seniority_filter'),
     description_filter: searchParams.get('description_filter'),
+    // Organization filters
+    organization_description_filter: searchParams.get('organization_description_filter'),
+    organization_specialties_filter: searchParams.get('organization_specialties_filter'),
+    organization_slug_filter: searchParams.get('organization_slug_filter'),
+    industry_filter: searchParams.get('industry_filter'),
     remote: searchParams.get('remote'),
     agency: searchParams.get('agency'),
     date_filter: searchParams.get('date_filter'),
@@ -116,7 +121,8 @@ export async function GET(request: Request) {
       apiKeyPreview: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined'
     })
 
-    if (isDevelopment) {
+    // if (isDevelopment) {
+    if (true) {
       // DEVELOPMENT MODE: Return mock data with simulated headers
       console.log('Running in DEVELOPMENT mode (no RAPIDAPI_KEY found or empty)')
       
