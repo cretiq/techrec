@@ -26,6 +26,13 @@ This file provides comprehensive guidance for Claude Code when working with the 
 
 ## 🚨 CRITICAL WORKFLOWS & NON-NEGOTIABLES
 
+### Git Commit Policy
+**🚫 ABSOLUTE PROHIBITION**: 
+- **NEVER COMMIT CHANGES WITHOUT EXPLICIT USER PERMISSION**
+- User must test changes and explicitly say "commit this" or "create a commit"
+- Even if changes are complete and working, ALWAYS wait for user approval
+- Breaking this rule destroys user trust and workflow control
+
 ### Gamification System Management
 **⚠️ MANDATORY PROCESS**: For ANY gamification-related work:
 1. **ALWAYS read** `@GAMIFICATION_STRATEGY.md` first
@@ -137,6 +144,7 @@ docs(gamification): update strategy document with implemented features
 - Mixing multiple unrelated changes
 - Work is incomplete or partially implemented
 - Temporary debugging code is included
+- **USER HAS NOT EXPLICITLY APPROVED THE COMMIT** ⚠️ CRITICAL RULE
 
 ### Emergency Situations
 - Use `WIP:` prefix for urgent context switches
