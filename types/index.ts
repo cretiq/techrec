@@ -22,6 +22,14 @@ export interface Skill {
 export interface CompanySummary {
   id?: string; // Make ID optional as it might come from different sources
   name: string;
+  industry?: string;
+  size?: string;
+  headquarters?: string;
+  description?: string;
+  specialties?: string[];
+  employeeCount?: number;
+  logoUrl?: string;
+  linkedinUrl?: string;
 }
 
 /*
