@@ -23,7 +23,7 @@ import { ApplicationBadge } from "@/components/roles/ApplicationBadge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
-import { CoverLetterTone, RequestType } from "@/types/coverLetter"
+import { CoverLetterTone } from "@/types/coverLetter"
 import { CoverLetterPersonalization } from "./cover-letter-personalization"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
@@ -66,7 +66,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
     "Strong company culture and values"
   ]
   const tone = existingCoverLetter?.tone || "formal"
-  const requestType = existingCoverLetter?.requestType || "coverLetter"
+  const requestType = "coverLetter" // Fixed for cover letter tab
   const hiringManager = existingCoverLetter?.hiringManager || ""
   
   const { toast } = useToast()
@@ -435,7 +435,6 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   <CoverLetterPersonalization
                     roleId={role.id}
                     tone={tone}
-                    requestType={requestType}
                     hiringManager={hiringManager}
                     jobSource={jobSource}
                     isMultiRoleMode={isMultiRoleMode}
