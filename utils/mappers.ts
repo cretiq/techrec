@@ -1,4 +1,5 @@
 import { Role, RoleType, Skill, CompanySummary } from '@/types'; // Adjust path as necessary
+import type { ApplicationInfo } from '@/types/role';
 import { RapidApiJob } from '@/types/rapidapi'; // Adjust path as necessary
 
 // Formats the job type enum/string into a user-friendly string
@@ -75,7 +76,7 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     }));
   };
 
-  // Map company data with safe ID generation
+  // Map company data with enhanced information
   const mapCompany = (): CompanySummary => {
     // Generate a safe ID from organization URL or fallback to organization name
     let companyId: string;
@@ -92,6 +93,16 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     return {
       id: companyId,
       name: apiJob.organization || 'Unknown Company',
+      industry: apiJob.linkedin_org_industry || undefined,
+      size: apiJob.linkedin_org_size || undefined,
+      headquarters: apiJob.linkedin_org_headquarters || undefined,
+      description: apiJob.linkedin_org_description || undefined,
+      specialties: apiJob.linkedin_org_specialties && apiJob.linkedin_org_specialties.length > 0 
+        ? apiJob.linkedin_org_specialties 
+        : undefined,
+      employeeCount: apiJob.linkedin_org_employees || undefined,
+      logoUrl: apiJob.organization_logo || undefined,
+      linkedinUrl: apiJob.linkedin_org_url || undefined,
     };
   };
 
@@ -139,6 +150,33 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     return 'Location Not Specified';
   };
 
+  // Map application information from RapidAPI data
+  const mapApplicationInfo = (): ApplicationInfo => {
+    const applicationInfo: ApplicationInfo = {
+      directApply: Boolean(apiJob.directapply),
+      applicationUrl: apiJob.url || '',
+    };
+
+    // Add recruiter information if available
+    if (apiJob.recruiter_name || apiJob.recruiter_title || apiJob.recruiter_url) {
+      applicationInfo.recruiter = {
+        name: apiJob.recruiter_name || 'Unknown',
+        title: apiJob.recruiter_title || 'Recruiter',
+        url: apiJob.recruiter_url || '',
+      };
+    }
+
+    // Add hiring manager information if available from AI extraction
+    if (apiJob.ai_hiring_manager_name || apiJob.ai_hiring_manager_email_address) {
+      applicationInfo.hiringManager = {
+        name: apiJob.ai_hiring_manager_name || 'Hiring Manager',
+        email: apiJob.ai_hiring_manager_email_address || '',
+      };
+    }
+
+    return applicationInfo;
+  };
+
   return {
     id: apiJob.id || `job-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     title: apiJob.title || 'Job Title Not Available',
@@ -152,5 +190,6 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     remote: Boolean(apiJob.remote_derived),
     visaSponsorship: Boolean(apiJob.ai_visa_sponsorship), // Use AI field if available
     url: apiJob.url || '',
+    applicationInfo: mapApplicationInfo(),
   };
 }; 
