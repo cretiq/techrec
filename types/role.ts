@@ -1,5 +1,19 @@
 import type { Skill, CompanySummary, RoleType } from './index';
 
+export interface ApplicationInfo {
+  directApply: boolean; // LinkedIn Easy Apply availability
+  applicationUrl: string; // Primary application URL
+  recruiter?: {
+    name: string;
+    title: string;
+    url: string;
+  };
+  hiringManager?: {
+    name: string;
+    email: string;
+  };
+}
+
 export interface Role {
   id: string; // This might be the external ID from TheirStack or internal DB ID
   title: string;
@@ -13,5 +27,6 @@ export interface Role {
   remote: boolean;
   visaSponsorship: boolean;
   url?: string; // Optional URL to the job posting
+  applicationInfo?: ApplicationInfo; // Application routing information
   // Add any other relevant fields that are common across sources
 } 
