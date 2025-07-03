@@ -5,6 +5,9 @@ import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
 import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, PenTool, Check, Bookmark, BookmarkCheck } from "lucide-react"
+import ApplicationBadge from '@/components/roles/ApplicationBadge'
+import ApplicationActionButton from '@/components/roles/ApplicationActionButton'
+import RecruiterCard from '@/components/roles/RecruiterCard'
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
@@ -467,9 +470,21 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <CardTitle className="text-lg line-clamp-2">{role.title}</CardTitle>
-                        <CardDescription className="flex items-center gap-1">
-                          <Building className="h-4 w-4" />
-                          <span className="line-clamp-1 text-xs">{role.company?.name || 'Unknown Company'}</span>
+                        <CardDescription className="space-y-1">
+                          <div className="flex items-center gap-1">
+                            <Building className="h-4 w-4" />
+                            <span className="line-clamp-1 text-xs font-medium">{role.company?.name || 'Unknown Company'}</span>
+                          </div>
+                          {role.company?.industry && (
+                            <div className="text-xs text-muted-foreground line-clamp-1">
+                              {role.company.industry}
+                            </div>
+                          )}
+                          {role.company?.size && (
+                            <div className="text-xs text-muted-foreground">
+                              {role.company.size} employees
+                            </div>
+                          )}
                         </CardDescription>
                       </div>
                     </div>
@@ -490,6 +505,12 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                           Remote
                         </Badge>
                       )}
+                      {role.applicationInfo && (
+                        <ApplicationBadge 
+                          applicationInfo={role.applicationInfo}
+                          data-testid={`role-search-badge-application-${role.id}`}
+                        />
+                      )}
                     </div>
                     <p className="text-muted-foreground text-sm line-clamp-3">{role.description || 'No description available.'}</p>
                     <div className="space-y-2">
@@ -506,11 +527,30 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                               {skill.name}
                             </Badge>
                           ))
+                        ) : (role.company?.specialties && role.company.specialties.length > 0) ? (
+                          role.company.specialties.slice(0, 5).map((specialty, idx) => (
+                            <Badge key={`${role.id}-spec-${idx}`} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                              {specialty}
+                            </Badge>
+                          ))
                         ) : (
                           <span className="text-xs text-muted-foreground">Not specified</span>
                         )}
                       </div>
+                      {role.company?.specialties && role.company.specialties.length > 5 && (
+                        <p className="text-xs text-muted-foreground">
+                          +{role.company.specialties.length - 5} more company specialties
+                        </p>
+                      )}
                     </div>
+                    
+                    {/* Recruiter/Hiring Manager Contact Information */}
+                    {role.applicationInfo && (role.applicationInfo.recruiter || role.applicationInfo.hiringManager) && (
+                      <RecruiterCard 
+                        applicationInfo={role.applicationInfo}
+                        data-testid={`role-search-recruiter-card-${role.id}`}
+                      />
+                    )}
                   </CardContent>
                   <CardFooter className="card-body pt-2 mt-auto space-y-3" data-testid={`role-search-footer-role-${role.id}`}>
                     {/* Salary Section */}
@@ -520,21 +560,14 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                     
                     {/* Action Buttons Section */}
                     <div className="flex justify-between items-center w-full px-2">
-                      {/* Left: Apply Externally Button */}
+                      {/* Left: Application Button */}
                       <div className="flex-shrink-0">
-                        {role.url ? (
-                          <a 
-                            href={role.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Button size="sm" className="text-xs px-3" data-testid={`role-search-button-apply-external-trigger-${role.id}`}>
-                              Apply Externally
-                              <ArrowRight className="h-3 w-3 ml-1" />
-                            </Button>
-                          </a>
+                        {role.applicationInfo ? (
+                          <ApplicationActionButton
+                            applicationInfo={role.applicationInfo}
+                            disabled={!session?.user}
+                            data-testid={`role-search-button-apply-action-${role.id}`}
+                          />
                         ) : (
                           <Button size="sm" disabled className="text-xs px-3" data-testid={`role-search-button-apply-disabled-${role.id}`}>
                             Apply Now
