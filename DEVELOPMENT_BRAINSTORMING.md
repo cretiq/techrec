@@ -18,6 +18,7 @@
 - ✅ Enhanced company filtering (descriptions, specialties, names, industries) → **Moved to Feature Request #3**
 - ✅ Multiple RapidAPI endpoint selection (7 days, 24h, hourly) → **Moved to Feature Request #4**
 - ✅ Cover letter application routing with Easy Apply detection → **Moved to Feature Request #5**
+- ✅ Cover letter personalization UI redesign - always show tone/hiring manager, collapse other fields, remove message type → **Moved to Feature Request #6**
 
 
 ### Immediate Next Features (This Sprint)
@@ -26,11 +27,7 @@
   - Help developers focus on roles they're most likely to get
   - Requires skill matching algorithm and enhanced developer profiles
 
-- [ ] **Cover Letter Personalization UI Improvements**
-  - Always show "Tone & Style" and "Hiring Manager Name" fields
-  - Hide other fields unless expanded (collapsible section)
-  - Remove "Message Type" field since outreach messages have separate tab
-  - Improve user experience by reducing visual clutter
+
 
 - [ ] **Cover Letter Application Routing**
   - Direct application from cover letter page to job posting
@@ -205,106 +202,82 @@
 
 ---
 
-### Feature Request #5: Cover Letter Application Routing
-**Status:** Ready for Development  
+### Feature Request #6: Cover Letter Personalization UI Redesign
+**Status:** Planning Phase  
 **Priority:** High
 
-**Goal:** Enable developers to quickly navigate from their generated cover letters directly to the job application page with clear indication of application method (Easy Apply vs External), creating a seamless workflow from cover letter creation to job application.
+**Goal:** Improve the cover letter personalization user experience by always showing the most important fields (tone & hiring manager) while hiding less critical fields until expanded, and removing redundant message type selection.
 
-**User Story:** As a developer, I want to see a clear application button in my cover letter's company/role information box that shows whether it's Easy Apply or requires external application, and takes me directly to the correct application page, so that I can quickly move from cover letter creation to job application without losing context.
+**User Story:** As a developer creating cover letters, I want to see the most important personalization options (tone and hiring manager) immediately visible, with less critical fields collapsible, and without redundant message type selection since I already chose the cover letter tab, so that I can quickly customize my application without UI clutter.
 
 **Success Metrics:** 
-- Increase in application completion rates from cover letter page
-- Reduced time between cover letter creation and job application
-- Higher user satisfaction with cover letter to application workflow
-- Improved conversion from cover letter generation to actual applications
+- Reduced time to customize cover letter settings
+- Increased usage of tone and hiring manager fields
+- Improved user satisfaction with personalization workflow
+- Cleaner, more focused user interface
 
 **Technical Approach:** 
-- **Frontend Integration:** Add secondary application button at bottom of company/role information box
-- **Data Requirements:** Ensure cover letter context includes application-related role data (directapply, url, etc.)
-- **UI Consistency:** Reuse existing application routing components from Feature Request #2
-- **Navigation Strategy:** Open applications in new tab to preserve cover letter context
-- **Error Handling:** Gray out/disable button when application data is missing
-- **Additional Context:** Display recruiter information when available
+- **Component Restructure:** Modify CoverLetterPersonalization component to separate always-visible from collapsible fields
+- **State Management:** Add expansion/collapse state for optional fields section
+- **UI Consistency:** Maintain design system patterns from other expandable sections
+- **Field Removal:** Remove message type selection as it's redundant with tab selection
+- **Progressive Disclosure:** Use expandable pattern to show advanced options only when needed
 
-**Available Backend Data (✅ From Feature Request #2):**
-- `directapply` (boolean) - LinkedIn Easy Apply availability 
-- `url` - Job posting URL for application
-- `recruiter_name`, `recruiter_title`, `recruiter_url` - Recruiter contact information
-- `ai_hiring_manager_name`, `ai_hiring_manager_email_address` - AI-extracted hiring manager details
+**Current Implementation Analysis:**
+- **Always Visible Fields:** None (all fields in collapsed state when not expanded)
+- **Current Fields:** Tone & Style, Message Type, Hiring Manager Name, Job Source
+- **Proposed Always Visible:** Tone & Style, Hiring Manager Name
+- **Proposed Collapsible:** Job Source (How did you find this job?)
+- **Proposed Removal:** Message Type (redundant with tab selection)
 
 **Acceptance Criteria:**
-- [x] Add secondary application button at bottom of company/role information box
-- [x] Display clear "Easy Apply" vs "External Application" indication using consistent styling
-- [x] Route users to correct application URL in new tab when button is clicked
-- [x] Gray out/disable button when application data is missing
-- [x] Reuse existing ApplicationBadge and ApplicationActionButton components
-- [x] Show recruiter information when available in application context
-- [x] Open applications in new tab to preserve cover letter context
-- [x] No confirmation dialog required (new tab approach)
-
-**Technical Implementation Details:**
-- [x] **Cover Letter Page Enhancement**: Add secondary application button at bottom of company/role information box
-- [x] **Component Reuse**: Import and utilize existing `ApplicationBadge` and `ApplicationActionButton` components
-- [x] **Data Flow**: Ensure role data with application info is available in cover letter context
-- [x] **URL Handling**: Implement new tab navigation for both Easy Apply and external applications
-- [x] **Error State**: Gray out/disable button when application URL is missing
-- [x] **Recruiter Context**: Display recruiter information when available
-- [x] **No State Management**: New tab approach eliminates need for state preservation
-
-**Questions to Resolve:**
-- [x] Should application button be the primary CTA or secondary to cover letter actions?
-    **✅ DECISION**: Secondary placement at the bottom of each box
-    **RATIONALE**: Preserves focus on cover letter content while providing easy access to application
-- [x] How do we handle cases where role/company data is missing application info?
-    **✅ DECISION**: Make button grayed out/disabled
-    **RATIONALE**: Clear visual indication of unavailable functionality
-- [ ] Should we track analytics on cover letter → application conversion rates?
-    **PENDING**: Needs decision on analytics implementation
-- [x] Do we want to show additional application context (deadline, recruiter info) in cover letter?
-    **✅ DECISION**: Show recruiter info when available
-    **RATIONALE**: Provides valuable context for application strategy
-- [x] Should clicking application button open in new tab or same window?
-    **✅ DECISION**: Open in new tab
-    **RATIONALE**: Preserves cover letter context, allows easy return
-- [x] How do we handle the user flow if they want to return to their cover letter after applying?
-    **✅ DECISION**: No special handling needed - new tab preserves original context
-    **RATIONALE**: User can simply close application tab to return to cover letter
-- [x] Should we show a confirmation dialog before navigating away from cover letter?
-    **✅ DECISION**: No confirmation dialog
-    **RATIONALE**: New tab approach eliminates need for navigation warnings
-
-**Dependencies:**
-- [x] Feature Request #2 (Smart Application Routing) components must be implemented first ✅ **COMPLETED**
-- [ ] Cover letter page must have access to complete role data including application fields
-- [x] ApplicationBadge and ApplicationActionButton components must be exported for reuse ✅ **AVAILABLE**
-- [x] Role data structure must include application-related fields in cover letter context ✅ **AVAILABLE**
-
-**Implementation Phases:**
-- **Phase 1 (1 week)**: Add application button to cover letter page with basic routing
-- **Phase 2 (1 week)**: Integrate Easy Apply detection and styling consistency
-- **Phase 3 (1 week)**: Add advanced features like state preservation and analytics tracking
+- [ ] Tone & Style selection always visible in personalization section
+- [ ] Hiring Manager Name input always visible in personalization section
+- [ ] Job Source field moved to collapsible section with expand/collapse toggle
+- [ ] Message Type field completely removed from cover letter personalization
+- [ ] Collapsible section uses consistent expand/collapse UI pattern
+- [ ] All existing functionality preserved (Redux state management, form validation)
+- [ ] Mobile responsive design maintained
+- [ ] Accessibility preserved (ARIA labels, keyboard navigation)
 
 **Design Considerations:**
-- **UI/UX**: Secondary button placement at bottom of information box to preserve cover letter focus
-- **Accessibility**: Proper ARIA labels, keyboard navigation, disabled state indicators for screen readers
-- **Mobile**: Responsive design that works well on mobile devices with touch-friendly button sizing
-- **Performance**: Minimal impact on cover letter page load times
-- **Error States**: Clear visual indication (grayed out) when application data is unavailable
-- **New Tab UX**: Target="_blank" with proper rel="noopener" for security
+- **UI/UX:** Clear visual hierarchy with most important fields prominently displayed
+- **Accessibility:** Proper ARIA labels for expand/collapse functionality, screen reader support
+- **Mobile:** Touch-friendly expand/collapse interactions, proper spacing on small screens
+- **Performance:** Minimal impact on component rendering and state management
+- **Consistency:** Follow existing expandable section patterns from other components
 
-**Resolved Decisions:**
-- ✅ **Button Placement**: Secondary position at bottom of company/role information box
-- ✅ **Navigation Method**: Open applications in new tab (target="_blank")
-- ✅ **Error Handling**: Gray out/disable button when application data is missing
-- ✅ **Additional Context**: Show recruiter information when available
-- ✅ **User Flow**: No confirmation dialog needed (new tab preserves context)
-- ✅ **State Management**: No complex state preservation required due to new tab approach
+**Questions to Resolve:**
+- [ ] Should the collapsible section be expanded by default for first-time users?
+- [ ] What icon should we use for the expand/collapse toggle (ChevronDown, Plus, etc.)?
+- [ ] Should we add a subtle animation for the expand/collapse transition?
+- [ ] Do we need to persist the expanded/collapsed state across sessions?
+- [ ] Should we add a visual indicator showing how many fields are hidden when collapsed?
 
-**Related Features:**
-- Builds upon Feature Request #2 (Smart Application Routing & Easy Apply Detection)
-- Complements existing cover letter generation workflow
-- Potential integration with application tracking features
+**Dependencies:**
+- [ ] CoverLetterPersonalization component restructure
+- [ ] Redux state management for message type removal (cleanup)
+- [ ] Consistent expandable UI pattern (following existing components)
+- [ ] Test coverage for new UI states and interactions
+
+**Estimated Timeline:** 1-2 weeks
+**Implementation Phases:** 
+- Phase 1: Remove message type field and update Redux state management
+- Phase 2: Restructure component to separate always-visible from collapsible fields
+- Phase 3: Add expand/collapse functionality with proper animations and accessibility
+
+**Technical Implementation Details:**
+- **Component Changes:** Modify `CoverLetterPersonalization` component structure
+- **State Management:** Remove `requestType` related Redux actions and state
+- **UI Components:** Add expand/collapse toggle with animation
+- **Styling:** Maintain design system consistency with backdrop blur and border patterns
+- **Animation:** Use framer-motion for smooth expand/collapse transitions
+
+**Files to Modify:**
+- `app/developer/writing-help/components/cover-letter-personalization.tsx` - Main component restructure
+- `lib/features/coverLettersSlice.ts` - Remove message type related actions/state
+- `types/coverLetter.ts` - Update types if needed for RequestType removal
+- Component test files for updated functionality
 
 ---
 
@@ -750,6 +723,13 @@
 **Impact:** Impact to be measured
 **Key Learnings:** Implementation completed as planned
 **Implementation Notes:** Implemented comprehensive company filtering with organization descriptions, specialties, company name search, and industry filtering. Enhanced CompanySummary interface with rich company data including industry, size, headquarters, and specialties. Added full validation for all organization filter parameters with smart warnings and error handling.
+
+### ✅ Feature Request #5: Cover Letter Application Routing
+**Completed:** July 3, 2025
+**Goal:** Enable developers to quickly navigate from their generated cover letters directly to the job application page with clear indication of application method (Easy Apply vs External), creating a seamless workflow from cover letter creation to job application
+**Impact:** Impact to be measured
+**Key Learnings:** Implementation completed successfully with LinkedIn branding integration
+**Implementation Notes:** Implemented comprehensive application routing with LinkedIn branding, glass morphism styling, and seamless integration with existing ApplicationBadge and ApplicationActionButton components. Added conditional rendering based on applicationInfo availability, enhanced components with official LinkedIn logos and authentic colors, and created integration tests for complete functionality coverage.
 
 ---
 
