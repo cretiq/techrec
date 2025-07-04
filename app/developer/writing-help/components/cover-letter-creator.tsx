@@ -18,7 +18,7 @@ import {
   updateCoverLetterAttractionPoints,
   updateCoverLetterJobSource
 } from '@/lib/features/coverLettersSlice'
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown, Briefcase } from "lucide-react"
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown, Briefcase, X } from "lucide-react"
 import { ApplicationActionButton } from "@/components/roles/ApplicationActionButton"
 import { ApplicationBadge } from "@/components/roles/ApplicationBadge"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -41,11 +41,14 @@ interface CoverLetterCreatorProps {
   generationTrigger?: number
   onGenerationComplete?: (roleId: string, success: boolean) => void
   isMultiRoleMode?: boolean
+  onRemoveRole?: () => void
+  onRemoveHover?: (isHovered: boolean) => void
 }
 
-export function CoverLetterCreator({ role, generationTrigger, onGenerationComplete, isMultiRoleMode = false }: CoverLetterCreatorProps) {
+export function CoverLetterCreator({ role, generationTrigger, onGenerationComplete, isMultiRoleMode = false, onRemoveRole, onRemoveHover }: CoverLetterCreatorProps) {
   const { data: session } = useSession()
   const dispatch = useDispatch<AppDispatch>()
+  const [isRemoveHovered, setIsRemoveHovered] = useState(false)
   
   // Get cover letter from Redux (if it exists)
   const existingCoverLetter = useSelector((state: RootState) => selectCoverLetter(state, role.id))
@@ -390,6 +393,35 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   )}
                 </Button>
               </motion.div>
+
+              {/* Remove Button - Only show in multi-role mode */}
+              {isMultiRoleMode && onRemoveRole && (
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex-shrink-0"
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onRemoveRole}
+                    onMouseEnter={() => {
+                      setIsRemoveHovered(true)
+                      onRemoveHover?.(true)
+                    }}
+                    onMouseLeave={() => {
+                      setIsRemoveHovered(false)
+                      onRemoveHover?.(false)
+                    }}
+                    className="h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10 transition-all duration-200"
+                    aria-label="Remove role"
+                    title="Remove role"
+                    data-testid={`write-multirole-remove-button-${role.id}`}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              )}
             </div>
             
             {!developerProfile && (
@@ -707,10 +739,10 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         <motion.div
           animate={isNewlyGenerated ? {
             boxShadow: [
-              "0 0 0 0 rgba(139, 92, 246, 0)",
-              "0 0 20px 4px rgba(139, 92, 246, 0.5)",
-              "0 0 40px 8px rgba(139, 92, 246, 0.3)",
-              "0 0 0 0 rgba(139, 92, 246, 0)"
+              "0 0 0 0 rgba(34, 197, 94, 0)",
+              "0 0 20px 4px rgba(34, 197, 94, 0.5)",
+              "0 0 40px 8px rgba(34, 197, 94, 0.3)",
+              "0 0 0 0 rgba(34, 197, 94, 0)"
             ]
           } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -718,7 +750,10 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         >
           <Card 
             className={cn(
-              "bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 h-full relative overflow-hidden rounded-lg"
+              "backdrop-blur-sm transition-all duration-300 h-full relative overflow-hidden rounded-lg",
+              isNewlyGenerated 
+                ? "bg-success/20 border-success/50" 
+                : "bg-base-100/60 border-base-300/50"
             )}
             data-testid="write-coverletter-card-output"
           >
@@ -823,7 +858,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   className={cn(
                     "resize-none transition-all duration-300 font-sans text-base h-full w-full",
                     !generatedLetter && "text-center opacity-0",
-                    generatedLetter && "shadow-inner bg-base-100/60 backdrop-blur-sm border-base-300/50 rounded-lg"
+                    generatedLetter && !isNewlyGenerated && "shadow-inner bg-base-100/60 backdrop-blur-sm border-base-300/50 rounded-lg",
+                    generatedLetter && isNewlyGenerated && "shadow-inner bg-success/10 backdrop-blur-sm border-success/30 rounded-lg"
                   )}
                   data-testid="write-coverletter-textarea-output"
                 />
@@ -882,65 +918,20 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                     </div>
                   </div>
                   
-                  {/* Success Message */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="relative overflow-hidden p-4 bg-success/10 backdrop-blur-sm rounded-lg border border-success/30 shadow-md"
-                  >
-                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-success to-success" />
-                    <div className="flex items-center gap-3">
-                      <motion.div
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ type: "spring", stiffness: 200 }}
-                        className="p-2 bg-success/20 rounded-lg"
-                      >
-                        <CheckCircle2 className="h-5 w-5 text-success" />
-                      </motion.div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-success">
-                          Cover letter generated successfully!
-                        </p>
-                        <p className="text-xs text-success/80 mt-0.5">
-                          Personalized for {role.title} at {role.company.name}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
 
-                  {/* Application Routing Section */}
+                  {/* Application Routing Section - Full Width Button */}
                   {role.applicationInfo && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
-                      className="relative overflow-hidden p-4 bg-primary/10 backdrop-blur-sm rounded-lg border border-primary/30 shadow-md"
+                      className="w-full"
                     >
-                      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-primary" />
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <p className="text-sm font-semibold text-primary">
-                              Ready to Apply?
-                            </p>
-                          </div>
-                          <p className="text-xs text-primary/80">
-                            Apply directly to {role.company.name} for {role.title}
-                          </p>
-                          {role.applicationInfo.recruiter && (
-                            <p className="text-xs text-primary/70 mt-1">
-                              Recruiter: {role.applicationInfo.recruiter.name} - {role.applicationInfo.recruiter.title}
-                            </p>
-                          )}
-                        </div>
-                        <ApplicationActionButton
-                          applicationInfo={role.applicationInfo}
-                          className="flex-shrink-0"
-                          data-testid="cover-letter-application-button"
-                        />
-                      </div>
+                      <ApplicationActionButton
+                        applicationInfo={role.applicationInfo}
+                        className="w-full"
+                        data-testid="cover-letter-application-button"
+                      />
                     </motion.div>
                   )}
                 </motion.div>

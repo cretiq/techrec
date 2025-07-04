@@ -30,6 +30,8 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
   className = '',
   'data-testid': testId
 }) => {
+  // Detect if this is being used full-width (cover letter mode)
+  const isFullWidth = className.includes('w-full')
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     
@@ -45,13 +47,17 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
   if (!applicationInfo.applicationUrl) {
     return (
       <Button 
-        size="sm" 
+        size={isFullWidth ? "lg" : "sm"} 
         disabled 
-        className={`text-xs px-4 py-2 bg-base-100/40 backdrop-blur-sm border border-base-300/50 text-base-content/50 ${className}`}
+        className={`${isFullWidth ? 'text-base px-6 py-4' : 'text-xs px-4 py-2'} bg-base-100/40 backdrop-blur-sm border border-base-300/50 text-base-content/50 ${className}`}
         data-testid={testId || 'application-action-button-disabled'}
       >
-        <AlertTriangle className="h-3 w-3 mr-2" />
-        Apply Now
+        <div className={`flex items-center justify-center ${isFullWidth ? 'gap-3' : 'gap-2'}`}>
+          <AlertTriangle className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0`} />
+          <span className={`font-medium ${isFullWidth ? 'text-lg' : ''}`}>
+            {isFullWidth ? 'Application Link Not Available' : 'Apply Now'}
+          </span>
+        </div>
       </Button>
     )
   }
@@ -65,18 +71,21 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
         transition={{ duration: 0.1 }}
       >
         <Button
-          size="sm"
+          size={isFullWidth ? "lg" : "sm"}
           variant="default"
           onClick={handleClick}
           disabled={disabled}
-          className={`text-xs px-4 py-2 bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border-0 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 group ${className}`}
+          className={`${isFullWidth ? 'text-base px-6 py-4' : 'text-xs px-4 py-2'} bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border-0 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 group ${className}`}
           title="Apply directly through LinkedIn Easy Apply"
           data-testid={testId || 'application-action-button-easy-apply'}
         >
-          <div className="flex items-center gap-2">
-            <LinkedInIcon className="h-3 w-3 flex-shrink-0" />
-            <Zap className="h-3 w-3 flex-shrink-0 group-hover:animate-pulse" />
-            <span className="font-medium">Easy Apply</span>
+          <div className={`flex items-center justify-center ${isFullWidth ? 'gap-3' : 'gap-2'}`}>
+            <LinkedInIcon className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0`} />
+            <Zap className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0 group-hover:animate-pulse`} />
+            <span className={`font-medium ${isFullWidth ? 'text-lg' : ''}`}>
+              {isFullWidth ? 'Apply on LinkedIn - Easy Apply' : 'Easy Apply'}
+            </span>
+            {isFullWidth && <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />}
           </div>
         </Button>
       </motion.div>
@@ -91,18 +100,20 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
       transition={{ duration: 0.1 }}
     >
       <Button
-        size="sm"
+        size={isFullWidth ? "lg" : "sm"}
         variant="outline"
         onClick={handleClick}
         disabled={disabled}
-        className={`text-xs px-4 py-2 bg-base-100/60 backdrop-blur-sm border border-[#0077b5]/30 text-[#0077b5] hover:bg-[#0077b5]/10 hover:border-[#0077b5]/50 hover:text-[#005885] shadow-md hover:shadow-lg transition-all duration-200 group ${className}`}
+        className={`${isFullWidth ? 'text-base px-6 py-4' : 'text-xs px-4 py-2'} bg-base-100/60 backdrop-blur-sm border border-[#0077b5]/30 text-[#0077b5] hover:bg-[#0077b5]/10 hover:border-[#0077b5]/50 hover:text-[#005885] shadow-md hover:shadow-lg transition-all duration-200 group ${className}`}
         title="Apply via LinkedIn (opens in new tab)"
         data-testid={testId || 'application-action-button-external'}
       >
-        <div className="flex items-center gap-2">
-          <LinkedInIcon className="h-3 w-3 flex-shrink-0" />
-          <span className="font-medium">Apply on LinkedIn</span>
-          <ArrowRight className="h-3 w-3 flex-shrink-0 group-hover:translate-x-0.5 transition-transform" />
+        <div className={`flex items-center justify-center ${isFullWidth ? 'gap-3' : 'gap-2'}`}>
+          <LinkedInIcon className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0`} />
+          <span className={`font-medium ${isFullWidth ? 'text-lg' : ''}`}>
+            {isFullWidth ? 'Apply on LinkedIn - External' : 'Apply on LinkedIn'}
+          </span>
+          <ArrowRight className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0 group-hover:translate-x-0.5 transition-transform`} />
         </div>
       </Button>
     </motion.div>
