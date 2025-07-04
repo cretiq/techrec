@@ -40,22 +40,24 @@ export function MultiRolePane({
     };
 
     return (
-        <motion.div
-            animate={isRemoveHovered ? {
-                boxShadow: [
-                    "0 0 0 0 rgba(239, 68, 68, 0)",
-                    "0 0 20px 4px rgba(239, 68, 68, 0.4)",
-                    "0 0 30px 6px rgba(239, 68, 68, 0.2)",
-                    "0 0 40px 8px rgba(239, 68, 68, 0.1)"
-                ],
-            } : {
-            }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="relative"
-        >
+        <div className="relative">
+            {/* Glow Effect Overlay */}
+            {/* <motion.div
+                className="absolute inset-0 rounded-lg pointer-events-none"
+                style={{
+                    boxShadow: "0 0 10px 10px rgba(239, 68, 68, 0.4)",
+                    zIndex: -1,
+                }}
+                initial={{ opacity: 0, scale: 1 }}
+                animate={{ 
+                    opacity: isRemoveHovered ? 1 : 0,
+                }}
+                transition={{ duration: 0.1, ease: "easeOut" }}
+            /> */}
+            
             <Card 
                 className={`relative transition-all duration-300 ${
-                    isRemoveHovered ? 'bg-error/5 border-error/30' : ''
+                    isRemoveHovered ? '' : ''
                 }`} 
                 data-testid={`write-multirole-card-${role.id}`}
             >
@@ -98,6 +100,6 @@ export function MultiRolePane({
                 </CardContent>
             </motion.div>
             </Card>
-        </motion.div>
+        </div>
     );
 } 
