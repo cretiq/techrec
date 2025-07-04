@@ -422,19 +422,19 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
               />
               
               {/* Collapsible Section for Additional Customization */}
-              <div className="mt-6">
+              <div className="mt-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
-                  className="w-full justify-between p-3 h-auto hover:bg-base-200/50 transition-all duration-200 border border-base-300/30 rounded-lg"
+                  className="w-full justify-between p-3 h-auto hover:bg-base-200/50 transition-all duration-200 rounded-lg m-0"
                   data-testid="write-coverletter-header-personalization-trigger"
                 >
                   <span className="text-sm font-medium text-base-content">
                     Additional Customization
-                    <Badge variant="secondary" size="sm" className="ml-2 bg-primary/20 text-primary">
+                    {/* <Badge variant="secondary" size="sm" className="ml-2 bg-primary/20 text-primary">
                       {(developerProfile?.achievements?.length || 0) + companyAttractionPoints.length + (jobSource ? 1 : 0)} items
-                    </Badge>
+                    </Badge> */}
                   </span>
                   <motion.div
                     animate={{ rotate: isPersonalizationExpanded ? 180 : 0 }}
