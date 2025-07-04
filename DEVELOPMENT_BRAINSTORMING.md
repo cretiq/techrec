@@ -19,15 +19,20 @@
 - ✅ Multiple RapidAPI endpoint selection (7 days, 24h, hourly) → **Moved to Feature Request #4**
 - ✅ Cover letter application routing with Easy Apply detection → **Moved to Feature Request #5**
 - ✅ Cover letter personalization UI redesign - always show tone/hiring manager, collapse other fields, remove message type → **Moved to Feature Request #6**
+- ✅ Redux state persistence for search results and selected roles → **Moved to Feature Request #7**
 
 
 ### Immediate Next Features (This Sprint)
+- [ ] **Server-Side Role State Persistence (Revised)**
+  - Fix critical issue where search results disappear on page refresh
+  - Use existing RapidAPI cache and Redis patterns instead of Redux Persist
+  - Prevent users from being redirected from writing-help page
+  - Restore user workflow continuity with proven architecture patterns
+
 - [ ] **Developer-Role Matching Score System**
   - Display compatibility scores for each role based on developer profile
   - Help developers focus on roles they're most likely to get
   - Requires skill matching algorithm and enhanced developer profiles
-
-
 
 - [ ] **Cover Letter Application Routing**
   - Direct application from cover letter page to job posting
@@ -267,6 +272,371 @@
 - Phase 1: ✅ Basic structure and field separation (Partially Complete)
 - Phase 2: ⚠️ Message type cleanup and state management verification (In Progress)
 - Phase 3: ⚠️ Polish animations, accessibility, and testing (Pending)
+
+---
+
+### Feature Request #7: Server-Side Role State Persistence (Revised)
+**Status:** Planning Phase - Major Architecture Revision Required  
+**Priority:** High
+
+**Goal:** Fix the critical issue where search results and selected roles disappear after page refresh using existing architecture patterns instead of adding complex client-side persistence.
+
+**User Story:** As a developer using the job search functionality, I want my search results and selected roles to persist when I refresh the page or navigate between pages, so that I can continue where I left off without losing my search progress or having to reselect roles.
+
+**Success Metrics:** 
+- Elimination of user complaints about losing search results on refresh
+- Increased user engagement with multi-page workflows (search → writing-help → back to search)
+- Improved user retention in writing-help workflows
+- Reduced bounce rate from writing-help page redirects
+
+## 🚨 CRITICAL FINDINGS: Original Plan Too Complex
+
+**After thorough analysis of Redux Persist best practices, ioredis patterns, and existing codebase:**
+
+❌ **Original Redux Persist plan would create TRIPLE cache complexity:**
+1. RapidAPI in-memory cache (Map-based, working well)
+2. Redis server-side cache (gamification, config - working well)  
+3. Redux Persist localStorage (new, problematic)
+
+❌ **Previous Redux Persist issues documented in TROUBLESHOOTING.md:**
+- State rehydration issues with missing fields
+- ID mismatch problems between URL and store
+- Infinite useEffect loops and REHYDRATE complications
+
+❌ **User explicitly mentioned "wrestling with cache and state management"**
+
+## ✅ REVISED APPROACH: Leverage Existing Patterns
+
+**Instead of adding Redux Persist complexity, extend the existing architecture patterns:**
+
+**Technical Approach:** 
+- **Extend RapidApiCacheManager:** Use existing proven cache patterns for role state
+- **Use Redis Infrastructure:** Leverage existing server-side session storage
+- **Keep Client Simple:** No localStorage complexity or client-side persistence
+- **URL State Backup:** Simple URL parameters for basic persistence fallback
+
+**Advantages of Revised Approach:**
+✅ **Uses existing proven patterns** (RapidAPI cache, Redis infrastructure)
+✅ **No new dependencies** or complex persistence layers
+✅ **Avoids Redux Persist pitfalls** that caused previous issues
+✅ **Simpler debugging and maintenance**
+✅ **Consistent with existing architecture**
+✅ **Lower risk of cache synchronization issues**
+
+**Implementation Plan:**
+
+**Phase 1: RapidAPI Cache Manager Extension (2 days)**
+
+**File: `lib/api/rapidapi-cache.ts`**
+- [ ] Add `RoleStateCache` class extending existing `RapidApiCacheManager`
+- [ ] Implement `setUserRoleState(userId: string, roleState: UserRoleState): void` method
+- [ ] Implement `getUserRoleState(userId: string): UserRoleState | null` method
+- [ ] Implement `clearUserRoleState(userId: string): void` method for logout
+- [ ] Add `cleanupExpiredRoleStates(): void` method using existing cleanup patterns
+- [ ] Extend existing `generateParameterHash()` method to handle role state parameters
+- [ ] Use existing `MAX_CACHE_SIZE` (500) and create separate limit for role states (50 users max)
+- [ ] Apply existing `CACHE_TTL` pattern but with 24h expiration for role states
+
+**Required Interface Definition:**
+- [ ] Define `UserRoleState` interface in new file `types/roleState.ts`:
+  - `roles: Role[]` - current search results
+  - `selectedRoles: string[]` - array of selected role IDs
+  - `lastSearchParams: SearchParameters` - last search parameters used
+  - `timestamp: number` - when state was cached
+  - `sessionId: string` - user session identifier
+- [ ] Define `RoleStateCacheEntry` interface extending existing `CacheEntry` pattern
+
+**Integration Points:**
+- [ ] Export singleton instance `roleStateCache` similar to existing `RapidApiCacheManager.getInstance()`
+- [ ] Hook into existing cache cleanup cycle in `getCacheStats()` method
+- [ ] Use existing error handling patterns from parent class
+
+**Phase 2: Redux Store Integration (1 day)**
+
+**File: `lib/features/rolesSlice.ts`**
+- [ ] Add new action `restoreRoleState` that accepts `UserRoleState` parameter
+- [ ] Add new action `persistRoleState` that triggers cache storage
+- [ ] Modify existing `setRoles` action to automatically trigger persistence
+- [ ] Add `lastSearchParams` field to slice state
+- [ ] Add middleware integration point to automatically save state on relevant actions
+
+**File: `lib/features/selectedRolesSlice.ts`**
+- [ ] Add new action `restoreSelectedRoles` that accepts `string[]` parameter
+- [ ] Add new action `persistSelectedRoles` that triggers cache storage
+- [ ] Modify existing `toggleRole`, `addRole`, `removeRole` actions to trigger persistence
+- [ ] Add session tracking to prevent cross-user contamination
+
+**Required Store Middleware:**
+- [ ] Create `roleStatePersistenceMiddleware` in new file `lib/middleware/roleStatePersistence.ts`
+- [ ] Middleware should intercept actions: `setRoles`, `toggleRole`, `addRole`, `removeRole`
+- [ ] Debounce persistence calls (500ms) to avoid excessive cache writes
+- [ ] Add user session validation before persisting or restoring
+
+**Phase 3: Server-Side Session Enhancement (2 days)**
+
+**File: `lib/redis.ts`**
+- [ ] Add `setUserRoleState(userId: string, roleState: UserRoleState): Promise<boolean>` function
+- [ ] Add `getUserRoleState(userId: string): Promise<UserRoleState | null>` function
+- [ ] Add `clearUserRoleState(userId: string): Promise<void>` function
+- [ ] Use existing `setCache` and `getCache` functions with key pattern `user_role_state:${userId}`
+- [ ] Set 24h TTL using existing `CACHE_TTL_SECONDS` constant (extend to 86400)
+- [ ] Add to existing error handling patterns in `redis.ts`
+
+**Integration with Authentication:**
+- [ ] Hook into NextAuth session creation/destruction in `lib/auth.ts`
+- [ ] On session creation, attempt to restore role state from Redis
+- [ ] On session destruction, clear both client cache and Redis cache
+- [ ] Add user ID extraction utility for cache key generation
+
+**Session Storage Data Structure:**
+- [ ] Store serialized `UserRoleState` object in Redis
+- [ ] Include session validation token to prevent unauthorized access
+- [ ] Add metadata: `createdAt`, `lastAccessed`, `userAgent` for security
+
+**Phase 4: URL State Management Fallback (1 day)**
+
+**File: `app/developer/roles/search/page.tsx`**
+- [ ] Add URL parameter parsing for `selectedRoles` (comma-separated role IDs)
+- [ ] Add URL parameter parsing for `searchQuery`, `location`, `remote` basic search params
+- [ ] Implement `useEffect` hook to check URL params on page load
+- [ ] Priority order: 1) Client cache, 2) Redis cache, 3) URL params, 4) Empty state
+- [ ] Add URL updating when role selection changes (without page reload)
+
+**File: `app/developer/writing-help/page.tsx`**
+- [ ] Modify redirect logic to check for persisted selected roles before redirecting
+- [ ] If `selectedRoles` exist in cache/Redis, allow page to render normally
+- [ ] If no selected roles found, redirect to search with URL params intact
+- [ ] Add loading state while checking for persisted roles
+
+**URL Parameter Specification:**
+- [ ] `selectedRoles`: Comma-separated list of role IDs (max 10 for URL length)
+- [ ] `q`: Search query string (URL encoded)
+- [ ] `location`: Location filter (URL encoded)
+- [ ] `remote`: Boolean for remote work preference
+- [ ] Use Next.js `useRouter` and `useSearchParams` for URL manipulation
+
+**Phase 5: Component Integration & Data Flow (1 day)**
+
+**File: `components/roles/RoleCard.tsx`**
+- [ ] Modify role selection handlers to trigger persistence actions
+- [ ] Add integration with `roleStateCache.setUserRoleState()` on selection
+- [ ] Handle role state restoration on component mount
+- [ ] Add error boundary for cache failures
+
+**File: `components/roles/AdvancedFilters.tsx`**
+- [ ] Persist filter state as part of `lastSearchParams`
+- [ ] Restore filter state on page load from cache
+- [ ] Clear filter state when user explicitly resets
+
+**Data Flow Architecture:**
+- [ ] User action (select role) → Redux action → Middleware → Client cache → Redis backup
+- [ ] Page load → Check client cache → Fallback to Redis → Fallback to URL → Default empty
+- [ ] Session end → Clear client cache → Clear Redis cache
+- [ ] 24h expiry → Automatic cleanup of both client and Redis cache
+
+**Phase 6: Error Handling & Fallbacks (1 day)**
+
+**Cache Failure Scenarios:**
+- [ ] Client cache unavailable → Fallback to Redis
+- [ ] Redis unavailable → Fallback to URL params
+- [ ] URL params invalid → Fallback to empty state
+- [ ] Corrupted cache data → Clear cache and fallback to next level
+- [ ] Session mismatch → Clear cache and start fresh
+
+**Error Handling Requirements:**
+- [ ] Silent failures for cache operations (don't break user experience)
+- [ ] Logging for cache failures using existing error reporting
+- [ ] Graceful degradation at each fallback level
+- [ ] Cache corruption detection and auto-recovery
+- [ ] User session validation before cache operations
+
+**Testing Integration Points:**
+- [ ] Mock `roleStateCache` for unit tests
+- [ ] Mock Redis operations for integration tests
+- [ ] Test URL parameter parsing edge cases
+- [ ] Test cross-session contamination prevention
+- [ ] Test automatic cleanup and expiration
+
+**Acceptance Criteria:**
+
+**Core Functionality:**
+- [ ] Search results persist across page refreshes for 24h
+- [ ] Selected roles remain selected after page refresh (up to 10 roles)
+- [ ] Writing-help page allows access when selectedRoles exist in cache
+- [ ] Search parameters (query, location, remote) are restored exactly
+- [ ] Multiple search sessions can be cached for different users simultaneously
+- [ ] Cache automatically expires after 24h with cleanup verification
+
+**Data Integrity:**
+- [ ] User A cannot access User B's cached role state
+- [ ] Session validation prevents unauthorized cache access
+- [ ] Corrupted cache data triggers automatic cleanup and fallback
+- [ ] Cache key collisions are impossible between users
+- [ ] State restoration validates data types and structure
+
+**Performance Requirements:**
+- [ ] Initial page load with cache check completes in < 200ms
+- [ ] Role selection triggers cache persistence in < 100ms
+- [ ] Cache cleanup runs without blocking user actions
+- [ ] Memory usage stays under 10MB for role state cache
+- [ ] No memory leaks after 24h of continuous usage
+
+**Error Handling:**
+- [ ] Redis unavailable → Graceful fallback to URL params
+- [ ] Client cache disabled → Fallback to Redis works
+- [ ] URL params corrupted → Fallback to empty search
+- [ ] Session expired → Clear all caches and start fresh
+- [ ] Cache writes fail → User experience unaffected
+
+**Integration Points:**
+- [ ] NextAuth session creation/destruction triggers cache management
+- [ ] Redux actions automatically trigger persistence without developer intervention
+- [ ] Existing RapidAPI cache patterns remain unaffected
+- [ ] URL updates reflect current state without page reload
+- [ ] Component remounts restore state correctly
+
+**Security & Privacy:**
+- [ ] Cache entries include session validation tokens
+- [ ] User logout clears both client and Redis caches
+- [ ] No sensitive data (passwords, tokens) stored in cache
+- [ ] Cache keys use secure hashing for user identification
+- [ ] Cross-session contamination testing passes
+
+**Questions to Resolve:**
+- [x] Should we add Redux Persist complexity? → **❌ No, use existing patterns**
+- [x] Should we leverage existing RapidAPI cache patterns? → **✅ Yes, extend them**
+- [x] Should we use existing Redis infrastructure? → **✅ Yes, proven and working**
+- [x] Should we keep client-side state simple? → **✅ Yes, avoid localStorage complexity**
+- [x] Should we have URL-based fallback? → **✅ Yes, simple and reliable**
+
+**Dependencies:**
+- [ ] Extend existing `RapidApiCacheManager` class
+- [ ] Use existing Redis infrastructure patterns from `lib/redis.ts`
+- [ ] Minimal changes to existing store configuration
+- [ ] No new package dependencies required
+
+**Testing Strategy:**
+
+**Unit Tests Required:**
+- [ ] `RoleStateCache` class methods (setUserRoleState, getUserRoleState, cleanup)
+- [ ] Cache key generation and hashing functions
+- [ ] Session validation utility functions
+- [ ] URL parameter parsing and encoding functions
+- [ ] Redux middleware state synchronization logic
+
+**Integration Tests Required:**
+- [ ] Redis cache operations with mock Redis instance
+- [ ] NextAuth session integration (login/logout cache management)
+- [ ] Redux store integration with cache persistence
+- [ ] Component integration (RoleCard, AdvancedFilters, SearchPage)
+- [ ] URL parameter restoration on page load
+
+**End-to-End Tests Required:**
+- [ ] Complete user journey: search → select roles → refresh → verify persistence
+- [ ] Writing-help page access with persisted selected roles
+- [ ] Cache expiration after 24h verification
+- [ ] Multi-user session isolation testing
+- [ ] Error fallback scenarios (Redis down, corrupted cache, etc.)
+
+**Performance Tests Required:**
+- [ ] Cache operation performance under load (100 concurrent users)
+- [ ] Memory usage monitoring during extended sessions
+- [ ] Page load time with cache restoration
+- [ ] Redis connection pool usage under normal load
+
+**Security Tests Required:**
+- [ ] Cross-user cache access prevention
+- [ ] Session token validation
+- [ ] Cache key collision resistance
+- [ ] Unauthorized cache access attempts
+
+**Monitoring & Observability:**
+
+**Metrics to Track:**
+- [ ] Cache hit/miss ratios for client and Redis cache
+- [ ] Cache operation latency (set/get/cleanup)
+- [ ] Memory usage of client cache over time
+- [ ] Redis connection pool utilization
+- [ ] Session validation failure rates
+- [ ] Cache corruption detection frequency
+
+**Alerting Thresholds:**
+- [ ] Cache hit ratio below 80% (indicates cache issues)
+- [ ] Cache operation latency above 100ms (performance degradation)
+- [ ] Memory usage above 10MB (potential memory leak)
+- [ ] Redis connection pool above 80% usage (scale concern)
+- [ ] Session validation failures above 5% (security concern)
+
+**Logging Requirements:**
+- [ ] Cache operations (set/get/delete) with user ID and timestamp
+- [ ] Session validation failures with reason codes
+- [ ] Cache cleanup operations with statistics
+- [ ] Fallback activations (Redis → URL params)
+- [ ] Error conditions with stack traces
+
+**Rollback Procedures:**
+- [ ] Feature flag to disable role state persistence
+- [ ] Cache flush procedure for corrupted data
+- [ ] Redis cache namespace isolation for safe cleanup
+- [ ] Redux state reset procedure for emergency cases
+
+**Technical Considerations:**
+- **Leverage existing Redis patterns** from gamification system
+- **Extend proven RapidAPI cache manager** instead of new persistence
+- **Use existing session management** for user-specific state
+- **Simple URL-based fallback** for basic persistence
+- **No localStorage complexity** or client-side persistence issues
+
+**Performance Considerations:**
+- Uses existing proven cache performance patterns
+- No additional client-side storage or rehydration overhead
+- Leverages existing Redis connection pooling and management
+- Consistent with current application performance characteristics
+
+**Risk Assessment & Mitigation:**
+
+**High-Risk Areas Identified:**
+1. **Redis Connection Pool Exhaustion**
+   - Risk: Adding role state caching could overwhelm Redis connection pool
+   - Mitigation: Use existing Redis instance with connection pooling limits
+   - Monitoring: Track connection usage in existing Redis metrics
+
+2. **Memory Leak in Client Cache**
+   - Risk: Map-based cache could grow indefinitely with user sessions
+   - Mitigation: Implement strict cache size limits (50 users max) and automatic cleanup
+   - Monitoring: Memory usage tracking in cache manager
+
+3. **Session Validation Complexity**
+   - Risk: Complex session validation could create security vulnerabilities
+   - Mitigation: Use existing NextAuth session patterns, simple token validation
+   - Monitoring: Failed session validation alerts
+
+4. **Cache Key Collisions**
+   - Risk: Multiple users could have cache key conflicts
+   - Mitigation: Use hashed userId + sessionId for unique keys
+   - Monitoring: Cache key collision detection in metrics
+
+5. **Redux State Synchronization**
+   - Risk: Client cache and Redux state could become out of sync
+   - Mitigation: Single source of truth pattern, middleware handles sync
+   - Monitoring: State consistency validation in development
+
+**Low-Risk Areas (Proven Patterns):**
+- ✅ Redis caching patterns (already working in gamification)
+- ✅ RapidAPI cache manager extension (proven architecture)
+- ✅ NextAuth session management (existing integration)
+- ✅ URL parameter handling (Next.js standard patterns)
+
+**Mitigation Strategies:**
+1. **Circuit Breaker Pattern**: If Redis fails, immediately fallback to URL params
+2. **Graceful Degradation**: Each fallback layer is simpler than the previous
+3. **Monitoring & Alerting**: Track cache hit rates, memory usage, connection health
+4. **Incremental Rollout**: Deploy to small user group first, monitor metrics
+5. **Rollback Plan**: Can disable feature flag and revert to stateless behavior
+
+**Estimated Timeline:** 1 week total (vs 2-3 weeks for Redux Persist)
+**Risk Level:** Low-Medium - Uses proven patterns with careful risk mitigation
+**Complexity:** Low - Extends existing architecture rather than adding new layers
 
 ---
 
