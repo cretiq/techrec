@@ -49,8 +49,6 @@ export function MultiRolePane({
                     "0 0 40px 8px rgba(239, 68, 68, 0.1)"
                 ],
             } : {
-                boxShadow: "0 0 0 0 rgba(239, 68, 68, 0)",
-                scale: 1
             }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="relative"
