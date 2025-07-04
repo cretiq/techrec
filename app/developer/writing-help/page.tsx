@@ -245,7 +245,7 @@ export default function WritingHelpPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="flex justify-between items-center mt-6"
+            className="grid grid-cols-2 gap-4 mt-6 w-full"
           >
             {/* Back to Roles Button */}
             <motion.div
@@ -265,75 +265,77 @@ export default function WritingHelpPage() {
               </Button>
             </motion.div>
 
-            {/* Generate All Button */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.1 }}
-              className="relative"
-            >
-              <Button
-                onClick={handleGenerateAll}
-                disabled={isGeneratingAll || isAnyPaneGenerating}
-                size="lg"
-                className="relative overflow-hidden bg-gradient-to-r border-0 px-8 py-3 transition-all duration-150"
-                data-testid="write-button-generate-all-trigger"
+            {/* Generate All Button - Aligned to right column */}
+            <div className="flex justify-end">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.1 }}
+                className="relative"
               >
-                {/* Shimmer Effect */}
-                <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
-                
-                {/* Button Content */}
-                <div className="relative z-10 flex items-center gap-3">
-                  {(isGeneratingAll || isAnyPaneGenerating) ? (
-                    <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      >
-                        <Loader2 className="h-5 w-5" />
-                      </motion.div>
-                      <span>Generating All {activeTab === 'cover-letter' ? 'Letters' : 'Messages'}...</span>
-                    </>
-                  ) : (
-                    <>
-                      <motion.div
-                        animate={{ 
-                          y: [0, -1, 0],
-                          rotate: [0, 3, -3, 0]
-                        }}
-                        transition={{ 
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        <Rocket className="h-5 w-5" />
-                      </motion.div>
-                      <span>Generate All {activeTab === 'cover-letter' ? 'Letters' : 'Messages'} ({selectedRoles.length})</span>
-                      <motion.div
-                        animate={{ x: [0, 2, 0] }}
-                        transition={{ 
-                          duration: 2.5,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      >
-                        <ArrowRight className="h-5 w-5" />
-                      </motion.div>
-                    </>
+                <Button
+                  onClick={handleGenerateAll}
+                  disabled={isGeneratingAll || isAnyPaneGenerating}
+                  size="lg"
+                  className="relative overflow-hidden bg-gradient-to-r border-0 px-8 py-3 transition-all duration-150"
+                  data-testid="write-button-generate-all-trigger"
+                >
+                  {/* Shimmer Effect */}
+                  <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+                  
+                  {/* Button Content */}
+                  <div className="relative z-10 flex items-center gap-3">
+                    {(isGeneratingAll || isAnyPaneGenerating) ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        >
+                          <Loader2 className="h-5 w-5" />
+                        </motion.div>
+                        <span>Generating All {activeTab === 'cover-letter' ? 'Letters' : 'Messages'}...</span>
+                      </>
+                    ) : (
+                      <>
+                        <motion.div
+                          animate={{ 
+                            y: [0, -1, 0],
+                            rotate: [0, 3, -3, 0]
+                          }}
+                          transition={{ 
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <Rocket className="h-5 w-5" />
+                        </motion.div>
+                        <span>Generate All {activeTab === 'cover-letter' ? 'Letters' : 'Messages'} ({selectedRoles.length})</span>
+                        <motion.div
+                          animate={{ x: [0, 2, 0] }}
+                          transition={{ 
+                            duration: 2.5,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                          }}
+                        >
+                          <ArrowRight className="h-5 w-5" />
+                        </motion.div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Pulse Effect when generating */}
+                  {(isGeneratingAll || isAnyPaneGenerating) && (
+                    <motion.div
+                      className="absolute inset-0 bg-white/10"
+                      animate={{ opacity: [0.2, 0.5, 0.2] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    />
                   )}
-                </div>
-                
-                {/* Pulse Effect when generating */}
-                {(isGeneratingAll || isAnyPaneGenerating) && (
-                  <motion.div
-                    className="absolute inset-0 bg-white/10"
-                    animate={{ opacity: [0.2, 0.5, 0.2] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  />
-                )}
-              </Button>
-            </motion.div>
+                </Button>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </Tabs>

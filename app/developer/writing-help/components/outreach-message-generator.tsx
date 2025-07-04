@@ -34,6 +34,8 @@ import {
   Linkedin,
   Twitter,
   Github,
+  X,
+  ArrowRight,
 } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile } from "@/types/types"
@@ -348,13 +350,118 @@ export function OutreachMessageGenerator({
   const PlatformIcon = platformIcons[platform as keyof typeof platformIcons] || Mail
 
   return (
-    <motion.div 
-      variants={fadeInUp} 
-      initial="hidden" 
-      animate="visible"
-      className="grid gap-6 lg:grid-cols-2 relative"
-      data-testid="write-outreach-container-main"
-    >
+    <div className={cn(
+      "grid grid-cols-1 lg:grid-cols-2 max-w-7xl mx-auto",
+      isMultiRoleMode ? "gap-4" : "gap-6",
+      "lg:items-start lg:h-auto"
+    )}>
+      {/* Header Card */}
+      <Card 
+        variant="transparent"
+        className="lg:col-span-2"
+        data-testid="write-outreach-card-header"
+      >
+        <CardHeader className={cn(isMultiRoleMode ? "pb-4 pt-4" : "pb-6 pt-6")}>
+          <div className="space-y-4">
+            {/* Top Row - Title/Description with Remove Button */}
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                <motion.div 
+                  animate={{ rotate: isGenerating ? 360 : 0 }}
+                  transition={{ 
+                    duration: isGenerating ? 2 : 0.5, 
+                    repeat: isGenerating ? Infinity : 0, 
+                    ease: "linear" 
+                  }}
+                  className="p-3 bg-primary/10 backdrop-blur-md rounded-lg border border-primary/20 flex-shrink-0"
+                >
+                  <Mail className={cn("text-primary", isMultiRoleMode ? "h-6 w-6" : "h-8 w-8")} />
+                </motion.div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className={cn("font-bold mb-2 text-base-content", isMultiRoleMode ? "text-2xl" : "text-3xl")}>
+                    <span className="truncate" title={role.title}>
+                      {role.title}
+                    </span>
+                  </CardTitle>
+                  <CardDescription className="text-base-content/70 flex items-center gap-2 flex-wrap">
+                    <span>at</span>
+                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/30">
+                      {role.company.name}
+                    </Badge>
+                    {role.location && (
+                      <span className="text-base-content/60 text-sm">• {role.location}</span>
+                    )}
+                  </CardDescription>
+                </div>
+              </div>
+              
+              {/* Remove Button - Only show in multi-role mode - Top Right */}
+              {isMultiRoleMode && onRemoveRole && (
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex-shrink-0"
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onRemoveRole}
+                    onMouseEnter={() => onRemoveHover?.(true)}
+                    onMouseLeave={() => onRemoveHover?.(false)}
+                    className="h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10 transition-all duration-200"
+                    aria-label="Remove role"
+                    title="Remove role"
+                    data-testid={`write-multirole-remove-button-${role.id}`}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Bottom Row - Generate Button */}
+            <div className="w-full">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.1 }}
+                className="w-full"
+              >
+                <Button
+                  onClick={() => handleGenerate()}
+                  disabled={isGenerating || !recipientName}
+                  variant="default"
+                  size="lg"
+                  className="w-full text-base px-6 py-4 bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border-0 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 group"
+                  data-testid="write-outreach-button-generate-trigger"
+                >
+                  <div className="flex items-center justify-center gap-3">
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-5 w-5 animate-spin flex-shrink-0" />
+                        <span className="font-medium text-lg">Generating Messages...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-5 w-5 flex-shrink-0 group-hover:animate-pulse" />
+                        <span className="font-medium text-lg">Generate Outreach Messages</span>
+                        <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </div>
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+          
+          {!developerProfile && (
+            <p className="text-xs text-base-content/60 mt-2">
+              Loading your profile data...
+            </p>
+          )}
+        </CardHeader>
+      </Card>
+
       {/* Celebration overlay */}
       <AnimatePresence>
         {showCelebration && (
@@ -719,134 +826,7 @@ export function OutreachMessageGenerator({
             </AnimatePresence>
           </motion.div>
 
-          {/* Generate Button with Orbital Animation */}
-          <motion.div 
-            whileHover={scaleOnHover} 
-            whileTap={{ scale: 0.98 }}
-            className="relative"
-            data-testid="write-outreach-container-generate-button"
-          >
-            {/* Orbital rings when generating */}
-            {isGenerating && (
-              <div 
-                className="absolute inset-0 pointer-events-none"
-                data-testid="write-outreach-animation-orbital-rings"
-              >
-                <motion.div
-                  className="absolute inset-0 border-2 border-primary/30 rounded-lg"
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.1, 0.3]
-                  }}
-                  transition={{ 
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  data-testid="write-outreach-ring-primary"
-                />
-                <motion.div
-                  className="absolute inset-0 border-2 border-secondary/30 rounded-lg"
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    opacity: [0.4, 0.2, 0.4]
-                  }}
-                  transition={{ 
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 0.5
-                  }}
-                  data-testid="write-outreach-ring-secondary"
-                />
-                
-              </div>
-            )}
-            
-            <Button
-              onClick={() => handleGenerate()}
-              disabled={isGenerating || !recipientName}
-              className="relative w-full h-12 text-base font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-lg overflow-hidden"
-              data-testid="write-outreach-button-generate-trigger"
-            >
-              {/* Pulse wave effect when generating */}
-              {isGenerating && (
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
-                  animate={{
-                    x: ['-100%', '100%'],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  data-testid="write-outreach-button-pulse-wave"
-                />
-              )}
-              
-              <div 
-                className="relative z-10 flex items-center justify-center"
-                data-testid="write-outreach-button-content"
-              >
-                {isGenerating ? (
-                  <>
-                    {/* Orbital loading animation */}
-                    <div 
-                      className="relative mr-2 w-5 h-5"
-                      data-testid="write-outreach-loading-orbital-container"
-                    >
-                      <motion.div
-                        className="absolute inset-0 border-2 border-white/30 rounded-full"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                        data-testid="write-outreach-loading-ring"
-                      />
-                      <motion.div
-                        className="absolute top-0 left-1/2 w-1 h-1 bg-white rounded-full transform -translate-x-1/2"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        style={{ transformOrigin: '50% 10px' }}
-                        data-testid="write-outreach-loading-dot-1"
-                      />
-                      <motion.div
-                        className="absolute top-1/2 left-0 w-1 h-1 bg-white/70 rounded-full transform -translate-y-1/2"
-                        animate={{ rotate: -360 }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                        style={{ transformOrigin: '10px 50%' }}
-                        data-testid="write-outreach-loading-dot-2"
-                      />
-                    </div>
-                    <motion.span
-                      animate={{ opacity: [1, 0.7, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      data-testid="write-outreach-text-generating"
-                    >
-                      Generating Messages...
-                    </motion.span>
-                  </>
-                ) : (
-                  <>
-                    <motion.div
-                      animate={{ 
-                        rotate: [0, 10, -10, 0],
-                        scale: [1, 1.1, 1]
-                      }}
-                      transition={{ 
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                      data-testid="write-outreach-icon-sparkles"
-                    >
-                      <Sparkles className="mr-2 h-5 w-5" />
-                    </motion.div>
-                    <span data-testid="write-outreach-text-button">Generate Outreach Messages</span>
-                  </>
-                )}
-              </div>
-            </Button>
-          </motion.div>
+
 
           {/* Tips */}
           <div 
@@ -1197,6 +1177,6 @@ export function OutreachMessageGenerator({
             </div>
           )}
       </div>
-    </motion.div>
+    </div>
   )
 }

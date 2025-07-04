@@ -331,97 +331,104 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
           data-testid="write-coverletter-card-header"
         >
             <CardHeader className={cn(isMultiRoleMode ? "pb-4 pt-4" : "pb-6 pt-6")}>
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4 flex-1 min-w-0">
-                <motion.div 
-                  animate={{ rotate: isGenerating ? 360 : 0 }}
-                  transition={{ 
-                    duration: isGenerating ? 2 : 0.5, 
-                    repeat: isGenerating ? Infinity : 0, 
-                    ease: "linear" 
-                  }}
-                  className="p-3 bg-primary/10 backdrop-blur-md rounded-lg border border-primary/20 flex-shrink-0"
-                >
-                  <Sparkles className={cn("text-primary", isMultiRoleMode ? "h-6 w-6" : "h-8 w-8")} />
-                </motion.div>
-                <div className="flex-1 min-w-0">
-                  <CardTitle className={cn("font-bold mb-2 text-base-content truncate", isMultiRoleMode ? "text-2xl" : "text-3xl")}>
-                    {role.title}
+            <div className="space-y-4">
+              {/* Top Row - Title/Description with Remove Button */}
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  <motion.div 
+                    animate={{ rotate: isGenerating ? 360 : 0 }}
+                    transition={{ 
+                      duration: isGenerating ? 2 : 0.5, 
+                      repeat: isGenerating ? Infinity : 0, 
+                      ease: "linear" 
+                    }}
+                    className="p-3 bg-primary/10 backdrop-blur-md rounded-lg border border-primary/20 flex-shrink-0"
+                  >
+                    <Sparkles className={cn("text-primary", isMultiRoleMode ? "h-6 w-6" : "h-8 w-8")} />
+                  </motion.div>
+                  <div className="flex-1 min-w-0">
+                                      <CardTitle className={cn("font-bold mb-2 text-base-content", isMultiRoleMode ? "text-2xl" : "text-3xl")}>
+                    <span className="truncate" title={role.title}>
+                      {role.title}
+                    </span>
                   </CardTitle>
-                  <CardDescription className="text-base-content/70 flex items-center gap-2 flex-wrap">
-                    <span>at</span>
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/30">
-                      {role.company.name}
-                    </Badge>
-                    {role.location && (
-                      <span className="text-base-content/60 text-sm">• {role.location}</span>
-                    )}
-                  </CardDescription>
+                    <CardDescription className="text-base-content/70 flex items-center gap-2 flex-wrap">
+                      <span>at</span>
+                      <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/30">
+                        {role.company.name}
+                      </Badge>
+                      {role.location && (
+                        <span className="text-base-content/60 text-sm">• {role.location}</span>
+                      )}
+                    </CardDescription>
+                  </div>
                 </div>
+                
+                {/* Remove Button - Only show in multi-role mode - Top Right */}
+                {isMultiRoleMode && onRemoveRole && (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex-shrink-0"
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={onRemoveRole}
+                      onMouseEnter={() => {
+                        setIsRemoveHovered(true)
+                        onRemoveHover?.(true)
+                      }}
+                      onMouseLeave={() => {
+                        setIsRemoveHovered(false)
+                        onRemoveHover?.(false)
+                      }}
+                      className="h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10 transition-all duration-200"
+                      aria-label="Remove role"
+                      title="Remove role"
+                      data-testid={`write-multirole-remove-button-${role.id}`}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </motion.div>
+                )}
               </div>
-              
-              {/* Generate Button */}
+
+                          {/* Bottom Row - Generate Button */}
+            <div className="w-full">
               <motion.div
-                whileHover={scaleOnHover}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-shrink-0"
+                transition={{ duration: 0.1 }}
+                className="w-full"
               >
                 <Button
                   onClick={generatedLetter ? handleRegenerate : handleGenerate}
                   disabled={isGenerating || !developerProfile}
                   variant="default"
-                  size={isMultiRoleMode ? "default" : "lg"}
-                  className={cn(
-                    "bg-primary hover:bg-primary/90 text-primary-content transition-all",
-                    isMultiRoleMode ? "px-4 py-2" : "px-6 py-3"
-                  )}
+                  size="lg"
+                  className="w-full text-base px-6 py-4 bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border-0 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 group"
                   data-testid="write-coverletter-button-generate-trigger"
                 >
-                  {isGenerating ? (
-                    <>
-                      <RefreshCw className={cn("animate-spin", isMultiRoleMode ? "mr-2 h-4 w-4" : "mr-2 h-5 w-5")} />
-                      <span className={cn(isMultiRoleMode ? "text-sm" : "text-base")}>Generating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className={cn(isMultiRoleMode ? "mr-2 h-4 w-4" : "mr-2 h-5 w-5")} />
-                      <span className={cn("font-semibold", isMultiRoleMode ? "text-sm" : "text-base")}>
-                        {generatedLetter ? 'Regenerate' : 'Generate'}
-                      </span>
-                      <ArrowRight className={cn("transition-transform group-hover:translate-x-1", isMultiRoleMode ? "ml-2 h-4 w-4" : "ml-2 h-5 w-5")} />
-                    </>
-                  )}
+                  <div className="flex items-center justify-center gap-3">
+                    {isGenerating ? (
+                      <>
+                        <RefreshCw className="h-5 w-5 animate-spin flex-shrink-0" />
+                        <span className="font-medium text-lg">Generating Cover Letter...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-5 w-5 flex-shrink-0 group-hover:animate-pulse" />
+                        <span className="font-medium text-lg">
+                          {generatedLetter ? 'Regenerate Cover Letter' : 'Generate Cover Letter'}
+                        </span>
+                        <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </div>
                 </Button>
               </motion.div>
-
-              {/* Remove Button - Only show in multi-role mode */}
-              {isMultiRoleMode && onRemoveRole && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex-shrink-0"
-                >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onRemoveRole}
-                    onMouseEnter={() => {
-                      setIsRemoveHovered(true)
-                      onRemoveHover?.(true)
-                    }}
-                    onMouseLeave={() => {
-                      setIsRemoveHovered(false)
-                      onRemoveHover?.(false)
-                    }}
-                    className="h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10 transition-all duration-200"
-                    aria-label="Remove role"
-                    title="Remove role"
-                    data-testid={`write-multirole-remove-button-${role.id}`}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </motion.div>
-              )}
+            </div>
             </div>
             
             {!developerProfile && (
@@ -750,10 +757,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         >
           <Card 
             className={cn(
-              "backdrop-blur-sm transition-all duration-300 h-full relative overflow-hidden rounded-lg",
-              isNewlyGenerated 
-                ? "bg-success/20 border-success/50" 
-                : "bg-base-100/60 border-base-300/50"
+              "bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 h-full relative overflow-hidden rounded-lg shadow-lg",
+              isNewlyGenerated && "ring-2 ring-success/50 bg-success/5"
             )}
             data-testid="write-coverletter-card-output"
           >
