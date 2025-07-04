@@ -314,7 +314,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
     <div 
       className={cn(
         "grid grid-cols-1 lg:grid-cols-2 max-w-7xl mx-auto",
-        isMultiRoleMode ? "gap-4" : "gap-6"
+        isMultiRoleMode ? "gap-4" : "gap-6",
+        "lg:items-start lg:h-auto"
       )}
     >
       {/* Left Column - Customization */}
@@ -701,7 +702,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
         initial={{ opacity: 0, x: 10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.25, delay: 0.1, ease: "easeOut" }}
-        className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
+        className="h-full"
       >
         <motion.div
           animate={isNewlyGenerated ? {
@@ -713,7 +714,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
             ]
           } : {}}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="rounded-lg"
+          className="rounded-lg h-full"
         >
           <Card 
             className={cn(
@@ -721,8 +722,8 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
             )}
             data-testid="write-coverletter-card-output"
           >
-          <CardContent className="flex flex-col bg-transparent p-6">
-            <div className="flex-1 relative">
+          <CardContent className="flex flex-col bg-transparent p-6 h-full">
+            <div className="flex-1 relative min-h-0">
               {!generatedLetter && (
                 <motion.div 
                   initial={{ opacity: 0 }}
@@ -820,8 +821,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                   readOnly
                   variant={generatedLetter ? "default" : "ghost"}
                   className={cn(
-                    "resize-none transition-all duration-300 font-sans text-base h-full",
-                    isMultiRoleMode ? "min-h-[350px]" : "min-h-[300px]",
+                    "resize-none transition-all duration-300 font-sans text-base h-full w-full",
                     !generatedLetter && "text-center opacity-0",
                     generatedLetter && "shadow-inner bg-base-100/60 backdrop-blur-sm border-base-300/50 rounded-lg"
                   )}
