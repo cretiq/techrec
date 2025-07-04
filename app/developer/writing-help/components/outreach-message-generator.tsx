@@ -430,25 +430,18 @@ export function OutreachMessageGenerator({
                 <Button
                   onClick={() => handleGenerate()}
                   disabled={isGenerating || !recipientName}
-                  variant="default"
+                  variant="linkedin"
                   size="lg"
-                  className="w-full text-base px-6 py-4 bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border-0 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 group"
+                  elevation="lg"
+                  loading={isGenerating}
+                  leftIcon={!isGenerating ? <Sparkles className="h-5 w-5 flex-shrink-0 group-hover:animate-pulse" /> : undefined}
+                  rightIcon={!isGenerating ? <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" /> : undefined}
+                  className="w-full text-base group"
                   data-testid="write-outreach-button-generate-trigger"
                 >
-                  <div className="flex items-center justify-center gap-3">
-                    {isGenerating ? (
-                      <>
-                        <RefreshCw className="h-5 w-5 animate-spin flex-shrink-0" />
-                        <span className="font-medium text-lg">Generating Messages...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-5 w-5 flex-shrink-0 group-hover:animate-pulse" />
-                        <span className="font-medium text-lg">Generate Outreach Messages</span>
-                        <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
-                      </>
-                    )}
-                  </div>
+                  <span className="font-medium text-lg">
+                    {isGenerating ? 'Generating Messages...' : 'Generate Outreach Messages'}
+                  </span>
                 </Button>
               </motion.div>
             </div>
@@ -1119,26 +1112,20 @@ export function OutreachMessageGenerator({
                   variant="outline"
                   onClick={handleRegenerate}
                   disabled={isGenerating}
+                  leftIcon={<RefreshCw className="h-4 w-4" data-testid="write-outreach-icon-regenerate" />}
                   className="flex-1"
                   data-testid="write-outreach-button-regenerate-trigger"
                 >
-                  <RefreshCw 
-                    className="mr-2 h-4 w-4" 
-                    data-testid="write-outreach-icon-regenerate"
-                  />
                   <span data-testid="write-outreach-text-regenerate">Regenerate</span>
                 </Button>
                 <Button
                   variant="default"
                   onClick={downloadMessage}
                   disabled={selectedVariation === null}
+                  leftIcon={<Download className="h-4 w-4" data-testid="write-outreach-icon-download" />}
                   className="flex-1"
                   data-testid="write-outreach-button-download-trigger"
                 >
-                  <Download 
-                    className="mr-2 h-4 w-4" 
-                    data-testid="write-outreach-icon-download"
-                  />
                   <span data-testid="write-outreach-text-download">Download Selected</span>
                 </Button>
               </div>

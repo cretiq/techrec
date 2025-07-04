@@ -641,7 +641,7 @@ After conducting comprehensive analysis detailed in [`REDIS_VS_REDUX_DECISION_FR
 
 ### Feature Request #8: Button Styling Consistency & Coherence
 
-**Status:** Planning Phase
+**Status:** Ready for Development
 **Priority:** Medium
 
 **Goal:** Establish consistent button styling patterns across the entire application to improve visual coherence and maintain a professional, polished user experience.
@@ -711,6 +711,14 @@ After conducting comprehensive analysis detailed in [`REDIS_VS_REDUX_DECISION_FR
 - [ ] **Application Components** (Priority 3):
   - `components/roles/ApplicationActionButton.tsx` - Use component variants
   - `components/analysis/AnalysisActionButtons.tsx` - Apply consistent styling
+
+**Phase 2.5: Enhanced Button Component Features (Based on Resolved Questions)**
+
+- [ ] **Theme-Aware Shadows:** Add shadow variants for dark/light themes
+- [ ] **Disabled States:** Implement comprehensive disabled styling for all variants
+- [ ] **Loading States:** Add loading animations (spinner or icon animation)
+- [ ] **Gradient Constraints:** Limit to maximum 2 gradient button types
+- [ ] **Icon Button Preparation:** Architecture for future icon-only styling
 
 **Phase 3: Style Guide Documentation**
 
@@ -792,6 +800,14 @@ After conducting comprehensive analysis detailed in [`REDIS_VS_REDUX_DECISION_FR
 - [ ] Props-based styling instead of className-based styling
 - [ ] Type safety maintained for all button variants
 
+**Enhanced Features (Based on Resolved Questions):**
+
+- [ ] All button variants have properly styled disabled states (duller, grayer)
+- [ ] Loading states implemented with spinner or icon animation
+- [ ] Maximum 2 gradient button types used throughout application
+- [ ] Theme-aware shadow variants prepared for dark/light modes
+- [ ] Icon-only button architecture prepared for future implementation
+
 **Migration Strategy:**
 
 **Step 1: Safe Migration (No Visual Changes)**
@@ -814,17 +830,17 @@ After conducting comprehensive analysis detailed in [`REDIS_VS_REDUX_DECISION_FR
 
 **Questions to Resolve:**
 
-- [ ] Should we add a `variant="compact"` for very small buttons?
+- [x] Should we add a `variant="compact"` for very small buttons?
   **DECISION**: We should not have "very small" buttons, I don't think. It's bad for the usability
-- [ ] Do we need different shadow levels for dark vs light themes?
+- [x] Do we need different shadow levels for dark vs light themes?
   **DECISION**: I think we should future proof it for it
-- [ ] Should icon-only buttons have different default styling?
+- [x] Should icon-only buttons have different default styling?
   **DECISION**: Not at this moment, but future proof it.
-- [ ] How should we handle buttons in complex gradients/backgrounds?
+- [x] How should we handle buttons in complex gradients/backgrounds?
   **DECISION**: we should make a set of gradient styling for buttons. the main idea is that we should not use more than 1 or maximum 2 different types of gradient buttons throughout the app, as it's bad to coherence.
-- [ ] Should disabled states have consistent styling across all variants?
+- [x] Should disabled states have consistent styling across all variants?
   **DECISION**: I think every type of button should have a "disabled" counter part, which is duller, grayer (a toned down version of the "enabled" color), and a fainth border matching the color theme of this button.
-- [ ] Do we need loading state variants for different button types?
+- [x] Do we need loading state variants for different button types?
   **DECISION**: Every button's loading state should be the button in it's original form, but with either a spinner inside of it, or if an icon exist in the button, make it animated.
 
 **Dependencies:**
@@ -835,11 +851,12 @@ After conducting comprehensive analysis detailed in [`REDIS_VS_REDUX_DECISION_FR
 - [ ] Testing strategy for visual regression prevention
 - [ ] Team training on new button patterns
 
-**Estimated Timeline:** 1 week total
+**Estimated Timeline:** 1.5 weeks total
 **Implementation Phases:**
 
 - Phase 1: ✅ Button component enhancement (Completed)
 - Phase 2: ⚠️ Main page refactoring (2-3 days)
+- Phase 2.5: ⚠️ Enhanced button features (disabled, loading, theme-aware) (1-2 days)
 - Phase 3: ⚠️ Component library migration (2-3 days)
 - Phase 4: ⚠️ Documentation and testing (1 day)
 

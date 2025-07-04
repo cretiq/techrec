@@ -184,8 +184,8 @@ export default function CVManagementPage() {
                                 <div className="space-y-4" data-testid="cv-management-scratch-option">
                                     <Button
                                         size="lg"
-                                        variant="outline"
-                                        className="w-full h-32 flex flex-col gap-2 border-2 border-dashed border-secondary/20 hover:border-secondary/40 hover:bg-secondary/5 transition-all"
+                                        variant="dashdot"
+                                        className="w-full h-32 flex flex-col gap-2"
                                         onClick={() => setShowGuidedCreation(true)}
                                         data-testid="cv-management-start-scratch-button"
                                     >
@@ -254,9 +254,9 @@ export default function CVManagementPage() {
                                                     params.delete('analysisId');
                                                     router.replace(`${window.location.pathname}?${params.toString()}`);
                                                 }}
+                                                leftIcon={<RefreshCw className="h-4 w-4" />}
                                                 data-testid="cv-management-action-reupload"
                                             >
-                                                <RefreshCw className="h-4 w-4 mr-2" />
                                                 Re-upload CV
                                             </Button>
                                             <Button
@@ -269,9 +269,9 @@ export default function CVManagementPage() {
                                                         description: "PDF export coming soon!",
                                                     });
                                                 }}
+                                                leftIcon={<Download className="h-4 w-4" />}
                                                 data-testid="cv-management-action-export"
                                             >
-                                                <Download className="h-4 w-4 mr-2" />
                                                 Export PDF
                                             </Button>
                                             <Button
@@ -284,9 +284,9 @@ export default function CVManagementPage() {
                                                         description: "Detailed analysis view coming soon!",
                                                     });
                                                 }}
+                                                leftIcon={<BarChart3 className="h-4 w-4" />}
                                                 data-testid="cv-management-action-analysis"
                                             >
-                                                <BarChart3 className="h-4 w-4 mr-2" />
                                                 View Analysis
                                             </Button>
                                         </div>

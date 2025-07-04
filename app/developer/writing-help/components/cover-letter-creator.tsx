@@ -405,27 +405,21 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                 <Button
                   onClick={generatedLetter ? handleRegenerate : handleGenerate}
                   disabled={isGenerating || !developerProfile}
-                  variant="default"
+                  variant="linkedin"
                   size="lg"
-                  className="w-full text-base px-6 py-4 bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border-0 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-200 group"
+                  elevation="lg"
+                  loading={isGenerating}
+                  className="w-full text-base group"
                   data-testid="write-coverletter-button-generate-trigger"
+                  leftIcon={!isGenerating ? <Sparkles className="h-5 w-5 flex-shrink-0 group-hover:animate-pulse" /> : undefined}
+                  rightIcon={!isGenerating ? <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" /> : undefined}
                 >
-                  <div className="flex items-center justify-center gap-3">
-                    {isGenerating ? (
-                      <>
-                        <RefreshCw className="h-5 w-5 animate-spin flex-shrink-0" />
-                        <span className="font-medium text-lg">Generating Cover Letter...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-5 w-5 flex-shrink-0 group-hover:animate-pulse" />
-                        <span className="font-medium text-lg">
-                          {generatedLetter ? 'Regenerate Cover Letter' : 'Generate Cover Letter'}
-                        </span>
-                        <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
-                      </>
-                    )}
-                  </div>
+                  <span className="font-medium text-lg">
+                    {isGenerating 
+                      ? 'Generating Cover Letter...'
+                      : generatedLetter ? 'Regenerate Cover Letter' : 'Generate Cover Letter'
+                    }
+                  </span>
                 </Button>
               </motion.div>
             </div>
@@ -604,11 +598,9 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                                 size="default"
                                 onClick={handleAddAchievement}
                                 disabled={!newAchievementTitle.trim()}
-                                className="transition-all duration-150"
+                                leftIcon={<PlusCircle className="h-4 w-4" />}
                                 data-testid="write-coverletter-button-add-achievement-trigger"
-                              >
-                                <PlusCircle className="h-4 w-4" />
-                              </Button>
+                              />
                             </motion.div>
                           </div>
                         </motion.div>
@@ -681,11 +673,9 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                                 size="default"
                                 onClick={handleAddAttractionPoint}
                                 disabled={!newAttractionPoint.trim()}
-                                className="transition-all duration-150"
+                                leftIcon={<PlusCircle className="h-4 w-4" />}
                                 data-testid="write-coverletter-button-add-attraction-point-trigger"
-                              >
-                                <PlusCircle className="h-4 w-4" />
-                              </Button>
+                              />
                             </motion.div>
                           </div>
                         </motion.div>
@@ -884,12 +874,13 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                     <div className="flex-1">
                       <Button
                         onClick={handleExport}
-                        variant="default"
+                        variant="outline"
                         size="default"
-                        className="w-full group bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 backdrop-blur-sm shadow-md transition-all duration-150 font-medium rounded-lg"
+                        elevation="sm"
+                        leftIcon={<Download className="h-4 w-4" />}
+                        className="w-full group font-medium"
                         data-testid="write-coverletter-button-export-trigger"
                       >
-                        <Download className="mr-2 h-4 w-4" />
                         Export as Text
                       </Button>
                     </div>
@@ -898,27 +889,22 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
                         onClick={handleCopy}
                         variant={isCopied ? "gradient-blue" : "outline"}
                         size="default"
-                        className="w-full group shadow-md transition-all duration-150 rounded-lg"
                         elevation="sm"
+                        className="w-full group"
+                        leftIcon={isCopied ? (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          >
+                            <Check className="h-4 w-4" />
+                          </motion.div>
+                        ) : (
+                          <Copy className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                        )}
                         data-testid="write-coverletter-button-copy-trigger"
                       >
-                        {isCopied ? (
-                          <>
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 300 }}
-                            >
-                              <Check className="mr-2 h-4 w-4" />
-                            </motion.div>
-                            Copied!
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                            Copy to Clipboard
-                          </>
-                        )}
+                        {isCopied ? 'Copied!' : 'Copy to Clipboard'}
                       </Button>
                     </div>
                   </div>

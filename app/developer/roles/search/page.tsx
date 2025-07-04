@@ -305,14 +305,10 @@ export default function RolesSearch2Page() {
                 disabled={selectedCount === 0}
                 size="sm"
                 variant="gradient"
-                className="relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                leftIcon={<PenTool className="h-4 w-4" />}
                 data-testid="role-search-button-write-selected-trigger"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-pink-500 opacity-0 transition-opacity hover:opacity-100"></div>
-                <div className="relative flex items-center">
-                  <PenTool className="mr-2 h-4 w-4" />
-                  Write to {selectedCount} role{selectedCount !== 1 ? 's' : ''}
-                </div>
+                Write to {selectedCount} role{selectedCount !== 1 ? 's' : ''}
               </Button>
             )}
           </div>
@@ -345,9 +341,9 @@ export default function RolesSearch2Page() {
                   disabled={!canMakeRequest}
                   variant="default"
                   size="lg"
+                  leftIcon={<Search className="h-4 w-4" />}
                   data-testid="role-search-button-start-search"
                 >
-                  <Search className="h-4 w-4 mr-2" />
                   Start Searching
                 </Button>
                 {!canMakeRequest && (
@@ -582,11 +578,10 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                           variant="outline"
                           onClick={handleWriteClick}
                           disabled={!session?.user}
-                          className="gap-1 text-xs px-3"
+                          leftIcon={<PenTool className="h-3 w-3" />}
                           title={!session?.user ? "Login to use Writing Help" : "Get writing assistance"}
                           data-testid={`role-search-button-write-trigger-${role.id}`}
                         >
-                          <PenTool className="h-3 w-3" />
                           Write to
                         </Button>
                       </div>
