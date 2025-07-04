@@ -15,9 +15,10 @@ import { RootState, AppDispatch } from '@/lib/store'
 import { 
   setCoverLetter, 
   selectCoverLetter, 
-  updateCoverLetterAttractionPoints
+  updateCoverLetterAttractionPoints,
+  updateCoverLetterJobSource
 } from '@/lib/features/coverLettersSlice'
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown } from "lucide-react"
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown, Briefcase } from "lucide-react"
 import { ApplicationActionButton } from "@/components/roles/ApplicationActionButton"
 import { ApplicationBadge } from "@/components/roles/ApplicationBadge"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -404,218 +405,257 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
             className="bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 rounded-lg"
             data-testid="write-coverletter-card-customization"
           >
-            <CardHeader 
-              className="bg-base-100/30 backdrop-blur-sm transition-all duration-300 cursor-pointer"
-              onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
-              data-testid="write-coverletter-header-personalization-trigger"
-            >
-            <div className="flex items-center justify-between">
+            <CardHeader className="bg-base-100/30 backdrop-blur-sm transition-all duration-300">
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
                 <CardTitle className="text-lg text-base-content">Personalize Your Application</CardTitle>
               </div>
-              <motion.div
-                animate={{ rotate: isPersonalizationExpanded ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChevronDown className="h-5 w-5 text-base-content/60" />
-              </motion.div>
-            </div>
             </CardHeader>
-            <AnimatePresence>
-              {isPersonalizationExpanded && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="overflow-hidden"
+            <CardContent>
+              {/* Always Visible: Tone & Style and Hiring Manager Name */}
+              <CoverLetterPersonalization
+                roleId={role.id}
+                tone={tone}
+                hiringManager={hiringManager}
+                jobSource={jobSource}
+                isMultiRoleMode={isMultiRoleMode}
+              />
+              
+              {/* Collapsible Section for Additional Customization */}
+              <div className="mt-6">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
+                  className="w-full justify-between p-3 h-auto hover:bg-base-200/50 transition-all duration-200 border border-base-300/30 rounded-lg"
+                  data-testid="write-coverletter-header-personalization-trigger"
                 >
-                <CardContent>
-                  <CoverLetterPersonalization
-                    roleId={role.id}
-                    tone={tone}
-                    hiringManager={hiringManager}
-                    jobSource={jobSource}
-                    isMultiRoleMode={isMultiRoleMode}
-                  />
-            
-            {/* Achievements Section */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="space-y-3"
-            >
-              <label className="text-sm font-medium flex items-center gap-2">
-                <Award className="h-4 w-4 text-primary" />
-                Your Key Achievements
-                <Badge variant="secondary" size="sm" className="ml-auto bg-primary/20 text-primary">
-                  {developerProfile?.achievements?.length || 0}
-                </Badge>
-              </label>
-              <div 
-                className="bg-base-100/40 backdrop-blur-sm rounded-lg p-4 border border-base-300/50 shadow-inner"
-                data-testid="write-coverletter-container-achievements"
-              >
-                <ScrollArea className="h-32">
-                  <AnimatePresence mode="popLayout">
-                    {(developerProfile?.achievements || []).map((achievement: InternalAchievement, index) => (
-                      <motion.div
-                        key={achievement.id}
-                        initial={{ opacity: 0, x: -20, scale: 0.9 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: 20, scale: 0.9 }}
-                        transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
-                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50"
-                      >
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: index * 0.05 + 0.2 }}
-                        >
-                          <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        </motion.div>
-                        <p className="text-sm flex-1 truncate" title={achievement.title}>
-                          {achievement.title}
-                        </p>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-error/10"
-                          onClick={() => handleRemoveAchievement(achievement.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                  {(!developerProfile?.achievements || developerProfile.achievements.length === 0) && (
+                  <span className="text-sm font-medium text-base-content">
+                    Additional Customization
+                    <Badge variant="secondary" size="sm" className="ml-2 bg-primary/20 text-primary">
+                      {(developerProfile?.achievements?.length || 0) + companyAttractionPoints.length + (jobSource ? 1 : 0)} items
+                    </Badge>
+                  </span>
+                  <motion.div
+                    animate={{ rotate: isPersonalizationExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="h-4 w-4 text-base-content/60" />
+                  </motion.div>
+                </Button>
+                
+                <AnimatePresence>
+                  {isPersonalizationExpanded && (
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-center py-8"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="overflow-hidden"
                     >
-                      <Award className="h-8 w-8 text-base-content/30 mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">
-                        No achievements added yet
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Add your key accomplishments to personalize your letter
-                      </p>
+                      <div className="pt-4 space-y-6">
+                        {/* Job Source Input */}
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.1 }}
+                          className="space-y-2"
+                        >
+                          <label htmlFor="jobSource" className="text-sm font-medium flex items-center gap-2">
+                            <Briefcase className="h-4 w-4 text-primary" />
+                            How did you find this job?
+                            <Badge variant="secondary" size="sm" className="ml-auto">Optional</Badge>
+                          </label>
+                          <div className="relative">
+                            <Input
+                              id="jobSource"
+                              placeholder="e.g., LinkedIn, Company Website, Referral from John"
+                              value={jobSource}
+                              onChange={(e) => dispatch(updateCoverLetterJobSource({ roleId: role.id, jobSource: e.target.value }))}
+                              className="bg-base-100/60 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all pl-10 rounded-lg"
+                              data-testid="write-coverletter-input-job-source"
+                            />
+                            <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/40" />
+                          </div>
+                        </motion.div>
+
+                        {/* Achievements Section */}
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.15 }}
+                          className="space-y-3"
+                        >
+                          <label className="text-sm font-medium flex items-center gap-2">
+                            <Award className="h-4 w-4 text-primary" />
+                            Your Key Achievements
+                            <Badge variant="secondary" size="sm" className="ml-auto bg-primary/20 text-primary">
+                              {developerProfile?.achievements?.length || 0}
+                            </Badge>
+                          </label>
+                          <div 
+                            className="bg-base-100/40 backdrop-blur-sm rounded-lg p-4 border border-base-300/50 shadow-inner"
+                            data-testid="write-coverletter-container-achievements"
+                          >
+                            <ScrollArea className="h-32">
+                              <AnimatePresence mode="popLayout">
+                                {(developerProfile?.achievements || []).map((achievement: InternalAchievement, index) => (
+                                  <motion.div
+                                    key={achievement.id}
+                                    initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                                    exit={{ opacity: 0, x: 20, scale: 0.9 }}
+                                    transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
+                                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50"
+                                  >
+                                    <motion.div
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      transition={{ delay: index * 0.05 + 0.2 }}
+                                    >
+                                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                                    </motion.div>
+                                    <p className="text-sm flex-1 truncate" title={achievement.title}>
+                                      {achievement.title}
+                                    </p>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon" 
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-error/10"
+                                      onClick={() => handleRemoveAchievement(achievement.id)}
+                                    >
+                                      <Trash2 className="h-4 w-4 text-red-500" />
+                                    </Button>
+                                  </motion.div>
+                                ))}
+                              </AnimatePresence>
+                              {(!developerProfile?.achievements || developerProfile.achievements.length === 0) && (
+                                <motion.div
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  className="text-center py-8"
+                                >
+                                  <Award className="h-8 w-8 text-base-content/30 mx-auto mb-2" />
+                                  <p className="text-sm text-muted-foreground">
+                                    No achievements added yet
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Add your key accomplishments to personalize your letter
+                                  </p>
+                                </motion.div>
+                              )}
+                            </ScrollArea>
+                          </div>
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="E.g., Led team of 5 to deliver project 2 weeks early"
+                              value={newAchievementTitle}
+                              onChange={(e) => setNewAchievementTitle(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleAddAchievement()}
+                              className="bg-base-100/60 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
+                              data-testid="write-coverletter-input-add-achievement"
+                            />
+                            <motion.div 
+                              whileTap={{ scale: 0.98 }}
+                              transition={{ duration: 0.1 }}
+                            >
+                              <Button
+                                variant="default"
+                                size="default"
+                                onClick={handleAddAchievement}
+                                disabled={!newAchievementTitle.trim()}
+                                className="transition-all duration-150"
+                                data-testid="write-coverletter-button-add-achievement-trigger"
+                              >
+                                <PlusCircle className="h-4 w-4" />
+                              </Button>
+                            </motion.div>
+                          </div>
+                        </motion.div>
+
+                        {/* Company Attraction Points */}
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.175 }}
+                          className="space-y-3"
+                        >
+                          <label className="text-sm font-medium flex items-center gap-2">
+                            <Target className="h-4 w-4 text-primary" />
+                            Why {role.company.name}?
+                            <Badge variant="secondary" size="sm" className="ml-auto bg-primary/20 text-primary">
+                              {companyAttractionPoints.length}
+                            </Badge>
+                          </label>
+                          <div 
+                            className="bg-base-100/40 backdrop-blur-sm rounded-lg p-4 border border-base-300/50 shadow-inner"
+                            data-testid="write-coverletter-container-attraction-points"
+                          >
+                            <ScrollArea className="h-32">
+                              <AnimatePresence mode="popLayout">
+                                {companyAttractionPoints.map((point, index) => (
+                                  <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                                    exit={{ opacity: 0, x: 20, scale: 0.9 }}
+                                    transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
+                                    className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50"
+                                  >
+                                    <motion.div
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      transition={{ delay: index * 0.05 + 0.2 }}
+                                    >
+                                      <ChevronRight className="h-5 w-5 text-primary flex-shrink-0" />
+                                    </motion.div>
+                                    <p className="text-sm flex-1">{point}</p>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      onClick={() => handleRemoveAttractionPoint(index)}
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                                    </Button>
+                                  </motion.div>
+                                ))}
+                              </AnimatePresence>
+                            </ScrollArea>
+                          </div>
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="E.g., Innovative AI products, great work-life balance"
+                              value={newAttractionPoint}
+                              onChange={(e) => setNewAttractionPoint(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleAddAttractionPoint()}
+                              className="bg-base-100/60 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
+                              data-testid="write-coverletter-input-add-attraction-point"
+                            />
+                            <motion.div 
+                              whileTap={{ scale: 0.98 }}
+                              transition={{ duration: 0.1 }}
+                            >
+                              <Button
+                                variant="default"
+                                size="default"
+                                onClick={handleAddAttractionPoint}
+                                disabled={!newAttractionPoint.trim()}
+                                className="transition-all duration-150"
+                                data-testid="write-coverletter-button-add-attraction-point-trigger"
+                              >
+                                <PlusCircle className="h-4 w-4" />
+                              </Button>
+                            </motion.div>
+                          </div>
+                        </motion.div>
+                      </div>
                     </motion.div>
                   )}
-                </ScrollArea>
+                </AnimatePresence>
               </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="E.g., Led team of 5 to deliver project 2 weeks early"
-                  value={newAchievementTitle}
-                  onChange={(e) => setNewAchievementTitle(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddAchievement()}
-                  className="bg-base-100/60 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
-                  data-testid="write-coverletter-input-add-achievement"
-                />
-                <motion.div 
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.1 }}
-                >
-                  <Button
-                    variant="default"
-                    size="default"
-                    onClick={handleAddAchievement}
-                    disabled={!newAchievementTitle.trim()}
-                    className="transition-all duration-150"
-                    data-testid="write-coverletter-button-add-achievement-trigger"
-                  >
-                    <PlusCircle className="h-4 w-4" />
-                  </Button>
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* Company Attraction Points */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.175 }}
-              className="space-y-3"
-            >
-              <label className="text-sm font-medium flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" />
-                Why {role.company.name}?
-                <Badge variant="secondary" size="sm" className="ml-auto bg-primary/20 text-primary">
-                  {companyAttractionPoints.length}
-                </Badge>
-              </label>
-              <div 
-                className="bg-base-100/40 backdrop-blur-sm rounded-lg p-4 border border-base-300/50 shadow-inner"
-                data-testid="write-coverletter-container-attraction-points"
-              >
-                <ScrollArea className="h-32">
-                  <AnimatePresence mode="popLayout">
-                    {companyAttractionPoints.map((point, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -20, scale: 0.9 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: 20, scale: 0.9 }}
-                        transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
-                        className="group flex items-center gap-3 p-3 rounded-lg hover:bg-base-100/80 backdrop-blur-sm transition-all duration-200 mb-2 border border-transparent hover:border-base-300/50"
-                      >
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: index * 0.05 + 0.2 }}
-                        >
-                          <ChevronRight className="h-5 w-5 text-primary flex-shrink-0" />
-                        </motion.div>
-                        <p className="text-sm flex-1">{point}</p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => handleRemoveAttractionPoint(index)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </ScrollArea>
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="E.g., Innovative AI products, great work-life balance"
-                  value={newAttractionPoint}
-                  onChange={(e) => setNewAttractionPoint(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddAttractionPoint()}
-                  className="bg-base-100/60 backdrop-blur-sm border-base-300/50 focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
-                  data-testid="write-coverletter-input-add-attraction-point"
-                />
-                <motion.div 
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.1 }}
-                >
-                  <Button
-                    variant="default"
-                    size="default"
-                    onClick={handleAddAttractionPoint}
-                    disabled={!newAttractionPoint.trim()}
-                    className="transition-all duration-150"
-                    data-testid="write-coverletter-button-add-attraction-point-trigger"
-                  >
-                    <PlusCircle className="h-4 w-4" />
-                  </Button>
-                </motion.div>
-              </div>
-            </motion.div>
-
-                </CardContent>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Card>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Progress Indicator */}
