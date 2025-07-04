@@ -60,13 +60,17 @@ interface OutreachMessageGeneratorProps {
   generationTrigger?: number
   onGenerationComplete?: (roleId: string, success: boolean) => void
   isMultiRoleMode?: boolean
+  onRemoveRole?: () => void
+  onRemoveHover?: (isHovered: boolean) => void
 }
 
 export function OutreachMessageGenerator({ 
   role, 
   generationTrigger, 
   onGenerationComplete, 
-  isMultiRoleMode = false 
+  isMultiRoleMode = false,
+  onRemoveRole,
+  onRemoveHover
 }: OutreachMessageGeneratorProps) {
   const { data: session } = useSession()
   const dispatch = useDispatch<AppDispatch>()

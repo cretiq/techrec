@@ -28,38 +28,40 @@ export function MultiRolePane({
 }: MultiRolePaneProps) {
     const dispatch = useDispatch<AppDispatch>();
     const paneId = `pane-${role.id}`;
+    const [isRemoveHovered, setIsRemoveHovered] = useState(false);
 
     const handleRemoveRole = (e: React.MouseEvent) => {
         e.stopPropagation();
         dispatch(toggleRoleSelection(role));
     };
 
+    const handleRemoveHover = (isHovered: boolean) => {
+        setIsRemoveHovered(isHovered);
+    };
+
     return (
-        <Card className="relative" data-testid={`write-multirole-card-${role.id}`}>
-            <CardHeader className="pb-2 relative">
-                <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                        <CardTitle className="line-clamp-1" data-testid={`write-multirole-title-${role.id}`}>
-                            {role.title}
-                        </CardTitle>
-                        <CardDescription className="line-clamp-1" data-testid={`write-multirole-company-${role.id}`}>
-                            {role.company?.name || 'Unknown Company'}
-                        </CardDescription>
-                    </div>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleRemoveRole}
-                        className="flex-shrink-0 h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10"
-                        aria-label="Remove role"
-                        title="Remove role"
-                        data-testid={`write-multirole-remove-button-${role.id}`}
-                    >
-                        <X className="h-4 w-4" />
-                    </Button>
-                </div>
-            </CardHeader>
-            <motion.div
+        <motion.div
+            animate={isRemoveHovered ? {
+                boxShadow: [
+                    "0 0 0 0 rgba(239, 68, 68, 0)",
+                    "0 0 20px 4px rgba(239, 68, 68, 0.4)",
+                    "0 0 30px 6px rgba(239, 68, 68, 0.2)",
+                    "0 0 40px 8px rgba(239, 68, 68, 0.1)"
+                ],
+            } : {
+                boxShadow: "0 0 0 0 rgba(239, 68, 68, 0)",
+                scale: 1
+            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="relative"
+        >
+            <Card 
+                className={`relative transition-all duration-300 ${
+                    isRemoveHovered ? 'bg-error/5 border-error/30' : ''
+                }`} 
+                data-testid={`write-multirole-card-${role.id}`}
+            >
+                <motion.div
                 key="content"
                 id={paneId}
                 initial="collapsed"
@@ -81,6 +83,8 @@ export function MultiRolePane({
                             generationTrigger={generationTrigger} 
                             onGenerationComplete={onGenerationComplete}
                             isMultiRoleMode={true}
+                            onRemoveRole={handleRemoveRole}
+                            onRemoveHover={handleRemoveHover}
                         />}
                     {activeTab === 'cv' && <CVOptimizer />}
                     {activeTab === 'outreach' && 
@@ -89,10 +93,13 @@ export function MultiRolePane({
                             generationTrigger={generationTrigger} 
                             onGenerationComplete={onGenerationComplete}
                             isMultiRoleMode={true}
+                            onRemoveRole={handleRemoveRole}
+                            onRemoveHover={handleRemoveHover}
                         />}
                     </div>
                 </CardContent>
             </motion.div>
-        </Card>
+            </Card>
+        </motion.div>
     );
 } 

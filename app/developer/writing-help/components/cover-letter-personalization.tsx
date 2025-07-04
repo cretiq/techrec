@@ -4,13 +4,14 @@ import { motion } from "framer-motion"
 import { Button } from '@/components/ui-daisy/button'
 import { Badge } from '@/components/ui-daisy/badge'
 import { Input } from '@/components/ui-daisy/input'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/lib/store'
 import { 
   updateCoverLetterTone,
   updateCoverLetterHiringManager
 } from '@/lib/features/coverLettersSlice'
-import { MessageSquare, User } from "lucide-react"
+import { MessageSquare, User, HelpCircle } from "lucide-react"
 import { CoverLetterTone } from "@/types/coverLetter"
 import { cn } from "@/lib/utils"
 
@@ -40,19 +41,35 @@ export function CoverLetterPersonalization({
   }
 
   return (
-    <div className={cn("space-y-6", isMultiRoleMode ? "pt-4" : "pt-6")}>
-      {/* Always Visible Fields */}
-      {/* Tone Selection */}
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        className="space-y-2"
-      >
-        <label className="text-sm font-medium flex items-center gap-2">
-          <MessageSquare className="h-4 w-4 text-primary" />
-          Tone & Style
-        </label>
+    <TooltipProvider>
+      <div className={cn("space-y-6", isMultiRoleMode ? "pt-4" : "pt-6")}>
+        {/* Always Visible Fields */}
+        {/* Tone Selection */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="space-y-2"
+        >
+          <label className="text-sm font-medium flex items-center gap-2">
+            <MessageSquare className="h-4 w-4 text-primary" />
+            Tone & Style
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-3.5 w-3.5 text-base-content/40 hover:text-base-content/70 cursor-help transition-colors" />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs">
+                <p className="text-sm">
+                  Choose how your cover letter sounds to the employer:
+                </p>
+                <ul className="text-xs mt-1 space-y-0.5">
+                  <li><strong>Formal:</strong> Professional and traditional language</li>
+                  <li><strong>Friendly:</strong> Warm and approachable tone</li>
+                  <li><strong>Enthusiastic:</strong> Energetic and passionate style</li>
+                </ul>
+              </TooltipContent>
+            </Tooltip>
+          </label>
         <div className="flex gap-2 flex-wrap">
           {(["formal", "friendly", "enthusiastic"] as const).map((toneOption) => (
             <Button
@@ -84,6 +101,19 @@ export function CoverLetterPersonalization({
         <label htmlFor="hiringManager" className="text-sm font-medium flex items-center gap-2">
           <User className="h-4 w-4 text-primary" />
           Hiring Manager Name
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle className="h-3.5 w-3.5 text-base-content/40 hover:text-base-content/70 cursor-help transition-colors" />
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              <p className="text-sm">
+                Add the hiring manager's name to make your cover letter more personal and targeted.
+              </p>
+              <p className="text-xs mt-1 text-base-content/80">
+                When provided, your letter will be addressed directly to them (e.g., "Dear Sarah Johnson") instead of using generic greetings like "Dear Hiring Manager."
+              </p>
+            </TooltipContent>
+          </Tooltip>
           <Badge variant="secondary" size="sm" className="ml-auto">Optional</Badge>
         </label>
         <div className="relative">
@@ -99,6 +129,7 @@ export function CoverLetterPersonalization({
         </div>
       </motion.div>
 
-    </div>
+      </div>
+    </TooltipProvider>
   )
 }
