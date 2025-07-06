@@ -3,13 +3,13 @@ import { RootState } from '../store';
 import { Role } from '@/types'; // Import the Role type
 
 interface SelectedRolesState {
-    // selectedRoleIds: string[];
     selectedRoles: Role[]; // Store full Role objects
+    selectedRoleIds: Record<string, boolean>; // Fast O(1) lookup for selection state
 }
 
 const initialState: SelectedRolesState = {
-    // selectedRoleIds: [],
     selectedRoles: [],
+    selectedRoleIds: {},
 };
 
 export const selectedRolesSlice = createSlice({
@@ -18,14 +18,19 @@ export const selectedRolesSlice = createSlice({
     reducers: {
         toggleRoleSelection: (state, action: PayloadAction<Role>) => {
             const role = action.payload;
-            const index = state.selectedRoles.findIndex(r => r.id === role.id);
+            const isSelected = state.selectedRoleIds[role.id];
 
-            if (index === -1) {
+            if (!isSelected) {
                 // Add role if not already selected
                 state.selectedRoles.push(role);
+                state.selectedRoleIds[role.id] = true;
             } else {
                 // Remove role if already selected
-                state.selectedRoles.splice(index, 1);
+                const index = state.selectedRoles.findIndex(r => r.id === role.id);
+                if (index !== -1) {
+                    state.selectedRoles.splice(index, 1);
+                }
+                delete state.selectedRoleIds[role.id];
             }
         },
         setSelectedRoles: (state, action: PayloadAction<Role[]>) => {
@@ -37,11 +42,19 @@ export const selectedRolesSlice = createSlice({
                     uniqueRolesMap.set(role.id, role);
                 }
             });
+            
             state.selectedRoles = Array.from(uniqueRolesMap.values());
+            
+            // Rebuild the lookup object
+            state.selectedRoleIds = {};
+            state.selectedRoles.forEach(role => {
+                state.selectedRoleIds[role.id] = true;
+            });
         },
         clearRoleSelection: (state) => {
             // Reset selected roles to an empty array
             state.selectedRoles = [];
+            state.selectedRoleIds = {};
         },
     },
 });
@@ -59,9 +72,9 @@ export const selectSelectedRoles = (state: RootState) =>
 export const selectSelectedRolesCount = (state: RootState) =>
     state.selectedRoles.selectedRoles.length;
 
-// Selector to check if a specific role is selected by ID
+// Selector to check if a specific role is selected by ID - O(1) lookup
 export const selectIsRoleSelected = (state: RootState, roleId: string | undefined) =>
-    roleId ? state.selectedRoles.selectedRoles.some(role => role.id === roleId) : false;
+    roleId ? Boolean(state.selectedRoles.selectedRoleIds[roleId]) : false;
 
 // Export the reducer
 export default selectedRolesSlice.reducer; 

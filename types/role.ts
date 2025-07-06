@@ -28,5 +28,10 @@ export interface Role {
   visaSponsorship: boolean;
   url?: string; // Optional URL to the job posting
   applicationInfo?: ApplicationInfo; // Application routing information
+  
+  // AI-enhanced fields for matching (from RapidAPI)
+  ai_key_skills?: string[]; // AI-extracted key skills for matching
+  linkedin_org_specialties?: string[]; // Company specialties for fallback matching
+  
   // Add any other relevant fields that are common across sources
 } 

@@ -191,5 +191,9 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     visaSponsorship: Boolean(apiJob.ai_visa_sponsorship), // Use AI field if available
     url: apiJob.url || '',
     applicationInfo: mapApplicationInfo(),
+    
+    // Preserve AI fields for matching
+    ai_key_skills: apiJob.ai_key_skills || undefined,
+    linkedin_org_specialties: apiJob.linkedin_org_specialties || undefined,
   };
 }; 

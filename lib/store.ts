@@ -20,6 +20,8 @@ import suggestionsReducer from './features/suggestionsSlice';
 import gamificationReducer from './features/gamificationSlice';
 // Import the roles reducer
 import rolesReducer from './features/rolesSlice';
+// Import the matching reducer
+import matchingReducer from './features/matchingSlice';
 
 // Combine all reducers - no persistence needed as session-based auth handles state
 const combinedReducer = combineReducers({
@@ -33,6 +35,7 @@ const combinedReducer = combineReducers({
   gamification: gamificationReducer,
   analytics: analyticsReducer,
   roles: rolesReducer,
+  matching: matchingReducer,
 });
 
 /**

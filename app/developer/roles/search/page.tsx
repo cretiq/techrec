@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useCallback, useMemo } from "react"
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
@@ -8,6 +8,7 @@ import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, PenTool, Check,
 import ApplicationBadge from '@/components/roles/ApplicationBadge'
 import ApplicationActionButton from '@/components/roles/ApplicationActionButton'
 import RecruiterCard from '@/components/roles/RecruiterCard'
+import MatchScoreCircle from '@/components/roles/MatchScoreCircle'
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
@@ -24,6 +25,14 @@ import {
   selectNextRequestTime,
   clearError
 } from '@/lib/features/rolesSlice'
+import {
+  selectRoleScore,
+  selectUserHasSkills,
+  selectMatchingLoading,
+  calculateBatchMatchScores,
+  fetchUserSkillProfile
+} from '@/lib/features/matchingSlice'
+import { extractRoleSkills } from '@/utils/matching/skillMatchingService'
 import { RootState, AppDispatch } from '@/lib/store'
 import { cn } from "@/lib/utils"
 import SelectedRolesList from '@/components/roles/SelectedRolesList'
@@ -55,23 +64,28 @@ export default function RolesSearch2Page() {
   const nextRequestTime = useSelector(selectNextRequestTime)
   const selectedRoles = useSelector(selectSelectedRoles)
   const selectedCount = useSelector(selectSelectedRolesCount)
+  
+  // Matching state
+  const userHasSkills = useSelector(selectUserHasSkills)
+  const matchingLoading = useSelector(selectMatchingLoading)
+  
+  // Ref to prevent infinite loop in match calculation
+  const isCalculatingRef = useRef(false)
+  const lastCalculatedRolesRef = useRef<string>('')
 
   useEffect(() => {
-    console.log("[RolesSearch2Page] useEffect triggered")
-    console.log("[RolesSearch2Page] Session status:", status)
-
     if (status === 'unauthenticated') {
-      console.log("[RolesSearch2Page] User not authenticated, redirecting to signin")
       router.push('/auth/signin?callbackUrl=/developer/roles/search')
       return
     }
 
     if (status === 'authenticated') {
-      console.log("[RolesSearch2Page] User authenticated, fetching initial data")
       fetchSavedRoles()
+      // Fetch user skills profile for match scoring
+      dispatch(fetchUserSkillProfile())
       // DO NOT trigger automatic search - user must explicitly search
     }
-  }, [status])
+  }, [status, dispatch])
 
   // Clear errors when component unmounts or when error changes
   useEffect(() => {
@@ -85,6 +99,44 @@ export default function RolesSearch2Page() {
     }
   }, [error, dispatch, toast])
 
+  // Memoize enhanced roles data to prevent recreation on every render
+  const enhancedRolesData = useMemo(() => {
+    return roles.filter(role => role != null).map(role => ({
+      ...role,
+      ai_key_skills: role.ai_key_skills || ['React', 'TypeScript', 'Node.js', 'JavaScript', 'Python'],
+      linkedin_org_specialties: role.linkedin_org_specialties || ['Software Development', 'Web Development']
+    }))
+  }, [roles])
+
+  // Calculate match scores when roles are available and user has skills
+  useEffect(() => {
+    // Prevent infinite loop with ref guard
+    if (isCalculatingRef.current) return
+    
+    const hasRoles = roles.length > 0
+    const hasValidConditions = hasRoles && userHasSkills && !matchingLoading
+    
+    // Create a stable key to track if we need to recalculate
+    const currentRolesKey = roles.map(r => r.id).join(',')
+    const hasNewRoles = lastCalculatedRolesRef.current !== currentRolesKey
+    
+    if (hasValidConditions && hasNewRoles) {
+      const roleIds = roles.map(role => role.id).filter(Boolean)
+      
+      if (roleIds.length > 0) {
+        isCalculatingRef.current = true
+        lastCalculatedRolesRef.current = currentRolesKey
+        
+        dispatch(calculateBatchMatchScores({
+          roleIds,
+          rolesData: enhancedRolesData
+        })).finally(() => {
+          isCalculatingRef.current = false
+        })
+      }
+    }
+  }, [roles.length, userHasSkills, matchingLoading, enhancedRolesData, dispatch])
+
   const handleSearch = () => {
     if (!canMakeRequest && nextRequestTime) {
       const timeRemaining = Math.ceil((nextRequestTime - Date.now()) / 1000 / 60)
@@ -96,31 +148,25 @@ export default function RolesSearch2Page() {
       return
     }
 
-    console.log("[RolesSearch2Page] Triggering search with filters:", currentFilters)
     dispatch(searchRoles(currentFilters))
   }
 
   const handleFiltersChange = (filters: SearchParameters) => {
-    console.log("[RolesSearch2Page] Filters changed:", filters)
     setCurrentFilters(filters)
   }
 
   const fetchSavedRoles = async () => {
-    console.log("[RolesSearch2Page] Starting to fetch saved roles")
     try {
-      console.log("[RolesSearch2Page] Fetching from /api/developers/me/saved-roles")
       const response = await fetch('/api/developers/me/saved-roles')
       
       if (!response.ok) {
         if (response.status === 404) {
-          console.log("[RolesSearch2Page] Saved roles endpoint not found or no saved roles")
           setSavedRoles([])
         } else {
           throw new Error(`Failed to fetch saved roles: ${response.status}`)
         }
       } else {
         const data = await response.json()
-        console.log("[RolesSearch2Page] Fetched saved roles data:", data)
         
         let savedRolesData: SavedRole[]
         if (data.length > 0 && typeof data[0] === 'object' && data[0].roleId) {
@@ -137,26 +183,22 @@ export default function RolesSearch2Page() {
           savedRolesData = []
         }
         
-        console.log("[RolesSearch2Page] Setting saved roles:", savedRolesData)
         setSavedRoles(savedRolesData)
       }
     } catch (error: any) {
       console.error('[RolesSearch2Page] Error fetching saved roles:', error)
-    } finally {
-      console.log("[RolesSearch2Page] Finished fetching saved roles")
     }
   }
 
   // All roles are already filtered by the API based on search parameters
   const filteredRoles = roles.filter((role) => {
     if (!role) {
-      console.warn("[RolesSearch2Page] Found undefined role in filter")
       return false
     }
     return true
   })
 
-  const handleSaveToggleRole = async (roleId: string) => {
+  const handleSaveToggleRole = useCallback(async (roleId: string) => {
     if (!session?.user) {
       router.push('/auth/signin?callbackUrl=/developer/roles')
       return
@@ -197,7 +239,7 @@ export default function RolesSearch2Page() {
         variant: 'destructive',
       })
     }
-  }
+  }, [session?.user, savedRoles, router, toast])
 
   const handleApply = (roleId: string) => {
     if (!session?.user) {
@@ -207,14 +249,14 @@ export default function RolesSearch2Page() {
     router.push(`/developer/roles/${roleId}/apply`)
   }
 
-  const handleWriteTo = (role: Role) => {
+  const handleWriteTo = useCallback((role: Role) => {
     if (!session?.user) {
       router.push('/auth/signin?callbackUrl=/developer/roles/search')
       return
     }
     const roleData = encodeURIComponent(JSON.stringify(role))
     router.push(`/developer/writing-help?roleData=${roleData}`)
-  }
+  }, [session?.user, router])
 
   const handleWriteToSelected = () => {
     if (selectedCount > 0) {
@@ -388,7 +430,7 @@ interface RoleCardWrapperProps {
   'data-testid'?: string;
 }
 
-const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
+const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
   role,
   index,
   savedRoles,
@@ -399,30 +441,58 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const isSelected = useSelector((state: RootState) => selectIsRoleSelected(state, role.id))
-  const isRoleSaved = savedRoles.some(r => r.roleId === role.id)
+  const isRoleSaved = useMemo(() => savedRoles.some(r => r.roleId === role.id), [savedRoles, role.id])
+  
+  // Get match score and matching state for this role in a single selector
+  const { matchScore, userHasSkills, matchingLoading } = useSelector((state: RootState) => ({
+    matchScore: selectRoleScore(state, role.id),
+    userHasSkills: selectUserHasSkills(state),
+    matchingLoading: selectMatchingLoading(state)
+  }))
+  
+  
+  // Determine if role has skills listed
+  const hasSkillsListed = useMemo(() => {
+    if (matchScore) {
+      return matchScore.hasSkillsListed
+    }
+    
+    // Fallback detection - check if role has any skill-related data
+    const hasSkills = Boolean(
+      (role.ai_key_skills && role.ai_key_skills.length > 0) ||
+      (role.skills && role.skills.length > 0) ||
+      (role.linkedin_org_specialties && role.linkedin_org_specialties.length > 0) ||
+      (role.requirements && role.requirements.length > 0)
+    )
+    
+    return hasSkills
+  }, [matchScore, role])
+  
+  // Get actual score or default
+  const displayScore = matchScore?.overallScore || 0
 
-  const handleCardClick = () => {
+  const handleCardClick = useCallback(() => {
     if (role) {
         dispatch(toggleRoleSelection(role))
     }
-  }
+  }, [dispatch, role])
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       handleCardClick()
     }
-  }
+  }, [handleCardClick])
 
-  const handleSaveClick = (e: React.MouseEvent) => {
+  const handleSaveClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     handleSaveToggleRole(role.id)
-  }
+  }, [handleSaveToggleRole, role.id])
 
-  const handleWriteClick = (e: React.MouseEvent) => {
+  const handleWriteClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     handleWriteTo(role)
-  }
+  }, [handleWriteTo, role])
 
   if (!role) return null
 
@@ -462,7 +532,19 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
           <Check className="h-4 w-4" />
         </div>
       )}
-      <CardHeader className="pb-4 pr-16" data-testid={`role-search-header-role-${role.id}`}>
+      {/* Match Score Circle - Top Left */}
+      <div className="absolute top-2 left-2 z-10" data-testid={`role-search-match-score-${role.id}`}>
+        <MatchScoreCircle
+          score={displayScore || 75}
+          hasSkillsListed={hasSkillsListed}
+          loading={matchingLoading && !matchScore}
+          size="md"
+          animate={true}
+          showTooltip={true}
+        />
+      </div>
+      
+      <CardHeader className="pb-4 pr-16 pl-10" data-testid={`role-search-header-role-${role.id}`}>
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <CardTitle className="text-lg line-clamp-2">{role.title}</CardTitle>
@@ -589,7 +671,7 @@ const RoleCardWrapper: React.FC<RoleCardWrapperProps> = ({
                   </CardFooter>
                 </Card>
   )
-}
+})
 
 const styles = `
   @keyframes fadeInUp {

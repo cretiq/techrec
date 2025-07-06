@@ -78,6 +78,7 @@ export interface ComboboxOption {
 
 // --- Exports from new files ---
 export type { Role } from './role';
+export type * from './matching';
 
 // For Comboboxes and data sources
 // ... existing code ... 
