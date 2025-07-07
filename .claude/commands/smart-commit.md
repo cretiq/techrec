@@ -206,17 +206,27 @@ This commit process integrates with your feature development workflow:
 3. **Verify all acceptance criteria** are implemented
 
 #### After Committing:
-1. **Use implementation-mark-done.md** to move the feature to "Recently Completed"
-2. **Reference these commits** in the completion notes
-3. **Update cursor rule** to reflect new active feature count
+1. **MOVE FEATURE TO COMPLETED SECTION** - This is mandatory:
+   - Move the feature request from "Active Feature Requests" to "Recently Completed Features" section in DEVELOPMENT_BRAINSTORMING.md
+   - Include completion date, impact assessment, key learnings, and implementation notes
+   - Reference the commits created in the implementation notes
+2. **UPDATE TABLE OF CONTENTS** - Required when changing document structure:
+   - Update the TOC in DEVELOPMENT_BRAINSTORMING.md when moving features between sections
+   - Add new entries for any new feature requests or sections created
+   - Remove entries for any sections that were removed or renamed
+   - Ensure all anchor links match the actual header names exactly
+3. **Update cursor rule** to reflect new active feature count if needed
+
+#### Required Post-Implementation Step:
+**🔄 CRITICAL**: After creating commits for a feature request, you MUST move it from the "Active Feature Requests" section to the "Recently Completed Features" section in DEVELOPMENT_BRAINSTORMING.md. This maintains accurate project status and prevents confusion about which features are still in development.
 
 #### Traceability Chain:
 ```
-Feature Request #X (DEVELOPMENT_BRAINSTORMING.md)
+Feature Request #X (DEVELOPMENT_BRAINSTORMING.md - Active)
     ↓ (implementation)
 Commits with [FR #X] reference (git history)
-    ↓ (completion)
-Recently Completed Features (DEVELOPMENT_BRAINSTORMING.md)
+    ↓ (completion - REQUIRED STEP)
+Recently Completed Features (DEVELOPMENT_BRAINSTORMING.md - Completed)
 ```
 
 This creates a complete audit trail from planning → implementation → completion, making it easy to understand what was built, when, and why.
