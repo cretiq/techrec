@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react'
 import { Loader2, User, LogOut, Settings } from 'lucide-react'
 import { useDispatch } from 'react-redux'
 import { userLoggedOut } from '@/lib/features/metaSlice'
+import { persistor } from '@/lib/store'
 
 export function MainNav() {
   const pathname = usePathname()
@@ -109,10 +110,20 @@ export function UserNav() {
     setIsNavigating(true)
     
     try {
-      // Dispatch the Redux action to clear all user state
+      // Dispatch the Redux action to clear all user state (includes localStorage cleanup)
       dispatch(userLoggedOut())
+      
+      // Explicitly purge persistor to ensure complete cleanup
+      await persistor.purge()
+      
       // Sign out from NextAuth without automatic redirect for maximum reliability
       await signOut({ redirect: false })
+      
+      // Debug logging for persistence cleanup verification
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Logout] Redux state cleared and persistor purged');
+      }
+      
       // Manually navigate to home and refresh for clean state
       router.push('/')
       router.refresh()

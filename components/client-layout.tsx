@@ -10,11 +10,33 @@ import { ModeToggle } from '@/components/mode-toggle'
 import { ThemeColorToggle } from '@/components/theme-color-toggle'
 import { FontSwitcher } from "@/components/font-switcher"
 import { Provider } from 'react-redux'
-import { store } from '@/lib/store'
+import { PersistGate } from 'redux-persist/integration/react'
+import { store, persistor } from '@/lib/store'
 import { Menu } from 'lucide-react'
 
 interface ClientLayoutProps {
   children: React.ReactNode
+}
+
+// Loading component for PersistGate
+function PersistenceLoading() {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Redux Persist] Rehydrating state from localStorage...');
+  }
+  
+  return (
+    <div className="flex items-center justify-center min-h-screen" data-testid="layout-persist-loading">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="sparkle-loader pulse-ring animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" data-testid="layout-persist-spinner"></div>
+        <div className="text-sm text-muted-foreground animate-pulse" data-testid="layout-persist-message">
+          Restoring your session...
+        </div>
+        <div className="text-xs text-muted-foreground" data-testid="layout-persist-subtitle">
+          Loading saved preferences and selections
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // Session-aware layout component that handles authentication-dependent UI rendering
@@ -90,7 +112,9 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <SessionProvider>
       <Provider store={store}>
-        <SessionAwareLayout>{children}</SessionAwareLayout>
+        <PersistGate loading={<PersistenceLoading />} persistor={persistor}>
+          <SessionAwareLayout>{children}</SessionAwareLayout>
+        </PersistGate>
       </Provider>
     </SessionProvider>
   )

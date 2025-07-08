@@ -23,6 +23,7 @@ import {
   selectRolesError,
   selectCanMakeRequest,
   selectNextRequestTime,
+  selectLastSearchParams,
   clearError
 } from '@/lib/features/rolesSlice'
 import {
@@ -56,14 +57,25 @@ export default function RolesSearch2Page() {
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
 
+  // Minimal component lifecycle logging (reduced for performance)
+  if (process.env.NODE_ENV === 'development' && performance.now() % 5000 < 100) {
+    console.log('[RolesSearch] Render snapshot:', { status, rolesCount: roles.length, loading });
+  }
+
   // Redux state
   const roles = useSelector(selectRoles)
   const loading = useSelector(selectRolesLoading)
   const error = useSelector(selectRolesError)
   const canMakeRequest = useSelector(selectCanMakeRequest)
   const nextRequestTime = useSelector(selectNextRequestTime)
+  const lastSearchParams = useSelector(selectLastSearchParams)
   const selectedRoles = useSelector(selectSelectedRoles)
   const selectedCount = useSelector(selectSelectedRolesCount)
+
+  // Throttled Redux state logging (performance optimized)
+  if (process.env.NODE_ENV === 'development' && Math.random() < 0.1) {
+    console.log('[RolesSearch] State:', { rolesCount: roles.length, loading, selectedCount });
+  }
   
   // Matching state
   const userHasSkills = useSelector(selectUserHasSkills)
@@ -83,9 +95,32 @@ export default function RolesSearch2Page() {
       fetchSavedRoles()
       // Fetch user skills profile for match scoring
       dispatch(fetchUserSkillProfile())
-      // DO NOT trigger automatic search - user must explicitly search
     }
   }, [status, dispatch])
+
+  // Memoize the search trigger condition to prevent unnecessary effect runs
+  const shouldAutoSearch = useMemo(() => {
+    return status === 'authenticated' && 
+           lastSearchParams && 
+           roles.length === 0 && 
+           !loading &&
+           canMakeRequest;
+  }, [status, lastSearchParams, roles.length, loading, canMakeRequest]);
+
+  // Auto-search when persisted search params exist but no roles are loaded
+  useEffect(() => {
+    if (shouldAutoSearch) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Auto-Search] Triggering auto-search with cached params');
+      }
+      
+      // Set the current filters to the persisted params
+      setCurrentFilters(lastSearchParams!)
+      
+      // Trigger search with persisted parameters (uses cache if available)
+      dispatch(searchRoles(lastSearchParams!))
+    }
+  }, [shouldAutoSearch, lastSearchParams, dispatch])
 
   // Clear errors when component unmounts or when error changes
   useEffect(() => {
@@ -284,13 +319,7 @@ export default function RolesSearch2Page() {
     dispatch(clearRoleSelection())
   }
 
-  if (status === 'loading') {
-    return (
-      <div className="flex items-center justify-center min-h-screen" data-testid="role-search-container-auth-loading">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" data-testid="role-search-spinner-auth-loading"></div>
-      </div>
-    )
-  }
+  // PersistGate handles rehydration loading - no manual session loading check needed
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl" data-testid="role-search-container-main">
@@ -443,6 +472,11 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
   const isSelected = useSelector((state: RootState) => selectIsRoleSelected(state, role.id))
   const isRoleSaved = useMemo(() => savedRoles.some(r => r.roleId === role.id), [savedRoles, role.id])
   
+  // Minimal debug logging for persistence verification
+  if (process.env.NODE_ENV === 'development' && Math.random() < 0.05) {
+    console.log(`[RoleCard] ${role.id} selected: ${isSelected}`);
+  }
+  
   // Get match score and matching state for this role in a single selector
   const { matchScore, userHasSkills, matchingLoading } = useSelector((state: RootState) => ({
     matchScore: selectRoleScore(state, role.id),
@@ -548,7 +582,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <CardTitle className="text-lg line-clamp-2">{role.title}</CardTitle>
-                        <CardDescription className="space-y-1">
+                        <div className="space-y-1 text-base-content/70 text-sm">
                           <div className="flex items-center gap-1">
                             <Building className="h-4 w-4" />
                             <span className="line-clamp-1 text-xs font-medium">{role.company?.name || 'Unknown Company'}</span>
@@ -563,7 +597,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                               {role.company.size} employees
                             </div>
                           )}
-                        </CardDescription>
+                        </div>
                       </div>
                     </div>
                   </CardHeader>
@@ -671,6 +705,16 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                   </CardFooter>
                 </Card>
   )
+}, (prevProps, nextProps) => {
+  // Custom comparison function to prevent unnecessary re-renders
+  return (
+    prevProps.role.id === nextProps.role.id &&
+    prevProps.index === nextProps.index &&
+    prevProps.savedRoles.length === nextProps.savedRoles.length &&
+    prevProps.session?.user?.id === nextProps.session?.user?.id &&
+    prevProps.savedRoles.some(r => r.roleId === prevProps.role.id) === 
+    nextProps.savedRoles.some(r => r.roleId === nextProps.role.id)
+  );
 })
 
 const styles = `

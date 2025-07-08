@@ -56,11 +56,28 @@ export const selectedRolesSlice = createSlice({
             state.selectedRoles = [];
             state.selectedRoleIds = {};
         },
+        deduplicateSelectedRoles: (state) => {
+            // Remove duplicates and fix inconsistencies
+            const uniqueRolesMap = new Map<string, Role>();
+            state.selectedRoles.forEach(role => {
+                if (role && role.id) {
+                    uniqueRolesMap.set(role.id, role);
+                }
+            });
+            
+            state.selectedRoles = Array.from(uniqueRolesMap.values());
+            
+            // Rebuild the lookup object
+            state.selectedRoleIds = {};
+            state.selectedRoles.forEach(role => {
+                state.selectedRoleIds[role.id] = true;
+            });
+        },
     },
 });
 
 // Export actions
-export const { toggleRoleSelection, setSelectedRoles, clearRoleSelection } =
+export const { toggleRoleSelection, setSelectedRoles, clearRoleSelection, deduplicateSelectedRoles } =
     selectedRolesSlice.actions;
 
 // Export selectors

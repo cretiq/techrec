@@ -68,21 +68,12 @@ export default function WritingHelpPage() {
         return;
     }
 
-    // If authenticated but no roles selected, redirect to search
-    // Check after session is confirmed authenticated
+    // Simplified redirect logic - no need to check isRehydrated since PersistGate handles this
     if (sessionStatus === 'authenticated' && selectedRoles.length === 0) {
         toast({ title: "No Roles Selected", description: "Please select roles from the search page first." });
         router.push('/developer/roles/search');
     }
-
-    // Cleanup function remains the same if needed for other purposes
-    /* return () => {
-         if (selectedRoles.length > 0) {
-             // dispatch(clearRoleSelection());
-             // console.log("Cleared role selection on unmount/dependency change");
-         }
-       }; */
-  }, [selectedRoles.length, sessionStatus, router, toast]); // Only depend on length for redirect
+  }, [selectedRoles.length, sessionStatus, router, toast]);
 
   // Tab-specific generation completion handlers
   const handleCoverLetterComplete = (roleId: string, success: boolean) => {
@@ -161,13 +152,7 @@ export default function WritingHelpPage() {
     return Object.values(currentStatus).some(s => s.status === 'generating');
   }, [coverLetterStatus, outreachStatus, activeTab]);
 
-  if (sessionStatus === 'loading') {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
+  // PersistGate now handles loading state - no manual check needed
 
   if (sessionStatus === 'authenticated' && selectedRoles.length === 0) {
      // This case should ideally be handled by the redirect logic in useEffect

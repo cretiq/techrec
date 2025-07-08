@@ -5,15 +5,59 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui-daisy/card'
 import { Button } from '@/components/ui-daisy/button'
 import { X, Building } from "lucide-react"
-import { selectSelectedRoles, toggleRoleSelection } from '@/lib/features/selectedRolesSlice'
+import { selectSelectedRoles, toggleRoleSelection, deduplicateSelectedRoles } from '@/lib/features/selectedRolesSlice'
 import { AppDispatch } from '@/lib/store'
 
 export default function SelectedRolesList() {
   const dispatch = useDispatch<AppDispatch>()
   const selectedRoles = useSelector(selectSelectedRoles)
 
+  // Auto-fix duplicates on component mount
+  React.useEffect(() => {
+    const roleIds = selectedRoles.map(r => r.id);
+    const uniqueIds = new Set(roleIds);
+    
+    if (roleIds.length !== uniqueIds.size) {
+      console.warn('[SelectedRolesList] Duplicate role IDs detected, auto-fixing...', {
+        totalRoles: roleIds.length,
+        uniqueRoles: uniqueIds.size,
+        duplicateIds: roleIds.filter((id, index) => roleIds.indexOf(id) !== index)
+      });
+      
+      // Automatically fix duplicates
+      dispatch(deduplicateSelectedRoles());
+    }
+  }, [selectedRoles, dispatch]);
+
+  // Debug logging for duplicate detection
+  if (process.env.NODE_ENV === 'development') {
+    const roleIds = selectedRoles.map(r => r.id);
+    const uniqueIds = new Set(roleIds);
+    if (roleIds.length !== uniqueIds.size) {
+      console.warn('[SelectedRolesList] Duplicate role IDs still present:', {
+        totalRoles: roleIds.length,
+        uniqueRoles: uniqueIds.size,
+        duplicateIds: roleIds.filter((id, index) => roleIds.indexOf(id) !== index)
+      });
+    }
+  }
+
+  // Deduplicate roles as a safety measure to prevent React key errors
+  const uniqueSelectedRoles = React.useMemo(() => {
+    const uniqueRolesMap = new Map<string, typeof selectedRoles[0]>();
+    selectedRoles.forEach(role => {
+      if (role && role.id) {
+        // Keep the first occurrence of each role ID
+        if (!uniqueRolesMap.has(role.id)) {
+          uniqueRolesMap.set(role.id, role);
+        }
+      }
+    });
+    return Array.from(uniqueRolesMap.values());
+  }, [selectedRoles]);
+
   // Only render if there are selected roles
-  if (selectedRoles.length === 0) {
+  if (uniqueSelectedRoles.length === 0) {
     return null
   }
 
@@ -32,12 +76,23 @@ export default function SelectedRolesList() {
     >
       <CardHeader data-testid="selected-roles-list-header">
         <CardTitle className="text-lg font-semibold" data-testid="selected-roles-list-title">
-          Selected Roles ({selectedRoles.length})
+          Selected Roles ({uniqueSelectedRoles.length})
         </CardTitle>
+        {process.env.NODE_ENV === 'development' && selectedRoles.length !== uniqueSelectedRoles.length && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => dispatch(deduplicateSelectedRoles())}
+            className="mt-2 text-xs bg-warning/10 border-warning text-warning-content hover:bg-warning/20"
+            data-testid="selected-roles-list-deduplicate-button"
+          >
+            Fix Duplicates ({selectedRoles.length - uniqueSelectedRoles.length})
+          </Button>
+        )}
       </CardHeader>
       <CardContent data-testid="selected-roles-list-content">
         <div className="space-y-2 max-h-[40rem] overflow-y-auto" data-testid="selected-roles-list-container">
-          {selectedRoles.map((role) => (
+          {uniqueSelectedRoles.map((role) => (
             <Card
               key={role.id}
               variant="transparent"
