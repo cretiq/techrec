@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { PrismaClient, AnalysisStatus } from '@prisma/client';
 import { setCache } from '@/lib/redis';
 import { UpdateCvAnalysisSchema } from '@/types/cv';
+import { syncCvDataToProfile } from '@/utils/backgroundProfileSync';
 
 const prisma = new PrismaClient();
 const ANALYSIS_CACHE_PREFIX = 'cv_analysis:';
@@ -100,6 +101,16 @@ export async function POST(request: Request, { params }: { params: Params }) {
       const cacheKey = `${ANALYSIS_CACHE_PREFIX}${originalRecord.fileHash}`;
       await setCache(cacheKey, newAnalysisRecord);
       console.log(`[POST /cv-analysis/${originalAnalysisId}/save-version] Cache updated with new version.`);
+    }
+
+    // Background sync CV data to developer profile (silent operation)
+    try {
+      console.log(`[POST /cv-analysis/${originalAnalysisId}/save-version] Starting background profile sync for developer: ${developerId}`);
+      await syncCvDataToProfile(developerId, updatedAnalysisData);
+      console.log(`[POST /cv-analysis/${originalAnalysisId}/save-version] Background profile sync completed successfully`);
+    } catch (syncError) {
+      // Log error but don't throw - this is a background operation that shouldn't affect version creation
+      console.error(`[POST /cv-analysis/${originalAnalysisId}/save-version] Background profile sync failed (non-critical):`, syncError);
     }
 
     // Return the new analysis record

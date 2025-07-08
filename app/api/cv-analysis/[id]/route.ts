@@ -8,6 +8,8 @@ import { setCache, getCache } from '@/lib/redis'; // Import setCache AND getCach
 import { UpdateCvAnalysisSchema } from '@/types/cv';
 // Import gamification system
 import { gamificationEvents } from '@/lib/gamification/eventManager';
+// Import background sync
+import { syncCvDataToProfile } from '@/utils/backgroundProfileSync';
 
 const prisma = new PrismaClient();
 const ANALYSIS_CACHE_PREFIX = 'cv_analysis:';
@@ -204,6 +206,16 @@ export async function PUT(request: Request, { params }: { params: Params }) {
     // } else if (!fullUpdatedRecord) {
     //   console.warn(`Skipping cache update for ${analysisId} because re-fetch failed.`);
     // }
+
+    // --- Background sync CV data to developer profile (silent operation) ---
+    try {
+      console.log(`[PUT /cv-analysis/${analysisId}] Starting background profile sync for developer: ${developerId}`);
+      await syncCvDataToProfile(developerId, updatedAnalysisData);
+      console.log(`[PUT /cv-analysis/${analysisId}] Background profile sync completed successfully`);
+    } catch (syncError) {
+      // Log error but don't throw - this is a background operation that shouldn't affect CV analysis update
+      console.error(`[PUT /cv-analysis/${analysisId}] Background profile sync failed (non-critical):`, syncError);
+    }
 
     return NextResponse.json({
       message: 'Analysis updated successfully',

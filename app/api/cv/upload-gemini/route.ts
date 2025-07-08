@@ -9,6 +9,7 @@ import { AnalysisStatus, PrismaClient } from '@prisma/client';
 import { parseFileContent } from '@/utils/fileParsers';
 import { analyzeCvWithGemini } from '@/utils/geminiAnalysis'; // Import our new Gemini analyzer
 import crypto from 'crypto';
+import { syncCvDataToProfile } from '@/utils/backgroundProfileSync'; // Import background sync
 
 const prisma = new PrismaClient();
 
@@ -135,6 +136,16 @@ export async function POST(request: Request) {
         improvementScore,
       });
       console.log(`[Analysis ${newCV.id}] Updated CV status to COMPLETED with analysis ID: ${cvAnalysis.id}`);
+
+      // 8. Background sync CV data to developer profile (silent operation)
+      try {
+        console.log(`[Gemini Analysis ${newCV.id}] Starting background profile sync for developer: ${developerId}`);
+        await syncCvDataToProfile(developerId, analysisResult);
+        console.log(`[Gemini Analysis ${newCV.id}] Background profile sync completed successfully`);
+      } catch (syncError) {
+        // Log error but don't throw - this is a background operation that shouldn't affect CV upload
+        console.error(`[Gemini Analysis ${newCV.id}] Background profile sync failed (non-critical):`, syncError);
+      }
 
     } catch (analysisError) {
       console.error(`[Analysis ${newCV.id}] Analysis failed:`, analysisError);

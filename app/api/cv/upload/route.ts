@@ -9,6 +9,7 @@ import { AnalysisStatus, PrismaClient } from '@prisma/client'; // Import PrismaC
 import { parseFileContent } from '@/utils/fileParsers'; // Import parser
 import { analyzeCvWithGPT } from '@/utils/gptAnalysis'; // Import analyser
 import crypto from 'crypto'; // Import crypto for hashing
+import { syncCvDataToProfile } from '@/utils/backgroundProfileSync'; // Import background sync
 
 const prisma = new PrismaClient(); // Instantiate Prisma client
 
@@ -145,6 +146,16 @@ export async function POST(request: Request) {
       console.log(`[Upload Route] Data for updateCV (ID: ${newCV.id}):`, cvUpdateData);
       await updateCV(newCV.id, cvUpdateData);
       console.log(`[Upload Route] Updated CV record ID: ${newCV.id}`);
+
+      // 8. Background sync CV data to developer profile (silent operation)
+      try {
+        console.log(`[Upload Route] Starting background profile sync for developer: ${developerId}`);
+        await syncCvDataToProfile(developerId, analysisResult);
+        console.log(`[Upload Route] Background profile sync completed successfully`);
+      } catch (syncError) {
+        // Log error but don't throw - this is a background operation that shouldn't affect CV upload
+        console.error(`[Upload Route] Background profile sync failed (non-critical):`, syncError);
+      }
 
     } catch (analysisError) {
       console.error(`[Analysis ${newCV.id}] Error during analysis process:`, analysisError);
