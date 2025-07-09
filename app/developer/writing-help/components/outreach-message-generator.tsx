@@ -61,6 +61,8 @@ interface OutreachMessageGeneratorProps {
   role: Role
   generationTrigger?: number
   onGenerationComplete?: (roleId: string, success: boolean) => void
+  onGenerationStart?: (roleId: string) => void
+  isExternallyLocked?: boolean
   isMultiRoleMode?: boolean
   onRemoveRole?: () => void
   onRemoveHover?: (isHovered: boolean) => void
@@ -70,6 +72,8 @@ export function OutreachMessageGenerator({
   role, 
   generationTrigger, 
   onGenerationComplete, 
+  onGenerationStart,
+  isExternallyLocked,
   isMultiRoleMode = false,
   onRemoveRole,
   onRemoveHover
@@ -241,6 +245,7 @@ export function OutreachMessageGenerator({
     }
 
     console.log(`[OutreachMessageGenerator] Starting generation for role ${role.id}, recipient: ${effectiveRecipientName}`)
+    onGenerationStart?.(role.id)
     setIsGenerating(true)
     let success = false
     
@@ -429,7 +434,7 @@ export function OutreachMessageGenerator({
               >
                 <Button
                   onClick={() => handleGenerate()}
-                  disabled={isGenerating || !recipientName}
+                  disabled={isGenerating || isExternallyLocked || !recipientName}
                   variant="linkedin"
                   size="lg"
                   elevation="lg"

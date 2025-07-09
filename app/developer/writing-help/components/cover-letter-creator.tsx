@@ -40,12 +40,23 @@ interface CoverLetterCreatorProps {
   role: Role
   generationTrigger?: number
   onGenerationComplete?: (roleId: string, success: boolean) => void
+  onGenerationStart?: (roleId: string) => void
+  isExternallyLocked?: boolean
   isMultiRoleMode?: boolean
   onRemoveRole?: () => void
   onRemoveHover?: (isHovered: boolean) => void
 }
 
-export function CoverLetterCreator({ role, generationTrigger, onGenerationComplete, isMultiRoleMode = false, onRemoveRole, onRemoveHover }: CoverLetterCreatorProps) {
+export function CoverLetterCreator({ 
+  role, 
+  generationTrigger, 
+  onGenerationComplete, 
+  onGenerationStart,
+  isExternallyLocked,
+  isMultiRoleMode = false, 
+  onRemoveRole, 
+  onRemoveHover 
+}: CoverLetterCreatorProps) {
   const { data: session } = useSession()
   const dispatch = useDispatch<AppDispatch>()
   const [isRemoveHovered, setIsRemoveHovered] = useState(false)
@@ -184,6 +195,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
       return
     }
 
+    onGenerationStart?.(role.id);
     setIsGenerating(true)
     let success = false
     try {
@@ -404,7 +416,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
               >
                 <Button
                   onClick={generatedLetter ? handleRegenerate : handleGenerate}
-                  disabled={isGenerating || !developerProfile}
+                  disabled={isGenerating || isExternallyLocked || !developerProfile}
                   variant="linkedin"
                   size="lg"
                   elevation="lg"

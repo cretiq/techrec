@@ -18,20 +18,23 @@ interface MultiRolePaneProps {
     activeTab: "cv" | "cover-letter" | "outreach";
     generationTrigger?: number;
     onGenerationComplete?: (roleId: string, success: boolean) => void;
+    onGenerationStart?: (roleId:string) => void;
+    isExternallyLocked?: boolean;
 }
 
 export function MultiRolePane({ 
     role, 
     activeTab, 
     generationTrigger, 
-    onGenerationComplete 
+    onGenerationComplete,
+    onGenerationStart,
+    isExternallyLocked
 }: MultiRolePaneProps) {
     const dispatch = useDispatch<AppDispatch>();
     const paneId = `pane-${role.id}`;
     const [isRemoveHovered, setIsRemoveHovered] = useState(false);
 
-    const handleRemoveRole = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleRemoveRole = () => {
         dispatch(toggleRoleSelection(role));
     };
 
@@ -80,8 +83,10 @@ export function MultiRolePane({
                     {activeTab === 'cover-letter' && 
                         <CoverLetterCreator 
                             role={role} 
-                            generationTrigger={generationTrigger} 
+                            generationTrigger={generationTrigger}
+                            onGenerationStart={onGenerationStart}
                             onGenerationComplete={onGenerationComplete}
+                            isExternallyLocked={isExternallyLocked}
                             isMultiRoleMode={true}
                             onRemoveRole={handleRemoveRole}
                             onRemoveHover={handleRemoveHover}
@@ -90,8 +95,10 @@ export function MultiRolePane({
                     {activeTab === 'outreach' && 
                         <OutreachMessageGenerator 
                             role={role}
-                            generationTrigger={generationTrigger} 
+                            generationTrigger={generationTrigger}
+                            onGenerationStart={onGenerationStart}
                             onGenerationComplete={onGenerationComplete}
+                            isExternallyLocked={isExternallyLocked}
                             isMultiRoleMode={true}
                             onRemoveRole={handleRemoveRole}
                             onRemoveHover={handleRemoveHover}

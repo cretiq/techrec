@@ -34,6 +34,7 @@ export default function WritingHelpPage() {
     }
   }, [])
   const [isGeneratingAll, setIsGeneratingAll] = useState<boolean>(false);
+  const [generatingRoleId, setGeneratingRoleId] = useState<string | null>(null);
   // Separate states for cover letters and outreach messages
   const [coverLetterTriggers, setCoverLetterTriggers] = useState<Record<string, number>>({});
   const [coverLetterStatus, setCoverLetterStatus] = useState<Record<string, { status: 'idle' | 'generating' | 'success' | 'error' }>>({});
@@ -75,12 +76,17 @@ export default function WritingHelpPage() {
     }
   }, [selectedRoles.length, sessionStatus, router, toast]);
 
+  const handleGenerationStart = (roleId: string) => {
+    setGeneratingRoleId(roleId);
+  };
+
   // Tab-specific generation completion handlers
   const handleCoverLetterComplete = (roleId: string, success: boolean) => {
     setCoverLetterStatus(prev => ({
       ...prev,
       [roleId]: { status: success ? 'success' : 'error' }
     }));
+    setGeneratingRoleId(null); // Release lock
   };
 
   const handleOutreachComplete = (roleId: string, success: boolean) => {
@@ -88,6 +94,7 @@ export default function WritingHelpPage() {
       ...prev,
       [roleId]: { status: success ? 'success' : 'error' }
     }));
+    setGeneratingRoleId(null); // Release lock
   };
 
   // useEffect to check for overall completion when generation status changes
@@ -120,7 +127,7 @@ export default function WritingHelpPage() {
 
   // --- Handler for Generate All button (tab-aware) ---
   const handleGenerateAll = async () => {
-    if (selectedRoles.length === 0 || isGeneratingAll) {
+    if (selectedRoles.length === 0 || isGeneratingAll || generatingRoleId) {
         return;
     }
     setIsGeneratingAll(true);
@@ -151,6 +158,8 @@ export default function WritingHelpPage() {
     const currentStatus = activeTab === 'cover-letter' ? coverLetterStatus : outreachStatus;
     return Object.values(currentStatus).some(s => s.status === 'generating');
   }, [coverLetterStatus, outreachStatus, activeTab]);
+
+  const isAnyGenerationActive = isGeneratingAll || isAnyPaneGenerating || generatingRoleId !== null;
 
   // PersistGate now handles loading state - no manual check needed
 
@@ -260,12 +269,12 @@ export default function WritingHelpPage() {
               >
                 <Button
                   onClick={handleGenerateAll}
-                  disabled={isGeneratingAll || isAnyPaneGenerating}
+                  disabled={isAnyGenerationActive}
                   size="xl"
                   variant="gradient"
                   elevation="lg"
-                  loading={isGeneratingAll || isAnyPaneGenerating}
-                  leftIcon={!isGeneratingAll && !isAnyPaneGenerating ? (
+                  loading={isAnyGenerationActive}
+                  leftIcon={!isAnyGenerationActive ? (
                     <motion.div
                       animate={{ 
                         y: [0, -1, 0],
@@ -280,7 +289,7 @@ export default function WritingHelpPage() {
                       <Rocket className="h-5 w-5" />
                     </motion.div>
                   ) : undefined}
-                  rightIcon={!isGeneratingAll && !isAnyPaneGenerating ? (
+                  rightIcon={!isAnyGenerationActive ? (
                     <motion.div
                       animate={{ x: [0, 2, 0] }}
                       transition={{ 
@@ -294,8 +303,8 @@ export default function WritingHelpPage() {
                   ) : undefined}
                   data-testid="write-button-generate-all-trigger"
                 >
-                  {(isGeneratingAll || isAnyPaneGenerating) 
-                    ? `Generating All ${activeTab === 'cover-letter' ? 'Letters' : 'Messages'}...`
+                  {(isAnyGenerationActive) 
+                    ? `Generating...`
                     : `Generate All ${activeTab === 'cover-letter' ? 'Letters' : 'Messages'} (${selectedRoles.length})`
                   }
                 </Button>
@@ -322,7 +331,9 @@ export default function WritingHelpPage() {
                       role={role} 
                       activeTab={activeTab}
                       generationTrigger={generationTrigger}
+                      onGenerationStart={handleGenerationStart}
                       onGenerationComplete={onGenerationComplete}
+                      isExternallyLocked={generatingRoleId !== null && generatingRoleId !== role.id}
                   />
                 );
             })}
