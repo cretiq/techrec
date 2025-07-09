@@ -210,23 +210,47 @@ export function OnboardingRoadmap({ className = '', roadmapData, profileScore = 
           </p>
         </div>
         
-        <div className="relative">
-          <motion.div
-            className="w-16 h-16 rounded-full bg-base-100 border-4 border-base-300 flex items-center justify-center"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          >
-            <span className="text-lg font-bold text-primary">
-              {Math.round(overallProgress)}%
-            </span>
-          </motion.div>
-          
-          {/* Use DaisyUI radial progress component */}
-          <div className="radial-progress absolute inset-0 text-primary" style={{"--value": overallProgress} as React.CSSProperties}>
-            <div className="w-16 h-16 rounded-full bg-transparent"></div>
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className="relative inline-flex items-center justify-center"
+          data-testid="roadmap-progress-circle"
+        >
+          <div className="w-32 h-32 rounded-full bg-base-200 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-3xl font-bold" data-testid="roadmap-progress-percentage">{Math.round(overallProgress)}%</div>
+              <div className="text-sm font-medium text-base-content/70" data-testid="roadmap-progress-label">
+                Complete
+              </div>
+            </div>
           </div>
-        </div>
+          <svg className="absolute inset-0 w-32 h-32 -rotate-90">
+            <circle
+              cx="64"
+              cy="64"
+              r="60"
+              stroke="currentColor"
+              strokeWidth="8"
+              fill="none"
+              className="text-base-300"
+            />
+            <motion.circle
+              cx="64"
+              cy="64"
+              r="60"
+              stroke="currentColor"
+              strokeWidth="8"
+              fill="none"
+              className="text-primary"
+              strokeDasharray={`${(overallProgress / 100) * 377} 377`}
+              strokeLinecap="round"
+              initial={{ strokeDasharray: "0 377" }}
+              animate={{ strokeDasharray: `${(overallProgress / 100) * 377} 377` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+            />
+          </svg>
+        </motion.div>
       </div>
 
       {/* Overall Progress Bar */}
@@ -301,26 +325,6 @@ export function OnboardingRoadmap({ className = '', roadmapData, profileScore = 
                         </h4>
                         
                         <div className="flex items-center gap-2">
-                          {milestone.estimatedTime && (
-                            <Badge 
-                              variant="outline" 
-                              className="text-xs"
-                              data-testid={`roadmap-milestone-time-${milestone.id}`}
-                            >
-                              {milestone.estimatedTime}
-                            </Badge>
-                          )}
-                          
-                          {milestone.priority === 'high' && (
-                            <Badge 
-                              variant="default" 
-                              className="bg-red-500/20 text-red-700 border-red-200"
-                              data-testid={`roadmap-milestone-priority-${milestone.id}`}
-                            >
-                              High Priority
-                            </Badge>
-                          )}
-                          
                           <ChevronRight className="w-4 h-4 text-base-content/50" />
                         </div>
                       </div>
@@ -359,10 +363,10 @@ export function OnboardingRoadmap({ className = '', roadmapData, profileScore = 
                         </Badge>
                       </div>
                       
-                      {/* Completion Status */}
-                      {milestone.isCompleted && milestone.completedAt && (
+                      {/* Completion Status - Simplified */}
+                      {milestone.isCompleted && (
                         <div className="mt-2 text-xs text-green-600">
-                          ✅ Completed on {milestone.completedAt.toLocaleDateString()}
+                          ✅ Completed
                         </div>
                       )}
                     </div>

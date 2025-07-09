@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { OnboardingRoadmap } from './OnboardingRoadmap';
 import { DashboardStats } from './DashboardStats';
 import { RecentBadges } from './RecentBadges';
-import { DailyStreak } from './DailyStreak';
+// import { DailyStreak } from './DailyStreak'; // Commented out for UI simplification
 import { PointsBalance } from './PointsBalance';
 import { LevelProgressBar } from '@/components/gamification/LevelProgressBar';
 import { 
@@ -151,10 +151,10 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
   }
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-10 gap-8 ${className}`} data-testid="dashboard-client">
+    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 ${className}`} data-testid="dashboard-client">
       
-      {/* Left Column - Onboarding Roadmap (70%) */}
-      <div className="lg:col-span-7 space-y-6">
+      {/* Left Column - Onboarding Roadmap (50%) */}
+      <div className="space-y-6">
         <Card 
           variant="transparent" 
           className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
@@ -171,14 +171,6 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
                   Complete these milestones to unlock your full potential on TechRec
                 </p>
               </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-primary">
-                  {Math.round(roadmapProgress?.progress || 0)}%
-                </div>
-                <div className="text-sm text-base-content/70">
-                  Complete
-                </div>
-              </div>
             </div>
           </CardHeader>
           <CardContent>
@@ -190,8 +182,8 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
         </Card>
       </div>
 
-      {/* Right Column - Gamification Stats (30%) */}
-      <div className="lg:col-span-3 space-y-6">
+      {/* Right Column - Gamification Stats (50%) */}
+      <div className="space-y-6">
         
         {/* Level Progress */}
         {profileData && (
@@ -206,8 +198,8 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
         {/* Points Balance */}
         <PointsBalance pointsData={pointsData} />
 
-        {/* Daily Streak */}
-        <DailyStreak streakData={streakData} />
+        {/* Daily Streak - Commented out for UI simplification */}
+        {/* <DailyStreak streakData={streakData} /> */}
 
         {/* Recent Badges */}
         <RecentBadges badges={recentBadges} />
@@ -225,6 +217,7 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
             <Link href="/developer/cv-management">
               <Button 
                 variant="default" 
+                size="lg"
                 className="w-full justify-between"
                 data-testid="dashboard-action-cv-management"
               >
@@ -235,6 +228,7 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
             <Link href="/developer/roles/search">
               <Button 
                 variant="outline" 
+                size="lg"
                 className="w-full justify-between"
                 data-testid="dashboard-action-search-roles"
               >
@@ -245,6 +239,7 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
             <Link href="/developer/writing-help">
               <Button 
                 variant="ghost" 
+                size="lg"
                 className="w-full justify-between"
                 data-testid="dashboard-action-writing-help"
               >
@@ -265,9 +260,9 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
 // Loading skeleton component
 function DashboardSkeleton() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-10 gap-8" data-testid="dashboard-client-skeleton">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" data-testid="dashboard-client-skeleton">
       {/* Left Column - Roadmap Skeleton */}
-      <div className="lg:col-span-7 space-y-6">
+      <div className="space-y-6">
         <Card 
           variant="transparent" 
           className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
@@ -296,7 +291,7 @@ function DashboardSkeleton() {
       </div>
 
       {/* Right Column - Stats Skeleton */}
-      <div className="lg:col-span-3 space-y-6">
+      <div className="space-y-6">
         {[...Array(5)].map((_, i) => (
           <Card 
             key={i}

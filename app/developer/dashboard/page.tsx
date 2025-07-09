@@ -9,16 +9,15 @@ import Link from "next/link"
 import { DashboardClient } from "@/components/dashboard/DashboardClient"
 
 /**
- * Gamified Developer Welcome Dashboard
+ * Simplified Developer Dashboard
  * 
  * This is the main dashboard page that serves as the central hub for developers.
  * It provides:
- * - Personalized welcome message
  * - Onboarding roadmap with progress tracking
- * - Gamification stats (XP, points, badges, streak)
+ * - Gamification stats (XP, points, badges)
  * - Quick actions for key platform features
  * 
- * Layout: Two-column with roadmap on left (70%) and stats on right (30%)
+ * Layout: Two-column 50/50 split for clean, focused experience
  */
 export default async function DeveloperDashboard() {
   const session = await getServerSession(authOptions)
@@ -31,16 +30,6 @@ export default async function DeveloperDashboard() {
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8" data-testid="developer-dashboard">
-      {/* Welcome Header */}
-      <div className="mb-8" data-testid="dashboard-welcome-header">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Welcome back, {session.user?.name?.split(' ')[0] || 'Developer'}!
-        </h1>
-        <p className="text-lg text-base-content/70 mt-2">
-          Ready to level up your career? Let's see what you can accomplish today.
-        </p>
-      </div>
-
       {/* Dashboard Client Component */}
       <Suspense fallback={<DashboardSkeleton />}>
         <DashboardClient />

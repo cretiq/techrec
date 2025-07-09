@@ -236,17 +236,19 @@ export interface XPAwardResponse {
 
 // Constants for XP calculations
 export const XP_REWARDS: Record<string, number> = {
-  PROFILE_UPDATE: 15,
-  CV_UPLOAD: 25,
-  CV_ANALYSIS: 50,
-  CV_IMPROVEMENT: 75,
-  APPLICATION_SUBMIT: 100,
-  SKILL_ADD: 10,
-  ACHIEVEMENT_ADD: 20,
+  PROFILE_SECTION_UPDATED: 15,
+  CV_UPLOADED: 25,
+  CV_ANALYSIS_COMPLETED: 50,
+  CV_IMPROVEMENT_APPLIED: 75,
+  APPLICATION_SUBMITTED: 100,
+  SKILL_ADDED: 10,
+  ACHIEVEMENT_UNLOCKED: 20,
   DAILY_LOGIN: 5,
-  STREAK_BONUS: 25,
-  CHALLENGE_COMPLETE: 50,
-  BADGE_EARNED: 0 // XP is handled by badge definition
+  STREAK_MILESTONE: 25,
+  CHALLENGE_COMPLETED: 50,
+  BADGE_EARNED: 0, // XP is handled by badge definition
+  ADMIN_AWARD: 0, // Admin awards are flexible and bypass validation
+  LEVEL_UP: 0, // Level up is a milestone, not a direct XP source
 };
 
 // Level thresholds for progression (ProfileTier removed)
@@ -290,6 +292,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'BRONZE',
     requirements: { type: 'profile_completeness', threshold: 100, data: {} },
     xpReward: 100,
+    rarity: 'COMMON',
     isHidden: false
   },
   
@@ -303,6 +306,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'SILVER',
     requirements: { type: 'suggestions_accepted', threshold: 10, data: {} },
     xpReward: 200,
+    rarity: 'UNCOMMON',
     isHidden: false
   },
   
@@ -316,6 +320,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'GOLD',
     requirements: { type: 'applications_submitted', threshold: 25, data: {} },
     xpReward: 500,
+    rarity: 'RARE',
     isHidden: false
   },
   
@@ -329,6 +334,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'BRONZE',
     requirements: { type: 'login_streak', threshold: 7, data: {} },
     xpReward: 150,
+    rarity: 'UNCOMMON',
     isHidden: false
   },
   
@@ -342,6 +348,7 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
     tier: 'SILVER',
     requirements: { type: 'skill_count', threshold: 15, data: {} },
     xpReward: 300,
+    rarity: 'UNCOMMON',
     isHidden: false
   }
 ];

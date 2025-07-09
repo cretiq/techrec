@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card';
 import { Badge } from '@/components/ui-daisy/badge';
 import { Button } from '@/components/ui-daisy/button';
+import { Tooltip, TooltipInfo } from '@/components/ui-daisy/tooltip';
 import { 
   Coins, 
   TrendingUp, 
@@ -173,23 +174,30 @@ export function PointsBalance({ className = '', pointsData: propPointsData }: Po
         <CardTitle className="flex items-center gap-2 text-lg">
           <Coins className="w-5 h-5 text-primary" />
           Points Balance
+          <Tooltip 
+            content="Points are used for premium features like AI cover letters, advanced CV analysis, and job application tools. You receive monthly points based on your subscription tier."
+            size="large"
+            position="top"
+          >
+            <Info className="w-4 h-4 text-base-content/50 hover:text-base-content/80 cursor-help" />
+          </Tooltip>
         </CardTitle>
         
         <div className="flex items-center gap-2">
-          <Badge 
-            variant="outline" 
-            className={`text-xs ${getTierColor(pointsData.subscriptionTier)}`}
-            data-testid="points-tier-badge"
+          <Tooltip 
+            content={`${pointsData.subscriptionTier} subscription tier - upgrade for more monthly points and features`}
+            size="medium"
+            position="bottom"
           >
-            {pointsData.subscriptionTier}
-          </Badge>
-          <Badge 
-            variant="outline" 
-            className={`text-xs ${getEfficiencyColor(pointsData.efficiency)}`}
-            data-testid="points-efficiency-badge"
-          >
-            {pointsData.efficiency}% efficiency
-          </Badge>
+            <Badge 
+              variant="outline" 
+              className={`text-xs ${getTierColor(pointsData.subscriptionTier)}`}
+              data-testid="points-tier-badge"
+            >
+              {pointsData.subscriptionTier}
+            </Badge>
+          </Tooltip>
+          {/* Efficiency badge removed for simplified UI */}
         </div>
       </CardHeader>
       
@@ -232,9 +240,15 @@ export function PointsBalance({ className = '', pointsData: propPointsData }: Po
           </motion.div>
           
           <div className="space-y-1">
-            <p className="text-sm font-medium text-base-content">
-              {pointsData.monthly - pointsData.used} of {pointsData.monthly} monthly points
-            </p>
+            <Tooltip 
+              content={`Monthly allocation: ${pointsData.monthly} points. Used: ${pointsData.used} points. Remaining: ${pointsData.monthly - pointsData.used} points. Your monthly points reset on ${pointsData.resetDate ? pointsData.resetDate.toLocaleDateString() : 'unknown date'}.`}
+              size="large"
+              position="bottom"
+            >
+              <p className="text-sm font-medium text-base-content cursor-help">
+                {pointsData.monthly - pointsData.used} of {pointsData.monthly} monthly points
+              </p>
+            </Tooltip>
             <progress 
               className="progress progress-primary w-full" 
               value={usagePercentage} 
@@ -248,7 +262,13 @@ export function PointsBalance({ className = '', pointsData: propPointsData }: Po
           <div className="space-y-1">
             <div className="flex items-center justify-center gap-1">
               <TrendingUp className="w-4 h-4 text-green-600" />
-              <span className="text-xs text-base-content/60">Earned</span>
+              <Tooltip 
+                content="Points earned through daily activities, challenges, and bonus rewards"
+                size="medium"
+                position="top"
+              >
+                <span className="text-xs text-base-content/60 cursor-help">Earned</span>
+              </Tooltip>
             </div>
             <div className="font-semibold text-base-content" data-testid="points-earned-count">
               {pointsData.earned.toLocaleString()}
@@ -258,7 +278,13 @@ export function PointsBalance({ className = '', pointsData: propPointsData }: Po
           <div className="space-y-1">
             <div className="flex items-center justify-center gap-1">
               <ShoppingCart className="w-4 h-4 text-red-600" />
-              <span className="text-xs text-base-content/60">Used</span>
+              <Tooltip 
+                content="Points spent on premium features like AI cover letters, advanced CV analysis, and job application tools"
+                size="medium"
+                position="top"
+              >
+                <span className="text-xs text-base-content/60 cursor-help">Used</span>
+              </Tooltip>
             </div>
             <div className="font-semibold text-base-content" data-testid="points-used-count">
               {pointsData.used.toLocaleString()}

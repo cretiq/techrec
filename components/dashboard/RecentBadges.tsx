@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card';
 import { Badge } from '@/components/ui-daisy/badge';
 import { Button } from '@/components/ui-daisy/button';
-import { Trophy, ArrowRight, Sparkles, Lock } from 'lucide-react';
+import { Tooltip } from '@/components/ui-daisy/tooltip';
+import { Trophy, ArrowRight, Sparkles, Lock, Info } from 'lucide-react';
 import Link from 'next/link';
 import { UserBadgeWithDetails } from '@/types/gamification';
 
@@ -110,13 +111,26 @@ export function RecentBadges({ className = '', badges = [] }: RecentBadgesProps)
         <CardTitle className="flex items-center gap-2 text-lg">
           <Trophy className="w-5 h-5 text-primary" />
           Recent Badges
+          <Tooltip 
+            content="Badges are earned by completing activities and milestones. Each badge rewards you with XP to level up your profile."
+            size="large"
+            position="top"
+          >
+            <Info className="w-4 h-4 text-base-content/50 hover:text-base-content/80 cursor-help" />
+          </Tooltip>
         </CardTitle>
         
         {totalBadges > 0 && (
           <div className="flex items-center justify-between">
-            <p className="text-sm text-base-content/70">
-              {totalBadges} badge{totalBadges !== 1 ? 's' : ''} earned
-            </p>
+            <Tooltip 
+              content="Total badges earned across all categories and activities"
+              size="medium"
+              position="bottom"
+            >
+              <p className="text-sm text-base-content/70 cursor-help">
+                {totalBadges} badge{totalBadges !== 1 ? 's' : ''} earned
+              </p>
+            </Tooltip>
             <Link href="/developer/badges">
               <Button variant="ghost" size="sm" className="text-xs">
                 View All
@@ -142,14 +156,20 @@ export function RecentBadges({ className = '', badges = [] }: RecentBadgesProps)
               >
                 {/* Badge Icon */}
                 <div className="flex-shrink-0">
-                  <motion.div
-                    className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 flex items-center justify-center text-2xl"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    data-testid={`recent-badge-icon-${userBadge.badgeId}`}
+                  <Tooltip 
+                    content={`${userBadge.badge.name} - ${userBadge.badge.description}`}
+                    size="medium"
+                    position="left"
                   >
-                    {userBadge.badge.icon}
-                  </motion.div>
+                    <motion.div
+                      className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30 flex items-center justify-center text-2xl cursor-help"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      data-testid={`recent-badge-icon-${userBadge.badgeId}`}
+                    >
+                      {userBadge.badge.icon}
+                    </motion.div>
+                  </Tooltip>
                 </div>
                 
                 {/* Badge Info */}
@@ -158,13 +178,19 @@ export function RecentBadges({ className = '', badges = [] }: RecentBadgesProps)
                     <h4 className="font-semibold text-sm text-base-content truncate">
                       {userBadge.badge.name}
                     </h4>
-                    <Badge 
-                      variant="outline" 
-                      className={`text-xs ${getTierColor(userBadge.badge.tier)}`}
-                      data-testid={`recent-badge-tier-${userBadge.badgeId}`}
+                    <Tooltip 
+                      content={`${userBadge.badge.tier} tier badge - rarity affects XP rewards and prestige`}
+                      size="small"
+                      position="top"
                     >
-                      {userBadge.badge.tier}
-                    </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs ${getTierColor(userBadge.badge.tier)} cursor-help`}
+                        data-testid={`recent-badge-tier-${userBadge.badgeId}`}
+                      >
+                        {userBadge.badge.tier}
+                      </Badge>
+                    </Tooltip>
                   </div>
                   
                   <p className="text-xs text-base-content/70 truncate mb-2">
@@ -174,14 +200,26 @@ export function RecentBadges({ className = '', badges = [] }: RecentBadgesProps)
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       <Sparkles className="w-3 h-3 text-primary" />
-                      <span className="text-xs text-base-content/60">
-                        +{userBadge.badge.xpReward} XP
-                      </span>
+                      <Tooltip 
+                        content={`This badge awarded ${userBadge.badge.xpReward} XP towards your level progression`}
+                        size="small"
+                        position="bottom"
+                      >
+                        <span className="text-xs text-base-content/60 cursor-help">
+                          +{userBadge.badge.xpReward} XP
+                        </span>
+                      </Tooltip>
                     </div>
                     
-                    <span className="text-xs text-base-content/50">
-                      {userBadge.earnedAt.toLocaleDateString()}
-                    </span>
+                    <Tooltip 
+                      content={`Badge earned on ${userBadge.earnedAt.toLocaleDateString()}`}
+                      size="small"
+                      position="bottom"
+                    >
+                      <span className="text-xs text-base-content/50 cursor-help">
+                        {userBadge.earnedAt.toLocaleDateString()}
+                      </span>
+                    </Tooltip>
                   </div>
                 </div>
               </motion.div>

@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 
 const cardVariants = {
   default: "card",
-  transparent: "overflow-hidden bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 rounded-lg shadow-none",
+  transparent: "bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 rounded-lg shadow-none",
   glass: "bg-base-100/40 backdrop-blur-md border border-base-300/30 transition-all duration-300 rounded-lg shadow-sm",
   solid: "bg-base-100 border border-base-300 transition-all duration-300 rounded-lg shadow-md",
   outlined: "bg-transparent border border-base-300 transition-all duration-300 rounded-lg shadow-none",

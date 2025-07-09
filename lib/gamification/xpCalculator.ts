@@ -129,6 +129,11 @@ export class XPCalculator {
     userId: string,
     sourceId?: string
   ): { isValid: boolean; reason?: string } {
+    // Admin awards bypass standard validation
+    if (source === 'ADMIN_AWARD') {
+      return { isValid: true };
+    }
+  
     const maxAmount = this.getXPForSource(source);
     
     // Check if amount exceeds maximum for source (STRICT validation - no flexibility)
@@ -159,7 +164,7 @@ export class XPCalculator {
         }
         break;
         
-      case 'CV_ANALYSIS':
+      case 'CV_ANALYSIS_COMPLETED':
         // Requires a sourceId (analysis ID)
         if (!sourceId) {
           return {
@@ -169,7 +174,7 @@ export class XPCalculator {
         }
         break;
         
-      case 'APPLICATION_SUBMIT':
+      case 'APPLICATION_SUBMITTED':
         // Requires a sourceId (application ID)
         if (!sourceId) {
           return {
@@ -188,10 +193,10 @@ export class XPCalculator {
    */
   static isRepeatableSource(source: XPSource): boolean {
     const repeatableSources: XPSource[] = [
-      'PROFILE_UPDATE',
-      'SKILL_ADD',
+      'PROFILE_SECTION_UPDATED',
+      'SKILL_ADDED',
       'DAILY_LOGIN',
-      'STREAK_BONUS'
+      'STREAK_MILESTONE'
     ];
     
     return repeatableSources.includes(source);
@@ -249,13 +254,13 @@ export class XPCalculator {
   } {
     const activities = [
       { activity: 'Daily login', xp: XP_REWARDS.DAILY_LOGIN, source: 'DAILY_LOGIN' as XPSource },
-      { activity: 'Update profile sections (3)', xp: XP_REWARDS.PROFILE_UPDATE * 3, source: 'PROFILE_UPDATE' as XPSource },
-      { activity: 'Add new skills (5)', xp: XP_REWARDS.SKILL_ADD * 5, source: 'SKILL_ADD' as XPSource },
-      { activity: 'Upload new CV', xp: XP_REWARDS.CV_UPLOAD, source: 'CV_UPLOAD' as XPSource },
-      { activity: 'Complete CV analysis', xp: XP_REWARDS.CV_ANALYSIS, source: 'CV_ANALYSIS' as XPSource },
-      { activity: 'Apply AI improvements (3)', xp: XP_REWARDS.CV_IMPROVEMENT * 3, source: 'CV_IMPROVEMENT' as XPSource },
-      { activity: 'Submit job applications (5)', xp: XP_REWARDS.APPLICATION_SUBMIT * 5, source: 'APPLICATION_SUBMIT' as XPSource },
-      { activity: 'Streak bonus (7+ days)', xp: 25, source: 'STREAK_BONUS' as XPSource }
+      { activity: 'Update profile sections (3)', xp: XP_REWARDS.PROFILE_SECTION_UPDATED * 3, source: 'PROFILE_SECTION_UPDATED' as XPSource },
+      { activity: 'Add new skills (5)', xp: XP_REWARDS.SKILL_ADDED * 5, source: 'SKILL_ADDED' as XPSource },
+      { activity: 'Upload new CV', xp: XP_REWARDS.CV_UPLOADED, source: 'CV_UPLOADED' as XPSource },
+      { activity: 'Complete CV analysis', xp: XP_REWARDS.CV_ANALYSIS_COMPLETED, source: 'CV_ANALYSIS_COMPLETED' as XPSource },
+      { activity: 'Apply AI improvements (3)', xp: XP_REWARDS.CV_IMPROVEMENT_APPLIED * 3, source: 'CV_IMPROVEMENT_APPLIED' as XPSource },
+      { activity: 'Submit job applications (5)', xp: XP_REWARDS.APPLICATION_SUBMITTED * 5, source: 'APPLICATION_SUBMITTED' as XPSource },
+      { activity: 'Streak bonus (7+ days)', xp: 25, source: 'STREAK_MILESTONE' as XPSource }
     ];
     
     const maxDaily = activities.reduce((sum, activity) => sum + activity.xp, 0);
