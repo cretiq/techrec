@@ -24,6 +24,8 @@ import gamificationReducer from './features/gamificationSlice';
 import rolesReducer from './features/rolesSlice';
 // Import the matching reducer
 import matchingReducer from './features/matchingSlice';
+// Import the dashboard reducer
+import dashboardReducer from './features/dashboardSlice';
 
 // Configuration for persisting selectedRoles slice
 const selectedRolesPersistConfig = {
@@ -72,6 +74,7 @@ const combinedReducer = combineReducers({
   analytics: analyticsReducer,
   roles: persistedRolesReducer,
   matching: matchingReducer,
+  dashboard: dashboardReducer,
 });
 
 /**

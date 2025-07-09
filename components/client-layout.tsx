@@ -61,6 +61,9 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/developer/dashboard" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-home-trigger">
                     Home
                   </Link>
+                  <Link href="/developer/dashboard" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-dashboard-trigger">
+                    Dashboard
+                  </Link>
                   <div className="relative group" data-testid="nav-desktop-dropdown-features">
                     <div className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors cursor-pointer flex items-center gap-1 py-2" data-testid="nav-desktop-dropdown-features-trigger">
                       Features

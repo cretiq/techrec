@@ -1,11 +1,25 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
-import {  Button  } from '@/components/ui-daisy/button'
-import { ArrowRight, Briefcase, FileText, User } from "lucide-react"
+import { Suspense } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card'
+import { Button } from '@/components/ui-daisy/button'
+import { ArrowRight, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { DashboardClient } from "@/components/dashboard/DashboardClient"
 
+/**
+ * Gamified Developer Welcome Dashboard
+ * 
+ * This is the main dashboard page that serves as the central hub for developers.
+ * It provides:
+ * - Personalized welcome message
+ * - Onboarding roadmap with progress tracking
+ * - Gamification stats (XP, points, badges, streak)
+ * - Quick actions for key platform features
+ * 
+ * Layout: Two-column with roadmap on left (70%) and stats on right (30%)
+ */
 export default async function DeveloperDashboard() {
   const session = await getServerSession(authOptions)
 
@@ -13,155 +27,81 @@ export default async function DeveloperDashboard() {
     redirect("/auth/signin")
   }
 
+  console.log('🏠 [Dashboard] Loading dashboard for user:', session.user?.email)
+
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Welcome back, {session.user?.name}!</h1>
-        <p className="text-muted-foreground">Here's what's happening with your job search</p>
+    <div className="container mx-auto max-w-7xl px-4 py-8" data-testid="developer-dashboard">
+      {/* Welcome Header */}
+      <div className="mb-8" data-testid="dashboard-welcome-header">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Welcome back, {session.user?.name?.split(' ')[0] || 'Developer'}!
+        </h1>
+        <p className="text-lg text-base-content/70 mt-2">
+          Ready to level up your career? Let's see what you can accomplish today.
+        </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" />
-              <CardTitle>Your Profile</CardTitle>
-            </div>
-            <CardDescription>Complete your profile to increase your visibility</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Profile Completion</p>
-                  <p className="text-2xl font-bold">75%</p>
-                </div>
-                <div className="h-2 w-24 rounded-full bg-muted">
-                  <div className="h-full w-3/4 rounded-full bg-primary"></div>
-                </div>
-              </div>
-              <Link href="/developer/cv-management">
-                <Button className="w-full gap-1">
-                  Complete Profile
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              <CardTitle>Your Applications</CardTitle>
-            </div>
-            <CardDescription>Track your job applications and their status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Active Applications</p>
-                  <p className="text-2xl font-bold">3</p>
-                </div>
-                <div className="flex gap-2">
-                  <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                  <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
-                  <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                </div>
-              </div>
-              <Link href="/developer/applications">
-                <Button className="w-full gap-1">
-                  View Applications
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-primary" />
-              <CardTitle>Available Roles</CardTitle>
-            </div>
-            <CardDescription>Find your next opportunity</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Matching Roles</p>
-                  <p className="text-2xl font-bold">12</p>
-                </div>
-                <div className="flex gap-2">
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                  <div className="h-2 w-2 rounded-full bg-primary"></div>
-                </div>
-              </div>
-              <Link href="/developer/roles">
-                <Button className="w-full gap-1">
-                  Browse Roles
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Your latest interactions with the platform</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Briefcase className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Application Submitted</p>
-                    <p className="text-sm text-muted-foreground">Senior Frontend Developer at TechCorp</p>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">2 hours ago</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Assessment Completed</p>
-                    <p className="text-sm text-muted-foreground">React & TypeScript Challenge</p>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">1 day ago</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Profile Updated</p>
-                    <p className="text-sm text-muted-foreground">Added new skills and projects</p>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">2 days ago</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Dashboard Client Component */}
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardClient />
+      </Suspense>
     </div>
   )
 }
 
+// Loading skeleton for dashboard
+function DashboardSkeleton() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-10 gap-8" data-testid="dashboard-skeleton">
+      {/* Left Column - Roadmap Skeleton */}
+      <div className="lg:col-span-7 space-y-6">
+        <Card 
+          variant="transparent" 
+          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+        >
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-base-300/50 rounded animate-pulse" />
+              <div className="h-6 bg-base-300/50 rounded animate-pulse w-48" />
+            </div>
+            <div className="h-4 bg-base-300/30 rounded animate-pulse w-64" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-base-300/50 rounded-full animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-base-300/50 rounded animate-pulse" />
+                    <div className="h-3 bg-base-300/30 rounded animate-pulse w-2/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Right Column - Stats Skeleton */}
+      <div className="lg:col-span-3 space-y-6">
+        {[...Array(5)].map((_, i) => (
+          <Card 
+            key={i}
+            variant="transparent" 
+            className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-base-300/50 rounded-full animate-pulse" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-base-300/50 rounded animate-pulse" />
+                  <div className="h-3 bg-base-300/30 rounded animate-pulse w-1/2" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
