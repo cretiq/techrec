@@ -34,7 +34,6 @@
 
 *Capture all ideas here, then organize them below*
 
-- Machine learning to improve matching accuracy over time based on application success rates
 - Integration with GitHub/LinkedIn to auto-populate developer skills
 - Company culture matching based on values and work preferences
 - Salary expectation vs. role compensation matching
