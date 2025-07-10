@@ -1,13 +1,20 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { PrismaClient } from '@prisma/client'
 import mockJobResponse from './rapidapi_job_response_example_v4.json'
 import RapidApiCacheManager, { type SearchParameters } from '@/lib/api/rapidapi-cache'
 import RapidApiValidator from '@/lib/api/rapidapi-validator'
+import { RapidApiEndpointLogger, isPremiumEndpoint, isValidEndpoint, isEligibleSubscriptionTier } from '@/utils/rapidApiEndpointLogger'
+
+const prisma = new PrismaClient()
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const cacheManager = RapidApiCacheManager.getInstance()
   const validator = RapidApiValidator.getInstance()
 
+  const requestId = RapidApiEndpointLogger.generateRequestId()
+  
   // Extract all possible parameters from URL
   const params: SearchParameters = {
     limit: parseInt(searchParams.get('limit') || '10'),
@@ -36,6 +43,8 @@ export async function GET(request: Request) {
     ai_experience_level_filter: searchParams.get('ai_experience_level_filter'),
     ai_visa_sponsorship_filter: searchParams.get('ai_visa_sponsorship_filter'),
     description_type: searchParams.get('description_type'),
+    // Endpoint selection (defaults to '7d' if not specified)
+    endpoint: searchParams.get('endpoint') || '7d',
   }
 
   // Remove undefined values
@@ -46,15 +55,38 @@ export async function GET(request: Request) {
   })
 
   try {
+    // Validate endpoint parameter
+    if (!isValidEndpoint(params.endpoint)) {
+      RapidApiEndpointLogger.logError('Invalid Endpoint', `Invalid endpoint: ${params.endpoint}`, { requestId })
+      return NextResponse.json(
+        { 
+          error: 'Invalid endpoint parameter',
+          details: 'Endpoint must be one of: 7d, 24h, 1h',
+          requestId
+        },
+        { status: 400 }
+      )
+    }
+
+    // Log endpoint selection
+    RapidApiEndpointLogger.logEndpointSelection({
+      endpoint: params.endpoint,
+      isPremium: isPremiumEndpoint(params.endpoint),
+      requestId,
+      timestamp: new Date().toISOString()
+    })
+
     // Validate parameters
     const validation = validator.validateSearchParameters(params)
     if (!validation.valid) {
       console.error('Parameter validation failed:', validation.errors)
+      RapidApiEndpointLogger.logError('Parameter Validation Failed', validation.errors, { requestId })
       return NextResponse.json(
         { 
           error: 'Invalid search parameters',
           details: validation.errors,
-          warnings: validation.warnings
+          warnings: validation.warnings,
+          requestId
         },
         { status: 400 }
       )
@@ -67,6 +99,167 @@ export async function GET(request: Request) {
 
     // Use normalized parameters
     const normalizedParams = validation.normalizedParams
+    
+    // Handle premium endpoint validation
+    if (isPremiumEndpoint(normalizedParams.endpoint)) {
+      // Get user session for premium validation
+      const session = await getServerSession()
+      if (!session?.user?.email) {
+        RapidApiEndpointLogger.logError('Premium Endpoint Unauthorized', 'No user session for premium endpoint', { requestId, endpoint: normalizedParams.endpoint })
+        return NextResponse.json(
+          { 
+            error: 'Authentication required for premium endpoints',
+            details: 'Please sign in to use 24-hour and 1-hour search endpoints',
+            requestId
+          },
+          { status: 401 }
+        )
+      }
+
+      // Get user's subscription tier and points
+      const developer = await prisma.developer.findUnique({
+        where: { email: session.user.email },
+        select: {
+          id: true,
+          subscriptionTier: true,
+          monthlyPoints: true,
+          pointsUsed: true,
+          pointsEarned: true,
+        },
+      })
+
+      if (!developer) {
+        RapidApiEndpointLogger.logError('Premium Endpoint User Not Found', 'Developer record not found', { requestId, email: session.user.email })
+        return NextResponse.json(
+          { 
+            error: 'User profile not found',
+            requestId
+          },
+          { status: 404 }
+        )
+      }
+
+      // Validate subscription tier
+      if (!isEligibleSubscriptionTier(developer.subscriptionTier)) {
+        RapidApiEndpointLogger.logPremiumValidation({
+          userId: developer.id,
+          endpoint: normalizedParams.endpoint,
+          subscriptionTier: developer.subscriptionTier,
+          pointsAvailable: 0,
+          pointsRequired: 5,
+          validationResult: 'invalid_tier'
+        })
+        
+        return NextResponse.json(
+          { 
+            error: 'Subscription tier insufficient',
+            details: 'Premium search endpoints require Starter tier or higher',
+            currentTier: developer.subscriptionTier,
+            requiredTier: 'STARTER',
+            requestId
+          },
+          { status: 402 }
+        )
+      }
+
+      // Calculate available points
+      const availablePoints = Math.max(0, developer.monthlyPoints + developer.pointsEarned - developer.pointsUsed)
+      const requiredPoints = 5 // ADVANCED_SEARCH cost
+
+      // Validate points balance
+      if (availablePoints < requiredPoints) {
+        RapidApiEndpointLogger.logPremiumValidation({
+          userId: developer.id,
+          endpoint: normalizedParams.endpoint,
+          subscriptionTier: developer.subscriptionTier,
+          pointsAvailable: availablePoints,
+          pointsRequired: requiredPoints,
+          validationResult: 'insufficient_points'
+        })
+        
+        return NextResponse.json(
+          { 
+            error: 'Insufficient points',
+            details: `Premium search requires ${requiredPoints} points. You have ${availablePoints} points available.`,
+            pointsRequired: requiredPoints,
+            pointsAvailable: availablePoints,
+            requestId
+          },
+          { status: 402 }
+        )
+      }
+
+      // Deduct points for premium search
+      try {
+        const pointsResponse = await fetch(`${new URL(request.url).origin}/api/gamification/points`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': request.headers.get('Cookie') || '',
+          },
+          body: JSON.stringify({
+            action: 'ADVANCED_SEARCH',
+            sourceId: `search_${normalizedParams.endpoint}_${requestId}`,
+            metadata: {
+              endpoint: normalizedParams.endpoint,
+              requestId,
+              searchParams: normalizedParams,
+            },
+          }),
+        })
+
+        if (!pointsResponse.ok) {
+          const errorData = await pointsResponse.json()
+          RapidApiEndpointLogger.logPointsDeduction({
+            userId: developer.id,
+            pointsBefore: availablePoints,
+            pointsAfter: availablePoints,
+            pointsDeducted: 0,
+            success: false,
+            error: errorData.error
+          })
+          
+          return NextResponse.json(
+            { 
+              error: 'Points deduction failed',
+              details: errorData.error,
+              requestId
+            },
+            { status: pointsResponse.status }
+          )
+        }
+
+        const pointsResult = await pointsResponse.json()
+        RapidApiEndpointLogger.logPointsDeduction({
+          userId: developer.id,
+          pointsBefore: availablePoints,
+          pointsAfter: pointsResult.newBalance,
+          pointsDeducted: pointsResult.pointsSpent,
+          transactionId: pointsResult.transaction?.id,
+          success: true
+        })
+
+        RapidApiEndpointLogger.logPremiumValidation({
+          userId: developer.id,
+          endpoint: normalizedParams.endpoint,
+          subscriptionTier: developer.subscriptionTier,
+          pointsAvailable: availablePoints,
+          pointsRequired: requiredPoints,
+          validationResult: 'success'
+        })
+
+      } catch (error) {
+        RapidApiEndpointLogger.logError('Points Deduction Error', error, { requestId, userId: developer.id })
+        return NextResponse.json(
+          { 
+            error: 'Premium validation failed',
+            details: 'Unable to process points transaction',
+            requestId
+          },
+          { status: 500 }
+        )
+      }
+    }
 
     // Check cache first
     const cachedResponse = cacheManager.getCachedResponse(normalizedParams)
@@ -121,10 +314,13 @@ export async function GET(request: Request) {
       apiKeyPreview: apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined'
     })
 
+    const forceDevMode = true; // Currently forced for testing
+    RapidApiEndpointLogger.logModeDetection(isDevelopment, !!apiKey, forceDevMode)
+
     // if (isDevelopment) {
-    if (true) {
+    if (forceDevMode) {
       // DEVELOPMENT MODE: Return mock data with simulated headers
-      console.log('Running in DEVELOPMENT mode (no RAPIDAPI_KEY found or empty)')
+      console.log('Running in DEVELOPMENT mode (forced for testing)')
       
       // Simulate usage headers for development
       const mockHeaders = new Headers()
@@ -159,13 +355,28 @@ export async function GET(request: Request) {
     // PRODUCTION MODE: Make real API calls
     console.log('Running in PRODUCTION mode with real API calls')
     
-    const baseUrl = 'https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d'
+    // Construct dynamic endpoint URL based on selection
+    const endpointMap = {
+      '7d': 'active-jb-7d',
+      '24h': 'active-jb-24h', 
+      '1h': 'active-jb-1h'
+    }
+    const endpointSuffix = endpointMap[normalizedParams.endpoint as keyof typeof endpointMap] || 'active-jb-7d'
+    const baseUrl = `https://linkedin-job-search-api.p.rapidapi.com/${endpointSuffix}`
     const apiHost = 'linkedin-job-search-api.p.rapidapi.com'
+    
+    RapidApiEndpointLogger.logApiCall({
+      endpoint: normalizedParams.endpoint,
+      originalUrl: 'https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d',
+      constructedUrl: baseUrl,
+      parameters: normalizedParams,
+      success: true // Will be updated based on actual response
+    })
 
-    // Build query string from normalized parameters
+    // Build query string from normalized parameters (excluding our internal endpoint parameter)
     const queryParams = new URLSearchParams()
     Object.entries(normalizedParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
+      if (value !== undefined && value !== null && key !== 'endpoint') {
         queryParams.append(key, value.toString())
       }
     })

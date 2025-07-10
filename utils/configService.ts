@@ -10,6 +10,7 @@ export interface PointsCosts {
   CV_SUGGESTION: number;
   BULK_APPLICATION: number;
   PREMIUM_ANALYSIS: number;
+  ADVANCED_SEARCH: number;
 }
 
 export interface XPRewards {
@@ -50,6 +51,7 @@ const DEFAULT_POINTS_COSTS: PointsCosts = {
   CV_SUGGESTION: 1,
   BULK_APPLICATION: 8, // 3 queries + 5 cover letters
   PREMIUM_ANALYSIS: 5,
+  ADVANCED_SEARCH: 5, // Premium search endpoints (24h, 1h)
 };
 
 const DEFAULT_XP_REWARDS: XPRewards = {

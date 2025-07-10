@@ -78,6 +78,7 @@ enum PointsSpendType {
   CV_SUGGESTION       // AI CV suggestions
   BULK_APPLICATION    // Bulk application features
   PREMIUM_ANALYSIS    // Premium CV analysis
+  ADVANCED_SEARCH     // Premium search endpoints (24h, 1h)
 }
 
 enum BadgeCategory {

@@ -61,6 +61,9 @@ interface SearchParameters {
   ai_experience_level_filter?: string; // '0-2', '2-5', '5-10', '10+'
   ai_visa_sponsorship_filter?: string; // 'true' for jobs mentioning visa sponsorship
   
+  // Endpoint selection for premium features
+  endpoint?: string; // '7d' (default), '24h' (premium), '1h' (premium)
+  
   // Allow for any additional parameters
   [key: string]: any;
 }

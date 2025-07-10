@@ -122,7 +122,8 @@ export async function POST(request: NextRequest) {
       'OUTREACH_MESSAGE',
       'CV_SUGGESTION',
       'BULK_APPLICATION',
-      'PREMIUM_ANALYSIS'
+      'PREMIUM_ANALYSIS',
+      'ADVANCED_SEARCH'
     ];
 
     if (!validActions.includes(action)) {
