@@ -120,7 +120,7 @@ npm run build
 ### 🔍 Technical Architecture
 
 **Decision Framework Compliance:**
-Following the `REDIS_VS_REDUX_DECISION_FRAMEWORK.md`, I chose Redux Persist for search results because:
+Following the [Redis vs Redux Framework](../architecture/redis-vs-redux-framework.md), I chose Redux Persist for search results because:
 
 - ✅ **Immediate user experience** - Users expect search results to persist
 - ✅ **State restoration without network calls** - Instant page loads

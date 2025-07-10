@@ -12,7 +12,7 @@ This document details the complete implementation of role selection persistence 
 
 ## 🏗️ Architecture Decision
 
-Following the `REDIS_VS_REDUX_DECISION_FRAMEWORK.md`, we chose **Redux Persist** because:
+Following the [Redis vs Redux Framework](../architecture/redis-vs-redux-framework.md), we chose **Redux Persist** because:
 
 ✅ **User-specific data** - Role selections are personal to each user  
 ✅ **Should survive browser refresh** - Core requirement of the feature  

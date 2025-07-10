@@ -80,7 +80,7 @@ This document provides a comprehensive framework for deciding when to use **Redi
 
 ### Previous Redux Persist Issues (⚠️ Lessons Learned)
 
-**Issues documented in `TROUBLESHOOTING.md`:**
+**Issues documented in [Troubleshooting](../implementation/troubleshooting.md):**
 - State rehydration issues with missing fields in whitelist
 - ID mismatch problems between URL and store  
 - Infinite useEffect loops with REHYDRATE action
