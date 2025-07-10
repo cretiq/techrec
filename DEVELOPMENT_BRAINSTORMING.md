@@ -11,11 +11,12 @@
   - [Medium-term Vision (3-6 Months)](#medium-term-vision-3-6-months)
   - [Long-term Exploration (6+ Months)](#long-term-exploration-6-months)
 - [💭 Active Feature Requests](#-active-feature-requests)
-  - [Feature Request #4: Multiple RapidAPI Endpoint Selection](#feature-request-4-multiple-rapidapi-endpoint-selection)
   - [Feature Request #8: Button Styling Consistency & Coherence](#feature-request-8-button-styling-consistency--coherence)
   - [Feature Request #11: Post-Signup Success Message on Sign-In Page](#feature-request-11-post-signup-success-message-on-sign-in-page)
   - [Feature Request #14: Comprehensive Cache Invalidation on Sign-Out](#feature-request-14-comprehensive-cache-invalidation-on-sign-out)
+  - [Feature Request #15: Comprehensive Documentation Architecture & Markdown File Organization](#feature-request-15-comprehensive-documentation-architecture--markdown-file-organization)
 - [📋 Recently Completed Features](#-recently-completed-features)
+  - [✅ Feature Request #4: Multiple RapidAPI Endpoint Selection](#-feature-request-4-multiple-rapidapi-endpoint-selection)
   - [✅ Feature Request #13: Developer Dashboard UI/UX Simplification](#feature-request-13-developer-dashboard-uiux-simplification)
   - [✅ Feature Request #12: Gamified Developer Welcome Dashboard](#-feature-request-12-gamified-developer-welcome-dashboard)
   - [✅ Feature Request #1: Developer-Role Matching Score System](#-feature-request-1-developer-role-matching-score-system)
@@ -41,6 +42,7 @@
 - Role recommendation engine based on matching scores
 - Create a dedicated page for earned user badges (that can be reached from e.g. the users dashboard.)
 - create a github like commit grid/graph to for a great visualization over your applications
+- **Comprehensive Documentation Architecture & Markdown File Organization** → **Moved to Feature Request #15**
 - 
 - ✅ Smart application routing and Easy Apply detection → **Moved to Feature Request #2**
 - ✅ Enhanced company filtering (descriptions, specialties, names, industries) → **Moved to Feature Request #3**
@@ -98,131 +100,6 @@
 
 ## 💭 Active Feature Requests
 
-### Feature Request #4: Multiple RapidAPI Endpoint Selection
-
-**Status:** Ready for Development
-**Priority:** Medium
-
-**Review Summary (Second Review):**
-This feature was previously blocked pending investigation into the existence of the required gamification and subscription infrastructure. After a detailed analysis of the `GAMIFICATION_STRATEGY.md` document, it has been confirmed that the necessary backend systems are in place.
-
-- **Points Management**: The `PointsManager.spendPointsAtomic` service provides the required atomic transaction for spending points on premium searches.
-- **Subscription Validation**: The user's subscription tier (`STARTER` or higher) and points balance will be validated on the backend as part of the `spendPointsAtomic` call.
-- **Configuration**: The cost for premium searches is managed by the `ConfigService`.
-- **Conclusion**: The feature is unblocked and ready for implementation. The development plan is sound.
-
-**Goal:** Allow developers to choose between different job freshness levels (7 days, 24 hours, or hourly) to get the most relevant results for their search needs and optimize API usage patterns.
-
-**User Story:** As a developer, I want to select how fresh I want my job search results to be (from the last 7 days, 24 hours, or past hour), so that I can find the newest opportunities when needed or search broader when exploring more options.
-
-**Success Metrics:**
-
-- Increased user engagement with time-sensitive job searches
-- Better API credit efficiency through targeted endpoint usage
-- Reduced search time for users looking for fresh opportunities
-- Improved user satisfaction with result relevance
-
-**Available API Endpoints (✅ All Available):**
-- **7 Days Endpoint** (`active-jb-7d`) - Jobs from last 7 days ✅ **Currently Implemented**
-- **24 Hours Endpoint** (`active-jb-24h`) - Jobs indexed in last 24 hours ⚠️ **API Available, Not Implemented**
-- **Hourly Endpoint** (`active-jb-1h`) - Jobs from last hour (Ultra & Mega plans only) ⚠️ **API Available, Not Implemented**
-
-**Key Benefits by Endpoint:**
-
-- **7 Days**: Broadest selection, good for comprehensive searches
-- **24 Hours**: Fresh opportunities, better for daily job hunting
-- **Hourly**: Latest postings, optimal for premium users with urgent needs
-
-**Feature Requirements:**
-- The default search endpoint will be **7 days**.
-- The UI will **not** show estimated job counts per endpoint.
-- The system will **not** automatically suggest different endpoints to the user.
-- The **24-hour** and **1-hour** search options are **premium features**.
-  - **Subscription Requirement**: Users must be on the **"Starter"** tier or higher.
-  - **Gamification Cost**: Each premium search (24h or 1h) will cost **5 points**.
-- The UI should **not** warn users about potential performance issues with `description_filter`.
-
-**Technical Implementation Plan:**
-
-1.  **Backend Enhancement** - Make API endpoint dynamic based on user selection.
-2.  **Parameter Addition** - Add `endpoint` or `time_range` parameter to search.
-3.  **Frontend UI** - Add endpoint selector in search filters. The default selection will be "7 days".
-4.  **Premium Feature Validation (Backend)** - Before executing a premium search (24h or 1h):
-    -   Check if the user's subscription plan is "Starter" tier or higher.
-    -   Check if the user has at least 5 points.
-    -   If validation passes, deduct 5 points from the user's account.
-    -   If validation fails, return an appropriate error message.
-5.  **Plan Validation** - Check user's API plan for Hourly endpoint access
-6.  **Cache Strategy** - Ensure the caching mechanism uses a key that includes the selected endpoint to prevent conflicts. The cache should only store the most recent search results.
-7.  **Frontend UI for Premium Features** -
-    -   If a user is eligible, the 24h and 1h options are enabled. Display the 5-point cost clearly.
-    -   If a user is not eligible, disable the premium options and show a tooltip or message guiding them to upgrade their plan.
-
-**Acceptance Criteria:**
-
--   [ ] Add endpoint selection UI component (e.g., radio buttons) in `AdvancedFilters`, defaulted to "7 days".
--   [ ] Implement dynamic endpoint URL construction in the backend API route based on the `endpoint` parameter.
--   [ ] Add `endpoint` parameter to the `SearchParameters` interface.
--   [ ] **Premium Logic**:
-    -   [ ] When a user selects a 24h or 1h search, the frontend confirms the 5-point cost.
-    -   [ ] The backend validates the user's subscription tier and points balance before executing a premium search.
-    -   [ ] 5 points are successfully deducted upon a valid premium search.
-    -   [ ] If the user has insufficient points or the wrong subscription tier, the API returns an error and the frontend displays a clear message.
--   [ ] **UI States**:
-    -   [ ] For non-premium users, the 24h and 1h options are disabled, with a message prompting an upgrade.
--   [ ] Update cache keys to include the endpoint selection to ensure fresh data.
--   [ ] The system functions correctly without performance warnings for `description_filter`.
-
-**Technical Details from Documentation:**
-
-- **7 Days**: `https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d` (current)
-- **24 Hours**: `https://linkedin-job-search-api.p.rapidapi.com/active-jb-24h` (estimated)
-- **Hourly**: `https://linkedin-job-search-api.p.rapidapi.com/active-jb-1h` (estimated, Ultra & Mega plans)
-- **Performance Note**: `description_filter` has timeout risks with 7-day endpoint, but per requirements, no user-facing warning will be shown.
-- **Refresh Schedule**: Hourly refresh with 1-2 hour delay, 2-hour delay for Hourly endpoint
-
-**Implementation Requirements:**
-
-- [ ] **Backend Changes**:
-  - Add `endpoint` parameter to SearchParameters interface
-  - Update API route to construct dynamic endpoint URLs
-  - Add endpoint validation (check plan for Hourly access)
-  - **Add premium validation logic (tier and points check).**
-  - **Implement points deduction logic.**
-  - Update cache keys to separate by endpoint
-- [ ] **Frontend Changes**:
-  - Add endpoint selector component (radio buttons or dropdown)
-  - Update `AdvancedFilters` to include time range selection
-  - **Display point cost for premium searches.**
-  - **Implement disabled/enabled states for premium options based on user eligibility.**
-  - **Show appropriate warnings for insufficient points or subscription level.**
-  - Add endpoint selection to search form state
-- [ ] **Validation & UX**:
-  - Show warning for Hourly endpoint if not on Ultra/Mega plan
-  - Display endpoint info (job count estimates, freshness)
-  - Add tooltips explaining each endpoint's benefits
-
-**Questions to Resolve:**
-
-- [✅] How exactly should the user's subscription plan and points balance be validated on the backend? Is there an existing service or utility for this?
-**Answer:** Yes. The backend will call the existing `PointsManager.spendPointsAtomic` service. This service is responsible for atomically validating the user's subscription tier, checking their points balance, and deducting the points for the `ADVANCED_SEARCH` action.
-
-- [✅] What should the UI look like when a user has the right plan but insufficient points?
-**Answer:** The 24-hour and 1-hour options should be grayed out ("inactive"), and a small message or tooltip next to them should read "Not enough points." This will require the frontend to fetch the user's current point balance.
-
-**Dependencies:**
-
-- [✅] **Gamification System**: For checking and deducting user points.
-  - **Implementation Note**: Use the `POST /api/gamification/points` endpoint, which should trigger the `PointsManager.spendPointsAtomic` service with the `spendType: 'ADVANCED_SEARCH'`.
-- [✅] **Subscription System**: For checking the user's current subscription tier.
-  - **Implementation Note**: This is handled implicitly by the gamification backend services, which check for the required 'STARTER' tier.
-- [ ] API plan detection mechanism for Hourly endpoint validation
-- [ ] Updated `SearchParameters` interface with endpoint field
-- [ ] Enhanced caching strategy to handle multiple endpoints
-- [ ] UI component for endpoint selection with clear labeling
-- [ ] Documentation updates for endpoint-specific behaviors
-
----
 
 
 ### Feature Request #8: Button Styling Consistency & Coherence
@@ -733,8 +610,238 @@ const handleLogout = async () => {
 
 ---
 
+### Feature Request #15: Comprehensive Documentation Architecture & Markdown File Organization
+
+**Status:** Planning Phase
+**Priority:** High
+
+**Goal:** Systematically organize, optimize, and restructure the project's markdown documentation (excluding core files CLAUDE.md, DEVELOPMENT_BRAINSTORMING.md, and README.md) to eliminate redundancy, improve discoverability, and create a maintainable documentation architecture.
+
+**User Story:** As a developer working on this project, I want well-organized, up-to-date supporting documentation that is easy to navigate and maintain, so that I can quickly find implementation guides, troubleshooting information, and architectural decisions without searching through outdated or redundant files.
+
+**Success Metrics:**
+
+- **60%+ reduction** in non-core markdown file count through consolidation and cleanup
+- **100% accuracy** in documentation relevance - all files serve active purposes
+- **Clear navigation structure** with logical categorization and consistent naming
+- **Improved discoverability** through organized directory structure
+- **Reduced maintenance overhead** through elimination of duplicates and outdated files
+- **Enhanced developer experience** with faster access to implementation guides
+
+**Comprehensive Codebase Analysis:**
+
+**Files in Scope for Organization (19 files):**
+- ✅ **Confirmed no code dependencies** - No imports or references from TypeScript/JavaScript files
+- ✅ **Cross-reference mapping completed** - 4 files have internal markdown links requiring updates
+- ✅ **Content analysis completed** - All files categorized by purpose and current relevance
+
+**File Categories with Detailed Analysis:**
+
+1. **Architecture & Strategy** (786+699+302 = 1,787 lines) - **High value, active**
+   - `GAMIFICATION_STRATEGY.md` (786 lines) - Critical system documentation with implementation details
+   - `REDIS_VS_REDUX_DECISION_FRAMEWORK.md` (699 lines) - Key architectural decisions with detailed patterns
+   - `DATA_TESTID_STRATEGY.md` (302 lines) - Testing strategy with naming conventions
+   - **Cross-references**: REDIS framework → TROUBLESHOOTING.md (link requires update)
+
+2. **Implementation Documentation** (344+210+145 = 699 lines) - **Active, essential**
+   - `ROLE_PERSISTENCE_IMPLEMENTATION.md` (344 lines) - Comprehensive implementation guide
+   - `DESIGN_SYSTEM.md` (210 lines) - Active design guidelines and color schemes
+   - `TROUBLESHOOTING.md` (145 lines) - Active support documentation with Redux solutions
+   - `ROLES_PERSISTENCE_VERIFICATION.md` - Implementation verification and testing
+   - **Cross-references**: Role persistence → REDIS framework (link requires update)
+
+3. **Feature Documentation** (docs/ directory) - **Mixed relevance**
+   - `docs/button-style-guide.md` - Active style guidelines for button standardization
+   - `docs/cv_data_flow.md` - Active data flow documentation with Mermaid diagrams
+   - `docs/API_CALL_PREVENTION_VERIFICATION.md` - Implementation verification and testing
+   - `docs/PRODUCTION_ACTIVATION_GUIDE.md` - Deployment guidelines
+   - `docs/RAPIDAPI_IMPLEMENTATION_SUMMARY.md` - API implementation summary
+   - `app/api/rapidapi/rapidapi_documentation.md` - RapidAPI integration documentation
+
+4. **Confirmed Obsolete Files** (3 files) - **Candidates for immediate removal**
+   - `INSTALL_REDUX_PERSIST.md` (89 lines) - ✅ **Confirmed obsolete**: Installation complete, Redux Persist working
+   - `SELECTION_STATE_FIX.md` (133 lines) - ✅ **Confirmed obsolete**: Temporary fix, superseded by full implementation
+   - `TROUBLESHOOTING_STEPS.md` (143 lines) - ✅ **Confirmed obsolete**: Specific issue, superseded by main troubleshooting
+
+5. **Task Master Documentation** (2 files) - **External tool, evaluate retention**
+   - `README-task-master.md` - Task master documentation (separate tool)
+   - `scripts/README-task-master.md` - Duplicate task master documentation
+
+**Technical Implementation Plan:**
+
+### **Phase 1: Immediate Cleanup & Analysis (1-2 hours)**
+
+**Confirmed Obsolete File Removal:**
+- [ ] **Remove verified obsolete files:**
+  - `INSTALL_REDUX_PERSIST.md` (89 lines) - ✅ Installation complete, Redux Persist working
+  - `SELECTION_STATE_FIX.md` (133 lines) - ✅ Temporary fix, superseded by full implementation  
+  - `TROUBLESHOOTING_STEPS.md` (143 lines) - ✅ Specific issue, superseded by main troubleshooting
+- [ ] **Evaluate Task Master documentation retention:**
+  - Assess if `README-task-master.md` and `scripts/README-task-master.md` are needed for project
+  - Consolidate or remove if external tool documentation
+
+**Cross-Reference Impact Analysis:**
+- [ ] **Map all internal links requiring updates:**
+  - `ROLE_PERSISTENCE_IMPLEMENTATION.md` → `REDIS_VS_REDUX_DECISION_FRAMEWORK.md`
+  - `REDIS_VS_REDUX_DECISION_FRAMEWORK.md` → `TROUBLESHOOTING.md` 
+  - Document exact line numbers and link formats for updates
+
+### **Phase 2: Strategic Reorganization (2-3 hours)**
+
+**New Directory Structure (Refined):**
+```
+docs/
+├── architecture/                # System architecture & critical decisions (1,787 lines)
+│   ├── gamification-strategy.md      # 786 lines - Critical system documentation
+│   ├── redis-vs-redux-framework.md   # 699 lines - Key architectural decisions  
+│   └── data-testid-strategy.md       # 302 lines - Testing strategy & conventions
+├── implementation/              # Feature implementation guides (699+ lines)
+│   ├── role-persistence-implementation.md  # 344 lines - Comprehensive guide
+│   ├── design-system.md                    # 210 lines - Design guidelines
+│   ├── troubleshooting.md                  # 145 lines - Support documentation
+│   └── roles-persistence-verification.md   # Verification & testing
+├── features/                    # Feature-specific documentation
+│   ├── button-style-guide.md           # Button standardization
+│   ├── cv-data-flow.md                 # Data flow with Mermaid diagrams
+│   ├── api-call-prevention-verification.md
+│   └── rapidapi-implementation-summary.md
+└── deployment/                  # Production & deployment
+    └── production-activation-guide.md
+```
+
+**Systematic File Relocation Process:**
+- [ ] **Create directory structure with git commands:**
+  ```bash
+  mkdir -p docs/{architecture,implementation,features,deployment}
+  ```
+- [ ] **Move files with history preservation:**
+  ```bash
+  git mv GAMIFICATION_STRATEGY.md docs/architecture/
+  git mv REDIS_VS_REDUX_DECISION_FRAMEWORK.md docs/architecture/redis-vs-redux-framework.md
+  git mv DATA_TESTID_STRATEGY.md docs/architecture/
+  # ... continue for all files
+  ```
+- [ ] **Update all cross-references immediately after moves**
+
+### **Phase 3: Cross-Reference Updates & Link Maintenance (1-2 hours)**
+
+**Systematic Link Updates:**
+- [ ] **Update `ROLE_PERSISTENCE_IMPLEMENTATION.md` references:**
+  - Line containing: `Following the \`REDIS_VS_REDUX_DECISION_FRAMEWORK.md\``
+  - Update to: `Following the [Redis vs Redux Framework](../architecture/redis-vs-redux-framework.md)`
+- [ ] **Update `REDIS_VS_REDUX_DECISION_FRAMEWORK.md` references:**
+  - Line containing: `**Issues documented in \`TROUBLESHOOTING.md\`:**`
+  - Update to: `**Issues documented in [Troubleshooting](../implementation/troubleshooting.md):**`
+- [ ] **Validate all links work after reorganization**
+- [ ] **Create relative path links for better maintainability**
+
+### **Phase 4: Documentation Standards & Quality Assurance (1 hour)**
+
+**Create Documentation Navigation:**
+- [ ] **Create `docs/README.md` as navigation hub:**
+  ```markdown
+  # TechRec Documentation
+  
+  ## Architecture & Decisions
+  - [Gamification Strategy](architecture/gamification-strategy.md) - System design & implementation
+  - [Redis vs Redux Framework](architecture/redis-vs-redux-framework.md) - State management decisions
+  - [Data TestID Strategy](architecture/data-testid-strategy.md) - Testing conventions
+  
+  ## Implementation Guides
+  - [Role Persistence Implementation](implementation/role-persistence-implementation.md)
+  - [Design System](implementation/design-system.md) - UI guidelines & patterns
+  - [Troubleshooting](implementation/troubleshooting.md) - Common issues & solutions
+  
+  ## Feature Documentation
+  - [CV Data Flow](features/cv-data-flow.md) - Data processing pipeline
+  - [Button Style Guide](features/button-style-guide.md) - UI component standards
+  ```
+
+**Documentation Quality Standards:**
+- [ ] **Verify all links work after reorganization**
+- [ ] **Ensure consistent header formatting across files**
+- [ ] **Add last-updated metadata to major files**
+- [ ] **Validate all code examples compile/work**
+
+**Acceptance Criteria:**
+
+### **File Organization & Cleanup**
+- [ ] **60%+ reduction** in non-core markdown file count (from 19 to 7-8 remaining files)
+- [ ] **Clear categorization:** All files logically organized in `docs/{architecture,implementation,features,deployment}`
+- [ ] **Consistent naming:** Kebab-case naming convention applied throughout
+- [ ] **Obsolete files removed:** 3 confirmed obsolete files (`INSTALL_REDUX_PERSIST.md`, `SELECTION_STATE_FIX.md`, `TROUBLESHOOTING_STEPS.md`) deleted
+- [ ] **Working cross-references:** All internal markdown links updated and functional
+
+### **Implementation Quality & Thoroughness**
+- [ ] **Git history preserved:** All file moves use `git mv` to maintain version history
+- [ ] **Cross-reference mapping:** All 4 internal links identified and updated correctly
+- [ ] **Code dependency analysis:** Confirmed no TypeScript/JavaScript imports to update
+- [ ] **Line count tracking:** Major files (1,787 + 699+ lines) properly categorized
+- [ ] **Content validation:** No content lost or corrupted during reorganization
+
+### **Navigation & Discoverability**
+- [ ] **Structured navigation:** `docs/README.md` provides clear categorized access
+- [ ] **Logical grouping:** Related files grouped by purpose (architecture, implementation, features)
+- [ ] **Quick access patterns:** Troubleshooting and implementation guides easily findable
+- [ ] **Relative path links:** All internal links use relative paths for maintainability
+- [ ] **Directory-based organization:** Files organized by technical function, not arbitrary categories
+
+### **Process Quality & Validation**
+- [ ] **Systematic execution:** All phases completed in order with validation checkpoints
+- [ ] **Link validation:** All cross-references tested and working post-reorganization
+- [ ] **Git workflow:** Clean commit history showing organized file moves and updates
+- [ ] **No regressions:** All documentation remains accessible and functional
+- [ ] **Maintenance simplicity:** New documentation can be easily added to appropriate directories
+
+**Questions to Resolve:**
+
+- [ ] **Should Task Master documentation be retained** or removed as external tool documentation?
+- [ ] **What level of backward compatibility** should we maintain for any existing bookmarks to moved files?
+- [ ] **Should we add redirect links** in root directory for frequently accessed files?
+- [ ] **How should we handle future documentation** - add to this structure or create new categories?
+- [ ] **Should we implement periodic link validation** to prevent broken cross-references?
+
+**Dependencies:**
+
+- [ ] **Git repository access** for file moves with history preservation
+- [ ] **Cross-reference mapping completed** ✅ (4 internal links identified)
+- [ ] **Content analysis completed** ✅ (All files categorized and obsolete files confirmed)
+- [ ] **No code dependencies** ✅ (Confirmed no TypeScript/JavaScript imports)
+- [ ] **Line count analysis completed** ✅ (Major files sized and prioritized)
+
+**Implementation Strategy:**
+
+**Sequential Execution (5-7 total hours):**
+1. **Phase 1** (1-2h): Remove 3 confirmed obsolete files, evaluate Task Master docs
+2. **Phase 2** (2-3h): Create directory structure, execute systematic file moves with git mv
+3. **Phase 3** (1-2h): Update all 4 cross-references with relative paths, validate links
+4. **Phase 4** (1h): Create navigation index, final quality checks
+
+**Risk Mitigation & Quality Assurance:**
+- **Git history preservation:** All moves use `git mv` to maintain version history
+- **Systematic approach:** Each phase has validation checkpoints before proceeding
+- **Link validation:** Test all cross-references immediately after updates
+- **Content integrity:** No content modification, only organization and link updates
+- **Rollback capability:** Git history allows complete rollback if needed
+
+**Key Success Indicators:**
+- **Quantifiable reduction:** From 19 files to 7-8 well-organized files
+- **Functional validation:** All cross-references work after reorganization
+- **Improved discoverability:** Clear directory structure with logical categorization
+- **Maintainable structure:** Future documentation can be easily categorized and added
+
+---
+
 
 ## 📋 Recently Completed Features
+
+### ✅ Feature Request #4: Multiple RapidAPI Endpoint Selection
+
+**Completed:** July 2025  
+**Goal:** Allow developers to choose between different job freshness levels (7 days, 24 hours, or hourly) to get the most relevant results for their search needs and optimize API usage patterns.
+**Impact:** Successfully implemented the platform's first premium feature with points-based monetization, validating the entire gamification infrastructure and establishing patterns for future premium features.
+**Key Learnings:** The gamification system (PointsManager.spendPointsAtomic) worked flawlessly for premium feature validation. EndpointSelector component provides excellent UX with clear premium feature indicators. Redis cache separation by endpoint ensures optimal performance without conflicts.
+**Implementation Notes:** Implemented comprehensive endpoint selection system with 7-day (free), 24-hour (premium), and hourly (premium) options. Created EndpointSelector component with subscription tier validation, points balance checking, and clear premium feature indicators. Added backend support for dynamic endpoint URLs, premium validation logic with atomic points deduction, and enhanced caching strategy with endpoint-specific cache keys. Features include real-time eligibility checking, tooltip guidance for upgrades, and seamless integration with existing search infrastructure.
 
 ### ✅ Feature Request #13: Developer Dashboard UI/UX Simplification
 
