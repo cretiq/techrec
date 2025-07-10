@@ -5,110 +5,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui-daisy/card';
 import { Badge } from '@/components/ui-daisy/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Lock, 
-  CheckCircle2, 
-  Sparkles, 
+import {
+  Lock,
+  CheckCircle2,
+  Sparkles,
   Calendar,
   Target,
   Info
 } from 'lucide-react';
-import { BadgeDefinition, UserBadgeWithDetails } from '@/types/gamification';
-import { BADGE_DEFINITIONS } from '@/lib/gamification/badgeDefinitions';
+import { BadgeWithProgress } from '@/types/gamification';
 
 interface BadgeGalleryProps {
+  badges: BadgeWithProgress[];
   className?: string;
 }
 
-interface BadgeWithProgress extends BadgeDefinition {
-  userBadge?: UserBadgeWithDetails;
-  progress: number; // 0-100
-  isEarned: boolean;
-  earnedAt?: Date;
-  isInProgress: boolean;
-}
-
-export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
-  const [badges, setBadges] = useState<BadgeWithProgress[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
+  // The state for selectedBadge is kept on the client-side for interactivity
   const [selectedBadge, setSelectedBadge] = useState<BadgeWithProgress | null>(null);
-
-  console.log('🏆 [BadgeGallery] Component mounted');
-
-  useEffect(() => {
-    const fetchBadges = async () => {
-      try {
-        console.log('🏆 [BadgeGallery] Fetching badges...');
-        
-        // For now, use mock data - in production this would fetch from API
-        // TODO: Replace with actual API call to get user badges and progress
-        const mockUserBadges: UserBadgeWithDetails[] = [
-          {
-            id: 'user-badge-1',
-            badgeId: 'first_analysis',
-            badge: BADGE_DEFINITIONS.find(b => b.id === 'first_analysis')!,
-            earnedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-            progress: 1.0
-          },
-          {
-            id: 'user-badge-2',
-            badgeId: 'ai_collaborator',
-            badge: BADGE_DEFINITIONS.find(b => b.id === 'ai_collaborator')!,
-            earnedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            progress: 1.0
-          }
-        ];
-
-        const badgesWithProgress: BadgeWithProgress[] = BADGE_DEFINITIONS.map(badge => {
-          const userBadge = mockUserBadges.find(ub => ub.badgeId === badge.id);
-          
-          // Mock progress calculation
-          let progress = 0;
-          if (userBadge) {
-            progress = 100; // Earned
-          } else {
-            // Mock progress for different badges
-            switch (badge.id) {
-              case 'profile_complete':
-                progress = 65;
-                break;
-              case 'streak_starter':
-                progress = 45;
-                break;
-              case 'first_application':
-                progress = 80;
-                break;
-              default:
-                progress = Math.floor(Math.random() * 60);
-            }
-          }
-
-          return {
-            ...badge,
-            userBadge,
-            progress,
-            isEarned: !!userBadge,
-            earnedAt: userBadge?.earnedAt,
-            isInProgress: progress > 0 && progress < 100
-          };
-        });
-
-        setBadges(badgesWithProgress);
-        setIsLoading(false);
-        
-        console.log('🏆 [BadgeGallery] Badges loaded:', {
-          total: badgesWithProgress.length,
-          earned: badgesWithProgress.filter(b => b.isEarned).length,
-          inProgress: badgesWithProgress.filter(b => b.isInProgress).length
-        });
-      } catch (error) {
-        console.error('🏆 [BadgeGallery] Error fetching badges:', error);
-        setIsLoading(false);
-      }
-    };
-
-    fetchBadges();
-  }, []);
 
   const getTierColor = (tier: string) => {
     switch (tier) {
@@ -153,33 +67,9 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
     return 'Not started';
   };
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" data-testid="badge-gallery-loading">
-        {[...Array(12)].map((_, i) => (
-          <Card
-            key={i}
-            variant="transparent"
-            className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
-          >
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-base-300/50 rounded-lg animate-pulse" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-base-300/50 rounded animate-pulse" />
-                  <div className="h-3 bg-base-300/30 rounded animate-pulse w-2/3" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div className={`space-y-6 ${className}`} data-testid="badge-gallery">
-      
+
       {/* Badge Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <AnimatePresence>
@@ -195,10 +85,10 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                 variant="transparent"
                 className={`
                   cursor-pointer transition-all duration-200 hover:scale-105
-                  ${badge.isEarned 
-                    ? 'bg-green-50/50 border-green-200/50 shadow-lg' 
-                    : badge.isInProgress 
-                      ? 'bg-blue-50/50 border-blue-200/50' 
+                  ${badge.isEarned
+                    ? 'bg-green-50/50 border-green-200/50 shadow-lg'
+                    : badge.isInProgress
+                      ? 'bg-blue-50/50 border-blue-200/50'
                       : 'bg-base-100/60 border-base-300/50'
                   }
                   backdrop-blur-sm hover:shadow-xl
@@ -207,17 +97,17 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                 data-testid={`badge-card-${badge.id}`}
               >
                 <CardContent className="p-4">
-                  
+
                   {/* Badge Header */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <motion.div
                         className={`
                           w-12 h-12 rounded-lg flex items-center justify-center text-2xl border-2
-                          ${badge.isEarned 
-                            ? 'bg-green-500/20 border-green-500/30' 
-                            : badge.isInProgress 
-                              ? 'bg-blue-500/20 border-blue-500/30' 
+                          ${badge.isEarned
+                            ? 'bg-green-500/20 border-green-500/30'
+                            : badge.isInProgress
+                              ? 'bg-blue-500/20 border-blue-500/30'
                               : 'bg-base-200/50 border-base-300/50'
                           }
                         `}
@@ -232,7 +122,7 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                           <Lock className="w-6 h-6 text-base-content/30" />
                         )}
                       </motion.div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-sm text-base-content truncate">
                           {badge.name}
@@ -242,7 +132,7 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                         </p>
                       </div>
                     </div>
-                    
+
                     {/* Status indicator */}
                     <div className="flex-shrink-0">
                       {badge.isEarned ? (
@@ -254,28 +144,28 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Badges and Progress */}
                   <div className="space-y-3">
-                    
+
                     {/* Tier and Rarity */}
                     <div className="flex items-center gap-2">
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={`text-xs ${getTierColor(badge.tier)}`}
                         data-testid={`badge-tier-${badge.id}`}
                       >
                         {badge.tier}
                       </Badge>
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={`text-xs ${getRarityColor(badge.rarity)}`}
                         data-testid={`badge-rarity-${badge.id}`}
                       >
                         {badge.rarity}
                       </Badge>
                     </div>
-                    
+
                     {/* Progress Bar */}
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs">
@@ -286,35 +176,27 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                           +{badge.xpReward} XP
                         </span>
                       </div>
-                      <Progress 
-                        value={badge.progress} 
+                      <Progress
+                        value={badge.progress}
                         className="h-2"
                         data-testid={`badge-progress-${badge.id}`}
                       />
                     </div>
-                    
+
                     {/* Earned Date */}
-                    {badge.earnedAt && (
-                      <div className="flex items-center gap-1 text-xs text-green-600">
-                        <Calendar className="w-3 h-3" />
-                        <span>
-                          Earned {badge.earnedAt.toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </CardContent>
-                
+
                 {/* Earned Badge Glow */}
                 {badge.isEarned && (
                   <motion.div
                     className="absolute inset-0 rounded-lg bg-gradient-to-r from-green-400/20 to-blue-400/20 blur-sm -z-10"
-                    animate={{ 
+                    animate={{
                       opacity: [0.3, 0.6, 0.3],
                       scale: [1, 1.05, 1]
                     }}
-                    transition={{ 
-                      duration: 2, 
+                    transition={{
+                      duration: 2,
                       repeat: Infinity,
                       ease: "easeInOut"
                     }}
@@ -346,19 +228,19 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="space-y-4">
-                
+
                 {/* Badge Header */}
                 <div className="flex items-center gap-4">
                   <div className={`
                     w-16 h-16 rounded-lg flex items-center justify-center text-4xl border-2
-                    ${selectedBadge.isEarned 
-                      ? 'bg-green-500/20 border-green-500/30' 
+                    ${selectedBadge.isEarned
+                      ? 'bg-green-500/20 border-green-500/30'
                       : 'bg-base-200/50 border-base-300/50'
                     }
                   `}>
                     {selectedBadge.isEarned ? '✅' : selectedBadge.icon}
                   </div>
-                  
+
                   <div className="flex-1">
                     <h2 className="text-xl font-bold text-base-content">
                       {selectedBadge.name}
@@ -368,30 +250,30 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Badge Details */}
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={`${getTierColor(selectedBadge.tier)}`}
                     >
                       {selectedBadge.tier} Tier
                     </Badge>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={`${getRarityColor(selectedBadge.rarity)}`}
                     >
                       {selectedBadge.rarity}
                     </Badge>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={`${getCategoryColor(selectedBadge.category)}`}
                     >
                       {selectedBadge.category.replace('_', ' ')}
                     </Badge>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-primary" />
                     <span className="text-sm text-base-content">
@@ -399,7 +281,7 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                     </span>
                   </div>
                 </div>
-                
+
                 {/* Progress */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -410,7 +292,7 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                   </div>
                   <Progress value={selectedBadge.progress} className="h-3" />
                 </div>
-                
+
                 {/* Requirements */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -421,21 +303,21 @@ export function BadgeGallery({ className = '' }: BadgeGalleryProps) {
                   </div>
                   <div className="p-3 bg-base-200/50 rounded-lg">
                     <p className="text-sm text-base-content/70">
-                      {selectedBadge.requirements.type.replace('_', ' ')} - 
+                      {selectedBadge.requirements.type.replace('_', ' ')} -
                       Threshold: {selectedBadge.requirements.threshold}
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Close Button */}
                 <div className="flex justify-end">
-                  <Button 
-                    variant="outline" 
+                  <button
+                    className="btn btn-outline"
                     onClick={() => setSelectedBadge(null)}
                     data-testid="badge-detail-close"
                   >
                     Close
-                  </Button>
+                  </button>
                 </div>
               </div>
             </motion.div>

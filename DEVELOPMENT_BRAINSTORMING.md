@@ -15,6 +15,7 @@
   - [Feature Request #8: Button Styling Consistency & Coherence](#feature-request-8-button-styling-consistency--coherence)
   - [Feature Request #11: Post-Signup Success Message on Sign-In Page](#feature-request-11-post-signup-success-message-on-sign-in-page)
 - [📋 Recently Completed Features](#-recently-completed-features)
+  - [✅ Feature Request #13: Developer Dashboard UI/UX Simplification](#feature-request-13-developer-dashboard-uiux-simplification)
   - [✅ Feature Request #12: Gamified Developer Welcome Dashboard](#-feature-request-12-gamified-developer-welcome-dashboard)
   - [✅ Feature Request #1: Developer-Role Matching Score System](#-feature-request-1-developer-role-matching-score-system)
   - [✅ Feature Request #2: Smart Application Routing & Easy Apply Detection](#-feature-request-2-smart-application-routing--easy-apply-detection)
@@ -49,6 +50,7 @@
 - ✅ CV parsing data persistence to developer database profile → **Moved to Feature Request #9**
 - ✅ Post-signup success message on sign-in page → **Moved to Feature Request #11**
 - ✅ Gamified developer welcome dashboard → **Moved to Feature Request #12**
+- ✅ Developer Dashboard UI/UX Simplification → **Moved to Feature Request #13**
 
 ### Immediate Next Features (This Sprint)
 
@@ -169,12 +171,19 @@
 **Questions to Resolve:**
 
 - [ ] Should we default to 7-day for broader results or 24h for freshness?
+answer: yes, 7 days default
 - [ ] How do we handle plan validation for Hourly endpoint?
+Follow-up question: how do you mean validation?
 - [ ] Should we show estimated job counts per endpoint?
+answer: No
 - [ ] Do we want to automatically suggest better endpoints based on search criteria?
+answer: No
 - [ ] Should endpoint selection be prominent or in advanced filters?
+answer: we should make it so that searching with 24 or 1 hour endpoint is a premium feature as they are better for being an early applicant for the role, which can potentially lead to higher chance of getting the job. Look at the gamification strategy.md. I think we should put 24 and 1 hour search possibility in "Starter" tier, but it should still cost 5 points to use those searches.
 - [ ] How do we handle caching conflicts between endpoints?
+answer: we always want to cache only the latest search, nothing fancy going on there.
 - [ ] Should we warn users about performance implications of description_filter with 7-day endpoint?
+answer: No, this should just work.
 
 **Dependencies:**
 
@@ -332,6 +341,8 @@
 - [ ] No more custom `border-*` classes for standard button styles
 - [ ] No more `
 
+---
+
 ### Feature Request #9: Comprehensive CV Data Persistence to Developer Database Profile
 
 **Status:** Incomplete / Buggy
@@ -432,6 +443,14 @@
 
 
 ## 📋 Recently Completed Features
+
+### ✅ Feature Request #13: Developer Dashboard UI/UX Simplification
+
+**Completed:** July 2025
+**Goal:** To simplify and declutter the developer dashboard, improving clarity, focusing on essential information, and making key actions more prominent.
+**Impact:** Significantly improved dashboard clarity and user focus by removing visual clutter and simplifying the layout. The 50/50 column split provides a more balanced and readable interface, and the larger Quick Action buttons guide users more effectively.
+**Key Learnings:** Simplifying a UI can have a major impact on user experience. Commenting out components is a fast and effective way to test layout changes without permanent code removal. Standardized button sizes are crucial for creating a clear visual hierarchy.
+**Implementation Notes:** Successfully refactored the developer dashboard by commenting out the `DailyStreak` component and simplifying the `OnboardingRoadmap` and `DashboardStats` components to remove non-essential information. The main layout in `app/developer/dashboard/page.tsx` was adjusted to a 50/50 grid, and the "Quick Actions" buttons were enlarged using the `size="lg"` variant for better visibility. The "Welcome back" text was also removed to further declutter the UI.
 
 ### ✅ Feature Request #12: Gamified Developer Welcome Dashboard
 

@@ -1,44 +1,44 @@
-import { redirect } from "next/navigation"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { Suspense } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card'
-import { Badge } from '@/components/ui-daisy/badge'
-import { Button } from '@/components/ui-daisy/button'
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { Suspense } from "react";
+import { Card, CardContent } from '@/components/ui-daisy/card';
+import { Badge } from '@/components/ui-daisy/badge';
+import { Button } from '@/components/ui-daisy/button';
 import { 
   Trophy, 
   ArrowLeft, 
   Filter, 
   Search,
-  Lock,
   CheckCircle2,
-  Sparkles,
-  Calendar,
   Target,
   Star
-} from "lucide-react"
-import Link from "next/link"
-import { BadgeGallery } from "@/components/badges/BadgeGallery"
+} from "lucide-react";
+import Link from "next/link";
+import { BadgeGallery } from "@/components/badges/BadgeGallery";
+import { getBadgesForDeveloper } from "@/lib/gamification/data";
 
 /**
  * Developer Badges Page
  * 
  * Displays all available badges and the user's badge collection progress.
- * Features:
- * - Grid layout of all available badges
- * - Filter by category, tier, and earned status
- * - Badge details with requirements and progress
- * - Celebration animations for earned badges
- * - Badge statistics and completion tracking
  */
 export default async function BadgesPage() {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
-  if (!session) {
-    redirect("/auth/signin")
+  if (!session?.user?.id) {
+    redirect("/auth/signin");
   }
 
-  console.log('🏆 [BadgesPage] Loading badges page for user:', session.user?.email)
+  console.log('🏆 [BadgesPage] Loading badges page for user:', session.user?.email);
+
+  const badges = await getBadgesForDeveloper(session.user.id);
+
+  const earnedCount = badges.filter(b => b.isEarned).length;
+  const inProgressCount = badges.filter(b => b.isInProgress).length;
+  const rareBadgesCount = badges.filter(b => b.isEarned && (b.rarity === 'RARE' || b.rarity === 'EPIC' || b.rarity === 'LEGENDARY')).length;
+  // Avoid division by zero if there are no badges defined
+  const completionPercentage = badges.length > 0 ? Math.round((earnedCount / badges.length) * 100) : 0;
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8" data-testid="badges-page">
@@ -89,7 +89,7 @@ export default async function BadgesPage() {
             <div className="w-12 h-12 mx-auto mb-3 bg-green-500/20 rounded-full flex items-center justify-center">
               <CheckCircle2 className="w-6 h-6 text-green-600" />
             </div>
-            <div className="text-2xl font-bold text-base-content">8</div>
+            <div className="text-2xl font-bold text-base-content">{earnedCount}</div>
             <div className="text-sm text-base-content/70">Badges Earned</div>
           </CardContent>
         </Card>
@@ -102,7 +102,7 @@ export default async function BadgesPage() {
             <div className="w-12 h-12 mx-auto mb-3 bg-blue-500/20 rounded-full flex items-center justify-center">
               <Target className="w-6 h-6 text-blue-600" />
             </div>
-            <div className="text-2xl font-bold text-base-content">15</div>
+            <div className="text-2xl font-bold text-base-content">{inProgressCount}</div>
             <div className="text-sm text-base-content/70">In Progress</div>
           </CardContent>
         </Card>
@@ -115,7 +115,7 @@ export default async function BadgesPage() {
             <div className="w-12 h-12 mx-auto mb-3 bg-purple-500/20 rounded-full flex items-center justify-center">
               <Star className="w-6 h-6 text-purple-600" />
             </div>
-            <div className="text-2xl font-bold text-base-content">3</div>
+            <div className="text-2xl font-bold text-base-content">{rareBadgesCount}</div>
             <div className="text-sm text-base-content/70">Rare Badges</div>
           </CardContent>
         </Card>
@@ -128,13 +128,13 @@ export default async function BadgesPage() {
             <div className="w-12 h-12 mx-auto mb-3 bg-orange-500/20 rounded-full flex items-center justify-center">
               <Trophy className="w-6 h-6 text-orange-600" />
             </div>
-            <div className="text-2xl font-bold text-base-content">35%</div>
+            <div className="text-2xl font-bold text-base-content">{completionPercentage}%</div>
             <div className="text-sm text-base-content/70">Completion</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Badge Categories */}
+      {/* Badge Categories (this remains static for now) */}
       <div className="mb-8" data-testid="badges-categories">
         <h2 className="text-2xl font-semibold mb-4">Badge Categories</h2>
         
@@ -183,7 +183,7 @@ export default async function BadgesPage() {
         </div>
         
         <Suspense fallback={<BadgeGallerySkeleton />}>
-          <BadgeGallery />
+          <BadgeGallery badges={badges} />
         </Suspense>
       </div>
     </div>

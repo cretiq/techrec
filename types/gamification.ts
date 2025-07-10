@@ -50,6 +50,13 @@ export interface UserBadgeWithDetails {
   progress: number; // 0.0 to 1.0 for progressive badges
 }
 
+export interface BadgeWithProgress extends BadgeDefinition {
+  isEarned: boolean;
+  earnedAt?: Date;
+  progress: number;
+  isInProgress: boolean;
+}
+
 export interface BadgeCriteria {
   type: 'profile_completeness' | 'suggestions_accepted' | 'applications_submitted' | 
         'cv_analyses_completed' | 'login_streak' | 'skill_count' | 'custom';
