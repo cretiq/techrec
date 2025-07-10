@@ -14,6 +14,7 @@
   - [Feature Request #4: Multiple RapidAPI Endpoint Selection](#feature-request-4-multiple-rapidapi-endpoint-selection)
   - [Feature Request #8: Button Styling Consistency & Coherence](#feature-request-8-button-styling-consistency--coherence)
   - [Feature Request #11: Post-Signup Success Message on Sign-In Page](#feature-request-11-post-signup-success-message-on-sign-in-page)
+  - [Feature Request #14: Comprehensive Cache Invalidation on Sign-Out](#feature-request-14-comprehensive-cache-invalidation-on-sign-out)
 - [📋 Recently Completed Features](#-recently-completed-features)
   - [✅ Feature Request #13: Developer Dashboard UI/UX Simplification](#feature-request-13-developer-dashboard-uiux-simplification)
   - [✅ Feature Request #12: Gamified Developer Welcome Dashboard](#-feature-request-12-gamified-developer-welcome-dashboard)
@@ -466,6 +467,269 @@ This feature was previously blocked pending investigation into the existence of 
 - [ ] Modification of `app/api/auth/register/route.ts` to include the redirect with a query parameter.
 - [ ] Modification of `app/auth/signin/page.tsx` to handle the query parameter and display the message.
 - [ ] An existing, styleable `Alert` component for displaying the message.
+
+---
+
+### Feature Request #14: Comprehensive Cache Invalidation on Sign-Out
+
+**Status:** Ready for Development  
+**Priority:** High
+
+**Goal:** To ensure all user-specific data is completely cleared from both client-side (browser) and server-side (Redis) caches upon user sign-out. This guarantees data privacy, prevents state-related bugs for subsequent users on the same browser, and ensures a clean application state.
+
+**User Story:** As a user, when I sign out of the application, I expect all of my personal data and session information to be securely and completely removed from the browser and server caches, so that my privacy is protected and the application is reset to a clean, default state for the next user.
+
+**Success Metrics:**
+
+- 100% of persisted Redux state is cleared from `localStorage` on sign-out.
+- All user-specific Redis keys are successfully deleted from the server-side cache on sign-out.
+- No user data from a previous session is visible after signing out and signing in with a different account on the same browser.
+- A significant reduction in bug reports related to inconsistent state after user sign-out/sign-in cycles.
+
+## 🔧 **DETAILED IMPLEMENTATION PLAN**
+
+### **Phase 1: Backend API Endpoint Creation**
+
+**File:** `app/api/auth/clear-session-cache/route.ts`
+
+**Implementation Requirements:**
+
+```typescript
+// Required imports and structure
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { GamificationQueryOptimizer } from '@/lib/gamification/queryOptimizer'
+
+// POST handler implementation
+export async function POST(request: NextRequest) {
+  // 1. Session validation
+  // 2. User ID extraction
+  // 3. Cache invalidation using existing infrastructure
+  // 4. Error handling with graceful degradation
+  // 5. Response with success/failure status
+}
+```
+
+**Specific Implementation Details:**
+
+1. **Session Validation:**
+   - Use `getServerSession(authOptions)` to validate the user session
+   - Return 401 if no valid session exists
+   - Extract `userId` from session object
+
+2. **Cache Invalidation:**
+   - Call `GamificationQueryOptimizer.getInstance().invalidateUserCaches(userId)`
+   - This method already handles all user-specific Redis patterns:
+     - `user_profile:${userId}`
+     - `cv_count:${userId}:*`
+     - `app_stats:${userId}`
+     - `badge_eval_batch:*${userId}*`
+     - `leaderboard:*`
+
+3. **Error Handling:**
+   - Wrap cache invalidation in try-catch
+   - Log errors but return success status (don't block logout)
+   - Include debug information in development mode
+
+4. **Response Format:**
+   ```typescript
+   return NextResponse.json({
+     success: true,
+     message: 'Cache cleared successfully',
+     clearedKeys: number, // for debugging
+     timestamp: new Date().toISOString()
+   })
+   ```
+
+### **Phase 2: Frontend Integration**
+
+**File:** `components/nav.tsx`
+
+**Modification to `handleLogout` function:**
+
+```typescript
+const handleLogout = async () => {
+  setIsNavigating(true)
+  
+  try {
+    // NEW: Call cache clearing endpoint
+    try {
+      const response = await fetch('/api/auth/clear-session-cache', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      
+      if (response.ok) {
+        console.log('[Logout] Server-side cache cleared successfully')
+      } else {
+        console.warn('[Logout] Server-side cache clearing failed, continuing with logout')
+      }
+    } catch (cacheError) {
+      console.warn('[Logout] Cache clearing request failed:', cacheError)
+      // Continue with logout regardless of cache clearing failure
+    }
+    
+    // ✅ EXISTING: Client-side cache clearing (already implemented)
+    dispatch(userLoggedOut())
+    await persistor.purge()
+    await signOut({ redirect: false })
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Logout] Complete cleanup: Redux state cleared and persistor purged')
+    }
+    
+    router.push('/')
+    router.refresh()
+  } catch (error) {
+    console.error('Logout error:', error)
+    router.push('/')
+    router.refresh()
+  } finally {
+    setIsNavigating(false)
+  }
+}
+```
+
+**Key Implementation Notes:**
+
+- **Non-blocking:** Cache clearing failure doesn't prevent user logout
+- **Graceful degradation:** Existing client-side clearing continues to work
+- **Error logging:** Comprehensive logging for debugging
+- **Backwards compatible:** No breaking changes to existing functionality
+
+### **Phase 3: Testing & Validation**
+
+**Manual Testing Checklist:**
+
+1. **Cache Clearing Validation:**
+   - [ ] User-specific Redis keys are deleted after logout
+   - [ ] Client-side localStorage is cleared
+   - [ ] Redux state is reset to initial values
+
+2. **Multi-User Testing:**
+   - [ ] Sign in as User A, perform actions, sign out
+   - [ ] Sign in as User B on same browser
+   - [ ] Verify no User A data is visible to User B
+
+3. **Error Resilience:**
+   - [ ] Test logout when Redis is unavailable
+   - [ ] Test logout when API endpoint fails
+   - [ ] Verify user is still logged out in failure scenarios
+
+4. **Performance Testing:**
+   - [ ] Measure logout time impact
+   - [ ] Verify no UI blocking during cache clearing
+   - [ ] Test with large amounts of cached data
+
+### **Phase 4: Monitoring & Observability**
+
+**Logging Strategy:**
+
+1. **Development Logging:**
+   - Detailed cache clearing operations
+   - Key patterns and counts
+   - Performance metrics
+
+2. **Production Logging:**
+   - Error rates and types
+   - Cache clearing success/failure rates
+   - Performance impact metrics
+
+**Monitoring Points:**
+
+- Cache clearing API endpoint response times
+- Redis operation success rates
+- User logout completion rates
+- Error frequency and patterns
+
+## ✅ **ACCEPTANCE CRITERIA**
+
+### **Backend Implementation**
+-   [ ] **API Endpoint Created:** `POST /api/auth/clear-session-cache` endpoint exists at the correct file path
+-   [ ] **Session Security:** Endpoint validates user session using `getServerSession(authOptions)`
+-   [ ] **Cache Invalidation:** Endpoint calls `GamificationQueryOptimizer.getInstance().invalidateUserCaches(userId)`
+-   [ ] **Error Handling:** Endpoint handles Redis failures gracefully and returns success status
+-   [ ] **Response Format:** Endpoint returns structured JSON with success status and debug information
+
+### **Frontend Integration**
+-   [ ] **API Call Integration:** `handleLogout` function calls the cache clearing endpoint
+-   [ ] **Non-blocking Behavior:** Cache clearing failures don't prevent user logout
+-   [ ] **Error Logging:** Comprehensive logging for debugging cache clearing operations
+-   [ ] ✅ **Client-side Clearing:** `persistor.purge()` and `userLoggedOut()` already implemented
+-   [ ] **Backwards Compatibility:** No breaking changes to existing logout functionality
+
+### **Data Privacy & Security**
+-   [ ] **Redis Cache Clearing:** User-specific Redis keys are deleted after logout:
+    - `user_profile:${userId}` (gamification profiles)
+    - `cv_count:${userId}:*` (CV count caches)
+    - `app_stats:${userId}` (application statistics)
+    - `badge_eval_batch:*${userId}*` (badge evaluation caches)
+    - `leaderboard:*` (leaderboard invalidation)
+-   [ ] **Client-side Clearing:** localStorage and Redux state completely cleared
+-   [ ] **Multi-user Privacy:** No data leakage between different users on same browser
+
+### **Testing & Validation**
+-   [ ] **Functional Testing:** Multi-user scenario testing confirms no data leakage
+-   [ ] **Error Resilience:** Logout works when Redis is unavailable
+-   [ ] **Performance Testing:** Logout time impact is acceptable (<2 seconds)
+-   [ ] **Debug Verification:** Development logging shows cache clearing operations
+
+**Questions to Resolve:**
+
+-   [✅] What is the exact key-naming convention for user-specific data in Redis?
+**Answer:** Investigation revealed multiple Redis key patterns used throughout the application:
+    - **Gamification**: `user_profile:${userId}`, `cv_count:${userId}:*`, `app_stats:${userId}`, `badge_eval_batch:*${userId}*`
+    - **Leaderboards**: `leaderboard:*` (affects all users when any user changes)
+    - **CV Analysis**: `cv_analysis:${fileHash}` (not user-specific, but should be cleared for privacy)
+    - **Cover Letters**: `cover_letter:${dataHash}` (not user-specific, but should be cleared for privacy)
+    - **Config Service**: `config:points-costs`, `config:xp-rewards`, `config:subscription-tiers` (global, should not be cleared)
+    - **RapidAPI Cache**: Uses parameter hashes, not user-specific (can remain cached)
+
+-   [✅] How is the `persistor` object currently made available to the UI components?
+**Answer:** The `persistor` object is exported from `@/lib/store` and is already imported and used in `components/nav.tsx`. It's available globally through the import system, not through React Context.
+
+-   [✅] Where is the primary sign-out button/logic located?
+**Answer:** Located in `components/nav.tsx` in the `UserNav` component, specifically in the `handleLogout` function. **Important discovery**: The current implementation already includes `persistor.purge()` and Redux state clearing via `userLoggedOut()` action.
+
+## 🔗 **DEPENDENCIES & INFRASTRUCTURE**
+
+### **✅ Available Infrastructure (Ready to Use)**
+-   **Authentication:** `next-auth/react` and `getServerSession` for session management
+-   **Cache Management:** `GamificationQueryOptimizer.invalidateUserCaches()` method already implemented
+-   **Client-side Persistence:** `redux-persist` with `persistor.purge()` already integrated
+-   **Redis Client:** Available through existing gamification infrastructure
+-   **Logout Logic:** `handleLogout` function in `components/nav.tsx` already handles client-side clearing
+
+### **📋 Implementation Requirements**
+-   **New API Route:** `app/api/auth/clear-session-cache/route.ts` (needs creation)
+-   **Frontend Modification:** Add API call to existing `handleLogout` function
+-   **Testing Scripts:** Manual testing checklist and validation procedures
+
+### **🔧 Technical Dependencies**
+-   **Session Access:** `@/lib/auth` authOptions configuration
+-   **Cache Patterns:** User-specific Redis key patterns (already documented)
+-   **Error Handling:** Graceful degradation patterns for cache failures
+-   **Logging:** Development and production logging strategies
+
+## 📝 **IMPLEMENTATION NOTES**
+
+### **Key Design Decisions**
+1. **Non-blocking Design:** Cache clearing failures don't prevent logout
+2. **Leverage Existing Infrastructure:** Use `GamificationQueryOptimizer` instead of custom Redis operations
+3. **Graceful Degradation:** Maintain existing client-side clearing as fallback
+4. **Security First:** Validate session before any cache operations
+
+### **Performance Considerations**
+- Cache clearing operations are asynchronous and non-blocking
+- Redis operations are batched through existing optimizer
+- Client-side clearing continues to work independently
+- No impact on user experience during normal logout flow
+
+### **Final Questions to Resolve**
+-   [ ] Should the cache clearing API endpoint also clear content-hash based caches (CV analysis, cover letters) for additional privacy, even though they're not user-specific?
+-   [ ] Should we add logging/analytics to track cache clearing operations for debugging purposes?
+-   [ ] What should be the timeout for the cache clearing API call to avoid blocking logout?
 
 ---
 

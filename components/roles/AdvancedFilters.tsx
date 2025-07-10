@@ -25,10 +25,9 @@ import {
   Building2,
   Zap,
   CheckCircle,
-  AlertCircle,
-  Calendar,
-  Crown
+  AlertCircle
 } from 'lucide-react'
+import EndpointSelector from './EndpointSelector'
 import type { SearchParameters } from '@/lib/api/rapidapi-cache'
 import RapidApiValidator, { type ValidationResult } from '@/lib/api/rapidapi-validator'
 import { 
@@ -280,101 +279,12 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             </div>
           </div>
 
-          {/* Job Freshness Selection */}
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Job Freshness
-            </Label>
-            <div className="space-y-3">
-              {/* Free Option */}
-              <div className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  id="endpoint-7d"
-                  name="endpoint"
-                  value="7d"
-                  checked={filters.endpoint === '7d'}
-                  onChange={(e) => updateFilters({ endpoint: e.target.value })}
-                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                  data-testid="advanced-filters-radio-endpoint-7d"
-                />
-                <label htmlFor="endpoint-7d" className="flex items-center justify-between flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">Last 7 Days</span>
-                    <Badge variant="outline" className="text-xs">Free</Badge>
-                  </div>
-                  <span className="text-xs text-muted-foreground">Broadest selection</span>
-                </label>
-              </div>
-
-              {/* Premium Options */}
-              <div className="border-l-2 border-primary/20 pl-4 space-y-3">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Crown className="h-3 w-3" />
-                  <span>Premium Features (5 points each)</span>
-                </div>
-                
-                {/* 24 Hour Option */}
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="radio"
-                    id="endpoint-24h"
-                    name="endpoint"
-                    value="24h"
-                    checked={filters.endpoint === '24h'}
-                    onChange={(e) => updateFilters({ endpoint: e.target.value })}
-                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                    data-testid="advanced-filters-radio-endpoint-24h"
-                    // TODO: Disable based on user subscription/points
-                  />
-                  <label htmlFor="endpoint-24h" className="flex items-center justify-between flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Last 24 Hours</span>
-                      <Badge variant="secondary" className="text-xs">5 pts</Badge>
-                    </div>
-                    <span className="text-xs text-muted-foreground">Fresh opportunities</span>
-                  </label>
-                </div>
-
-                {/* 1 Hour Option */}
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="radio"
-                    id="endpoint-1h"
-                    name="endpoint"
-                    value="1h"
-                    checked={filters.endpoint === '1h'}
-                    onChange={(e) => updateFilters({ endpoint: e.target.value })}
-                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300"
-                    data-testid="advanced-filters-radio-endpoint-1h"
-                    // TODO: Disable based on user subscription/points
-                  />
-                  <label htmlFor="endpoint-1h" className="flex items-center justify-between flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Last Hour</span>
-                      <Badge variant="secondary" className="text-xs">5 pts</Badge>
-                    </div>
-                    <span className="text-xs text-muted-foreground">Latest postings</span>
-                  </label>
-                </div>
-
-                {/* Premium Feature Notice */}
-                <div className="text-xs text-muted-foreground bg-muted/50 rounded-md p-2">
-                  <div className="flex items-start gap-2">
-                    <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium">Premium search endpoints require:</p>
-                      <ul className="mt-1 space-y-0.5 text-xs">
-                        <li>• Starter subscription tier or higher</li>
-                        <li>• 5 points per search</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Job Freshness Selection - Refactored to use proper DaisyUI components */}
+          <EndpointSelector
+            value={filters.endpoint || '7d'}
+            onValueChange={(endpoint) => updateFilters({ endpoint })}
+            disabled={loading || disabled}
+          />
         </div>
 
         <Separator />
