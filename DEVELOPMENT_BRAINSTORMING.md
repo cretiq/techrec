@@ -98,8 +98,16 @@
 
 ### Feature Request #4: Multiple RapidAPI Endpoint Selection
 
-**Status:** Planning Phase
+**Status:** Ready for Development
 **Priority:** Medium
+
+**Review Summary (Second Review):**
+This feature was previously blocked pending investigation into the existence of the required gamification and subscription infrastructure. After a detailed analysis of the `GAMIFICATION_STRATEGY.md` document, it has been confirmed that the necessary backend systems are in place.
+
+- **Points Management**: The `PointsManager.spendPointsAtomic` service provides the required atomic transaction for spending points on premium searches.
+- **Subscription Validation**: The user's subscription tier (`STARTER` or higher) and points balance will be validated on the backend as part of the `spendPointsAtomic` call.
+- **Configuration**: The cost for premium searches is managed by the `ConfigService`.
+- **Conclusion**: The feature is unblocked and ready for implementation. The development plan is sound.
 
 **Goal:** Allow developers to choose between different job freshness levels (7 days, 24 hours, or hourly) to get the most relevant results for their search needs and optimize API usage patterns.
 
@@ -113,7 +121,6 @@
 - Improved user satisfaction with result relevance
 
 **Available API Endpoints (✅ All Available):**
-
 - **7 Days Endpoint** (`active-jb-7d`) - Jobs from last 7 days ✅ **Currently Implemented**
 - **24 Hours Endpoint** (`active-jb-24h`) - Jobs indexed in last 24 hours ⚠️ **API Available, Not Implemented**
 - **Hourly Endpoint** (`active-jb-1h`) - Jobs from last hour (Ultra & Mega plans only) ⚠️ **API Available, Not Implemented**
@@ -124,31 +131,52 @@
 - **24 Hours**: Fresh opportunities, better for daily job hunting
 - **Hourly**: Latest postings, optimal for premium users with urgent needs
 
+**Feature Requirements:**
+- The default search endpoint will be **7 days**.
+- The UI will **not** show estimated job counts per endpoint.
+- The system will **not** automatically suggest different endpoints to the user.
+- The **24-hour** and **1-hour** search options are **premium features**.
+  - **Subscription Requirement**: Users must be on the **"Starter"** tier or higher.
+  - **Gamification Cost**: Each premium search (24h or 1h) will cost **5 points**.
+- The UI should **not** warn users about potential performance issues with `description_filter`.
+
 **Technical Implementation Plan:**
 
-1. **Backend Enhancement** - Make API endpoint dynamic based on user selection
-2. **Parameter Addition** - Add `endpoint` or `time_range` parameter to search
-3. **Frontend UI** - Add endpoint selector in search filters
-4. **Plan Validation** - Check user's API plan for Hourly endpoint access
-5. **Cache Strategy** - Separate caching by endpoint to avoid conflicts
+1.  **Backend Enhancement** - Make API endpoint dynamic based on user selection.
+2.  **Parameter Addition** - Add `endpoint` or `time_range` parameter to search.
+3.  **Frontend UI** - Add endpoint selector in search filters. The default selection will be "7 days".
+4.  **Premium Feature Validation (Backend)** - Before executing a premium search (24h or 1h):
+    -   Check if the user's subscription plan is "Starter" tier or higher.
+    -   Check if the user has at least 5 points.
+    -   If validation passes, deduct 5 points from the user's account.
+    -   If validation fails, return an appropriate error message.
+5.  **Plan Validation** - Check user's API plan for Hourly endpoint access
+6.  **Cache Strategy** - Ensure the caching mechanism uses a key that includes the selected endpoint to prevent conflicts. The cache should only store the most recent search results.
+7.  **Frontend UI for Premium Features** -
+    -   If a user is eligible, the 24h and 1h options are enabled. Display the 5-point cost clearly.
+    -   If a user is not eligible, disable the premium options and show a tooltip or message guiding them to upgrade their plan.
 
 **Acceptance Criteria:**
 
-- [ ] Add endpoint selection UI component in AdvancedFilters
-- [ ] Implement dynamic endpoint URL construction in API route
-- [ ] Add endpoint parameter to SearchParameters interface
-- [ ] Validate Hourly endpoint access based on API plan
-- [ ] Update cache keys to include endpoint selection
-- [ ] Show endpoint-specific information in search results
-- [ ] Add endpoint selection to search form state management
-- [ ] Display appropriate warnings for endpoint limitations
+-   [ ] Add endpoint selection UI component (e.g., radio buttons) in `AdvancedFilters`, defaulted to "7 days".
+-   [ ] Implement dynamic endpoint URL construction in the backend API route based on the `endpoint` parameter.
+-   [ ] Add `endpoint` parameter to the `SearchParameters` interface.
+-   [ ] **Premium Logic**:
+    -   [ ] When a user selects a 24h or 1h search, the frontend confirms the 5-point cost.
+    -   [ ] The backend validates the user's subscription tier and points balance before executing a premium search.
+    -   [ ] 5 points are successfully deducted upon a valid premium search.
+    -   [ ] If the user has insufficient points or the wrong subscription tier, the API returns an error and the frontend displays a clear message.
+-   [ ] **UI States**:
+    -   [ ] For non-premium users, the 24h and 1h options are disabled, with a message prompting an upgrade.
+-   [ ] Update cache keys to include the endpoint selection to ensure fresh data.
+-   [ ] The system functions correctly without performance warnings for `description_filter`.
 
 **Technical Details from Documentation:**
 
 - **7 Days**: `https://linkedin-job-search-api.p.rapidapi.com/active-jb-7d` (current)
 - **24 Hours**: `https://linkedin-job-search-api.p.rapidapi.com/active-jb-24h` (estimated)
 - **Hourly**: `https://linkedin-job-search-api.p.rapidapi.com/active-jb-1h` (estimated, Ultra & Mega plans)
-- **Performance Note**: `description_filter` has timeout risks with 7-day endpoint, recommended for 24h/Hourly
+- **Performance Note**: `description_filter` has timeout risks with 7-day endpoint, but per requirements, no user-facing warning will be shown.
 - **Refresh Schedule**: Hourly refresh with 1-2 hour delay, 2-hour delay for Hourly endpoint
 
 **Implementation Requirements:**
@@ -157,12 +185,16 @@
   - Add `endpoint` parameter to SearchParameters interface
   - Update API route to construct dynamic endpoint URLs
   - Add endpoint validation (check plan for Hourly access)
+  - **Add premium validation logic (tier and points check).**
+  - **Implement points deduction logic.**
   - Update cache keys to separate by endpoint
 - [ ] **Frontend Changes**:
   - Add endpoint selector component (radio buttons or dropdown)
-  - Update AdvancedFilters to include time range selection
+  - Update `AdvancedFilters` to include time range selection
+  - **Display point cost for premium searches.**
+  - **Implement disabled/enabled states for premium options based on user eligibility.**
+  - **Show appropriate warnings for insufficient points or subscription level.**
   - Add endpoint selection to search form state
-  - Display endpoint-specific warnings and info
 - [ ] **Validation & UX**:
   - Show warning for Hourly endpoint if not on Ultra/Mega plan
   - Display endpoint info (job count estimates, freshness)
@@ -170,25 +202,20 @@
 
 **Questions to Resolve:**
 
-- [ ] Should we default to 7-day for broader results or 24h for freshness?
-answer: yes, 7 days default
-- [ ] How do we handle plan validation for Hourly endpoint?
-Follow-up question: how do you mean validation?
-- [ ] Should we show estimated job counts per endpoint?
-answer: No
-- [ ] Do we want to automatically suggest better endpoints based on search criteria?
-answer: No
-- [ ] Should endpoint selection be prominent or in advanced filters?
-answer: we should make it so that searching with 24 or 1 hour endpoint is a premium feature as they are better for being an early applicant for the role, which can potentially lead to higher chance of getting the job. Look at the gamification strategy.md. I think we should put 24 and 1 hour search possibility in "Starter" tier, but it should still cost 5 points to use those searches.
-- [ ] How do we handle caching conflicts between endpoints?
-answer: we always want to cache only the latest search, nothing fancy going on there.
-- [ ] Should we warn users about performance implications of description_filter with 7-day endpoint?
-answer: No, this should just work.
+- [✅] How exactly should the user's subscription plan and points balance be validated on the backend? Is there an existing service or utility for this?
+**Answer:** Yes. The backend will call the existing `PointsManager.spendPointsAtomic` service. This service is responsible for atomically validating the user's subscription tier, checking their points balance, and deducting the points for the `ADVANCED_SEARCH` action.
+
+- [✅] What should the UI look like when a user has the right plan but insufficient points?
+**Answer:** The 24-hour and 1-hour options should be grayed out ("inactive"), and a small message or tooltip next to them should read "Not enough points." This will require the frontend to fetch the user's current point balance.
 
 **Dependencies:**
 
+- [✅] **Gamification System**: For checking and deducting user points.
+  - **Implementation Note**: Use the `POST /api/gamification/points` endpoint, which should trigger the `PointsManager.spendPointsAtomic` service with the `spendType: 'ADVANCED_SEARCH'`.
+- [✅] **Subscription System**: For checking the user's current subscription tier.
+  - **Implementation Note**: This is handled implicitly by the gamification backend services, which check for the required 'STARTER' tier.
 - [ ] API plan detection mechanism for Hourly endpoint validation
-- [ ] Updated SearchParameters interface with endpoint field
+- [ ] Updated `SearchParameters` interface with endpoint field
 - [ ] Enhanced caching strategy to handle multiple endpoints
 - [ ] UI component for endpoint selection with clear labeling
 - [ ] Documentation updates for endpoint-specific behaviors
