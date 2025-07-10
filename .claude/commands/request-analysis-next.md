@@ -1,7 +1,7 @@
 # Next Feature Analysis - AI Primer
 
 ## Your Task
-You are helping identify the next best feature request to work on from the DEVELOPMENT_BRAINSTORMING.md file. This is designed for intelligent analysis - you must systematically evaluate all available feature requests and provide a well-grounded recommendation based on priority, dependencies, status, and strategic value. Make data-driven decisions with clear rationale.
+You are helping identify the next best feature request to work on from the requests.md file. This is designed for intelligent analysis - you must systematically evaluate all available feature requests and provide a well-grounded recommendation based on priority, dependencies, status, and strategic value. Make data-driven decisions with clear rationale.
 
 ## Step-by-Step Analysis Process
 
@@ -11,7 +11,7 @@ You are helping identify the next best feature request to work on from the DEVEL
 3. **Execution Preparation Phase** (Step 7): **MANDATORY consultation with execution-primer.md**
 4. **Implementation Phase**: Begin detailed analysis and implementation
 
-### Step 1: Read and Parse DEVELOPMENT_BRAINSTORMING.md
+### Step 1: Read and Parse requests.md
 **Required Analysis:**
 - [ ] Read the entire "💭 Active Feature Requests" section
 - [ ] Identify all feature requests with their current status

@@ -68,9 +68,9 @@ Create an entry for each completed feature request using this format:
 - If multiple requests were completed, remove all of them from the active section
 
 ### Step 5: Update Active Feature Count
-- Update the count in the cursor rule (.cursor/rules/development-brainstorming.mdc)
+- Update the count in the main document (requests.md)
 - Change "Active Requests (X total)" to reflect the new count (subtract the number of completed requests)
-- Remove all completed features from the numbered list in the cursor rule
+- Remove all completed features from the numbered list in the main document
 
 ### Step 6: Clean Up Timeline Section
 - Remove all completed features from any timeline sections (Immediate Next Features, Short-term Features, etc.)
@@ -104,7 +104,7 @@ After completion, provide helpful guidance:
 ## Workflow Integration Notes
 
 ### Integration with Main Development Workflow:
-- This step corresponds to **Step 6** of the main development workflow in development-brainstorming.mdc
+- This step corresponds to **Step 6** of the main development workflow in requests.md
 - After marking complete, user typically moves to **Step 1** (new feature request) or continues with next ready feature
 - Reference the streamlined 6-step process: Feature Request → Planning → Analysis → Finalization → Implementation → **Completion (this process)**
 - This primer maintains the solo developer workflow efficiency while ensuring planning integrity

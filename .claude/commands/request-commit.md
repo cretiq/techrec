@@ -1,7 +1,7 @@
-Analyze all changes and create logical commits for implemented features from DEVELOPMENT_BRAINSTORMING.md with excellent traceability:
+Analyze all changes and create logical commits for implemented features from requests.md with excellent traceability:
 
 ## Feature Implementation Commit Strategy
-This process is used AFTER implementing a feature request from DEVELOPMENT_BRAINSTORMING.md and BEFORE marking it as done. The goal is maximum traceability between your commits and the planned feature requests.
+This process is used AFTER implementing a feature request from requests.md and BEFORE marking it as done. The goal is maximum traceability between your commits and the planned feature requests.
 
 ## Single Commit Per Feature Request Preference
 **Default approach**: Create ONE comprehensive commit per feature request that includes all related changes. This provides:
@@ -20,7 +20,7 @@ This process is used AFTER implementing a feature request from DEVELOPMENT_BRAIN
 Think hard about organizing commits to clearly show what feature request was implemented:
 
 ### 1. FEATURE REQUEST ALIGNMENT
-First, identify which Feature Request from DEVELOPMENT_BRAINSTORMING.md was implemented:
+First, identify which Feature Request from requests.md was implemented:
 - **Primary Feature Request**: The main feature request being implemented (e.g., "Feature Request #5: Cover Letter Application Routing")
 - **Supporting Components**: Related components or dependencies that were needed
 - **Feature Scope**: Which acceptance criteria and technical implementation details were completed
@@ -74,7 +74,7 @@ For each commit, create messages that clearly reference the implemented feature 
 
 **Feature Request Reference [FR #X]**:
 - ALWAYS include the feature request number at the end: `[FR #5]`
-- This creates clear traceability to DEVELOPMENT_BRAINSTORMING.md
+- This creates clear traceability to requests.md
 - Enables easy cross-referencing between commits and planning documents
 
 #### Extended Message Format:
@@ -88,7 +88,7 @@ Feature implementation details (≤72 chars per line):
 - Integration: [how this connects with existing system]
 - Testing: [validation and quality assurance included]
 
-Relates to Feature Request #X in DEVELOPMENT_BRAINSTORMING.md
+Relates to Feature Request #X in requests.md
 ```
 
 ### 5. EXECUTION INSTRUCTIONS
@@ -110,7 +110,7 @@ Relates to Feature Request #X in DEVELOPMENT_BRAINSTORMING.md
    - Integration: [complete system connections]
    - Testing: [all validation and quality assurance]
    
-   Relates to Feature Request #X in DEVELOPMENT_BRAINSTORMING.md"
+   Relates to Feature Request #X in requests.md"
    ```
 
 **For multiple commits (only when necessary)**:
@@ -130,7 +130,7 @@ Relates to Feature Request #X in DEVELOPMENT_BRAINSTORMING.md
    - Components: [key files/components modified]
    - Integration: [how this connects with existing system]
    
-   Relates to Feature Request #X in DEVELOPMENT_BRAINSTORMING.md"
+   Relates to Feature Request #X in requests.md"
    ```
 
 3. **Verify feature alignment**:
@@ -161,7 +161,7 @@ Implements complete cover letter application routing feature:
 - Testing: Button placement validation, context preservation tests
 - UI: Bottom placement in company info box, consistent styling
 
-Relates to Feature Request #5 in DEVELOPMENT_BRAINSTORMING.md
+Relates to Feature Request #5 in requests.md
 ```
 
 **Multiple Commits (Only When Necessary)**:
@@ -174,7 +174,7 @@ Implements foundational type definitions for application routing:
 - Integration: Supports mapRapidApiJobToRole data transformation
 - Next: Enables smart application routing UI components
 
-Relates to Feature Request #2 in DEVELOPMENT_BRAINSTORMING.md
+Relates to Feature Request #2 in requests.md
 ```
 
 ```
@@ -186,7 +186,7 @@ Implements complete application routing user interface:
 - Integration: Uses extended Role interface, connects with existing flows
 - Testing: Routing validation, UI interaction tests
 
-Relates to Feature Request #2 in DEVELOPMENT_BRAINSTORMING.md
+Relates to Feature Request #2 in requests.md
 ```
 
 ### 8. COMMIT VERIFICATION & FEATURE ALIGNMENT
@@ -201,32 +201,32 @@ Before finalizing each commit:
 This commit process integrates with your feature development workflow:
 
 #### Before Committing:
-1. **Implement feature** following the technical approach from DEVELOPMENT_BRAINSTORMING.md
-2. **Run this smart-commit process** to create traceable commits
+1. **Implement feature** following the technical approach from requests.md
+2. **Run this request-commit process** to create traceable commits
 3. **Verify all acceptance criteria** are implemented
 
 #### After Committing:
 1. **MOVE FEATURE TO COMPLETED SECTION** - This is mandatory:
-   - Move the feature request from "Active Feature Requests" to "Recently Completed Features" section in DEVELOPMENT_BRAINSTORMING.md
+   - Move the feature request from "Active Feature Requests" to "Recently Completed Features" section in requests.md
    - Include completion date, impact assessment, key learnings, and implementation notes
    - Reference the commits created in the implementation notes
 2. **UPDATE TABLE OF CONTENTS** - Required when changing document structure:
-   - Update the TOC in DEVELOPMENT_BRAINSTORMING.md when moving features between sections
+   - Update the TOC in requests.md when moving features between sections
    - Add new entries for any new feature requests or sections created
    - Remove entries for any sections that were removed or renamed
    - Ensure all anchor links match the actual header names exactly
 3. **Update cursor rule** to reflect new active feature count if needed
 
 #### Required Post-Implementation Step:
-**🔄 CRITICAL**: After creating commits for a feature request, you MUST move it from the "Active Feature Requests" section to the "Recently Completed Features" section in DEVELOPMENT_BRAINSTORMING.md. This maintains accurate project status and prevents confusion about which features are still in development.
+**🔄 CRITICAL**: After creating commits for a feature request, you MUST move it from the "Active Feature Requests" section to the "Recently Completed Features" section in requests.md. This maintains accurate project status and prevents confusion about which features are still in development.
 
 #### Traceability Chain:
 ```
-Feature Request #X (DEVELOPMENT_BRAINSTORMING.md - Active)
+Feature Request #X (requests.md - Active)
     ↓ (implementation)
 Commits with [FR #X] reference (git history)
     ↓ (completion - REQUIRED STEP)
-Recently Completed Features (DEVELOPMENT_BRAINSTORMING.md - Completed)
+Recently Completed Features (requests.md - Completed)
 ```
 
 This creates a complete audit trail from planning → implementation → completion, making it easy to understand what was built, when, and why.
