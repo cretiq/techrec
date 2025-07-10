@@ -110,6 +110,27 @@ export function UserNav() {
     setIsNavigating(true)
     
     try {
+      // NEW: Call server-side cache clearing endpoint
+      try {
+        const response = await fetch('/api/auth/clear-session-cache', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        })
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[Logout] Server-side cache cleared successfully:', result)
+          }
+        } else {
+          console.warn('[Logout] Server-side cache clearing failed, continuing with logout')
+        }
+      } catch (cacheError) {
+        console.warn('[Logout] Cache clearing request failed:', cacheError)
+        // Continue with logout regardless of cache clearing failure
+      }
+      
+      // ✅ EXISTING: Client-side cache clearing (already implemented)
       // Dispatch the Redux action to clear all user state (includes localStorage cleanup)
       dispatch(userLoggedOut())
       
@@ -121,7 +142,7 @@ export function UserNav() {
       
       // Debug logging for persistence cleanup verification
       if (process.env.NODE_ENV === 'development') {
-        console.log('[Logout] Redux state cleared and persistor purged');
+        console.log('[Logout] Complete cleanup: Redux state cleared and persistor purged')
       }
       
       // Manually navigate to home and refresh for clean state
