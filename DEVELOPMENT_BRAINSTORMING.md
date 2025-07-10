@@ -40,6 +40,8 @@
 - Salary expectation vs. role compensation matching
 - Role recommendation engine based on matching scores
 - Create a dedicated page for earned user badges (that can be reached from e.g. the users dashboard.)
+- create a github like commit grid/graph to for a great visualization over your applications
+- 
 - ✅ Smart application routing and Easy Apply detection → **Moved to Feature Request #2**
 - ✅ Enhanced company filtering (descriptions, specialties, names, industries) → **Moved to Feature Request #3**
 - ✅ Multiple RapidAPI endpoint selection (7 days, 24h, hourly) → **Moved to Feature Request #4**
