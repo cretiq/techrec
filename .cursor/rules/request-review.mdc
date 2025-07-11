@@ -1,0 +1,62 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Feature Request Review & Update
+
+**Purpose:** Review and update a feature request after the user has answered questions in the "Questions to Resolve" section.
+
+## **Review Process**
+1. **Read the feature request** from [requests.md](mdc:requests.md)
+2. **Identify answered questions** in the "Questions to Resolve" section
+3. **Assess impact** - How do answers affect technical approach, acceptance criteria, and dependencies?
+4. **Validate feasibility** - Is the implementation plan clear and achievable?
+5. **Check completeness** - Are acceptance criteria specific and measurable?
+
+## **Validation Requirements**
+**Before updating the feature request:**
+- **Preserve existing information** - Don't remove valuable context or decisions
+- **Check dependency impact** - Verify changes don't affect other features
+- **Validate technical consistency** - Ensure updates align with system architecture
+- **Confirm resource feasibility** - Check if requirements are achievable
+
+## **Status Updates**
+- **Planning Phase → Ready for Development**: When all critical questions are answered, technical approach is clear, and acceptance criteria are complete
+- **Ready for Development → Planning Phase**: If answers reveal new questions or clarification is needed
+- **Update sections** based on resolved questions and answers
+
+## **When Issues Are Found**
+**If validation reveals problems:**
+- **Don't proceed** with updates that could cause issues
+- **Document concerns** - List specific problems or conflicts
+- **Request clarification** - Ask user to resolve conflicts or provide missing information
+- **Suggest alternatives** - Propose safer approaches
+- **Preserve current state** until issues are resolved
+
+## **Output Format**
+```
+## Feature Request Review: [Feature Name]
+
+**Questions Reviewed:** [List answered questions]
+**Answer Impact:** [How answers affect the feature approach]
+**Status Update:** [Current Status] → [New Status]
+**Readiness:** [Ready/Needs Work/Blocked]
+
+**Changes Made:**
+- [Updates based on answered questions]
+- [Status changes with rationale]
+- [Any new questions or concerns]
+
+**Next Steps:**
+- [What needs to happen next]
+- [Any remaining blockers]
+```
+
+## **Quality Standards**
+- **Update only when necessary** and fully validated
+- **Preserve existing work** - Don't delete valuable information or decisions
+- **Validate all changes** against dependencies and technical feasibility
+- **Maintain feature integrity** - Don't change core goals or requirements
+- **Respect user decisions** - Honor the user's answers and choices
+- **Ask for clarification** when in doubt rather than making assumptions

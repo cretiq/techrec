@@ -1,0 +1,165 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Development Brainstorming & Feature Planning Guide
+
+This rule provides guidance for working with [requests.md](mdc:requests.md) - the collaborative workspace for feature ideation, planning, and development discussions.
+
+## **Document Structure & Purpose**
+
+- **Primary Purpose**: Planning workspace for feature ideas and requests (NOT status tracking)
+- **Organization**: Structured sections for ideas, active requests, and technical planning
+- **Workflow**: Ideas → Parking Lot → Feature Requests → Implementation
+
+## **Solo Developer Workflow**
+
+### **CRITICAL: Follow Document Guidelines**
+- ⚠️ **NEVER remove existing sections** from [requests.md](mdc:requests.md)
+- ⚠️ **ALWAYS follow the document's own "How to Add New Features" process**
+- ⚠️ **PRESERVE the "Feature Request Template" and "Managing Feature Requests" sections**
+- ⚠️ **Only ADD content, never delete important guidelines or templates**
+- ⚠️ **This is a planning document only; do not begin development on the feature or request.**
+
+### **Streamlined 6-Step Process**
+
+#### **Step 1: User Gives Feature Request**
+- User provides feature idea or request
+- AI immediately adds to [requests.md](mdc:requests.md)
+- Add to "Ideas Parking Lot" first, then create full Feature Request
+
+#### **Step 2: AI Creates Feature Request**
+- Use the next available number
+- **MUST follow the exact template provided in the document**
+- **MUST use the complete format shown in "Feature Request Template" section**
+- Status: "Planning Phase"
+- Include all required sections: Goals, User Story, Success Metrics, Technical Approach, Acceptance Criteria, Questions to Resolve, Dependencies
+
+#### **Step 3: User Analyzes & Provides Answers**
+- User reviews the created feature request
+- User answers questions in "Questions to Resolve" section
+- User may iterate and discuss with AI to refine the request
+- User confirms general approach and provides feedback
+
+#### **Step 4: User Signals Completion**
+- User tells AI when analysis is complete
+- User has answered all critical questions
+- User confirms the request is ready for finalization
+
+#### **Step 5: AI Updates to "Ready for Implementation"**
+- AI analyzes answered questions and user feedback
+- AI updates all sections to reflect resolved decisions
+- AI marks questions as resolved with ✅ and rationale
+- AI updates status to "Ready for Implementation"
+- AI integrates decisions into Technical Approach, Acceptance Criteria, and Design Considerations
+
+#### **Step 6: Implementation Completion**
+- When implementation is done, use `implementation-mark-done.md` primer
+- Move completed feature to "Recently Completed" section
+- Document completion date, impact, and key learnings
+- Remove from active feature requests to keep focus
+
+### **Planning Quality Standards**
+- **Thorough Planning**: Plan well enough that implementation is straightforward
+- **No Major Changes**: Implementation should not require significant approach changes
+- **Clear Specifications**: All UX and technical decisions resolved before implementation
+- **Complete Dependencies**: All prerequisites identified and documented
+
+## **Tech Stack Context**
+
+- Next.js 14 with App Router
+- RapidAPI integration for LinkedIn job data
+- Redux Toolkit for state management
+- Shadcn UI + TailwindCSS for components
+- Existing advanced search filters
+
+## **Documentation Standards**
+
+### **Table of Contents Maintenance**
+- **ALWAYS update the TOC** when making structural changes to [requests.md](mdc:requests.md)
+- **Required updates when:**
+  - Adding new feature requests or sections
+  - Moving features between Active and Completed sections
+  - Renaming any headers or sections
+  - Removing any sections or feature requests
+- **Ensure anchor links match exactly** - header text converted to lowercase with spaces as hyphens
+- **Verify all links work** after making changes to prevent broken navigation
+
+### **Backend Analysis Required**
+- Always check RapidAPI documentation for available parameters
+- Verify current implementation status (✅ Implemented, ⚠️ Available but not implemented)
+- Check existing interfaces and validation rules
+
+### **Frontend Analysis Required**
+- Review existing components (especially [AdvancedFilters.tsx](mdc:components/roles/AdvancedFilters.tsx))
+- Check current search parameters and state management
+- Identify required UI component extensions
+
+### **Implementation Planning**
+- Break down into backend and frontend requirements
+- Identify missing pieces vs. extensions of existing code
+- Consider API constraints and cost implications
+- Plan for caching and performance impact
+
+## **Technical References**
+
+**Key Files to Reference:**
+- [requests.md](mdc:requests.md) - Main planning document
+- [rapidapi_documentation.md](mdc:app/api/rapidapi/rapidapi_documentation.md) - API capabilities
+- [AdvancedFilters.tsx](mdc:components/roles/AdvancedFilters.tsx) - Current search UI
+- [route.ts](mdc:app/api/rapidapi/search/route.ts) - API implementation
+- [mappers.ts](mdc:utils/mappers.ts) - Data transformation
+
+**Common Integration Points:**
+- SearchParameters interface for new filters
+- RapidAPI validation and caching systems
+- Role mapping for new data fields
+- Redux state management for search
+
+## **Best Practices**
+
+### **DO:**
+- ✅ **ALWAYS follow the document's own "How to Add New Features" process**
+- ✅ **Use the complete "Feature Request Template" from the document**
+- ✅ **Preserve all existing guidelines and templates**
+- ✅ **Update the TOC whenever changing document structure** (adding/removing/renaming sections)
+- ✅ Research existing implementations before proposing new features
+- ✅ Reference specific API documentation sections
+- ✅ Provide detailed technical analysis
+- ✅ Consider API cost and performance implications
+- ✅ Use consistent formatting and numbering
+- ✅ Include realistic success metrics
+- ✅ Plan for both frontend and backend changes
+
+### **DON'T:**
+- ❌ **NEVER remove existing sections like "How to Add New Features" or "Feature Request Template"**
+- ❌ **NEVER delete important guidelines or workflow documentation**
+- ❌ **NEVER skip the document's established process**
+- ❌ **NEVER leave the TOC out of sync** with actual document structure
+- ❌ Track implementation status (this is for planning only)
+- ❌ Skip the Ideas Parking Lot step
+- ❌ Create incomplete feature requests
+- ❌ Ignore existing component architecture
+- ❌ Miss dependencies and prerequisites
+
+## **Questions Framework**
+
+**For New Features, Always Consider:**
+- What RapidAPI parameters are available?
+- What UI components need extension vs. creation?
+- How does this integrate with existing search flow?
+- What are the API cost implications?
+- Are there plan restrictions (e.g., Hourly endpoint)?
+- How does this affect caching strategy?
+- What validation rules are needed?
+
+## **Success Criteria**
+
+**Well-Documented Feature Request:**
+- Clear user story and problem statement
+- Thorough technical analysis of current vs. required state
+- Realistic implementation plan with phases
+- Specific acceptance criteria
+- Open questions for discussion
+- Proper integration with existing architecture
