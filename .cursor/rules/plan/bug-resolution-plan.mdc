@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+### **Strategic Bug Resolution Blueprint Mandate**
+
+**Objective:**
+When tasked with resolving a bug, your primary deliverable is a comprehensive *bug-resolution blueprint*. This document must do more than merely list fixes; it must illuminate the defect's lifecycle—from reproduction to long-term regression protection—while preserving system stability and maintainability.
+
+**Operational Mode: Planning Only**
+When this mandate is active, your operational mode is **strictly limited to planning and diagnostic analysis**. You must:
+* **NOT** modify, add, or delete any code files.
+* **NOT** execute commands, scripts, or database migrations.
+* **ONLY** produce the blueprint described below.
+
+This safeguard ensures the team deliberately reviews and approves the plan before any implementation work begins.
+
+**Guiding Philosophy:**
+Your blueprint must be grounded in rigorous engineering practice and industry-recognized debugging methodology.
+*   **Reproducibility First:** A bug that cannot be reliably reproduced cannot be confidently fixed.
+*   **Root-Cause Discipline:** Focus on the fundamental source of failure—not a superficial symptom—to avoid recurrence.
+*   **Minimal-Impact Fixes:** Prefer the smallest, most isolated change set that resolves the issue without introducing regressions.
+*   **Test-Driven Validation:** Every fix should be accompanied by failing tests that pass once the bug is resolved.
+*   **Safety Nets:** Instrument code, add logging, and employ feature flags or canary releases when risk is high.
+*   **Documentation & Knowledge Sharing:** Capture lessons learned to prevent similar issues in the future.
+
+**Execution Process:**
+1.  **Analyze:** Gather logs, stack traces, relevant code, and reproduction data. Verify all assumptions.
+2.  **Structure:** Organize findings and the planned approach using the blueprint sections below.
+3.  **Write:** Populate each section with clear, concise, and actionable content.
+
+**Blueprint Structure & Required Sections:**
+Your final plan must include the following sections, each addressing a critical aspect of the bug-fix lifecycle.
+
+**1. Bug Summary & Reproduction:**
+    *   **Description:** Concise explanation of the defect and its user-visible impact.
+    *   **Reproduction Steps:** Step-by-step instructions to reliably trigger the bug.
+    *   **Expected vs. Actual Behavior:** Clarify the deviation.
+    *   **Environment Details:** Browser/OS, API version, data prerequisites.
+
+**2. Root Cause Analysis:**
+    *   **Cause Hypothesis:** Explain *why* the bug occurs based on code inspection and debugging.
+    *   **Evidence:** Logs, stack traces, or experiments that confirm the hypothesis.
+    *   **Scope:** Identify whether the issue is isolated or systemic.
+
+**3. Impact & Risk Assessment:**
+    *   **Affected Components:** Files, modules, or services impacted.
+    *   **User & Business Impact:** Severity, frequency, and potential data loss or security concerns.
+    *   **Risk Surface:** Possibility of introducing regressions elsewhere.
+
+**4. Fix Strategy & Approach:**
+    *   **High-Level Solution:** Outline the conceptual fix.
+    *   **Alternative Considered:** Note rejected approaches and rationale.
+    *   **Backward Compatibility:** Plan for migrations or deprecations if needed.
+
+**5. Phased Execution Plan:**
+    *   Break the fix into sequential phases (e.g., *reproduction test*, *code change*, *refactor*, *code review*, *deployment*).
+    *   Emphasize *what* needs to be done, not the line-by-line *how*.
+
+**6. Testing & Validation Strategy:**
+    *   **Unit / Integration Tests:** New or updated tests that fail before the fix and pass after.
+    *   **Regression Suite Updates:** Ensure future failures are caught automatically.
+    *   **Manual QA Steps:** Additional checks not covered by automated tests.
+
+**7. Post-Deployment Monitoring & Regression Prevention:**
+    *   **Monitoring Metrics & Alerts:** Define signals to watch (error rates, performance).
+    *   **Feature Flags / Rollback Plan:** Safe-guards if issues persist.
+    *   **Documentation & Knowledge Transfer:** Update docs, runbooks, or onboarding materials.
+
+---
+**Output Mandate:**
+Your output must be **the blueprint itself, and nothing else**. Begin your response immediately with the markdown heading `### Strategic Bug Resolution Blueprint` (no additional words, punctuation, or whitespace before it). Do **not** include conversational filler, meta-commentary, or descriptions of your own process. The blueprint must be delivered in-chat as plain markdown—not as a file attachment or code edit. Ensure compliance with the planning-only restriction above.

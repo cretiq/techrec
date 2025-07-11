@@ -1,0 +1,413 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# TypeScript Guidelines
+
+This document defines TypeScript best practices and patterns to ensure type safety and maintainability across the codebase.
+
+## Core Principles
+
+1. **Strict Type Safety**: Enable and maintain strict TypeScript settings
+2. **Explicit Over Implicit**: Always define types explicitly when not obvious
+3. **Type Inference**: Leverage TypeScript's inference where it improves readability
+4. **No Any**: Avoid `any` type except in exceptional, documented cases
+5. **Immutability**: Prefer readonly types and const assertions
+
+## TypeScript Configuration
+
+### tsconfig.json Settings
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}
+```
+
+## Type Definitions
+
+### Basic Types
+```typescript
+// ✅ DO: Use specific types
+const count: number = 42;
+const name: string = "John";
+const isActive: boolean = true;
+const items: string[] = ["a", "b", "c"];
+const tuple: [string, number] = ["age", 30];
+
+// ❌ DON'T: Use any or leave types implicit when unclear
+const data: any = fetchData(); // Avoid any
+const result = processData(); // Add explicit return type
+```
+
+### Object Types
+```typescript
+// ✅ DO: Use interfaces for object shapes
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  preferences?: UserPreferences; // Optional property
+  readonly role: UserRole; // Immutable property
+}
+
+// ✅ DO: Use type aliases for unions, intersections, or utility types
+type UserRole = 'admin' | 'user' | 'guest';
+type ID = string | number;
+type PartialUser = Partial<User>;
+type UserWithoutEmail = Omit<User, 'email'>;
+
+// ✅ DO: Use const assertions for literal types
+const ROLES = ['admin', 'user', 'guest'] as const;
+type Role = typeof ROLES[number]; // 'admin' | 'user' | 'guest'
+```
+
+### Function Types
+```typescript
+// ✅ DO: Type function parameters and return values
+function calculateTotal(items: CartItem[]): number {
+  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
+// ✅ DO: Use arrow function types
+const processUser: (user: User) => Promise<ProcessedUser> = async (user) => {
+  // Implementation
+};
+
+// ✅ DO: Type higher-order functions
+type Middleware<T> = (next: (value: T) => void) => (value: T) => void;
+
+// ✅ DO: Use function overloads for multiple signatures
+function parse(value: string): object;
+function parse(value: string, reviver: (key: string, value: any) => any): object;
+function parse(value: string, reviver?: (key: string, value: any) => any): object {
+  return JSON.parse(value, reviver);
+}
+```
+
+## Advanced Patterns
+
+### Generic Types
+```typescript
+// ✅ DO: Use generics for reusable types
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message: string;
+}
+
+// ✅ DO: Constrain generics when needed
+interface Repository<T extends { id: string }> {
+  findById(id: string): Promise<T | null>;
+  save(entity: T): Promise<T>;
+  delete(id: string): Promise<void>;
+}
+
+// ✅ DO: Use generic constraints with keyof
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+```
+
+### Conditional Types
+```typescript
+// Utility type for nullable fields
+type Nullable<T> = T | null | undefined;
+
+// Extract promise type
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
+// Conditional type based on property
+type IsArray<T> = T extends any[] ? true : false;
+```
+
+### Mapped Types
+```typescript
+// Make all properties optional and nullable
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P] | null;
+};
+
+// Create a type with getters
+type Getters<T> = {
+  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
+};
+```
+
+### Template Literal Types
+```typescript
+// API endpoint types
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type ApiEndpoint = `/api/${string}`;
+
+// Event handler types
+type EventHandlerName = `on${Capitalize<string>}`;
+type ClickHandler = `onClick${string}`;
+```
+
+## Type Guards
+
+### User-Defined Type Guards
+```typescript
+// ✅ DO: Create type guard functions
+function isUser(value: unknown): value is User {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'email' in value &&
+    typeof (value as any).id === 'string' &&
+    typeof (value as any).email === 'string'
+  );
+}
+
+// ✅ DO: Use discriminated unions
+type Result<T> = 
+  | { success: true; data: T }
+  | { success: false; error: Error };
+
+function isSuccess<T>(result: Result<T>): result is { success: true; data: T } {
+  return result.success === true;
+}
+```
+
+### Type Assertions
+```typescript
+// ✅ DO: Use type assertions sparingly and with validation
+const element = document.getElementById('myId') as HTMLInputElement;
+
+// ✅ DO: Prefer type guards over assertions
+if (element instanceof HTMLInputElement) {
+  element.value = 'Hello';
+}
+
+// ❌ DON'T: Use type assertions to bypass type checking
+const data = {} as User; // Dangerous!
+```
+
+## React & TypeScript
+
+### Component Types
+```typescript
+// ✅ DO: Type functional components
+interface ButtonProps {
+  variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  children: React.ReactNode;
+  disabled?: boolean;
+}
+
+const Button: React.FC<ButtonProps> = ({ 
+  variant = 'primary',
+  size = 'md',
+  onClick,
+  children,
+  disabled = false
+}) => {
+  return (
+    <button
+      className={`btn btn-${variant} btn-${size}`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ✅ DO: Type event handlers
+const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  console.log(event.target.value);
+};
+
+// ✅ DO: Type refs
+const inputRef = useRef<HTMLInputElement>(null);
+```
+
+### Hook Types
+```typescript
+// ✅ DO: Type custom hooks
+function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      return initialValue;
+    }
+  });
+
+  const setValue = (value: T) => {
+    try {
+      setStoredValue(value);
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Error saving to localStorage:`, error);
+    }
+  };
+
+  return [storedValue, setValue];
+}
+```
+
+## API Types
+
+### Request/Response Types
+```typescript
+// ✅ DO: Define API contracts
+interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface UserResponse {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
+interface ApiError {
+  message: string;
+  code: string;
+  details?: Record<string, unknown>;
+}
+
+// ✅ DO: Type API functions
+async function createUser(data: CreateUserRequest): Promise<UserResponse> {
+  const response = await fetch('/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error: ApiError = await response.json();
+    throw new Error(error.message);
+  }
+
+  return response.json();
+}
+```
+
+## Utility Types
+
+### Common Utility Types
+```typescript
+// Deep readonly type
+type DeepReadonly<T> = {
+  readonly [P in keyof T]: T[P] extends object ? DeepReadonly<T[P]> : T[P];
+};
+
+// Require at least one property
+type RequireAtLeastOne<T, Keys extends keyof T = keyof T> =
+  Pick<T, Exclude<keyof T, Keys>> &
+  {
+    [K in Keys]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<Keys, K>>>;
+  }[Keys];
+
+// Exclusive OR type
+type XOR<T, U> = (T | U) extends object
+  ? (Without<T, U> & U) | (Without<U, T> & T)
+  : T | U;
+
+type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
+```
+
+## Best Practices
+
+### 1. Type Imports
+```typescript
+// ✅ DO: Use type imports for type-only imports
+import type { User, UserRole } from '@/types';
+import { processUser } from '@/utils/user';
+
+// This helps with tree-shaking and makes intent clear
+```
+
+### 2. Avoid Type Duplication
+```typescript
+// ❌ DON'T: Duplicate types
+interface UserFormData {
+  name: string;
+  email: string;
+}
+
+interface UserApiData {
+  name: string;
+  email: string;
+}
+
+// ✅ DO: Reuse and extend types
+interface UserBase {
+  name: string;
+  email: string;
+}
+
+interface UserFormData extends UserBase {
+  password: string;
+}
+
+interface UserApiData extends UserBase {
+  id: string;
+  createdAt: Date;
+}
+```
+
+### 3. Const Enums
+```typescript
+// ✅ DO: Use const enums for better performance
+const enum Status {
+  Pending = 'PENDING',
+  Active = 'ACTIVE',
+  Inactive = 'INACTIVE',
+}
+
+// They are completely removed during compilation
+```
+
+### 4. Type vs Interface
+- Use `interface` for object types that might be extended
+- Use `type` for unions, intersections, and utility types
+- Be consistent within a module
+
+### 5. Unknown vs Any
+```typescript
+// ❌ DON'T: Use any
+function processData(data: any) {
+  return data.someProperty; // No type checking
+}
+
+// ✅ DO: Use unknown and type guards
+function processData(data: unknown) {
+  if (isValidData(data)) {
+    return data.someProperty; // Type safe
+  }
+  throw new Error('Invalid data');
+}
+```
+
+## Related Documentation
+
+- [Coding Standards](mdc:.cursor/rules/core/coding-standards.mdc) - General coding conventions
+- [React Patterns](mdc:.cursor/rules/frontend/react-patterns.mdc) - React-specific TypeScript patterns
+- [API Conventions](mdc:.cursor/rules/backend/api-conventions.mdc) - API type definitions

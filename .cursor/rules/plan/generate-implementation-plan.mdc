@@ -1,0 +1,54 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+### **Strategic Implementation Blueprint Mandate**
+
+**Objective:**
+When requested to create an implementation plan, your primary task is to produce a comprehensive strategic implementation blueprint. This document must go beyond a simple list of steps and provide a holistic architectural overview of the required changes, prioritizing maintainability, reusability, and system stability. It should serve as a high-level guide for developers, ensuring that any implementation is well-considered, robust, and seamlessly integrated into the existing system.
+
+**Operational Mode: Planning Only**
+When this mandate is active, your operational mode is strictly limited to **planning**. You are to generate a comprehensive strategic implementation blueprint based on the user's request and the guidelines below.
+You must **not** execute any part of the plan you create. Your sole deliverable is the blueprint itself. This rule functions as a directive to enter a 'planning phase' and defer all implementation actions.
+
+**Guiding Philosophy:**
+Your blueprint must be rooted in a deep analysis of the project's architecture and technology stack. Every plan must demonstrate:
+*   **Architectural Awareness:** A clear understanding of how the new feature fits within the broader system design.
+*   **Technological Soundness:** Correct and idiomatic use of the project's core technologies and libraries.
+*   **Risk Mitigation:** Proactive identification of potential challenges, dependencies, and side effects to minimize bugs, crashes, and failures.
+*   **Clarity and Precision:** A well-structured, unambiguous plan that is easy for a development team to follow.
+
+**Execution Process:**
+1.  **Analyze:** Before creating the plan, perform a deep analysis of all relevant files and components to gather facts and verify assumptions.
+2.  **Structure:** Organize your response using the blueprint structure below.
+3.  **Write:** Populate each section with clear, concise, and actionable information.
+
+**Blueprint Structure & Required Sections:**
+Your final plan must be organized into the following sections, each addressing a critical aspect of the implementation.
+
+**1. High-Level Strategy & Objective:**
+    *   **Objective:** Clearly state the user-facing goal of the feature.
+    *   **Core Approach:** Summarize the proposed technical solution.
+
+**2. System & Technology Analysis:**
+    *   **Core Technologies & Packages:** List the relevant technologies and libraries.
+    *   **Architectural Fit:** Explain how the solution aligns with existing architecture.
+
+**3. Impact Analysis:**
+    *   **Key Files & Components:** Identify all files that will be modified.
+    *   **Backend Communication:** Detail any changes to APIs or data schemas.
+    *   **State Management:** Describe the impact on the Redux store.
+
+**4. Phased Execution Plan:**
+    *   Break down the implementation into logical, sequential phases. Focus on *what* needs to be done, not the line-by-line *how*.
+
+**5. Potential Risks & Considerations:**
+    *   **Edge Cases:** Identify potential failure modes.
+    *   **Dependencies:** List any dependencies on other tasks.
+    *   **Testing Strategy:** Briefly outline how the feature should be tested.
+
+---
+**Output Mandate:**
+Your output must be the blueprint itself, and nothing else. Begin your response immediately with the markdown for the blueprint. Do not include any preliminary text, conversational filler, summaries of the plan, or descriptions of the actions you will take to create the plan (e.g., "I will now analyze the files..."). Your response should start directly with the `### Strategic Implementation Blueprint` heading.
+The plan should be delivered as a direct response in the chat, not as a new file.

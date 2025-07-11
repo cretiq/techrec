@@ -1,0 +1,150 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# RapidAPI Integration Patterns for Feature Planning
+
+This rule provides technical guidance for analyzing and integrating RapidAPI LinkedIn Jobs API capabilities when planning new features in [DEVELOPMENT_BRAINSTORMING.md](mdc:DEVELOPMENT_BRAINSTORMING.md).
+
+## **RapidAPI Implementation Architecture**
+
+### **Current Implementation Status**
+- **API Route**: [route.ts](mdc:app/api/rapidapi/search/route.ts) - Main endpoint handler
+- **Caching**: [rapidapi-cache.ts](mdc:lib/api/rapidapi-cache.ts) - Cache management and usage tracking
+- **Validation**: [rapidapi-validator.ts](mdc:lib/api/rapidapi-validator.ts) - Parameter validation
+- **Documentation**: [rapidapi_documentation.md](mdc:app/api/rapidapi/rapidapi_documentation.md) - Full API reference
+- **Data Mapping**: [mappers.ts](mdc:utils/mappers.ts) - API response to internal Role mapping
+
+### **Integration Points**
+- **SearchParameters Interface**: Defined in cache manager, used across the system
+- **Dual Mode**: Development (mock data) vs Production (live API) switching
+- **Credit Management**: Built-in usage tracking and limits
+- **Error Handling**: Comprehensive validation and user-friendly messages
+
+## **Feature Analysis Framework**
+
+### **Step 1: API Capability Check**
+**Always Reference [rapidapi_documentation.md](mdc:app/api/rapidapi/rapidapi_documentation.md):**
+- Search for available parameters related to the feature
+- Check filter syntax and requirements (case sensitivity, delimiters, etc.)
+- Note any plan restrictions (e.g., Hourly endpoint for Ultra/Mega only)
+- Identify performance considerations (e.g., description_filter timeout risks)
+
+### **Step 2: Current Implementation Gap Analysis**
+**Check Implementation Status:**
+- ✅ **Fully Implemented**: Parameter in SearchParameters, route handler, and validator
+- ⚠️ **Partially Implemented**: Parameter defined but not fully integrated
+- ❌ **Not Implemented**: Available in API but missing from our implementation
+
+**Common Gaps:**
+- Parameters in cache interface but missing from route handler
+- Missing validation rules in rapidapi-validator.ts
+- Frontend UI not exposing available backend parameters
+
+### **Step 3: Integration Requirements**
+**Backend Requirements:**
+- Add parameter to SearchParameters interface
+- Update route.ts parameter extraction
+- Add validation rules to rapidapi-validator.ts
+- Update cache key generation if needed
+
+**Frontend Requirements:**
+- Extend AdvancedFilters component
+- Update Redux state management
+- Add new UI components if needed
+- Handle parameter-specific validation and UX
+
+## **Common RapidAPI Parameter Patterns**
+
+### **Filter Parameter Types**
+- **Text Filters**: Support Google-like syntax (`"exact phrase"`, `OR`, `-exclusion`)
+- **Boolean Filters**: `'true'`/`'false'` strings, not actual booleans
+- **Comma-Delimited**: Multiple values separated by commas, no spaces
+- **Numeric Ranges**: `employees_gte`/`employees_lte` pattern
+- **Case Sensitive**: Many filters require exact case matching
+
+### **Endpoint Variations**
+- **7-Day Endpoint**: `active-jb-7d` (current default)
+- **24-Hour Endpoint**: `active-jb-24h` (available)
+- **Hourly Endpoint**: `active-jb-1h` (Ultra/Mega plans only)
+
+### **AI-Enhanced Features**
+- **Beta Status**: All `ai_*` parameters are beta features
+- **Technology Jobs Only**: AI enhancement only for tech roles, excludes agencies
+- **`include_ai` Required**: Must set to `'true'` to access AI fields
+
+## **Implementation Checklist Template**
+
+### **Backend Implementation**
+- [ ] Parameter added to SearchParameters interface in [rapidapi-cache.ts](mdc:lib/api/rapidapi-cache.ts)
+- [ ] Parameter extraction added to [route.ts](mdc:app/api/rapidapi/search/route.ts)
+- [ ] Validation rules added to [rapidapi-validator.ts](mdc:lib/api/rapidapi-validator.ts)
+- [ ] API response mapping updated in [mappers.ts](mdc:utils/mappers.ts) if needed
+- [ ] Cache key generation accounts for new parameter
+
+### **Frontend Implementation**
+- [ ] UI component added/extended in [AdvancedFilters.tsx](mdc:components/roles/AdvancedFilters.tsx)
+- [ ] Parameter added to search form state management
+- [ ] Validation and error handling for user input
+- [ ] Help text and tooltips explaining parameter usage
+- [ ] Mobile-responsive design considerations
+
+### **Data Flow Verification**
+- [ ] Frontend correctly sends parameter to API
+- [ ] Backend correctly forwards parameter to RapidAPI
+- [ ] API response properly cached and returned
+- [ ] Role mapping handles new data fields if applicable
+- [ ] Error states properly handled and displayed
+
+## **Cost and Performance Considerations**
+
+### **API Credit Impact**
+- **Jobs Credits**: Deducted based on number of results returned
+- **Request Credits**: 1 credit per API call regardless of results
+- **Caching Strategy**: 1-hour TTL to minimize repeat calls
+- **Development Mode**: Uses mock data to avoid API costs
+
+### **Performance Implications**
+- **Timeout Risk**: `description_filter` with 7-day endpoint can timeout
+- **Recommendation**: Use 24h/Hourly endpoints for description searches
+- **Limit Considerations**: Search limited to 10 jobs per call for UI performance
+- **Caching**: Aggressive caching prevents unnecessary API calls
+
+## **Validation Requirements**
+
+### **Parameter Validation Patterns**
+- **Boolean Parameters**: Convert string `'true'`/`'false'` to boolean
+- **Numeric Parameters**: Validate ranges and convert to integers
+- **Text Parameters**: Trim whitespace, handle empty strings
+- **Comma-Delimited**: Split and validate individual values
+- **Case Sensitivity**: Preserve exact case for case-sensitive filters
+
+### **Error Handling Standards**
+- **User-Friendly Messages**: Convert API errors to helpful guidance
+- **Validation Errors**: Show specific field-level validation issues
+- **Plan Restrictions**: Clear messaging for unavailable features
+- **Fallback Behavior**: Graceful degradation when parameters fail
+
+## **Testing Considerations**
+
+### **Development Testing**
+- **Mock Data**: Verify UI works with mock responses
+- **Parameter Passing**: Ensure parameters correctly reach mock mode
+- **Error Simulation**: Test error handling without API costs
+- **Cache Behavior**: Verify caching works in development
+
+### **Production Testing**
+- **API Integration**: Verify real API calls work correctly
+- **Credit Consumption**: Monitor actual credit usage
+- **Performance**: Check response times with real data
+- **Error Recovery**: Test real API error scenarios
+
+## **Documentation Requirements**
+
+### **Feature Request Documentation**
+- **API Reference**: Link to specific documentation sections
+- **Implementation Status**: Clear status indicators (✅/⚠️/❌)
+- **Cost Analysis**: Estimate credit consumption impact
+- **Performance Notes**: Any special performance considerations
+- **Plan Requirements**: Note any subscription plan restrictions

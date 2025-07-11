@@ -1,0 +1,560 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Error Handling Standards
+
+This document defines comprehensive error handling strategies for all parts of the application, from React components to API routes and async operations.
+
+## Core Principles
+
+1. **Fail Gracefully**: Never let errors crash the application
+2. **User-Friendly Messages**: Show helpful messages, not technical details
+3. **Log Everything**: Capture full error context for debugging
+4. **Recover When Possible**: Implement retry mechanisms and fallbacks
+5. **Consistent Patterns**: Use the same error handling approach throughout
+
+## Client-Side Error Handling
+
+### React Error Boundaries
+
+Error boundaries catch JavaScript errors in component trees and display fallback UI.
+
+```typescript
+// components/ErrorBoundary.tsx
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+}
+
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+  public state: State = { hasError: false };
+
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('ErrorBoundary caught:', error, errorInfo);
+    this.props.onError?.(error, errorInfo);
+    
+    // Log to error reporting service
+    // logErrorToService(error, errorInfo);
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="error-fallback">
+          <h2>Something went wrong</h2>
+          <button onClick={() => this.setState({ hasError: false })}>
+            Try again
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Usage
+<ErrorBoundary fallback={<CustomErrorUI />}>
+  <YourComponent />
+</ErrorBoundary>
+```
+
+### Async Error Handling in Components
+
+```typescript
+// ✅ DO: Proper async error handling with loading and error states
+function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchUser() {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await fetch(`/api/users/${userId}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch user: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!cancelled) {
+          setUser(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'An error occurred');
+          console.error('Failed to fetch user:', err);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchUser();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage message={error} onRetry={() => fetchUser()} />;
+  if (!user) return <EmptyState />;
+
+  return <UserDetails user={user} />;
+}
+```
+
+### Form Error Handling
+
+```typescript
+// Using React Hook Form with Zod validation
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const schema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+function LoginForm() {
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    try {
+      setSubmitError(null);
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error?.message || 'Login failed');
+      }
+
+      // Handle success
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : 'An unexpected error occurred'
+      );
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {submitError && <ErrorAlert message={submitError} />}
+      
+      <input {...register('email')} />
+      {errors.email && <FieldError message={errors.email.message} />}
+      
+      <input {...register('password')} type="password" />
+      {errors.password && <FieldError message={errors.password.message} />}
+      
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Logging in...' : 'Login'}
+      </button>
+    </form>
+  );
+}
+```
+
+## Server-Side Error Handling
+
+### API Route Error Handling
+
+```typescript
+// app/api/users/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getServerSession } from 'next-auth';
+import { prisma } from '@/lib/prisma';
+
+// Consistent error response type
+interface ErrorResponse {
+  error: {
+    message: string;
+    code?: string;
+    details?: unknown;
+  };
+}
+
+// Centralized error response helper
+function errorResponse(
+  message: string,
+  status: number,
+  code?: string,
+  details?: unknown
+): NextResponse<ErrorResponse> {
+  console.error(`API Error [${code || 'UNKNOWN'}]:`, message, details);
+  
+  return NextResponse.json(
+    {
+      error: {
+        message,
+        code,
+        details: process.env.NODE_ENV === 'development' ? details : undefined,
+      },
+    },
+    { status }
+  );
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Authentication check
+    const session = await getServerSession();
+    if (!session) {
+      return errorResponse('Unauthorized', 401, 'AUTH_REQUIRED');
+    }
+
+    // Validation
+    const idSchema = z.string().uuid();
+    const validationResult = idSchema.safeParse(params.id);
+    
+    if (!validationResult.success) {
+      return errorResponse(
+        'Invalid user ID format',
+        400,
+        'VALIDATION_ERROR',
+        validationResult.error.flatten()
+      );
+    }
+
+    // Database operation with specific error handling
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: params.id },
+      });
+
+      if (!user) {
+        return errorResponse('User not found', 404, 'NOT_FOUND');
+      }
+
+      // Authorization check
+      if (user.id !== session.user.id && session.user.role !== 'ADMIN') {
+        return errorResponse('Forbidden', 403, 'FORBIDDEN');
+      }
+
+      return NextResponse.json({ data: user });
+      
+    } catch (dbError) {
+      // Handle specific Prisma errors
+      if (dbError instanceof Prisma.PrismaClientKnownRequestError) {
+        if (dbError.code === 'P2002') {
+          return errorResponse('Duplicate entry', 409, 'DUPLICATE_ENTRY');
+        }
+      }
+      throw dbError; // Re-throw to be caught by outer try-catch
+    }
+
+  } catch (error) {
+    // Generic error handler
+    console.error('Unhandled error in GET /api/users/[id]:', error);
+    
+    return errorResponse(
+      'Internal server error',
+      500,
+      'INTERNAL_ERROR',
+      error instanceof Error ? error.stack : undefined
+    );
+  }
+}
+```
+
+### Middleware Error Handling
+
+```typescript
+// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export async function middleware(request: NextRequest) {
+  try {
+    // Your middleware logic
+    const token = request.cookies.get('auth-token');
+    
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // Verify token
+    const isValid = await verifyToken(token.value);
+    
+    if (!isValid) {
+      const response = NextResponse.redirect(new URL('/login', request.url));
+      response.cookies.delete('auth-token');
+      return response;
+    }
+
+    return NextResponse.next();
+    
+  } catch (error) {
+    console.error('Middleware error:', error);
+    
+    // Don't expose internal errors, redirect to error page
+    return NextResponse.redirect(new URL('/error', request.url));
+  }
+}
+```
+
+## Async Operation Error Handling
+
+### Promise Error Handling
+
+```typescript
+// ✅ DO: Proper promise error handling
+async function processData(data: unknown): Promise<Result> {
+  try {
+    const validated = await validateData(data);
+    const processed = await transform(validated);
+    const saved = await saveToDatabase(processed);
+    
+    return { success: true, data: saved };
+  } catch (error) {
+    // Log with context
+    console.error('processData failed:', {
+      error,
+      data,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Re-throw with additional context
+    throw new ProcessingError(
+      'Failed to process data',
+      { cause: error, data }
+    );
+  }
+}
+
+// Custom error class with context
+class ProcessingError extends Error {
+  constructor(
+    message: string,
+    public context: { cause?: unknown; data?: unknown }
+  ) {
+    super(message);
+    this.name = 'ProcessingError';
+  }
+}
+```
+
+### Retry Logic with Exponential Backoff
+
+```typescript
+interface RetryOptions {
+  maxRetries?: number;
+  initialDelay?: number;
+  maxDelay?: number;
+  backoffFactor?: number;
+  shouldRetry?: (error: unknown) => boolean;
+}
+
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  options: RetryOptions = {}
+): Promise<T> {
+  const {
+    maxRetries = 3,
+    initialDelay = 1000,
+    maxDelay = 10000,
+    backoffFactor = 2,
+    shouldRetry = () => true,
+  } = options;
+
+  let lastError: unknown;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      
+      if (attempt === maxRetries || !shouldRetry(error)) {
+        throw error;
+      }
+
+      const delay = Math.min(
+        initialDelay * Math.pow(backoffFactor, attempt),
+        maxDelay
+      );
+      
+      console.warn(
+        `Attempt ${attempt + 1} failed, retrying in ${delay}ms...`,
+        error
+      );
+      
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError;
+}
+
+// Usage
+const data = await withRetry(
+  () => fetchDataFromAPI(),
+  {
+    shouldRetry: (error) => {
+      // Only retry on network errors or 5xx status codes
+      return error instanceof NetworkError || 
+             (error instanceof HTTPError && error.status >= 500);
+    }
+  }
+);
+```
+
+## State Management Error Handling
+
+### Redux Error Handling
+
+```typescript
+// Redux slice with error handling
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
+interface State {
+  data: Data | null;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
+}
+
+export const fetchData = createAsyncThunk(
+  'feature/fetchData',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await api.getData(id);
+      return response.data;
+    } catch (error) {
+      // Return a serializable error
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to fetch data'
+      );
+    }
+  }
+);
+
+const slice = createSlice({
+  name: 'feature',
+  initialState: {
+    data: null,
+    status: 'idle',
+    error: null,
+  } as State,
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchData.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchData.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.data = action.payload;
+      })
+      .addCase(fetchData.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      });
+  },
+});
+```
+
+## Error Monitoring & Logging
+
+### Structured Error Logging
+
+```typescript
+interface ErrorContext {
+  userId?: string;
+  requestId?: string;
+  url?: string;
+  method?: string;
+  userAgent?: string;
+  timestamp: string;
+  environment: string;
+}
+
+function logError(
+  error: unknown,
+  context: Partial<ErrorContext> = {}
+): void {
+  const errorInfo = {
+    message: error instanceof Error ? error.message : String(error),
+    stack: error instanceof Error ? error.stack : undefined,
+    type: error?.constructor?.name || 'Unknown',
+    ...context,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+  };
+
+  // Log to console in development
+  if (process.env.NODE_ENV === 'development') {
+    console.error('Error:', errorInfo);
+  }
+
+  // Send to error tracking service in production
+  if (process.env.NODE_ENV === 'production') {
+    // sendToErrorTracker(errorInfo);
+  }
+}
+```
+
+## Best Practices Summary
+
+1. **Always use try-catch** for async operations
+2. **Provide user-friendly error messages** - never expose technical details
+3. **Log errors with context** for debugging
+4. **Implement retry mechanisms** for transient failures
+5. **Use Error Boundaries** to catch React component errors
+6. **Validate early** to catch errors before they propagate
+7. **Handle specific error types** before generic ones
+8. **Clean up resources** in finally blocks or cleanup functions
+9. **Test error scenarios** explicitly in your test suite
+10. **Monitor errors** in production with proper tooling
+
+## Related Documentation
+
+- [API Conventions](mdc:.cursor/rules/backend/api-conventions.mdc) - API-specific error responses
+- [Testing Standards](mdc:.cursor/rules/core/testing.mdc) - Testing error scenarios
+- [TypeScript Guidelines](mdc:.cursor/rules/core/typescript.mdc) - Type-safe error handling

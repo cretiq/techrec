@@ -1,0 +1,235 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+---
+description: Defines UI/UX standards covering component architecture (shadcn/ui, composition), layout/spacing (Grid, Tailwind scale), typography, color, responsiveness, accessibility, component states, animation, forms, and performance for frontend development.
+globs:
+    - components/**/*.ts
+    - components/**/*.tsx
+    - app/**/*.tsx # Or wherever your UI components live
+    - styles/**/*.css
+    - styles/**/*.module.css
+    - tailwind.config.js # Or relevant config
+alwaysApply: false # Auto-attached based on globs
+---
+
+# UI/UX Standards
+
+## Component Architecture
+
+- **shadcn/ui Integration**
+  - Use shadcn/ui components as foundational building blocks
+  - Extend components using the provided configuration options before creating custom variants
+  - Follow the [shadcn/ui documentation](mdc:https:/ui.shadcn.com) for component customization
+  - Custom components should maintain consistency with shadcn/ui's design language
+
+- **Component Composition**
+  - Follow atomic design principles:
+    - Atoms: Basic UI elements (buttons, inputs, icons)
+    - Molecules: Simple component combinations (form fields, search bars)
+    - Organisms: Complex UI sections (navigation bars, analysis cards)
+    - Templates: Page layouts and structure
+  - Use composition over inheritance
+  - Implement render props pattern for flexible content injection
+
+## Layout & Spacing
+
+- **Grid System**
+  - Use CSS Grid for main layouts
+  - Implement responsive grid columns:
+    ```tsx
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    ```
+  - Maintain consistent gutters using Tailwind's gap utilities
+
+- **Spacing Scale**
+  - Follow Tailwind's spacing scale:
+    - 4px (1): Minimal spacing
+    - 8px (2): Tight spacing
+    - 16px (4): Standard spacing
+    - 24px (6): Component spacing
+    - 32px (8): Section spacing
+    - 48px (12): Large section spacing
+  - Use rem-based spacing for better accessibility
+
+## Typography
+
+- **Font Hierarchy**
+  - Use system font stack with optional Google Fonts
+  - Implement consistent type scale:
+    ```css
+    h1: text-4xl font-bold
+    h2: text-3xl font-semibold
+    h3: text-2xl font-medium
+    body: text-base
+    small: text-sm
+    ```
+  - Maintain readable line heights:
+    - Headers: leading-tight
+    - Body text: leading-normal
+    - Large text blocks: leading-relaxed
+
+## Color System
+
+- **Primary Palette**
+  - Use Tailwind's color system
+  - Define semantic color variables:
+    ```css
+    --primary: theme(colors.blue.600)
+    --secondary: theme(colors.gray.600)
+    --accent: theme(colors.emerald.500)
+    --background: theme(colors.white)
+    --foreground: theme(colors.gray.900)
+    ```
+
+- **Feedback Colors**
+  - Success: green.500
+  - Warning: yellow.500
+  - Error: red.500
+  - Info: blue.500
+
+## Responsive Design
+
+- **Breakpoints**
+  - Mobile First: < 640px
+  - sm: 640px (tablets)
+  - md: 768px (small laptops)
+  - lg: 1024px (desktops)
+  - xl: 1280px (large screens)
+  - 2xl: 1536px (extra large screens)
+
+- **Responsive Patterns**
+  - Stack to grid
+  - Column reduction
+  - Font size adaptation
+  - Spacing adjustments
+  - Navigation transformation
+
+## Accessibility (a11y)
+
+- **ARIA Implementation**
+  - Use semantic HTML elements
+  - Implement proper ARIA roles
+  - Provide aria-labels for interactive elements
+  - Ensure proper focus management
+
+- **Keyboard Navigation**
+  - All interactive elements must be keyboard accessible
+  - Implement logical tab order
+  - Provide visible focus indicators
+  - Support keyboard shortcuts for common actions
+
+## Component States
+
+- **Loading States**
+  - Use skeleton loaders for content
+  - Implement loading spinners for actions
+  - Disable interactive elements during loading
+  - Maintain layout stability
+
+- **Error States**
+  - Display inline errors for form fields
+  - Show error boundaries for component failures
+  - Provide clear error messages
+  - Implement retry mechanisms
+
+- **Empty States**
+  - Design meaningful empty states
+  - Provide clear calls to action
+  - Maintain consistent layout
+
+- **Status Indicators**
+  - Use `Badge` components (from shadcn/ui) to display status information (e.g., PENDING, ANALYZING, COMPLETED, FAILED).
+  - Define consistent color mappings for different statuses (e.g., using `variant` prop: `secondary` for PENDING, `outline` for processing, `default` for success, `destructive` for failure).
+
+## Animation & Transitions
+
+- **Motion Principles**
+  - Use subtle animations (0.2s - 0.3s duration)
+  - Implement smooth transitions
+  - Respect reduced-motion preferences
+  - Maintain consistent easing functions
+
+- **Common Animations**
+  ```css
+  /* Hover transitions */
+  transition-all duration-200 ease-in-out
+
+  /* Page transitions */
+  animate-fade-in duration-300
+
+  /* Loading animations */
+  animate-pulse duration-1000
+  ```
+
+### Framer Motion Integration Guidelines (Learnings)
+
+*   **Managing `layout` Prop in Lists/Siblings:**
+    *   The `layout` prop animates the component itself *and* smoothly repositions sibling `motion` components with `layout`.
+    *   Use `layout` when smooth reflowing of siblings is desired (e.g., list reordering).
+    *   Remove `layout` from siblings if only the interacted item should animate size/position, and others should snap instantly (e.g., standard accordion behavior). Be aware this can cause visual jumps.
+
+*   **Integrating with UI Library Animations (e.g., Shadcn UI):**
+    *   Check base UI components for built-in CSS transitions/animations before adding Framer Motion.
+    *   **Prefer disabling/removing built-in CSS animations** on the base component if controlling the animation primarily with Framer Motion to avoid conflicts.
+    *   Example: If animating accordion content with Framer Motion, remove `animate-accordion-up/down` classes from the base Shadcn `AccordionContent`.
+
+*   **Using `AnimatePresence` with Controlled Components:**
+    *   Wrap conditionally rendered `motion` components (whose mounting/unmounting is controlled by parent state, like accordion content) with `<AnimatePresence>`.
+    *   Ensure the direct child of `<AnimatePresence>` is the `motion` component.
+    *   **Avoid extra conditional rendering logic *between* `<AnimatePresence>` and its `motion` child.** Let parent state control the presence of the `AnimatePresence` block or its direct child.
+    *   Use unique `key` props on the `motion` children of `AnimatePresence`.
+    *   Use `initial={false}` on `AnimatePresence` to prevent initial animations for already-present items.
+
+*   **Centralizing Animation Configurations:**
+    *   Create a dedicated file (e.g., `lib/animation-config.ts`) to store reusable `Transition` objects (duration, ease) and potentially common `variants`.
+    *   Import and use these shared configurations in components for consistency and maintainability.
+
+*   **Handling TypeScript Errors with Motion & Conditionals:**
+    *   When using optional data (`type | null | undefined`) in boolean expressions for props expecting `boolean | undefined` (like `disabled`), be cautious of implicit type coercion.
+    *   Explicitly cast potentially non-boolean parts of the expression to boolean using `!!` (e.g., `disabled={conditionA || !!(optionalValue && conditionB)}`) to prevent type errors.
+    *   Avoid returning `null` directly from components if it causes upstream type issues; return `<></>` instead.
+
+## Forms
+
+- **Input Styling**
+  - Consistent padding and height
+  - Clear focus states
+  - Proper error styling
+  - Helper text positioning
+
+- **Validation**
+  - Real-time validation
+  - Clear error messages
+  - Success indicators
+  - Required field marking
+
+## CV Analysis Specific Components
+
+- **Analysis Result Cards**
+  - Consistent score display
+  - Clear visual hierarchy
+  - Expandable sections
+  - Action button placement
+
+- **Suggestion Components**
+  - Priority indicators
+  - Clear categorization
+  - Interactive elements
+  - Progress tracking
+
+## Performance Considerations
+
+- **Image Optimization**
+  - Use next/image for automatic optimization
+  - Implement lazy loading
+  - Provide proper aspect ratios
+  - Use appropriate formats (WebP with fallbacks)
+
+- **Component Loading**
+  - Implement code splitting
+  - Use dynamic imports for large components
+  - Prefetch critical components
+  - Optimize bundle size

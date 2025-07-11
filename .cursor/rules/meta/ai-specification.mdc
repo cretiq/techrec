@@ -1,0 +1,149 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# AI Integration Standards
+
+## Core Requirements
+
+- **AI Specification Compliance**
+  - All AI interactions **must** strictly follow [`ai_analysis_specification.md`](mdc:@documentation/ai_analysis_specification.md)
+  - Changes to AI logic require specification updates first
+  - Version control AI specification changes
+
+## Prompt Engineering
+
+- **System Prompts**
+  - Use version-controlled prompts from Section 2.2 of specification
+  - Include clear context and constraints
+  - Maintain consistent formatting
+  - Document prompt modifications
+
+- **Input Sanitization**
+  - Remove sensitive information
+  - Normalize text formatting
+  - Handle special characters
+  - Validate input length
+
+## Response Handling
+
+- **Validation**
+  - Implement Zod schemas for response validation
+  - Handle malformed responses gracefully
+  - Validate against expected structure
+  - Log validation failures
+
+- **Type Safety**
+  ```typescript
+  // Use strict typing for AI responses
+  interface AiAnalysisResponse {
+    score: number;
+    suggestions: CvSuggestion[];
+    confidence: number;
+    reasoning: string;
+  }
+  ```
+
+## Rate Limiting & Optimization
+
+- **Request Management**
+  - Implement token-bucket rate limiting
+  - Track token usage per request
+  - Cache frequently requested analyses
+  - Batch similar requests when possible
+
+- **Cost Optimization**
+  - Monitor token consumption
+  - Implement usage budgets
+  - Cache valid responses
+  - Use appropriate model tiers
+
+## Error Handling
+
+- **Retry Strategy**
+  ```typescript
+  // Implement exponential backoff
+  const retryConfig = {
+    maxRetries: 3,
+    initialDelay: 1000,
+    maxDelay: 10000,
+    backoffFactor: 2
+  };
+  ```
+
+- **Fallback Mechanisms**
+  - Maintain fallback rule-based analysis
+  - Cache previous successful responses
+  - Implement degraded service modes
+  - Clear error communication
+
+## Performance
+
+- **Response Time Optimization**
+  - Set appropriate timeouts
+  - Implement request queuing
+  - Monitor response times
+  - Cache partial results
+
+- **Concurrent Requests**
+  - Manage request pools
+  - Implement fair queuing
+  - Handle request priorities
+  - Monitor concurrent load
+
+## Monitoring & Logging
+
+- **Telemetry**
+  - Log request/response pairs
+  - Track error rates
+  - Monitor token usage
+  - Measure response times
+
+- **Alerting**
+  - Define error thresholds
+  - Alert on quota approaching
+  - Monitor service health
+  - Track cost anomalies
+
+## Security
+
+- **Data Protection**
+  - Encrypt sensitive data
+  - Implement access controls
+  - Audit data access
+  - Sanitize logs
+
+- **API Key Management**
+  - Rotate keys regularly
+  - Use environment variables
+  - Implement key restrictions
+  - Monitor key usage
+
+## Testing
+
+- **Unit Tests**
+  - Mock AI responses
+  - Test error handling
+  - Validate retry logic
+  - Check rate limiting
+
+- **Integration Tests**
+  - Test end-to-end flow
+  - Verify response handling
+  - Check error recovery
+  - Validate caching
+
+## Documentation
+
+- **API Documentation**
+  - Document request formats
+  - Specify response schemas
+  - List error codes
+  - Provide usage examples
+
+- **Maintenance Guides**
+  - Document troubleshooting
+  - Specify monitoring procedures
+  - Detail backup processes
+  - Update procedures

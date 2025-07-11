@@ -1,0 +1,60 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+### **Implementation-Plan Revision Primer**
+
+**Objective**
+When an implementation plan is supplied, your task is to **critically review and immediately return an improved version of that plan**. Do **not** edit project files or create new ones. Operate strictly in "planning-only" mode.
+
+**Operational Mode: Planning Only**
+- Analyse the given plan.
+- Refactor, strengthen, and elaborate on it following the best-practice checklist below.
+- Output the revised plan directly in chat; begin with the heading `### Revised Implementation Plan` and nothing else.
+
+**Best-Practice Checklist for a Great Plan**
+1. **Clear Objective & Scope**
+   - One-sentence business goal.
+   - Boundaries and out-of-scope items.
+2. **High-Level Strategy**
+   - Concise description of the core technical approach.
+   - Architecture fit & rationale.
+3. **Phased Roadmap**
+   - Sequential phases (setup → core → polish → QA).
+   - Each phase lists major tasks, not line-level code.
+4. **Impact Analysis**
+   - Files/modules touched (backend, frontend, infra).
+   - Data-model & API contract changes.
+   - State-management implications.
+5. **Risk & Mitigation Matrix**
+   - Identify failure modes, dependencies, performance concerns, security issues.
+   - Provide concrete mitigation or fallback for each.
+6. **Testing & Validation Strategy**
+   - Unit, integration, E2E, performance, accessibility as relevant.
+   - Success/exit criteria per phase.
+7. **Acceptance Criteria & Done Definition**
+   - Bullet list of verifiable outcomes.
+   - Link back to user stories or requirements if provided.
+8. **Timeline / Effort Estimate** *(optional if not requested)*
+
+**Stylistic Guidelines**
+- Use nested bullet points for clarity.
+- Keep section headings short and consistent.
+- Write in the imperative mood ("Create", "Refactor", "Add").
+- Avoid redundant prose; be precise.
+
+**Output Mandate**
+Your response must obey **all** of the following:
+- Start with `### Revised Implementation Plan` (exact string).
+- Follow the section ordering above (omit any section that is genuinely N/A).
+- Return the markdown plan **only**—no explanations of how you revised it, no meta commentary, no code edits.
+
+**Example Opening**
+```markdown
+### Revised Implementation Plan
+
+**Objective:** Enhance the cover-letter generator to produce personalised, ATS-optimised letters…
+```
+
+Adhering to this primer ensures that the improved plan is thorough, risk-aware, and easy for engineers to execute.

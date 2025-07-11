@@ -1,0 +1,170 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Workflow for CV upload, persistent storage, background analysis, and improvement features
+globs: 
+  - "app/developer/cv-management/**/*"
+  - "app/api/cv/**/*"
+  - "app/api/cv-analysis/**/*"
+  - "components/cv/**/*"
+  - "components/analysis/**/*"
+  - "utils/cv*.ts"
+  - "utils/gptAnalysis.ts"
+alwaysApply: false
+dependencies:
+  - api-conventions
+  - state-management
+---
+
+# CV Analysis & Improvement Workflow (v2 - Persistent CVs)
+
+This document outlines the updated workflow for uploading, managing, analyzing, and improving CVs within the application, incorporating persistent CV storage and background analysis.
+
+## Core Concepts
+
+*   **Persistent CVs:** User-uploaded CVs are stored persistently in the database (`CV` model) along with metadata (filename, upload date, status, etc.) and a link to the file in S3.
+*   **Background Analysis:** Upon successful upload, CV analysis (`utils/gptAnalysis.ts`) is triggered automatically in the background (or synchronously in the API route as a temporary measure). Results are stored in the `CvAnalysis` model.
+*   **Analysis Status:** The `CV` model tracks the analysis progress using `AnalysisStatus` (`PENDING`, `ANALYZING`, `COMPLETED`, `FAILED`).
+*   **Improvement Score:** A score reflecting the CV's quality or potential for improvement is calculated after analysis and stored on the `CV` model.
+*   **Centralized Management:** The "Manage CVs" tab becomes the primary hub for uploading and viewing the list of saved CVs and their statuses.
+*   **On-Demand Detail View:** The "Analyze & Edit" tab displays the detailed analysis results *only* when a specific CV analysis is selected from the list via the "Improve" button.
+
+## Workflow Diagram (Conceptual)
+
+```mermaid
+graph TD
+    A[User visits /developer/cv-management] --> B{Tabs: Manage CVs / Analyze & Edit};
+
+    subgraph Manage CVs Tab
+        B --> C[Upload New CV Card: UploadForm];
+        B --> D[My CVs Card: CVList];
+        C -- Upload File --> E[POST /api/cv/upload];
+        D -- Fetches List --> F[GET /api/cv];
+    end
+
+    subgraph POST /api/cv/upload Backend
+        E --> G{Auth & Validate};
+        G -- Valid --> H[Save file to S3];
+        H --> I[Create CV Record in DB (Status: PENDING)];
+        I --> J(Trigger Background Analysis Task);
+        J --> K[API Responds 201 (Upload OK, Analysis Pending)];
+        G -- Invalid --> L[API Responds 4xx Error];
+    end
+
+    subgraph Background Analysis Task
+        J --> M[Fetch CV File from S3];
+        M --> N[Update CV Status: ANALYZING];
+        N --> O[Parse File Content];
+        O --> P[Call analyzeCvWithGPT];
+        P --> Q{Analysis OK?};
+        Q -- Yes --> R[Calculate Score];
+        R --> S[Save CvAnalysis Result to DB];
+        S --> T[Update CV Status: COMPLETED, Score, AnalysisID];
+        Q -- No --> U[Update CV Status: FAILED];
+    end
+
+    subgraph GET /api/cv Backend
+        F --> V[Auth User];
+        V --> W[Query DB for User's CVs (with status, score, etc)];
+        W --> X[Return List of CVs];
+    end
+
+    subgraph Frontend List Update
+        K -- Triggers Refetch --> D; 
+        X -- Updates UI --> D;
+        T -- Eventually Updates Status via Refetch --> D;
+        U -- Eventually Updates Status via Refetch --> D;
+    end
+
+    subgraph Analyze & Edit Tab
+        D -- Click Improve Button (with analysisId) --> Y[Navigate w/ analysisId Query Param];
+        Y --> Z{Analyze & Edit Tab Loads};
+        Z -- Reads analysisId --> AA[Dispatch fetchAnalysisById Action (Redux)];
+        AA --> BB[GET /api/cv-analysis/:id];
+        BB --> CC[Fetch CvAnalysis Result from DB];
+        CC --> DD[Return Analysis Result];
+        DD --> EE[Update Redux Store];
+        EE --> FF[AnalysisResultDisplay Renders Data];
+        Z -- No analysisId --> GG[Show Placeholder Message];
+    end
+```
+
+## Detailed Steps
+
+1.  **User Accesses Page:**
+    *   User navigates to `/developer/cv-management`.
+    *   The `CVManagementPage` component (`page.tsx`) renders.
+    *   The default "Manage CVs" tab is active.
+
+2.  **Viewing Saved CVs:**
+    *   The `<CVList>` component mounts within the "Manage CVs" tab.
+    *   `useEffect` triggers `fetchCVs`.
+    *   `fetchCVs` calls `GET /api/cv`.
+    *   The backend authenticates the user and fetches their associated `CV` records from the database, including `id`, `originalName`, `uploadDate`, `status`, `improvementScore`, `analysisId`.
+    *   The API returns the list of CVs.
+    *   `<CVList>` updates its state and renders the table, displaying status (using Badges), score (if applicable), and action buttons.
+
+3.  **Uploading a New CV:**
+    *   User interacts with the `<UploadForm>` in the "Manage CVs" tab.
+    *   On submission, the form sends the file data via `POST /api/cv/upload`.
+    *   Backend (`upload/route.ts`):
+        *   Authenticates the user.
+        *   Validates the file (type, size).
+        *   Uploads the file to S3, generating a unique `s3Key`.
+        *   Creates a `CV` record in the database (`prisma.cV.create`) linked to the `developerId`, storing metadata (`originalName`, `mimeType`, `size`, `s3Key`) and setting `status` to `PENDING`.
+        *   **(Background Task Trigger):** Initiates the background analysis process (e.g., enqueues a job or, *currently*, proceeds synchronously).
+        *   Returns a `201 Created` response indicating upload success and pending analysis.
+    *   Frontend (`UploadForm`):
+        *   Receives the `201` response.
+        *   Calls the `onUploadComplete` callback prop.
+    *   Frontend (`CVManagementPage`):
+        *   The `handleUploadComplete` function increments the `refreshKey` state variable.
+    *   Frontend (`CVList`):
+        *   The change in `refreshKey` triggers the `useEffect` hook, causing `fetchCVs` to run again.
+        *   The list refreshes, showing the newly uploaded CV with a `PENDING` status.
+
+4.  **Background Analysis Processing:**
+    *   The triggered background task (or synchronous process in `upload/route.ts`):
+        *   Retrieves the `CV` record using its ID.
+        *   Downloads the corresponding file from S3 using `downloadS3FileAsBuffer`.
+        *   Updates the `CV` status to `ANALYZING` (`updateCV`).
+        *   Parses the file content using `parseFileContent`.
+        *   Calls `analyzeCvWithGPT` to get the structured analysis data.
+        *   Calculates the `improvementScore` (e.g., based on data completeness).
+        *   Creates a `CvAnalysis` record in the database (`prisma.cvAnalysis.create`), storing the analysis results and linking it back to the `CV` record (`cvId`).
+        *   Updates the original `CV` record (`updateCV`) with `status = COMPLETED`, the `analysisId` from the new `CvAnalysis` record, and the calculated `improvementScore`.
+        *   If any step fails, catches the error and updates the `CV` status to `FAILED` (`updateCV`).
+
+5.  **Viewing Analysis Details:**
+    *   User sees a CV in the `<CVList>` with status `COMPLETED`.
+    *   User clicks the "Improve" button associated with that CV.
+    *   The `handleImprove` function in `<CVList>` uses `router.push` to navigate to `/developer/cv-management?tab=analyze&analysisId=ANALYSIS_ID`.
+    *   The `CVManagementPage` re-renders or responds to the URL change:
+        *   The `useEffect` hook monitoring `searchParams` detects the `analysisId`.
+        *   It dispatches the `fetchAnalysisById(analysisId)` Redux action.
+    *   Redux (`analysisSlice.ts`):
+        *   The `fetchAnalysisById` thunk likely calls `GET /api/cv-analysis/[analysisId]`.
+        *   The backend fetches the `CvAnalysis` record by ID from the database.
+        *   The API returns the `analysisResult` JSON.
+        *   The thunk updates the Redux store (`currentAnalysisId`, `analysisResult`, `status`).
+    *   Frontend (`CVManagementPage`):
+        *   The component re-renders with the updated Redux state.
+        *   The conditional rendering logic now shows the "Analysis Result" card.
+        *   The `<AnalysisResultDisplay>` component receives the data via Redux selectors (implicitly or explicitly) and renders the detailed analysis.
+    *   If the user navigates to the "Analyze & Edit" tab without a valid `analysisId` in the URL (or clicks "Improve" on a non-COMPLETED CV), the placeholder message is shown instead.
+
+## Component Responsibilities
+
+*   **`app/developer/cv-management/page.tsx`:** Main page component, handles tab state, URL synchronization, Redux dispatch for loading analysis details.
+*   **`components/cv/UploadForm.tsx`:** Handles file input, basic client-side validation, and POSTing to `/api/cv/upload`.
+*   **`components/cv/CVList.tsx`:** Fetches CV list from `/api/cv`, displays data in a table, handles filtering (via `SearchFilters`), deletion, download requests, and navigation to the analysis view.
+*   **`components/analysis/AnalysisResultDisplay.tsx`:** Renders the detailed analysis results fetched via Redux.
+*   **`utils/cvOperations.ts`:** Contains functions for interacting with the `CV` model in the database (create, get, update, delete, list).
+*   **`utils/s3Storage.ts`:** Handles uploading and downloading files from S3.
+*   **`utils/fileParsers.ts`:** Extracts text content from different file formats (PDF, DOCX, TXT).
+*   **`utils/gptAnalysis.ts`:** Communicates with OpenAI GPT to perform the core CV analysis based on extracted text.
+*   **`lib/features/analysisSlice.ts`:** Redux slice managing the state for the *currently viewed* CV analysis details (`currentAnalysisId`, `analysisResult`, `status`).
+*   **API Routes (`app/api/cv/...`, `app/api/cv-analysis/...`):** Handle HTTP requests, authentication, validation, call utility functions, interact with the database/S3, and return responses.

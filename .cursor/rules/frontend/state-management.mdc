@@ -1,0 +1,495 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# State Management Guidelines
+
+This document outlines state management strategies for the application, primarily using Redux Toolkit with Redux Persist, along with guidelines for Context API and local state.
+
+## State Management Hierarchy
+
+### 1. Local Component State
+Use for UI-only state that doesn't need to be shared.
+
+```typescript
+// ✅ DO: Use local state for UI-only concerns
+function SearchInput() {
+  const [query, setQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  
+  return (
+    <input
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      className={isFocused ? 'ring-2' : ''}
+    />
+  );
+}
+```
+
+### 2. Context API
+Use for simple, low-frequency updates (theme, locale, user preferences).
+
+```typescript
+// contexts/ThemeContext.tsx
+interface ThemeContextType {
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  }, []);
+  
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within ThemeProvider');
+  }
+  return context;
+}
+```
+
+### 3. Redux Toolkit (Primary)
+Use for complex state, shared across multiple components, or requiring persistence.
+
+## Redux Toolkit Setup
+
+### Store Configuration
+
+```typescript
+// lib/store/store.ts
+import { configureStore } from '@reduxjs/toolkit';
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { combineReducers } from 'redux';
+
+// Import slices
+import userReducer from '@/lib/features/userSlice';
+import analysisReducer from '@/lib/features/analysisSlice';
+import uiReducer from '@/lib/features/uiSlice';
+
+// Persist configuration
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage,
+  whitelist: ['user'], // Only persist user slice
+  blacklist: ['ui', 'analysis'], // Don't persist these
+};
+
+const rootReducer = combineReducers({
+  user: userReducer,
+  analysis: analysisReducer,
+  ui: uiReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
+
+export const persistor = persistStore(store);
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+### Slice Pattern
+
+```typescript
+// lib/features/analysisSlice.ts
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import type { CvAnalysisData } from '@/types';
+
+interface AnalysisState {
+  currentAnalysisId: string | null;
+  analysisResult: CvAnalysisData | null;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
+  cache: Record<string, CvAnalysisData>;
+}
+
+const initialState: AnalysisState = {
+  currentAnalysisId: null,
+  analysisResult: null,
+  status: 'idle',
+  error: null,
+  cache: {},
+};
+
+// Async thunk with proper error handling
+export const fetchAnalysisById = createAsyncThunk(
+  'analysis/fetchById',
+  async (analysisId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/cv-analysis/${analysisId}`);
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to fetch analysis');
+      }
+      
+      const data = await response.json();
+      
+      // Normalize data structure
+      return {
+        id: data.id || analysisId,
+        analysisResult: data.analysisResult || data,
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Unknown error occurred'
+      );
+    }
+  }
+);
+
+const analysisSlice = createSlice({
+  name: 'analysis',
+  initialState,
+  reducers: {
+    // Synchronous actions
+    setCurrentAnalysis: (state, action: PayloadAction<string>) => {
+      state.currentAnalysisId = action.payload;
+      // Check cache first
+      if (state.cache[action.payload]) {
+        state.analysisResult = state.cache[action.payload];
+        state.status = 'succeeded';
+      }
+    },
+    clearAnalysis: (state) => {
+      state.currentAnalysisId = null;
+      state.analysisResult = null;
+      state.status = 'idle';
+      state.error = null;
+    },
+    updateAnalysisField: (
+      state,
+      action: PayloadAction<{ field: keyof CvAnalysisData; value: any }>
+    ) => {
+      if (state.analysisResult) {
+        state.analysisResult[action.payload.field] = action.payload.value;
+      }
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch analysis cases
+      .addCase(fetchAnalysisById.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchAnalysisById.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.currentAnalysisId = action.payload.id;
+        state.analysisResult = action.payload.analysisResult;
+        // Cache the result
+        state.cache[action.payload.id] = action.payload.analysisResult;
+      })
+      .addCase(fetchAnalysisById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+      });
+  },
+});
+
+export const { setCurrentAnalysis, clearAnalysis, updateAnalysisField } = analysisSlice.actions;
+export default analysisSlice.reducer;
+
+// Selectors
+export const selectAnalysisResult = (state: RootState) => state.analysis.analysisResult;
+export const selectAnalysisStatus = (state: RootState) => state.analysis.status;
+export const selectAnalysisError = (state: RootState) => state.analysis.error;
+export const selectCachedAnalysis = (state: RootState, id: string) => state.analysis.cache[id];
+```
+
+### Typed Hooks
+
+```typescript
+// hooks/redux.ts
+import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
+import type { RootState, AppDispatch } from '@/lib/store/store';
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+```
+
+## Redux Persist Configuration
+
+### Persistence Strategies
+
+```typescript
+// Persist specific fields only
+const userPersistConfig = {
+  key: 'user',
+  storage,
+  whitelist: ['id', 'email', 'preferences'], // Only persist these fields
+  blacklist: ['temporaryData'], // Never persist these
+};
+
+// Persist with migration
+const persistConfigWithMigration = {
+  key: 'root',
+  version: 2,
+  storage,
+  migrate: (state: any) => {
+    // Handle state migration between versions
+    if (state?._persist?.version === 1) {
+      // Migrate from v1 to v2
+      return Promise.resolve({
+        ...state,
+        newField: 'defaultValue',
+      });
+    }
+    return Promise.resolve(state);
+  },
+};
+
+// Persist with transform
+import { createTransform } from 'redux-persist';
+
+const SetTransform = createTransform(
+  // Transform state on its way to being serialized and persisted
+  (inboundState: any) => {
+    // Convert Sets to Arrays
+    return {
+      ...inboundState,
+      items: Array.from(inboundState.items || []),
+    };
+  },
+  // Transform state being rehydrated
+  (outboundState: any) => {
+    // Convert Arrays back to Sets
+    return {
+      ...outboundState,
+      items: new Set(outboundState.items || []),
+    };
+  },
+  // Apply to specific reducer
+  { whitelist: ['collection'] }
+);
+```
+
+## Component Integration
+
+### Using Redux in Components
+
+```typescript
+// components/AnalysisDisplay.tsx
+import { useAppSelector, useAppDispatch } from '@/hooks/redux';
+import { fetchAnalysisById, selectAnalysisResult, selectAnalysisStatus } from '@/lib/features/analysisSlice';
+
+export function AnalysisDisplay({ analysisId }: { analysisId: string }) {
+  const dispatch = useAppDispatch();
+  const analysisResult = useAppSelector(selectAnalysisResult);
+  const status = useAppSelector(selectAnalysisStatus);
+  
+  useEffect(() => {
+    if (analysisId && (!analysisResult || analysisResult.id !== analysisId)) {
+      dispatch(fetchAnalysisById(analysisId));
+    }
+  }, [analysisId, analysisResult, dispatch]);
+  
+  if (status === 'loading') return <LoadingSpinner />;
+  if (status === 'failed') return <ErrorMessage />;
+  if (!analysisResult) return <EmptyState />;
+  
+  return <AnalysisContent data={analysisResult} />;
+}
+```
+
+### Avoiding Common Pitfalls
+
+```typescript
+// ❌ DON'T: Include thunk-managed state in useEffect dependencies
+useEffect(() => {
+  dispatch(fetchData());
+}, [dispatch, status, data]); // Can cause infinite loops
+
+// ✅ DO: Only depend on external triggers
+useEffect(() => {
+  if (userId) {
+    dispatch(fetchUserData(userId));
+  }
+}, [dispatch, userId]); // Only re-fetch when userId changes
+
+// ❌ DON'T: Mutate state directly
+const slice = createSlice({
+  reducers: {
+    addItem: (state, action) => {
+      state.items.push(action.payload); // Only works with Immer
+      return state; // Don't return if using Immer
+    },
+  },
+});
+
+// ✅ DO: Let Immer handle immutability
+const slice = createSlice({
+  reducers: {
+    addItem: (state, action) => {
+      state.items.push(action.payload); // Immer makes this safe
+    },
+  },
+});
+```
+
+## Performance Optimization
+
+### Memoized Selectors
+
+```typescript
+// lib/features/selectors.ts
+import { createSelector } from '@reduxjs/toolkit';
+import type { RootState } from '@/lib/store/store';
+
+// Basic selector
+const selectAllItems = (state: RootState) => state.items.list;
+const selectFilter = (state: RootState) => state.items.filter;
+
+// Memoized selector for filtered items
+export const selectFilteredItems = createSelector(
+  [selectAllItems, selectFilter],
+  (items, filter) => {
+    if (!filter) return items;
+    return items.filter(item => 
+      item.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  }
+);
+
+// Parameterized selector
+export const makeSelectItemById = () =>
+  createSelector(
+    [selectAllItems, (_: RootState, id: string) => id],
+    (items, id) => items.find(item => item.id === id)
+  );
+```
+
+### Component Optimization
+
+```typescript
+// Optimize re-renders with React.memo and proper selectors
+const ItemList = React.memo(function ItemList() {
+  const filteredItems = useAppSelector(selectFilteredItems);
+  
+  return (
+    <ul>
+      {filteredItems.map(item => (
+        <ItemRow key={item.id} item={item} />
+      ))}
+    </ul>
+  );
+});
+
+// Use shallow equality for object selections
+const UserProfile = () => {
+  const userData = useAppSelector(
+    state => ({
+      name: state.user.name,
+      email: state.user.email,
+    }),
+    shallowEqual // From react-redux
+  );
+  
+  return <ProfileDisplay {...userData} />;
+};
+```
+
+## Testing Redux Logic
+
+```typescript
+// lib/features/__tests__/analysisSlice.test.ts
+import { configureStore } from '@reduxjs/toolkit';
+import analysisReducer, { fetchAnalysisById, clearAnalysis } from '../analysisSlice';
+
+describe('analysisSlice', () => {
+  let store: ReturnType<typeof configureStore>;
+  
+  beforeEach(() => {
+    store = configureStore({
+      reducer: { analysis: analysisReducer },
+    });
+  });
+  
+  it('should handle fetchAnalysisById.fulfilled', () => {
+    const mockData = { id: '123', analysisResult: { score: 85 } };
+    
+    store.dispatch(fetchAnalysisById.fulfilled(mockData, '', '123'));
+    
+    const state = store.getState().analysis;
+    expect(state.status).toBe('succeeded');
+    expect(state.analysisResult).toEqual(mockData.analysisResult);
+    expect(state.cache['123']).toEqual(mockData.analysisResult);
+  });
+  
+  it('should clear analysis state', () => {
+    store.dispatch(clearAnalysis());
+    
+    const state = store.getState().analysis;
+    expect(state.currentAnalysisId).toBeNull();
+    expect(state.analysisResult).toBeNull();
+    expect(state.status).toBe('idle');
+  });
+});
+```
+
+## Best Practices
+
+### 1. State Structure
+- Keep state normalized and flat
+- Avoid deeply nested objects
+- Use IDs for relationships
+- Separate UI state from data state
+
+### 2. When to Use Redux
+- **Use Redux for:**
+  - User authentication state
+  - Cached server data
+  - Complex UI state shared across routes
+  - Data that needs persistence
+
+- **Don't use Redux for:**
+  - Form state (use react-hook-form)
+  - Simple UI toggles
+  - Component-specific state
+
+### 3. Async Operations
+- Always handle loading, success, and error states
+- Use `createAsyncThunk` for complex async logic
+- Implement proper cleanup in components
+- Cache responses when appropriate
+
+### 4. Performance
+- Use `createSelector` for derived state
+- Implement `shallowEqual` for object selections
+- Split large slices into smaller ones
+- Lazy load slices when possible
+
+## Related Documentation
+
+- [React Patterns](mdc:.cursor/rules/frontend/react-patterns.mdc) - React best practices
+- [Error Handling](mdc:.cursor/rules/core/error-handling.mdc) - Error handling in Redux
+- [Testing Standards](mdc:.cursor/rules/core/testing.mdc) - Testing Redux logic

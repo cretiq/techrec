@@ -1,0 +1,236 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Core Coding Standards
+
+This document defines the fundamental coding standards and conventions that apply across the entire codebase. For technology-specific guidelines, refer to the specialized rule files.
+
+## Naming Conventions
+
+### Files & Folders
+- **Folders**: `kebab-case` (e.g., `user-profile`, `api-utils`)
+- **Component Files**: `PascalCase.tsx` (e.g., `UserProfile.tsx`)
+- **Hook Files**: `useHookName.ts` (e.g., `useAuth.ts`)
+- **Utility Files**: `kebab-case.ts` (e.g., `format-date.ts`)
+- **Test Files**: `*.test.ts` or `*.spec.ts` alongside the file being tested
+
+### Code Naming
+- **Variables & Functions**: `camelCase` (e.g., `userName`, `calculateTotal`)
+- **React Components**: `PascalCase` (e.g., `UserProfile`)
+- **Constants**: `UPPER_SNAKE_CASE` (e.g., `MAX_RETRY_COUNT`)
+- **Types & Interfaces**: `PascalCase` (e.g., `UserData`, `ApiResponse`)
+- **Enums**: `PascalCase` with `UPPER_SNAKE_CASE` values
+- **CSS Classes**: Follow Tailwind utility-first approach
+- **Event Handlers**: Prefix with `handle` (e.g., `handleClick`, `handleSubmit`)
+
+## Code Style & Formatting
+
+### General Rules
+- **ESLint & Prettier**: All code must pass linting and formatting checks
+- **Indentation**: 2 spaces (enforced by Prettier)
+- **Line Length**: Max 100 characters for code, 80 for comments
+- **Semicolons**: Always use semicolons (enforced by Prettier)
+- **Quotes**: Single quotes for strings, except when avoiding escapes
+
+### Function Guidelines
+- **Single Responsibility**: Each function should do one thing well
+- **Early Returns**: Use early returns to reduce nesting
+- **Pure Functions**: Prefer pure functions without side effects
+- **Arrow Functions**: Use for callbacks and simple functions
+- **Function Length**: Keep functions under 50 lines
+
+```typescript
+// ✅ DO: Early returns and clear naming
+function processUserData(user: User | null): ProcessedUser | null {
+  if (!user) return null;
+  if (!user.isActive) return null;
+  
+  return {
+    id: user.id,
+    displayName: formatUserName(user),
+    lastActive: user.lastLogin
+  };
+}
+
+// ❌ DON'T: Nested conditions and unclear purpose
+function proc(u: any) {
+  if (u) {
+    if (u.active) {
+      return { id: u.id, name: u.firstName + ' ' + u.lastName };
+    }
+  }
+}
+```
+
+## Import Organization
+
+### Import Order (enforced by ESLint)
+1. **React/Next.js imports**
+   ```typescript
+   import React from 'react';
+   import { useRouter } from 'next/navigation';
+   ```
+
+2. **External library imports**
+   ```typescript
+   import { z } from 'zod';
+   import { format } from 'date-fns';
+   ```
+
+3. **Internal absolute imports** (using `@/` alias)
+   ```typescript
+   import { Button } from '@/components/ui/button';
+   import { api } from '@/lib/api';
+   ```
+
+4. **Relative imports**
+   ```typescript
+   import { formatCurrency } from '../utils';
+   import type { LocalType } from './types';
+   ```
+
+5. **Style imports**
+   ```typescript
+   import styles from './Component.module.css';
+   ```
+
+### Import Best Practices
+- Use named exports for utilities and services
+- Use default exports for React components
+- Group related imports
+- Remove unused imports
+- Use type imports when importing only types: `import type { User } from '@/types'`
+
+## Comments & Documentation
+
+### When to Comment
+- **Complex Business Logic**: Explain the "why", not the "what"
+- **Workarounds**: Document temporary solutions with TODO/FIXME
+- **Public APIs**: Use JSDoc for exported functions and components
+- **Regular Expressions**: Always explain complex regex patterns
+- **Performance Optimizations**: Document why optimization was needed
+
+### Comment Formats
+```typescript
+// Single-line comment for brief notes
+
+/**
+ * JSDoc for functions and components
+ * @param userId - The unique identifier for the user
+ * @returns User data or null if not found
+ */
+export async function getUser(userId: string): Promise<User | null> {
+  // Implementation
+}
+
+// TODO: [JIRA-123] Refactor this when API v2 is ready
+// FIXME: Temporary workaround for race condition
+// NOTE: This must stay in sync with backend validation
+```
+
+## General Best Practices
+
+### DRY (Don't Repeat Yourself)
+- Extract common logic into utilities or hooks
+- Create shared components for repeated UI patterns
+- Use configuration objects for repeated values
+- Centralize type definitions
+
+### KISS (Keep It Simple, Stupid)
+- Avoid clever code - write for readability
+- Use built-in methods over custom implementations
+- Break complex problems into smaller functions
+- Choose clarity over brevity
+
+### YAGNI (You Aren't Gonna Need It)
+- Don't add functionality until it's needed
+- Avoid premature optimization
+- Don't over-engineer solutions
+- Remove dead code immediately
+
+### Code Quality Checklist
+- [ ] Passes all linting and type checks
+- [ ] Has appropriate error handling
+- [ ] Includes necessary comments
+- [ ] Follows naming conventions
+- [ ] Has no console.logs in production code
+- [ ] Handles edge cases
+- [ ] Is tested (when applicable)
+
+## Version Control
+
+### Commit Messages
+Follow conventional commits format:
+```
+type(scope): subject
+
+body (optional)
+
+footer (optional)
+```
+
+Types:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Test additions or modifications
+- `chore`: Build process or auxiliary tool changes
+
+Example:
+```
+feat(auth): add OAuth2 login support
+
+- Implement Google OAuth2 integration
+- Add login button to navbar
+- Store tokens securely in httpOnly cookies
+
+Closes #123
+```
+
+### Branch Naming
+- Feature: `feature/description-of-feature`
+- Bug fix: `fix/description-of-bug`
+- Hotfix: `hotfix/critical-issue`
+- Refactor: `refactor/what-is-being-refactored`
+
+## Performance Considerations
+
+### General Guidelines
+- Measure before optimizing
+- Optimize for the common case
+- Consider bundle size impact
+- Use lazy loading appropriately
+- Cache expensive computations
+
+### React-Specific
+- Use `React.memo` for expensive pure components
+- Implement `useMemo` and `useCallback` judiciously
+- Avoid inline function definitions in render
+- Keep component state as local as possible
+
+## Security Principles
+
+### Data Handling
+- Never trust user input
+- Sanitize all external data
+- Use parameterized queries
+- Implement proper authentication/authorization
+- Follow principle of least privilege
+
+### Sensitive Information
+- Never commit secrets or API keys
+- Use environment variables for configuration
+- Implement proper CORS policies
+- Use HTTPS everywhere
+- Sanitize error messages for users
+
+## Related Documentation
+
+- [TypeScript Guidelines](mdc:.cursor/rules/core/typescript.mdc) - Type system best practices
+- [React Patterns](mdc:.cursor/rules/frontend/react-patterns.mdc) - React-specific conventions
+- [API Conventions](mdc:.cursor/rules/backend/api-conventions.mdc) - Backend API standards
+- [Testing Standards](mdc:.cursor/rules/core/testing.mdc) - Testing guidelines

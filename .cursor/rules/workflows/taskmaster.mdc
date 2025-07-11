@@ -1,0 +1,337 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Taskmaster Tool & Command Reference
+
+This document provides a comprehensive reference for interacting with Taskmaster, covering both the recommended MCP tools (for integrations like Cursor) and the corresponding `task-master` CLI commands (for direct user interaction or fallback).
+
+**Note:** For interacting with Taskmaster programmatically or via integrated tools, using the **MCP tools is strongly recommended** due to better performance, structured data, and error handling. The CLI commands serve as a user-friendly alternative and fallback.
+
+**Important:** Several MCP tools involve AI processing and are long-running operations that may take up to a minute to complete. When using these tools, always inform users that the operation is in progress and to wait patiently for results. The AI-powered tools include: `parse_prd`, `analyze_project_complexity`, `update_subtask`, `update_task`, `update`, `expand_all`, `expand_task`, and `add_task`.
+
+## Quick Reference Table
+
+| Operation | MCP Tool | CLI Command | AI-Powered |
+|-----------|----------|-------------|------------|
+| Initialize Project | `initialize_project` | `task-master init` | No |
+| Parse PRD | `parse_prd` | `task-master parse-prd` | Yes |
+| List Tasks | `get_tasks` | `task-master list` | No |
+| Next Task | `next_task` | `task-master next` | No |
+| Show Task | `get_task` | `task-master show` | No |
+| Add Task | `add_task` | `task-master add-task` | Yes |
+| Update Task | `update_task` | `task-master update-task` | Yes |
+| Expand Task | `expand_task` | `task-master expand` | Yes |
+| Set Status | `set_task_status` | `task-master set-status` | No |
+
+---
+
+## Initialization & Setup
+
+### 1. Initialize Project (`init`)
+
+*   **MCP Tool:** `initialize_project`
+*   **CLI Command:** `task-master init [options]`
+*   **Description:** Set up the basic Taskmaster file structure and configuration in the current directory for a new project.
+*   **Key Parameters:**
+    *   `projectName` (string): Project name
+    *   `projectDescription` (string): Brief project description
+    *   `projectVersion` (string): Initial version (e.g., '0.1.0')
+    *   `authorName` (string): Author name
+    *   `skipInstall` (boolean): Skip installing dependencies (default: false)
+    *   `addAliases` (boolean): Add shell aliases (tm, taskmaster) (default: false)
+    *   `yes` (boolean): Skip prompts and use defaults (default: false)
+*   **CLI Options:**
+    *   `--name <name>`: Project name
+    *   `--description <text>`: Project description
+    *   `--version <version>`: Initial version
+    *   `--author <author>`: Author name
+    *   `--skip-install`: Skip dependency installation
+    *   `--aliases`: Add shell aliases
+    *   `-y, --yes`: Skip interactive prompts
+*   **Usage:** Run once at the beginning of a new project. The MCP variant operates on the current working directory of the MCP server.
+*   **Important:** Once complete, you *MUST* parse a PRD to generate tasks. There will be no task files until then.
+
+### 2. Parse PRD (`parse_prd`) 🤖
+
+*   **MCP Tool:** `parse_prd`
+*   **CLI Command:** `task-master parse-prd [file] [options]`
+*   **Description:** Parse a Product Requirements Document (PRD) to automatically generate initial tasks.
+*   **Key Parameters:**
+    *   `input` (string): Path to PRD file
+    *   `output` (string): Path for tasks.json (default: 'tasks/tasks.json')
+    *   `numTasks` (string): Approximate number of top-level tasks to generate
+    *   `force` (boolean): Overwrite existing tasks.json without confirmation
+*   **Notes:** Task Master will strictly adhere to requirements in the PRD while filling in gaps. Tasks provide the most direct implementation path.
+*   **⏱️ Long-running:** This operation can take up to a minute.
+
+---
+
+## Task Viewing & Navigation
+
+### 3. Get Tasks (`get_tasks`)
+
+*   **MCP Tool:** `get_tasks`
+*   **CLI Command:** `task-master list [options]`
+*   **Description:** List tasks with optional filtering and subtask display.
+*   **Key Parameters:**
+    *   `status` (string): Filter by status (e.g., 'pending', 'done')
+    *   `withSubtasks` (boolean): Include subtasks in the listing
+    *   `file` (string): Path to tasks.json (auto-detected by default)
+*   **Output:** Shows task IDs, titles, status (with indicators: ✅ done, ⏱️ pending), and dependencies
+
+### 4. Get Next Task (`next_task`)
+
+*   **MCP Tool:** `next_task`
+*   **CLI Command:** `task-master next [options]`
+*   **Description:** Show the next available task based on dependencies and status.
+*   **Logic:** Identifies tasks with all dependencies satisfied, prioritized by:
+    1. Priority level (high > medium > low)
+    2. Number of dependencies
+    3. Task ID
+*   **Output:** Comprehensive task information including implementation details and suggested actions
+
+### 5. Get Task Details (`get_task`)
+
+*   **MCP Tool:** `get_task`
+*   **CLI Command:** `task-master show [id] [options]`
+*   **Description:** Display detailed information for a specific task or subtask.
+*   **Key Parameters:**
+    *   `id` (string): Required. Task ID (e.g., '15') or subtask ID (e.g., '15.2')
+*   **Usage:** Use dot notation for subtasks: `task-master show 1.2`
+
+---
+
+## Task Creation & Modification
+
+### 6. Add Task (`add_task`) 🤖
+
+*   **MCP Tool:** `add_task`
+*   **CLI Command:** `task-master add-task [options]`
+*   **Description:** Add a new task by describing it; AI will structure it properly.
+*   **Key Parameters:**
+    *   `prompt` (string): Required. Description of the new task
+    *   `dependencies` (string): Comma-separated IDs of prerequisite tasks
+    *   `priority` (string): Priority level ('high', 'medium', 'low'; default: 'medium')
+*   **⏱️ Long-running:** This operation can take up to a minute.
+
+### 7. Add Subtask (`add_subtask`)
+
+*   **MCP Tool:** `add_subtask`
+*   **CLI Command:** `task-master add-subtask [options]`
+*   **Description:** Add a new subtask to a parent task or convert an existing task.
+*   **Key Parameters:**
+    *   `id`/`parent` (string): Required. Parent task ID
+    *   `taskId` (string): Existing task ID to convert to subtask
+    *   `title` (string): Required (if not converting). Subtask title
+    *   `description` (string): Brief description
+    *   `details` (string): Implementation notes
+    *   `dependencies` (string): Prerequisite IDs (e.g., '15', '16.1')
+    *   `status` (string): Initial status (default: 'pending')
+
+### 8. Update Tasks (`update`) 🤖
+
+*   **MCP Tool:** `update`
+*   **CLI Command:** `task-master update [options]`
+*   **Description:** Update multiple future tasks based on new context or changes.
+*   **Key Parameters:**
+    *   `from` (string): Required. Starting task ID
+    *   `prompt` (string): Required. Explanation of changes/new context
+    *   `research` (boolean): Enable Perplexity AI for research-backed updates
+*   **Usage Example:** `task-master update --from='18' --prompt='Switching to React Query for data fetching'`
+*   **⏱️ Long-running:** This operation can take up to a minute.
+
+### 9. Update Task (`update_task`) 🤖
+
+*   **MCP Tool:** `update_task`
+*   **CLI Command:** `task-master update-task [options]`
+*   **Description:** Modify a specific task with new information.
+*   **Key Parameters:**
+    *   `id` (string): Required. Task or subtask ID
+    *   `prompt` (string): Required. Specific changes to incorporate
+*   **⏱️ Long-running:** This operation can take up to a minute.
+
+### 10. Update Subtask (`update_subtask`) 🤖
+
+*   **MCP Tool:** `update_subtask`
+*   **CLI Command:** `task-master update-subtask [options]`
+*   **Description:** Append timestamped notes to a subtask for iterative logging.
+*   **Key Parameters:**
+    *   `id` (string): Required. Subtask ID (e.g., '15.2')
+    *   `prompt` (string): Required. New information to append
+*   **Best Practice:** Review existing details before appending to avoid redundancy
+*   **⏱️ Long-running:** This operation can take up to a minute.
+
+### 11. Set Task Status (`set_task_status`)
+
+*   **MCP Tool:** `set_task_status`
+*   **CLI Command:** `task-master set-status [options]`
+*   **Description:** Update the status of one or more tasks/subtasks.
+*   **Key Parameters:**
+    *   `id` (string): Required. Task/subtask ID(s), comma-separated
+    *   `status` (string): Required. New status (e.g., 'done', 'pending', 'in-progress')
+*   **Common Statuses:** pending, in-progress, done, blocked, cancelled, deferred
+
+### 12. Remove Task (`remove_task`)
+
+*   **MCP Tool:** `remove_task`
+*   **CLI Command:** `task-master remove-task [options]`
+*   **Description:** Permanently remove a task or subtask.
+*   **Warning:** This operation cannot be undone. Consider using status changes instead.
+*   **Key Parameters:**
+    *   `id` (string): Required. Task/subtask ID to remove
+    *   `yes`/`confirm` (boolean): Skip confirmation prompt
+
+---
+
+## Task Breakdown & Structure
+
+### 13. Expand Task (`expand_task`) 🤖
+
+*   **MCP Tool:** `expand_task`
+*   **CLI Command:** `task-master expand [options]`
+*   **Description:** AI-powered breakdown of complex tasks into subtasks.
+*   **Key Parameters:**
+    *   `id` (string): Required. Task ID to expand
+    *   `num` (string): Number of subtasks to create (uses complexity analysis by default)
+    *   `research` (boolean): Enable research-backed expansion
+    *   `prompt` (string): Additional context for generation
+    *   `force` (boolean): Replace existing subtasks
+*   **⏱️ Long-running:** This operation can take up to a minute.
+
+### 14. Expand All Tasks (`expand_all`) 🤖
+
+*   **MCP Tool:** `expand_all`
+*   **CLI Command:** `task-master expand --all [options]`
+*   **Description:** Expand all pending tasks based on complexity analysis.
+*   **⏱️ Long-running:** This operation can take up to a minute per task.
+
+### 15. Clear Subtasks (`clear_subtasks`)
+
+*   **MCP Tool:** `clear_subtasks`
+*   **CLI Command:** `task-master clear-subtasks [options]`
+*   **Description:** Remove all subtasks from specified parent task(s).
+*   **Key Parameters:**
+    *   `id` (string): Parent task ID(s), comma-separated
+    *   `all` (boolean): Clear subtasks from all tasks
+
+---
+
+## Dependency Management
+
+### 16. Add Dependency (`add_dependency`)
+
+*   **MCP Tool:** `add_dependency`
+*   **CLI Command:** `task-master add-dependency [options]`
+*   **Description:** Define a dependency relationship between tasks.
+*   **Key Parameters:**
+    *   `id` (string): Required. Task that will depend on another
+    *   `dependsOn` (string): Required. Prerequisite task ID
+*   **Validation:** Prevents circular dependencies and duplicate entries
+
+### 17. Remove Dependency (`remove_dependency`)
+
+*   **MCP Tool:** `remove_dependency`
+*   **CLI Command:** `task-master remove-dependency [options]`
+*   **Description:** Remove a dependency relationship.
+
+### 18. Validate Dependencies (`validate_dependencies`)
+
+*   **MCP Tool:** `validate_dependencies`
+*   **CLI Command:** `task-master validate-dependencies [options]`
+*   **Description:** Check for dependency issues without making changes.
+*   **Checks:** Circular references, non-existent task references
+
+### 19. Fix Dependencies (`fix_dependencies`)
+
+*   **MCP Tool:** `fix_dependencies`
+*   **CLI Command:** `task-master fix-dependencies [options]`
+*   **Description:** Automatically fix invalid dependencies.
+
+---
+
+## Analysis & Reporting
+
+### 20. Analyze Project Complexity (`analyze_project_complexity`) 🤖
+
+*   **MCP Tool:** `analyze_project_complexity`
+*   **CLI Command:** `task-master analyze-complexity [options]`
+*   **Description:** Analyze task complexity and identify breakdown candidates.
+*   **Key Parameters:**
+    *   `output` (string): Report path (default: 'scripts/task-complexity-report.json')
+    *   `threshold` (float): Minimum complexity score (1-10) for expansion recommendation
+    *   `research` (boolean): Enable research-backed analysis
+*   **⏱️ Long-running:** This operation can take up to a minute.
+
+### 21. View Complexity Report (`complexity_report`)
+
+*   **MCP Tool:** `complexity_report`
+*   **CLI Command:** `task-master complexity-report [options]`
+*   **Description:** Display complexity analysis in readable format.
+
+### 22. Generate Task Files (`generate`)
+
+*   **MCP Tool:** `generate`
+*   **CLI Command:** `task-master generate [options]`
+*   **Description:** Create/update individual Markdown files from tasks.json.
+*   **Key Parameters:**
+    *   `output` (string): Directory for task files
+*   **Note:** Automatically called after most task modifications
+
+---
+
+## Task Structure Fields
+
+Each task in tasks.json contains:
+
+- **id**: Unique identifier (e.g., `1`, `1.1`)
+- **title**: Brief, descriptive title
+- **description**: Concise summary of the task
+- **status**: Current state (pending, done, etc.)
+- **dependencies**: Array of prerequisite task IDs
+- **priority**: Importance level (high, medium, low)
+- **details**: In-depth implementation instructions
+- **testStrategy**: Verification approach
+- **subtasks**: Array of smaller, specific tasks
+
+---
+
+## Environment Variables
+
+Configure Taskmaster behavior via environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ANTHROPIC_API_KEY` | **Required**. Anthropic API key | - |
+| `MODEL` | Claude model to use | `claude-3-opus-20240229` |
+| `MAX_TOKENS` | Maximum tokens for AI responses | `8192` |
+| `TEMPERATURE` | AI temperature setting | `0.7` |
+| `DEBUG` | Enable debug logging | `false` |
+| `LOG_LEVEL` | Console output level | `info` |
+| `DEFAULT_SUBTASKS` | Default number of subtasks | `5` |
+| `DEFAULT_PRIORITY` | Default task priority | `medium` |
+| `PERPLEXITY_API_KEY` | For research features | - |
+| `PERPLEXITY_MODEL` | Perplexity model | `sonar-medium-online` |
+
+Set these in your `.env` file or environment.
+
+---
+
+## Best Practices
+
+1. **Start with `init`** → **Create/parse PRD** → **Analyze complexity** → **Expand tasks** → **Begin implementation**
+2. **Use `next_task`** to maintain proper task order
+3. **Update future tasks** when implementation differs from plan
+4. **Log progress** in subtasks using `update_subtask`
+5. **Validate dependencies** regularly to maintain project integrity
+
+## Related Documentation
+
+- [Development Workflow](mdc:.cursor/rules/workflows/dev-workflow.mdc) - Complete workflow guide
+- [Taskmaster Core](mdc:.cursor/rules/workflows/taskmaster-core.mdc) - Core principles and concepts
+- [Task Structure](mdc:.cursor/rules/meta/tasks.mdc) - Detailed task data structure
+
+---
+
+*Legend: 🤖 = AI-powered (may take up to a minute)*

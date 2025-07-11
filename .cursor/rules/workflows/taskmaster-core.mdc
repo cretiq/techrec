@@ -1,0 +1,87 @@
+---
+description: Outlines Taskmaster's core principles, standard workflow (init, task prep, implementation, logging), interaction methods (MCP Server, CLI), and key concepts (structure, dependencies, complexity). References related Taskmaster rules
+globs: 
+alwaysApply: false
+---
+# Taskmaster Core Concepts & Workflow
+
+This document outlines the fundamental concepts, standard workflow, and best practices for using Taskmaster to manage software development projects.
+
+**Note:** For specific command/tool details, refer to [`taskmaster-commands.mdc`](mdc:.cursor/rules/taskmaster-commands.mdc).
+
+## Core Principles
+
+- **Task-Driven:** Development revolves around clearly defined tasks and subtasks.
+- **AI-Assisted:** Leverage AI for task generation, breakdown, and updates.
+- **Structured:** Maintain tasks in a consistent JSON format (`tasks/tasks.json`) and optional Markdown files (`tasks/`).
+- **Iterative:** Workflow supports iterative development, logging, and refinement.
+
+## Primary Interaction Methods
+
+1.  **MCP Server (Recommended for AI/Tools):**
+    *   Preferred for integrated tools (like Cursor) via defined functions (e.g., `get_tasks`, `add_subtask`).
+    *   Offers structured data, better performance, and richer error handling.
+    *   Requires server restart if core logic or tool definitions change.
+    *   See [`mcp.mdc`](mdc:.cursor/rules/mcp.mdc) for architecture details.
+
+2.  **`task-master` CLI (For User Interaction):**
+    *   User-friendly command-line interface (`task-master` or `tm`).
+    *   Suitable for direct terminal use or as a fallback.
+    *   Commands often mirror MCP tool functionality.
+
+## Standard Development Workflow
+
+1.  **Initialization:**
+    *   Start new projects with `initialize_project` / `task-master init`.
+    *   **Crucially:** Generate initial tasks by creating a PRD (e.g., from `scripts/example_prd.txt`) and running `parse_prd` / `task-master parse-prd`.
+2.  **Session Start:**
+    *   View current tasks: `get_tasks` / `task-master list`.
+    *   Identify the next task: `next_task` / `task-master next`.
+3.  **Task Preparation:**
+    *   Analyze complexity (optional but recommended): `analyze_project_complexity` / `task-master analyze-complexity`.
+    *   Review complexity report: `complexity_report` / `task-master complexity-report`.
+    *   View task details: `get_task` / `task-master show <id>`.
+    *   Break down complex tasks: `expand_task` / `task-master expand --id=<id>`.
+    *   Clear old subtasks if needed: `clear_subtasks` / `task-master clear-subtasks`.
+4.  **Implementation (Iterative Subtask Workflow):**
+    *   **Understand Goal:** Use `get_task` to review subtask requirements.
+    *   **Plan:** Explore code, identify changes, gather details.
+    *   **Log Plan:** Use `update_subtask` / `task-master update-subtask --prompt='<detailed plan>'` to record the initial plan.
+    *   **Verify:** Use `get_task` to confirm the plan was logged.
+    *   **Implement:** Set status to `in-progress` (`set_task_status` / `task-master set-status`) and start coding.
+    *   **Refine & Log:** *Regularly* use `update_subtask` to append findings, decisions, successes, and failures. Review existing details before appending to avoid redundancy.
+    *   **Review & Update Rules:** After functional completion, review changes and update/create relevant Cursor rules (see [`meta-rules.mdc`](mdc:.cursor/rules/meta-rules.mdc)).
+    *   **Complete:** Mark subtask `done` (`set_task_status`).
+    *   **Commit:** Use Git, potentially with Changesets ([`changeset.mdc`](mdc:.cursor/rules/changeset.mdc)).
+    *   **Repeat:** Proceed to the next subtask.
+5.  **Handling Changes & Drift:**
+    *   Update future tasks if implementation deviates: `update` / `task-master update --from=<id>` (multiple tasks) or `update_task` / `task-master update-task --id=<id>` (single task).
+6.  **Adding Tasks:**
+    *   Add newly discovered tasks: `add_task` / `task-master add-task`.
+    *   Add subtasks manually: `add_subtask` / `task-master add-subtask`.
+7.  **Maintenance:**
+    *   Generate task files: `generate` / `task-master generate`.
+    *   Manage dependencies: `add_dependency`, `remove_dependency`, `validate_dependencies`, `fix_dependencies`.
+    *   Respect dependency chains and priorities.
+
+## Key Concepts
+
+- **Task Structure:** Tasks have `id`, `title`, `description`, `status`, `dependencies`, `priority`, `details`, `testStrategy`, and optional `subtasks`. See [`tasks.mdc`](mdc:.cursor/rules/tasks.mdc).
+- **Dependencies:** Control task order. Visualized with status indicators (✅/⏱️).
+- **Complexity Analysis:** AI-driven assessment to guide task breakdown.
+- **Implementation Logging:** Using `update_subtask` to create a detailed, timestamped record of the development process for each subtask.
+- **Environment Variables:** Configuration via `.env` (API keys, models, defaults). See [`taskmaster-commands.mdc`](mdc:.cursor/rules/taskmaster-commands.mdc) for details.
+
+## Best Practices
+
+- Prefer MCP tools for integration.
+- Always generate initial tasks via `parse_prd` after `init`.
+- Follow the iterative subtask implementation workflow, especially the logging steps.
+- Keep tasks focused; use subtasks for detailed steps.
+- Maintain accurate dependencies.
+- Regularly update task statuses.
+- Use `update` or `update_task` to handle implementation drift proactively.
+- Leverage `--research` flags for AI tasks when applicable.
+
+---
+*This workflow provides a general guideline. Adapt it based on your specific project needs.*

@@ -1,0 +1,171 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Development Guidelines for AI-Assisted Coding
+
+This document provides a comprehensive set of guidelines for AI behavior during software development. It covers general coding conventions, the process for consulting documentation, and how to manage and improve these operational rules.
+
+## 1. Documentation-Driven Development (AI Responsibility)
+
+This rule mandates that before writing or modifying code for any specific technology, framework, library, or API, the AI assistant must first consult its official documentation.
+
+### Core Principle
+
+**Always Read The Manual (RTFM) First.** The primary goal is to ensure code is accurate, up-to-date, and follows best practices as defined by the creators of the technology.
+
+### AI Workflow Integration
+
+1.  **Identify Technologies:**
+    *   Before starting any coding task, explicitly list the key technologies, frameworks, libraries, or APIs involved in the user's request.
+
+2.  **State Intent to Read Documentation:**
+    *   Clearly state that you will now find and review the official documentation for the identified technologies.
+    *   Example: "Okay, this task involves using the `React Query` library and the `GitHub REST API`. I will now consult their official documentation to ensure I use them correctly."
+
+3.  **Locate Documentation:**
+    *   Prioritize official documentation sources.
+    *   If available and relevant, use tools like `mcp_context7_resolve-library-id` followed by `mcp_context7_get-library-docs` to fetch high-quality documentation.
+    *   If these tools are not available or do not yield results, use general web search capabilities (`web_search` tool) to find official documentation.
+    *   If official documentation cannot be readily found, inform the user and ask for links or guidance.
+
+4.  **Review and Synthesize:**
+    *   Review the documentation, focusing on:
+        *   **Core Concepts:** Understand the fundamental principles and architecture.
+        *   **API Reference:** Identify correct function/method signatures, parameters, and return types.
+        *   **Best Practices:** Look for recommended usage patterns, security guidelines, and performance considerations.
+        *   **Common Pitfalls:** Note any common mistakes or anti-patterns to avoid.
+        *   **Version Specifics:** Ensure the documentation aligns with the version being used in the project.
+
+5.  **Inform Coding Approach:**
+    *   After reviewing the documentation, briefly state key takeaways that will influence your coding approach.
+    *   Example: "Having reviewed the `React Query` v5 documentation, I will use the `useQuery` hook with an object for options, and ensure proper query key management. For the GitHub API, I'll pay close attention to the rate limits and use `ETag` headers for caching if applicable."
+
+6.  **Proceed with Coding:**
+    *   Only after these steps, proceed with generating or modifying code.
+
+### Rationale
+
+*   **Accuracy:** Ensures the use of correct APIs and features.
+*   **Best Practices:** Promotes adherence to established guidelines.
+*   **Avoiding Deprecation:** Helps avoid using outdated or deprecated features.
+*   **Security & Performance:** Incorporates any relevant security or performance advice from the documentation.
+*   **Reduced Errors:** Minimizes bugs caused by misunderstanding or misusing a technology.
+
+## 2. General Project Coding Conventions
+
+This section outlines general best practices, naming conventions, code style, and other project-wide standards.
+
+### 2.1. Naming Conventions
+
+-   **Files & Folders:** `kebab-case` (e.g., `user-profile.tsx`). Component files: `ComponentName.tsx`. Hook files: `useHookName.ts`.
+-   **Variables & Functions:** `camelCase` (e.g., `userName`). Constants: `UPPER_SNAKE_CASE` (e.g., `MAX_USERS`).
+-   **Components (React/Next.js):** `PascalCase` (e.g., `UserProfile`).
+-   **Types & Interfaces (TypeScript):** `PascalCase` (e.g., `AuthToken`). Avoid `I` prefix for interfaces unless a strong project convention dictates otherwise.
+-   **CSS Classes (Tailwind):** Follow Tailwind's utility-first approach.
+
+### 2.2. Code Style & Formatting
+
+-   **ESLint & Prettier:** Configured to enforce style. Ensure editor integration and address all lint issues.
+-   **Readability:** Prioritize clear, readable code. Use meaningful names, small functions, and early returns.
+
+### 2.3. Commenting
+
+-   **When to Comment:** Complex logic, workarounds, important decisions, public API documentation (JSDoc).
+-   **Style:** `//` for single-line, `/** ... */` for JSDoc.
+-   **Avoid Obvious Comments.**
+
+### 2.4. Error Handling
+
+-   Use `try...catch` for fallible operations.
+-   Provide user-friendly error messages. Log errors appropriately.
+-   Refer to specific API/UI error handling rules if available (e.g., `api-conventions.mdc`, `react.mdc`).
+
+### 2.5. Environment Variables
+
+-   Prefix browser-exposed variables with `NEXT_PUBLIC_`.
+-   Do not commit sensitive `.env` files; use `.env.example`.
+
+### 2.6. Version Control (Git)
+
+-   Use conventional commit messages (e.g., `feat: ...`, `fix: ...`).
+-   Make small, atomic commits. Use feature branches.
+
+### 2.7. Imports
+
+-   **Order:** React/Next.js -> External libs -> Internal absolute (`@/components/`) -> Relative (`../`).
+-   Use path aliases. Avoid default exports for utilities/services; components can use them.
+
+### 2.8. General Best Practices
+
+-   **DRY:** Abstract reusable logic.
+-   **KISS:** Avoid over-engineering.
+-   **YAGNI:** Implement only what's necessary.
+-   **Code Reviews:** Actively participate.
+-   **TODOs:** `// TODO: [ticket/ID] - Description`. Review regularly.
+
+## 3. Managing and Improving Cursor Rules (Meta-Rules)
+
+This section provides guidelines for creating, formatting, maintaining, and improving Cursor rules themselves.
+
+### 3.1. Rule Structure & Format
+
+-   **Metadata (Frontmatter):**
+    -   `description`: Concise summary of the rule's purpose.
+    -   `globs`: Comma-separated file path patterns (e.g., `*.tsx,src/utils/**/*.ts`) where the rule applies.
+    -   `alwaysApply`: Boolean indicating if the rule should always be considered.
+-   **Content Structure (Markdown):**
+    -   Start with a high-level overview.
+    -   Use headings (`##`, `###`), **bold text for emphasis**, and bullet points.
+    -   Keep rules DRY by referencing other rules: `[Rule Name](mdc:.cursor/rules/rule-name.mdc)`.
+-   **File References within Rules:**
+    -   Use `[filename](mdc:path/to/file)` format (e.g., `[schema.prisma](mdc:prisma/schema.prisma)`).
+-   **Code Examples in Rules:**
+    -   Use language-specific fenced code blocks (e.g., ```typescript).
+    -   Provide clear examples:
+        ```typescript
+        // ✅ DO: Show good examples relevant to the rule
+        const goodExample = () => { /* ... */ };
+        
+        // ❌ DON'T: Show examples that violate the rule
+        const badExample = () => { /* ... */ };
+        ```
+    -   Prefer examples from the actual codebase.
+
+### 3.2. Rule Lifecycle & Continuous Improvement
+
+-   **Triggers for Rule Improvement:**
+    -   New code patterns not covered by existing rules.
+    -   Repeated similar implementations (opportunity for standardization).
+    -   Common error patterns that rules could prevent.
+    -   Consistent use of new libraries, tools, or frameworks.
+    -   Emerging best practices in the codebase or wider community.
+    -   Recurring feedback in code reviews.
+-   **Analysis Process for Rule Updates:**
+    -   Compare new code against existing rules to find gaps.
+    -   Identify patterns suitable for standardization.
+    -   Check for consistent error handling, testing, or documentation patterns that could be codified.
+-   **Updating Rules:**
+    -   **Add New Rules When:** A new pattern/technology is used in 3+ distinct places, a rule could prevent frequent bugs, or standardization improves security, performance, or maintainability.
+    -   **Modify Existing Rules When:** Better examples exist in the codebase, edge cases need documenting, related rules require consistency updates, or underlying implementation details change.
+-   **Rule Quality Checks:**
+    -   Rules must be actionable and specific.
+    -   Examples should ideally come from the actual codebase and be kept current.
+    -   References (to other rules, files, external docs) should be accurate and up-to-date.
+    -   Patterns should be consistently enforced.
+-   **Rule Deprecation:**
+    -   Mark rules for outdated patterns as deprecated within the rule description.
+    -   Remove rules entirely if they no longer apply.
+    -   Update any references pointing to deprecated or removed rules.
+    -   Document migration paths if replacing an old pattern with a new one.
+
+### 3.3. Documentation Standards for Rules
+
+-   **Clarity and Actionability:** Rules should be specific and provide clear guidance.
+-   **Example Relevance:** Use examples from the codebase; keep them synchronized.
+-   **Reference Accuracy:** Ensure links are correct and current.
+-   **Consistency:** Maintain consistent formatting and terminology across all rules.
+-   **Continuous Improvement:** Monitor code reviews and developer questions for improvement opportunities. Update rules after major refactors. Cross-reference related rules.
+
+Follow [cursor_rules.mdc](mdc:.cursor/rules/cursor_rules.mdc) for foundational rule formatting and structure if available, otherwise adhere to this section.

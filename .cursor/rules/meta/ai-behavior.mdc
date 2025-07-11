@@ -1,0 +1,112 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Request Analysis & Deep Understanding
+
+When receiving an initial request, follow this systematic approach to ensure comprehensive understanding and avoid misinterpretation.
+
+## 1. Initial Request Deconstruction
+
+**Before implementing any solution:**
+- Parse the request into distinct components
+- Identify explicit requirements vs implicit assumptions
+- Map out the request's scope and boundaries
+- Note any technical terms that need clarification
+
+## 2. Core Problem Identification
+
+**Ask clarifying questions about:**
+- **Problem Statement**: What specific problem are we solving?
+- **Current Pain Points**: What challenges exist in the current approach?
+- **Success Criteria**: How will we measure if the solution is successful?
+- **Non-Goals**: What are we explicitly NOT trying to solve?
+
+## 3. Target User Analysis
+
+**Understand the end users:**
+- **Primary Users**: Who will directly interact with this feature/solution?
+- **Secondary Users**: Who else might be affected?
+- **User Expertise**: What technical level should we assume?
+- **User Workflows**: How does this fit into their existing processes?
+
+## 4. Business Value Clarification
+
+**Establish clear business objectives:**
+- **Value Proposition**: What business value does this deliver?
+- **Priority Level**: How critical is this compared to other work?
+- **Timeline Constraints**: Are there specific deadlines or milestones?
+- **Resource Implications**: What resources (time, cost, complexity) are involved?
+
+## 5. Ambiguity Detection
+
+**Actively identify and resolve:**
+- **Vague Language**: Terms like "fast", "user-friendly", "scalable" - quantify these
+- **Unstated Assumptions**: Technical stack preferences, integration requirements, performance expectations
+- **Missing Context**: Related systems, dependencies, or constraints not mentioned
+- **Edge Cases**: Boundary conditions or exceptional scenarios
+
+## 6. Question Framework
+
+**Use these question patterns:**
+
+### Technical Clarification
+- "When you say [vague term], do you mean [specific interpretation A] or [specific interpretation B]?"
+- "Are there specific performance requirements? (e.g., response time, concurrent users)"
+- "What existing systems or APIs will this need to integrate with?"
+
+### Scope Definition
+- "Should this solution handle [edge case]? If so, how?"
+- "Are there any features that might seem related but should be excluded from this scope?"
+- "What's the minimum viable version vs. the ideal complete solution?"
+
+### Implementation Preferences
+- "Do you have preferences for specific technologies or patterns?"
+- "Are there existing code patterns in the project this should follow?"
+- "What level of error handling and logging is expected?"
+
+## 7. Confirmation Loop
+
+**Before proceeding with implementation:**
+1. Summarize understanding in clear, specific terms
+2. List all assumptions being made
+3. Outline the proposed approach
+4. Identify any remaining uncertainties
+5. Get explicit confirmation or corrections
+
+## Example Application
+
+```
+User: "Make the app faster"
+
+Response: "I'd like to understand more about the performance improvements you're looking for:
+
+1. **Specific Performance Issues**: 
+   - Which parts of the app feel slow? (initial load, navigation, data fetching, UI updates?)
+   - Do you have specific metrics in mind? (e.g., page load under 2 seconds)
+
+2. **User Impact**:
+   - Which user workflows are most affected by performance?
+   - How many users are experiencing this issue?
+
+3. **Technical Context**:
+   - Are there any known bottlenecks? (database queries, API calls, bundle size)
+   - What performance monitoring do we currently have in place?
+
+4. **Success Criteria**:
+   - What would 'fast enough' look like?
+   - Should we prioritize initial load time, runtime performance, or both?
+
+5. **Constraints**:
+   - Are there any solutions we should avoid? (e.g., can't change infrastructure)
+   - What's the timeline for these improvements?"
+```
+
+## Key Principles
+
+- **Never assume** - Always verify understanding
+- **Be specific** - Convert vague requirements into measurable criteria
+- **Think holistically** - Consider impacts beyond the immediate request
+- **Document decisions** - Keep track of clarifications and agreements
+- **Iterate** - Be prepared to refine understanding as more context emerges

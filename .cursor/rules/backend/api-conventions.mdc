@@ -1,0 +1,175 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# API Design & Conventions
+
+\
+---
+description: Conventions for designing and implementing API Route Handlers, including request/response formats, status codes, validation (Zod), and error handling.
+globs: "**/app/api/**/*.{ts,tsx}"
+alwaysApply: true
+---
+
+# API Design & Conventions (Route Handlers)
+
+This document outlines conventions for designing and implementing API Route Handlers within the Next.js 15.2 App Router (`app/api/.../route.ts`). For general TypeScript usage in defining request/response types and validation schemas, refer to [typescript.mdc](mdc:.cursor/rules/typescript.mdc).
+
+## 1. Structure and Naming
+
+-   **File Convention:** API endpoints are defined by `route.ts` files within the `app/api/` directory structure (e.g., `app/api/users/route.ts`, `app/api/posts/[postId]/route.ts`). Refer to [folder-structure.mdc](mdc:.cursor/rules/folder-structure.mdc) for detailed structure rules.
+-   **HTTP Method Functions:** Export `async` named functions corresponding to HTTP methods: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`.
+    -   The first parameter is the `Request` object.
+    -   The second parameter (for dynamic routes) is an object containing `params` (e.g., `{ params: { postId: string } }`).
+
+```typescript
+// app/api/example/[id]/route.ts
+import { NextRequest, NextResponse } from \'next/server\';
+
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  // params.id is available here
+  return NextResponse.json({ message: `Fetching item with ID: ${params.id}` });
+}
+
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+  const body = await request.json();
+  return NextResponse.json({ message: `Updating item with ID: ${params.id}`, data: body });
+}
+```
+
+## 2. Request Handling
+
+-   **Reading Request Body:** Use `await request.json()` for JSON bodies. Use `await request.formData()` for form data.
+-   **Reading URL Query Parameters:** Access `request.nextUrl.searchParams`.
+    -   `const name = request.nextUrl.searchParams.get(\'name\');`
+-   **Reading Headers:** Access `request.headers`.
+    -   `const contentType = request.headers.get(\'content-type\');`
+
+## 3. Response Handling
+
+-   **`NextResponse.json()`:** Use `NextResponse.json(body, options)` for sending JSON responses.
+    -   `options` can include `{ status: number, headers: HeadersInit }`.
+-   **Consistent JSON Structure:** Strive for a consistent JSON response structure for both successful responses and errors.
+    -   **Success:** `{ "data": { ... } }` or `{ "data": [ ... ] }` or `{ "message": "Success" }`
+    -   **Error:** `{ "error": { "message": "Error description", "code": "ERROR_CODE", "details": { ... } } }` (see Error Handling section).
+-   **Setting Headers:** Use the `headers` option in `NextResponse.json()` or create a new `NextResponse` and set headers manually.
+
+## 4. HTTP Status Codes
+
+-   Use appropriate HTTP status codes to indicate the outcome of the API request.
+    -   **200 OK:** General success for GET, PUT, PATCH (if entity updated and returned).
+    -   **201 Created:** Successful creation of a resource (POST).
+    -   **204 No Content:** Successful request with no response body (e.g., DELETE).
+    -   **400 Bad Request:** Client error (e.g., invalid input, malformed JSON).
+    -   **401 Unauthorized:** Authentication is required and has failed or has not yet been provided.
+    -   **403 Forbidden:** Authenticated user does not have permission to access the resource.
+    -   **404 Not Found:** Resource not found.
+    -   **405 Method Not Allowed:** HTTP method used is not supported for the resource.
+    -   **409 Conflict:** Request conflicts with the current state of the server (e.g., duplicate entry).
+    -   **422 Unprocessable Entity:** Server understands the content type, and the syntax is correct, but it was unable to process the contained instructions (often for validation errors).
+    -   **500 Internal Server Error:** A generic error message, given when an unexpected condition was encountered.
+
+## 5. Input Validation
+
+-   **Always Validate Inputs:** Validate all incoming data (request body, URL parameters, query parameters) before processing.
+-   **Zod (Recommended):** Use Zod for schema definition and validation. It provides excellent TypeScript integration and clear error reporting. See [typescript.mdc](mdc:.cursor/rules/typescript.mdc) for more on Zod and type definitions.
+
+```typescript
+// app/api/items/route.ts
+import { NextRequest, NextResponse } from \'next/server\';
+import { z } from \'zod\';
+
+const ItemSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  price: z.number().positive("Price must be a positive number"),
+  tags: z.array(z.string()).optional(),
+});
+
+export async function POST(request: NextRequest) {
+  let body;
+  try {
+    body = await request.json();
+  } catch (error) {
+    return NextResponse.json({ error: { message: "Invalid JSON payload" } }, { status: 400 });
+  }
+
+  const validationResult = ItemSchema.safeParse(body);
+
+  if (!validationResult.success) {
+    return NextResponse.json(
+      { 
+        error: { 
+          message: "Validation failed", 
+          code: "VALIDATION_ERROR",
+          details: validationResult.error.flatten().fieldErrors 
+        }
+      },
+      { status: 422 }
+    );
+  }
+
+  // Process validatedData (validationResult.data)
+  // const newItem = await createItemInDb(validationResult.data);
+  return NextResponse.json({ data: { id: \'123\', ...validationResult.data } }, { status: 201 });
+}
+```
+
+## 6. Error Handling
+
+-   **`try/catch` Blocks:** Wrap API logic in `try/catch` blocks to handle unexpected errors.
+-   **Specific Error Types:** Catch specific error types if possible (e.g., Prisma errors from [prisma.mdc](mdc:.cursor/rules/prisma.mdc), custom application errors) to return more informative responses.
+-   **Consistent Error Response:** Return a consistent JSON error object (see section 3).
+-   **Logging:** Log errors on the server-side with sufficient context (request ID, user ID if available, error stack). Refer to `error-handling.mdc` ([error-handling.mdc](mdc:.cursor/rules/error-handling.mdc)).
+-   Do not expose sensitive error details (like stack traces) to the client in production.
+
+## 7. Authentication and Authorization
+
+-   Protect sensitive API routes.
+-   Verify authentication status (e.g., using `getServerSession` from NextAuth.js within the Route Handler, or by checking a token validated by middleware).
+-   Perform authorization checks to ensure the authenticated user has the necessary permissions for the requested operation.
+-   Refer to `security.mdc` ([security.mdc](mdc:.cursor/rules/security.mdc)) and `nextjs.mdc` ([nextjs.mdc](mdc:.cursor/rules/nextjs.mdc)) (Middleware section) for more details.
+
+```typescript
+// app/api/protected-data/route.ts
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "../auth/[...nextauth]/route" // Adjust path to your authOptions
+import { NextResponse } from \'next/server\';
+
+export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: { message: "Unauthorized" } }, { status: 401 });
+  }
+
+  // Check for specific roles/permissions if needed
+  // if (session.user.role !== \'admin\') {
+  //   return NextResponse.json({ error: { message: "Forbidden" } }, { status: 403 });
+  // }
+
+  return NextResponse.json({ data: { secret: "This is protected data" } });
+}
+```
+
+## 8. API Versioning (If Needed)
+
+-   If API versioning is required, include the version in the URL path (e.g., `/api/v1/users`, `/api/v2/users`).
+-   Consider versioning only when making breaking changes.
+
+## 9. Idempotency for POST/PUT/PATCH
+
+-   Design mutations (especially `PUT` and `PATCH`, and sometimes `POST` if creating a resource with a client-provided ID) to be idempotent where possible. This means multiple identical requests should have the same effect as a single request.
+
+## 10. Business Logic Separation
+
+-   Keep Route Handlers thin. Their primary responsibility is to handle HTTP requests/responses, validate inputs, and orchestrate calls to business logic.
+-   Place core business logic in separate service files/functions within the `lib/` directory (e.g., `lib/services/userService.ts`). Refer to [folder-structure.mdc](mdc:.cursor/rules/folder-structure.mdc) for `lib/` structure. This promotes reusability and testability.
+
+## 11. Caching and Performance
+
+-   For GET requests that return frequently accessed, non-dynamic data, consider setting appropriate caching headers (`Cache-Control`) in your `NextResponse` to enable browser or CDN caching.
+-   Refer to [performance.mdc](mdc:.cursor/rules/performance.mdc) for more on API performance and caching strategies.
+
+---
+These conventions aim to create consistent, secure, and maintainable API Route Handlers.
