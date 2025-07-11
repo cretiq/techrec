@@ -11,22 +11,23 @@
   - [Medium-term Vision (3-6 Months)](#medium-term-vision-3-6-months)
   - [Long-term Exploration (6+ Months)](#long-term-exploration-6-months)
 - [💭 Active Feature Requests](#-active-feature-requests)
-  - [Feature Request #8: Button Styling Consistency & Coherence](#feature-request-8-button-styling-consistency--coherence)
   - [Feature Request #11: Post-Signup Success Message on Sign-In Page](#feature-request-11-post-signup-success-message-on-sign-in-page)
+  - [Feature Request #16: GitHub-Style Application Activity Visualization Grid](#feature-request-16-github-style-application-activity-visualization-grid)
 - [📋 Recently Completed Features](#-recently-completed-features)
-  - [✅ Feature Request #14: Comprehensive Cache Invalidation on Sign-Out](#-feature-request-14-comprehensive-cache-invalidation-on-sign-out)
-  - [✅ Feature Request #15: Comprehensive Documentation Architecture & Markdown File Organization](#-feature-request-15-comprehensive-documentation-architecture--markdown-file-organization)
-  - [✅ Feature Request #4: Multiple RapidAPI Endpoint Selection](#-feature-request-4-multiple-rapidapi-endpoint-selection)
+  - [✅ Feature Request #8: Button Styling Consistency & Coherence](#feature-request-8-button-styling-consistency-coherence)
+  - [✅ Feature Request #14: Comprehensive Cache Invalidation on Sign-Out](#feature-request-14-comprehensive-cache-invalidation-on-sign-out)
+  - [✅ Feature Request #15: Comprehensive Documentation Architecture & Markdown File Organization](#feature-request-15-comprehensive-documentation-architecture-markdown-file-organization)
+  - [✅ Feature Request #4: Multiple RapidAPI Endpoint Selection](#feature-request-4-multiple-rapidapi-endpoint-selection)
   - [✅ Feature Request #13: Developer Dashboard UI/UX Simplification](#feature-request-13-developer-dashboard-uiux-simplification)
-  - [✅ Feature Request #12: Gamified Developer Welcome Dashboard](#-feature-request-12-gamified-developer-welcome-dashboard)
-  - [✅ Feature Request #1: Developer-Role Matching Score System](#-feature-request-1-developer-role-matching-score-system)
-  - [✅ Feature Request #2: Smart Application Routing & Easy Apply Detection](#-feature-request-2-smart-application-routing--easy-apply-detection)
-  - [✅ Feature Request #3: Enhanced Company Filtering](#-feature-request-3-enhanced-company-filtering)
-  - [✅ Feature Request #5: Cover Letter Application Routing](#-feature-request-5-cover-letter-application-routing)
-  - [✅ Feature Request #6: Cover Letter Personalization UI Redesign](#-feature-request-6-cover-letter-personalization-ui-redesign)
-  - [✅ Feature Request #7: Enhanced Role Selection Persistence with Redux Strategy](#-feature-request-7-enhanced-role-selection-persistence-with-redux-strategy)
-  - [✅ Feature Request #9: Comprehensive CV Data Persistence to Developer Database Profile](#-feature-request-9-comprehensive-cv-data-persistence-to-developer-database-profile)
-  - [✅ Feature Request #10: Concurrent Cover Letter Generation Race Condition](#-feature-request-10-concurrent-cover-letter-generation-race-condition)
+  - [✅ Feature Request #12: Gamified Developer Welcome Dashboard](#feature-request-12-gamified-developer-welcome-dashboard)
+  - [✅ Feature Request #1: Developer-Role Matching Score System](#feature-request-1-developer-role-matching-score-system)
+  - [✅ Feature Request #2: Smart Application Routing & Easy Apply Detection](#feature-request-2-smart-application-routing-easy-apply-detection)
+  - [✅ Feature Request #3: Enhanced Company Filtering](#feature-request-3-enhanced-company-filtering)
+  - [✅ Feature Request #5: Cover Letter Application Routing](#feature-request-5-cover-letter-application-routing)
+  - [✅ Feature Request #6: Cover Letter Personalization UI Redesign](#feature-request-6-cover-letter-personalization-ui-redesign)
+  - [✅ Feature Request #7: Enhanced Role Selection Persistence with Redux Strategy](#feature-request-7-enhanced-role-selection-persistence-with-redux-strategy)
+  - [✅ Feature Request #9: Comprehensive CV Data Persistence to Developer Database Profile](#feature-request-9-comprehensive-cv-data-persistence-to-developer-database-profile)
+  - [✅ Feature Request #10: Concurrent Cover Letter Generation Race Condition](#feature-request-10-concurrent-cover-letter-generation-race-condition)
 
 ---
 
@@ -40,8 +41,7 @@
 - Company culture matching based on values and work preferences
 - Salary expectation vs. role compensation matching
 - Role recommendation engine based on matching scores
-- Create a dedicated page for earned user badges (that can be reached from e.g. the users dashboard.)
-- create a github like commit grid/graph to for a great visualization over your applications
+- ✅ Create a GitHub-like commit grid/graph for great visualization over applications → **Moved to Feature Request #16**
 - **Comprehensive Documentation Architecture & Markdown File Organization** → **Moved to Feature Request #15**
 - 
 - ✅ Smart application routing and Easy Apply detection → **Moved to Feature Request #2**
@@ -196,6 +196,78 @@
 - [ ] Modification of `app/api/auth/register/route.ts` to include the redirect with a query parameter.
 - [ ] Modification of `app/auth/signin/page.tsx` to handle the query parameter and display the message.
 - [ ] An existing, styleable `Alert` component for displaying the message.
+
+---
+
+### Feature Request #16: GitHub-Style Application Activity Visualization Grid
+
+**Status:** Planning Phase
+**Priority:** Medium
+
+**Goal:** To provide a visual grid of application activity, similar to a GitHub commit history, that displays the user's recent job applications, their status, and key details in a compact, scrollable format.
+
+**User Story:** As a developer, I want to see a grid of my recent job applications with their status, company, role, date, and a quick action button to re-apply or view details. This will help me track my application history and identify patterns in my job search.
+
+**Success Metrics:**
+
+- Clear, organized grid layout for application history.
+- Easy to scan and understand at a glance.
+- Quick access to re-apply or view details.
+- Responsive design for different screen sizes.
+
+**Technical Implementation Plan:**
+
+1.  **Backend (Application History API):** Create a new endpoint `/api/applications/history` that returns a paginated list of applications.
+    - **File**: `app/api/applications/history/route.ts` (implement the `GET` handler).
+    - **Schema**: `ApplicationHistorySchema` (to be defined).
+    - **Data**: Fetch applications from the database, including `applicationId`, `jobPostingId`, `companyName`, `roleTitle`, `status`, `appliedDate`, `easyApply`, `notes`, `coverLetterId`, `jobPostingUrl`.
+
+2.  **Frontend (Application History Grid):**
+    - Create a new component `ApplicationHistoryGrid.tsx`.
+    - **Props**: `applications: ApplicationHistoryItem[]`, `onReapply: (applicationId: string) => void`, `onViewDetails: (applicationId: string) => void`.
+    - **Layout**: Grid of cards, each displaying:
+        - `companyName` (bold)
+        - `roleTitle` (subtext)
+        - `status` (badge)
+        - `appliedDate` (subtext)
+        - `easyApply` (boolean)
+        - `notes` (truncated)
+        - Quick action buttons: `Reapply` (if not applied), `View Details` (if applied).
+    - **Styling**: Use DaisyUI cards, badges, and buttons.
+    - **Responsive**: Stack cards on smaller screens.
+
+3.  **Integration**:
+    - Integrate `ApplicationHistoryGrid` into the developer dashboard.
+    - Ensure it's only visible to authenticated users.
+    - Handle loading and error states.
+    - Maintain Redux state for selected applications.
+
+**Acceptance Criteria:**
+
+- [ ] Grid layout is clean and easy to scan.
+- [ ] Applications are sorted by `appliedDate` (newest first).
+- [ ] Status badges are clearly visible.
+- [ ] Easy Apply status is easily identifiable.
+- [ ] Notes are truncated and reveal on hover.
+- [ ] Quick action buttons are prominent and functional.
+- [ ] Responsive design works on all screen sizes.
+- [ ] Loading and error states are handled gracefully.
+- [ ] Grid is scrollable if applications exceed screen height.
+
+**Questions to Resolve:**
+
+- [ ] How many applications should be displayed in the grid? (e.g., 10-20).
+- [ ] Should the grid be paginated? If so, how many items per page?
+- [ ] How should the `Reapply` action be handled? Should it trigger a new cover letter generation?
+- [ ] Should the `View Details` action navigate to the full application details page?
+- [ ] How should the `Reapply` button be styled differently if the application is already applied?
+
+**Dependencies:**
+
+- [ ] New API endpoint `/api/applications/history`.
+- [ ] New component `ApplicationHistoryGrid.tsx`.
+- [ ] Integration into developer dashboard.
+- [ ] Redux state management for selected applications.
 
 ---
 
