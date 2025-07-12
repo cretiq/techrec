@@ -8,7 +8,7 @@ You are helping identify the next best feature request to work on from the reque
 **Process Overview:**
 1. **Analysis Phase** (Steps 1-6): Evaluate all features and make recommendation
 2. **Selection Phase**: User selects feature to implement
-3. **Execution Preparation Phase** (Step 7): **MANDATORY consultation with execution-primer.md**
+3. **Execution Preparation Phase** (Step 7): **MANDATORY consultation with @claude-instructions/execution-primer.md**
 4. **Implementation Phase**: Begin detailed analysis and implementation
 
 ### Step 1: Read and Parse requests.md
@@ -116,7 +116,7 @@ You are helping identify the next best feature request to work on from the reque
 
 ## Step 7: Post-Selection Execution Preparation
 
-**MANDATORY:** Once a feature is selected and approved for implementation, the YOU MUST consult the execution-primer.md for implementation guidance.
+**MANDATORY:** Once a feature is selected and approved for implementation, the YOU MUST consult the @claude-instructions/execution-primer.md for implementation guidance.
 
 ### Required Consultation Process:
 - [ ] **Read execution-primer.md**: Review the complete implementation guidance document
@@ -127,11 +127,11 @@ You are helping identify the next best feature request to work on from the reque
 
 ### Integration Point:
 ```
-User selects feature → you consult execution-primer.md → Begin detailed analysis → Implementation
+User selects feature → you consult @claude-instructions/execution-primer.md → Begin detailed analysis → Implementation
 ```
 
 **Documentation Requirement:** When proceeding with implementation, the you must explicitly state:
-> "I have consulted the execution-primer.md and am applying its guidance for this implementation. My confidence level is [X]% and [debug logging is/is not] required for this feature."
+> "I have consulted the @claude-instructions/execution-primer.md and am applying its guidance for this implementation. My confidence level is [X]% and [debug logging is/is not] required for this feature."
 
 ## Decision Framework
 
@@ -176,7 +176,7 @@ User selects feature → you consult execution-primer.md → Begin detailed anal
 - ❌ **Missing context**: Not considering recent completions or current work
 - ❌ **Vague rationale**: Recommendations without clear, verifiable reasoning
 - ❌ **Single-factor decisions**: Choosing based only on priority without considering feasibility
-- ❌ **Skipping execution-primer consultation**: Proceeding to implementation without consulting execution-primer.md
+- ❌ **Skipping execution-primer consultation**: Proceeding to implementation without consulting @claude-instructions/execution-primer.md
 
 ## Output Format
 
@@ -235,10 +235,10 @@ User selects feature → you consult execution-primer.md → Begin detailed anal
 - Ensure all planning and dependencies are properly resolved
 
 ### Post-Selection Phase (NEW - MANDATORY):
-- **IMMEDIATELY after feature selection**: you must consult execution-primer.md
+- **IMMEDIATELY after feature selection**: you must consult @claude-instructions/execution-primer.md
 - **Before detailed analysis**: Apply 99% confidence standard and debug logging requirements
-- **Document consultation**: Explicitly state execution-primer guidance has been applied
-- **Validate implementation readiness**: Confirm all execution-primer requirements are met
+- **Document consultation**: Explicitly state @claude-instructions/execution-primer.md guidance has been applied
+- **Validate implementation readiness**: Confirm all @claude-instructions/execution-primer.md requirements are met
 
 ### Post-Completion Phase:
 - Run this analysis after completing features to see what gets unblocked
