@@ -9,6 +9,8 @@
 - [💭 Active Feature Requests](#-active-feature-requests)
   - [Feature Request #11: Post-Signup Success Message on Sign-In Page](#feature-request-11-post-signup-success-message-on-sign-in-page)
   - [Feature Request #16: GitHub-Style Application Activity Visualization Grid](#feature-request-16-github-style-application-activity-visualization-grid)
+  - [Feature Request #17: "Mark as Applied" Role Tracking System](#feature-request-17-mark-as-applied-role-tracking-system)
+  - [Feature Request #18: Style-First Button System Refactoring](#feature-request-18-style-first-button-system-refactoring)
 - [📋 Recently Completed Features](#-recently-completed-features)
   - [Feature Request #8: Button Styling Consistency and Coherence](#feature-request-8-button-styling-consistency-and-coherence)
   - [Feature Request #14: Comprehensive Cache Invalidation on Sign-Out](#feature-request-14-comprehensive-cache-invalidation-on-sign-out)
@@ -38,6 +40,7 @@
 - Salary expectation vs. role compensation matching
 - Role recommendation engine based on matching scores
 - ✅ Create a GitHub-like commit grid/graph for great visualization over applications → **Moved to Feature Request #16**
+- ✅ Style-first button system refactoring (replace feature-specific buttons with reusable style variants) → **Moved to Feature Request #18**
 - **Comprehensive Documentation Architecture & Markdown File Organization** → **Moved to Feature Request #15**
 - 
 - ✅ Smart application routing and Easy Apply detection → **Moved to Feature Request #2**
@@ -159,73 +162,377 @@
 
 ### Feature Request #16: GitHub-Style Application Activity Visualization Grid
 
-**Status:** Planning Phase
+**Status:** Planning Phase (Blocked - Dependency Required)
 **Priority:** Medium
 
-**Goal:** To provide a visual grid of application activity, similar to a GitHub commit history, that displays the user's recent job applications, their status, and key details in a compact, scrollable format.
+**Goal:** Create a GitHub-style contribution heatmap that visualizes job application activity over time, showing which days developers applied for jobs with color intensity indicating application volume.
 
-**User Story:** As a developer, I want to see a grid of my recent job applications with their status, company, role, date, and a quick action button to re-apply or view details. This will help me track my application history and identify patterns in my job search.
+**User Story:** As a developer, I want to see a calendar heatmap (like GitHub's contribution graph) that shows my job application activity over the past 12 weeks, with each day colored based on how many applications I submitted. This will help me track my application consistency, identify productive periods, and maintain momentum in my job search.
 
 **Success Metrics:**
 
-- Clear, organized grid layout for application history.
-- Easy to scan and understand at a glance.
-- Quick access to re-apply or view details.
-- Responsive design for different screen sizes.
+- Clear visual representation of application frequency over time
+- Easy identification of active vs inactive application periods  
+- Motivational element encouraging consistent application activity
+- Quick overview of application patterns and trends
 
 **Technical Implementation Plan:**
 
-1.  **Backend (Application History API):** Create a new endpoint `/api/applications/history` that returns a paginated list of applications.
-    - **File**: `app/api/applications/history/route.ts` (implement the `GET` handler).
-    - **Schema**: `ApplicationHistorySchema` (to be defined).
-    - **Data**: Fetch applications from the database, including `applicationId`, `jobPostingId`, `companyName`, `roleTitle`, `status`, `appliedDate`, `easyApply`, `notes`, `coverLetterId`, `jobPostingUrl`.
+1.  **Backend (Application Activity API):** Create a new endpoint `/api/developer/application-activity` that returns daily application counts.
+    - **File**: `app/api/developer/application-activity/route.ts` (implement the `GET` handler).
+    - **Query Parameters**: Fixed 12-week range from current date
+    - **Response**: Array of `{ date: string, count: number }` objects for each day (84 days total)
+    - **Data Source**: Aggregate application counts by date from "applied roles" tracking system
 
-2.  **Frontend (Application History Grid):**
-    - Create a new component `ApplicationHistoryGrid.tsx`.
-    - **Props**: `applications: ApplicationHistoryItem[]`, `onReapply: (applicationId: string) => void`, `onViewDetails: (applicationId: string) => void`.
-    - **Layout**: Grid of cards, each displaying:
-        - `companyName` (bold)
-        - `roleTitle` (subtext)
-        - `status` (badge)
-        - `appliedDate` (subtext)
-        - `easyApply` (boolean)
-        - `notes` (truncated)
-        - Quick action buttons: `Reapply` (if not applied), `View Details` (if applied).
-    - **Styling**: Use DaisyUI cards, badges, and buttons.
-    - **Responsive**: Stack cards on smaller screens.
+2.  **Frontend (Application Heatmap Component):**
+    - Create a new component `ApplicationHeatmap.tsx`.
+    - **Props**: `activityData: DailyActivity[]`
+    - **Layout**: Calendar grid showing:
+        - Days of week as rows (Sun-Sat) = 7 rows
+        - 12 weeks as columns = 12 columns
+        - Fixed 12x7 grid (84 total squares/days)
+        - Each cell colored by application intensity (0-4+ applications)
+        - Tooltip on hover showing date and application count
+    - **Color Scale**: 
+        - Light gray: 0 applications
+        - Light green: 1 application  
+        - Medium green: 2-3 applications
+        - Dark green: 4+ applications
+    - **Styling**: DaisyUI theme-aware colors, responsive to current page theme
 
 3.  **Integration**:
-    - Integrate `ApplicationHistoryGrid` into the developer dashboard.
-    - Ensure it's only visible to authenticated users.
-    - Handle loading and error states.
-    - Maintain Redux state for selected applications.
+    - Add `ApplicationHeatmap` to developer dashboard under the roadmap section
+    - Include "Learn how we count applications" tooltip
+    - Handle loading states and empty data gracefully
+    - Responsive design for mobile devices
 
 **Acceptance Criteria:**
 
-- [ ] Grid layout is clean and easy to scan.
-- [ ] Applications are sorted by `appliedDate` (newest first).
-- [ ] Status badges are clearly visible.
-- [ ] Easy Apply status is easily identifiable.
-- [ ] Notes are truncated and reveal on hover.
-- [ ] Quick action buttons are prominent and functional.
-- [ ] Responsive design works on all screen sizes.
-- [ ] Loading and error states are handled gracefully.
-- [ ] Grid is scrollable if applications exceed screen height.
+- [ ] Calendar heatmap displays exactly 12 weeks (84 days) of application activity
+- [ ] Fixed 12x7 grid layout (12 weeks × 7 days)
+- [ ] Each day cell shows correct color intensity based on application count
+- [ ] Hover tooltips display date and exact application count
+- [ ] Days with no applications show as light gray
+- [ ] Color intensity scale: 0/1/2-3/4+ applications
+- [ ] Colors are theme-sensitive using DaisyUI/Tailwind theme system
+- [ ] Positioned under roadmap section in developer dashboard
+- [ ] Historical data aggregated for one year of user activity
+- [ ] Loading skeleton matches the final grid layout
+- [ ] Empty state handled gracefully for new users
+- [ ] "Learn how we count applications" informational element included
 
 **Questions to Resolve:**
 
-- [ ] How many applications should be displayed in the grid? (e.g., 10-20).
-- [ ] Should the grid be paginated? If so, how many items per page?
-- [ ] How should the `Reapply` action be handled? Should it trigger a new cover letter generation?
-- [ ] Should the `View Details` action navigate to the full application details page?
-- [ ] How should the `Reapply` button be styled differently if the application is already applied?
+- [x] **Visualization Type**: ✅ Confirmed as GitHub-style contribution heatmap
+- [x] **Time Range**: ✅ Static 12x7 grid (12 weeks, 84 days total)
+- [x] **Application Counting**: ✅ Requires new "Mark as Applied" feature for role tracking
+- [x] **Color Scale**: ✅ 0/1/2-3/4+ intensity levels, theme-sensitive with DaisyUI
+- [x] **Dashboard Placement**: ✅ Under roadmap in developer dashboard
+- [x] **Historical Data**: ✅ One year of aggregated data
+
+**Critical Dependency Identified:**
+
+⚠️ **BLOCKING ISSUE**: This feature requires a **"Mark as Applied" feature** that doesn't currently exist. The user identified that there's no way to track when developers apply for roles, which is essential for the heatmap data.
+
+**Required Prerequisite Feature:**
+- **New Feature Request Needed**: "Mark as Applied" role tracking system
+- **Scope**: Allow users to easily mark roles as "applied" and connect them to their developer account
+- **Priority**: Must be completed before this heatmap feature can be implemented
 
 **Dependencies:**
 
-- [ ] New API endpoint `/api/applications/history`.
-- [ ] New component `ApplicationHistoryGrid.tsx`.
-- [ ] Integration into developer dashboard.
-- [ ] Redux state management for selected applications.
+- [ ] **🚨 NEW FEATURE REQUIRED**: "Mark as Applied" role tracking system (blocking dependency)
+- [ ] New API endpoint `/api/developer/application-activity`
+- [ ] New component `ApplicationHeatmap.tsx` with calendar grid logic
+- [ ] Integration into developer dashboard layout (under roadmap)
+- [ ] Daily aggregation logic for application counts
+- [ ] DaisyUI theme integration for color scheme
+
+---
+
+### Feature Request #17: "Mark as Applied" Role Tracking System
+
+**Status:** Ready for Implementation
+**Priority:** High
+
+**Goal:** Allow developers to easily mark roles as "applied" and track their application history, enabling accurate application activity visualization in the heatmap.
+
+**User Story:** As a developer, I want to be able to quickly mark a role as "applied" so that it's counted towards my application activity in the heatmap. This should be a simple, intuitive action that doesn't require navigating away from the role card.
+
+**Success Metrics:**
+
+- Quick and easy "Mark as Applied" action for roles
+- Instant update of application count in the heatmap
+- No loss of application history or data integrity
+- Comprehensive application tracking for analytics
+
+**Database Architecture Plan:**
+
+**Extend Existing `SavedRole` Model:**
+
+After analyzing the current Prisma schema, the most architecturally sound approach is to extend the existing `SavedRole` model rather than creating a new table. This leverages the existing developer-role relationship and creates a natural progression from "save role" to "mark as applied."
+
+**Updated `SavedRole` Model:**
+```prisma
+model SavedRole {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+  developerId String    @db.ObjectId
+  role        Role      @relation(fields: [roleId], references: [id])
+  roleId      String    @db.ObjectId
+  notes       String?
+  
+  // NEW APPLICATION TRACKING FIELDS
+  appliedFor      Boolean   @default(false) // Track if user applied to this role
+  appliedAt       DateTime? // When they marked it as applied
+  applicationMethod String? // 'easy_apply', 'external', 'manual', 'cover_letter'
+  jobPostingUrl   String?   // Original job posting URL for reference
+  applicationNotes String?  // User notes about the application
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([developerId, roleId])
+  @@index([developerId])
+  @@index([roleId])
+  @@index([appliedFor]) // NEW: Index for filtering applied roles
+  @@index([appliedAt])  // NEW: Index for date-based queries (heatmap)
+  @@map("SavedRole")
+}
+```
+
+**Architecture Benefits:**
+- **Leverages Existing Infrastructure**: Uses the proven SavedRole relationship model
+- **Natural Workflow**: Save role → Mark as applied is intuitive user flow
+- **Data Integrity**: Existing `@@unique([developerId, roleId])` constraint prevents duplicates
+- **MongoDB Optimized**: Indexes optimized for MongoDB performance
+- **Backward Compatible**: Existing saved roles remain functional
+- **Auto-Save Mechanism**: Marking as applied automatically saves the role if not already saved
+
+**Migration Strategy:**
+```prisma
+// Add new fields to existing SavedRole records
+// All existing SavedRole records will have appliedFor=false by default
+// No data loss, fully backward compatible
+```
+
+**Technical Implementation Plan:**
+
+1.  **Database Schema Migration:**
+    - **Extend `SavedRole` model** with new application tracking fields
+    - **Migration Script**: Add new fields to existing SavedRole collection
+    - **Backward Compatibility**: All existing SavedRole records default to `appliedFor=false`
+    - **New Indexes**: Add indexes for `appliedFor` and `appliedAt` for performance
+
+2.  **Backend API Endpoints:**
+    - **POST** `/api/developer/saved-roles/mark-applied` - Mark saved role as applied
+      - **File**: `app/api/developer/saved-roles/mark-applied/route.ts`
+      - **Request**: `{ roleId: string, applicationMethod?: string, jobPostingUrl?: string, applicationNotes?: string }`
+      - **Response**: `{ success: true, savedRoleId: string, appliedAt: string }`
+      - **Logic**: Create or update SavedRole record with `appliedFor=true`, `appliedAt=now()`
+      - **Auto-Save**: If role isn't saved, automatically create SavedRole record and mark as applied
+    
+    - **GET** `/api/developer/saved-roles` - Retrieve saved roles with application status
+      - **Query Params**: `?appliedFor=true&startDate=YYYY-MM-DD&endDate=YYYY-MM-DD`
+      - **Response**: `{ savedRoles: SavedRoleWithApplicationStatus[], totalCount: number }`
+      - **Enhanced**: Include application status in existing saved roles endpoint
+    
+    - **GET** `/api/developer/application-activity` - Daily application counts for heatmap
+      - **File**: `app/api/developer/application-activity/route.ts`
+      - **Query Params**: `?weeks=12` (default 12 weeks)
+      - **Response**: `{ activityData: { date: string, count: number }[] }`
+      - **Logic**: Aggregate `appliedAt` dates from SavedRole where `appliedFor=true`
+
+3.  **Frontend Integration:**
+    - **RoleCard Component Updates**:
+      - Add "Mark as Applied" button positioned under "Apply on LinkedIn" button
+      - Use `PrimaryButton` with `size="xl"` (huge button as requested)
+      - **Button Logic**: 
+        - If role is saved and `appliedFor=true`: Show "Applied ✓" (disabled)
+        - If role is saved and `appliedFor=false`: Show "Mark as Applied" (enabled)
+        - If role is not saved: Show "Mark as Applied" (enabled, will auto-save)
+      - **Loading State**: Show spinner during API call
+    
+    - **Redux State Management**:
+      - **Extend `savedRolesSlice`**: Add actions for marking as applied
+      - **Actions**: `markSavedRoleAsApplied`, `fetchApplicationActivity`
+      - **Selectors**: `selectSavedRolesByStatus`, `selectApplicationActivity`
+      - **State Shape**: Update SavedRole interface with new application fields
+
+4.  **UI/UX Design:**
+    - **Button States**:
+      - **Default**: "Mark as Applied" (primary button, size xl)
+      - **Applied**: "Applied ✓" (disabled, success styling with checkmark)
+      - **Loading**: "Marking..." (disabled, spinner)
+    - **Auto-Save Feedback**: Brief toast notification "Role saved and marked as applied"
+    - **Visual Hierarchy**: Clear distinction between LinkedIn application and internal tracking
+    - **Consistent Styling**: Uses existing SavedRole styling patterns
+
+**Acceptance Criteria:**
+
+- [ ] **SavedRole model extended** with new application tracking fields (`appliedFor`, `appliedAt`, `applicationMethod`, `jobPostingUrl`, `applicationNotes`)
+- [ ] **Database migration** successfully adds new fields to existing SavedRole collection
+- [ ] **"Mark as Applied" button** prominently displayed under "Apply on LinkedIn" button on all role cards
+- [ ] **Button uses PrimaryButton** component with `size="xl"` (huge button as requested)
+- [ ] **Auto-save functionality**: Marking as applied automatically saves the role if not already saved
+- [ ] **Button states work correctly**:
+  - Unsaved role: "Mark as Applied" (enabled)
+  - Saved role (not applied): "Mark as Applied" (enabled)
+  - Saved role (applied): "Applied ✓" (disabled, success styling)
+  - Loading state: "Marking..." (disabled, spinner)
+- [ ] **No duplicate applications** prevented by existing `@@unique([developerId, roleId])` constraint
+- [ ] **Application data tracking** includes timestamp and optional application method/notes
+- [ ] **API endpoints handle edge cases** (role not found, already applied, validation errors)
+- [ ] **Redux state management** extends existing savedRolesSlice with application tracking
+- [ ] **Heatmap integration** works with new application activity data from SavedRole collection
+- [ ] **Backward compatibility** maintained - existing saved roles continue to work
+- [ ] **Performance** - new indexes on `appliedFor` and `appliedAt` ensure fast queries
+
+**Additional Considerations:**
+
+- **Leverages Existing Infrastructure**: Uses proven SavedRole model and existing role-saving UI patterns
+- **Data Consistency**: Single source of truth for role-developer relationships
+- **Future Expansion**: Can easily add more application tracking fields (response rate, follow-up dates, etc.)
+- **Analytics Ready**: Application data enables insights into user behavior and success rates
+- **Mobile Optimized**: Button sizing and placement work well on mobile devices
+- **User Experience**: Auto-save removes friction from the application tracking workflow
+- **Error Handling**: Graceful handling of network errors and duplicate application attempts
+
+**Dependencies:**
+
+- [ ] **Prisma schema migration** for SavedRole model extension
+- [ ] **Database indexes** for new `appliedFor` and `appliedAt` fields
+- [ ] **API endpoint implementation** for marking saved roles as applied
+- [ ] **Enhanced GET endpoint** for retrieving saved roles with application status
+- [ ] **Application activity endpoint** for heatmap data aggregation
+- [ ] **RoleCard component updates** with new button integration
+- [ ] **Redux slice extension** for application tracking state management
+- [ ] **PrimaryButton component** availability (from FR #18 or existing system)
+- [ ] **Toast notification system** for user feedback on auto-save
+- [ ] **Comprehensive error handling** for all application tracking operations
+
+**Questions to Resolve:**
+
+- [x] **Button Styling**: ✅ Use primary huge button (high emphasis, large size)
+- [x] **Button Disabled State**: ✅ Yes, disable when role is already marked to prevent double-counting
+- [x] **Button Visibility**: ✅ Available for all roles, positioned under "Apply on LinkedIn" button
+- [x] **Database Architecture**: ✅ Extend existing SavedRole model instead of creating new table
+- [x] **Auto-Save Behavior**: ✅ Marking as applied automatically saves the role if not already saved
+
+**Dependencies:**
+
+---
+
+### Feature Request #18: Style-First Button System Refactoring
+
+**Status:** Ready for Development
+**Priority:** Medium
+
+**Goal:** Refactor the existing button system from feature-specific components to style-first, reusable button variants that prioritize visual consistency and maintainability, while keeping complex specialized buttons (e.g., TimerButton).
+
+**User Story:** As a developer, I want to use style-first buttons (e.g., PrimaryButton, SecondaryButton, BadgeButton) instead of most feature-specific buttons so that I can maintain consistent styling and easily reuse button styles across different features, while keeping specialized buttons for complex use cases.
+
+**Success Metrics:**
+
+- Reduced code duplication in button components
+- Easier maintenance of button styles across the application
+- More consistent visual hierarchy and button behavior
+- Simplified button component architecture
+- Better adherence to design system principles
+
+**Current State Analysis:**
+
+The existing `components/buttons.tsx` file contains feature-specific buttons like:
+- `StartAssessmentButton`, `SubmitSolutionButton`, `SaveDraftButton`
+- `CreateAssessmentButton`, `DeleteButton`, `MatchButton`, `WarningButton`, `ExportButton`, `ImportButton`
+- **Keep specialized:** `TimerButton` (complex countdown functionality)
+
+**Technical Implementation Plan:**
+
+1.  **Style-First Button Components:**
+    - Create reusable button variants based on visual style:
+      - `PrimaryButton` - Main actions (solid, high emphasis)
+      - `SecondaryButton` - Secondary actions (outline, medium emphasis)
+      - `GhostButton` - Minimal actions (text-only, low emphasis)
+      - `DestructiveButton` - Dangerous actions (red, warning emphasis)
+      - `GlassButton` - Modern glass morphism style
+      - `LinkedInButton` - LinkedIn branded style
+      - `BadgeButton` - Flexible button that accepts badge icons/content as props
+    - Each variant accepts common props: `loading`, `disabled`, `size`, `icon`, `children`, `className`
+
+2.  **Enhanced Props Interface:**
+    - **File**: `components/buttons.tsx` (selective refactoring)
+    - **Props Interface**: 
+      ```tsx
+      interface ButtonProps {
+        loading?: boolean
+        disabled?: boolean
+        size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+        icon?: React.ReactNode
+        onClick?: () => void
+        className?: string // Allow custom Tailwind styling
+        children: React.ReactNode
+      }
+      
+      interface BadgeButtonProps extends ButtonProps {
+        badge?: React.ReactNode // Badge icon or content
+        badgePosition?: 'left' | 'right'
+      }
+      ```
+    - **Usage Examples**:
+      ```tsx
+      <PrimaryButton icon={<Play />} loading={isSubmitting} size="full">
+        Start Assessment
+      </PrimaryButton>
+      
+      <BadgeButton badge={<CheckIcon />} className="w-full h-12">
+        Complete Task
+      </BadgeButton>
+      
+      <SecondaryButton size="lg" className="min-w-full">
+        Custom Styled Button
+      </SecondaryButton>
+      ```
+
+3.  **Selective Migration Strategy:**
+    - Audit existing feature-specific button usage across the codebase
+    - **Replace simple buttons** with appropriate style-first variants
+    - **Keep specialized buttons** (TimerButton, other complex components)
+    - Ensure all existing functionality (loading states, icons, etc.) is preserved
+    - Update components importing from `buttons.tsx`
+
+**Acceptance Criteria:**
+
+- [ ] Simple feature-specific buttons replaced with style-first variants (keep specialized ones like TimerButton)
+- [ ] Consistent visual hierarchy across all button types
+- [ ] All button variants support common props (loading, disabled, size, icon, className)
+- [ ] Full-width and full-height sizing options (`size="full"` and custom className support)
+- [ ] BadgeButton component for buttons with badge icons/content
+- [ ] Custom styling support via className prop for Tailwind classes
+- [ ] DaisyUI theme integration for color schemes
+- [ ] Proper TypeScript interfaces for all button components
+- [ ] Loading states, disabled states, and icon integration work consistently
+- [ ] Reduced lines of code in `buttons.tsx` file (while keeping specialized buttons)
+- [ ] No functionality lost during migration
+- [ ] Updated button usage follows new style-first approach
+
+**Implementation Decisions (Resolved):**
+
+- ✅ **Complex buttons**: Keep specialized buttons like TimerButton that have complex functionality
+- ✅ **Badge styling**: Create BadgeButton component that accepts badge icons/content as props
+- ✅ **Icon positioning**: Support custom styling via className prop rather than built-in positioning
+- ✅ **Size variants**: Support full parent width/height via `size="full"` and custom className
+- ✅ **Component architecture**: Keep it simple - no compound components for now
+
+
+**Dependencies:**
+
+- [ ] Complete audit of existing button usage across the codebase
+- [ ] DaisyUI theme integration for consistent styling
+- [ ] TypeScript interface definitions for all button variants
+- [ ] Selective migration of components using simple feature-specific buttons
+- [ ] Testing to ensure no regression in button functionality
+- [ ] BadgeButton component implementation with flexible badge prop system
 
 ---
 
