@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import {  Button  } from '@/components/ui-daisy/button'
+import { cn } from '@/lib/utils'
 import {
   Play,
   CheckCircle,
@@ -33,30 +34,203 @@ interface ActionButtonProps {
   children: React.ReactNode
 }
 
+// Common props interface for style-first button variants
+interface StyleFirstButtonProps {
+  loading?: boolean
+  disabled?: boolean
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+  icon?: React.ReactNode
+  onClick?: () => void
+  className?: string
+  children: React.ReactNode
+}
+
+interface BadgeButtonProps extends StyleFirstButtonProps {
+  badge?: React.ReactNode
+  badgePosition?: 'left' | 'right'
+}
+
+// ========== STYLE-FIRST BUTTON VARIANTS ==========
+
+// Utility functions for consistent size handling across all button variants
+const getSizeClasses = (size?: string) => size === 'full' ? 'w-full h-full' : ''
+const getButtonSize = (size?: string) => size === 'full' ? undefined : size === 'md' ? 'default' : size
+
+export function PrimaryButton({ loading, disabled, size, icon, onClick, className, children }: StyleFirstButtonProps) {
+  const sizeClass = getSizeClasses(size)
+  const buttonSize = getButtonSize(size)
+  
+  return (
+    <Button 
+      variant="default"
+      size={buttonSize}
+      loading={loading}
+      disabled={disabled}
+      onClick={onClick}
+      leftIcon={icon}
+      className={cn("gap-2", sizeClass, className)}
+    >
+      {children}
+    </Button>
+  )
+}
+
+export function SecondaryButton({ loading, disabled, size, icon, onClick, className, children }: StyleFirstButtonProps) {
+  const sizeClass = getSizeClasses(size)
+  const buttonSize = getButtonSize(size)
+  
+  return (
+    <Button 
+      variant="outline"
+      size={buttonSize}
+      loading={loading}
+      disabled={disabled}
+      onClick={onClick}
+      leftIcon={icon}
+      className={cn("gap-2", sizeClass, className)}
+    >
+      {children}
+    </Button>
+  )
+}
+
+export function GhostButton({ loading, disabled, size, icon, onClick, className, children }: StyleFirstButtonProps) {
+  const sizeClass = getSizeClasses(size)
+  const buttonSize = getButtonSize(size)
+  
+  return (
+    <Button 
+      variant="ghost"
+      size={buttonSize}
+      loading={loading}
+      disabled={disabled}
+      onClick={onClick}
+      leftIcon={icon}
+      className={cn("gap-2", sizeClass, className)}
+    >
+      {children}
+    </Button>
+  )
+}
+
+export function DestructiveButton({ loading, disabled, size, icon, onClick, className, children }: StyleFirstButtonProps) {
+  const sizeClass = getSizeClasses(size)
+  const buttonSize = getButtonSize(size)
+  
+  return (
+    <Button 
+      variant="destructive"
+      size={buttonSize}
+      loading={loading}
+      disabled={disabled}
+      onClick={onClick}
+      leftIcon={icon}
+      className={cn("gap-2", sizeClass, className)}
+    >
+      {children}
+    </Button>
+  )
+}
+
+export function GlassButton({ loading, disabled, size, icon, onClick, className, children }: StyleFirstButtonProps) {
+  const sizeClass = getSizeClasses(size)
+  const buttonSize = getButtonSize(size)
+  
+  return (
+    <Button 
+      variant="glass"
+      size={buttonSize}
+      loading={loading}
+      disabled={disabled}
+      onClick={onClick}
+      leftIcon={icon}
+      className={cn("gap-2", sizeClass, className)}
+    >
+      {children}
+    </Button>
+  )
+}
+
+export function LinkedInButton({ loading, disabled, size, icon, onClick, className, children }: StyleFirstButtonProps) {
+  const sizeClass = getSizeClasses(size)
+  const buttonSize = getButtonSize(size)
+  
+  return (
+    <Button 
+      variant="linkedin"
+      size={buttonSize}
+      loading={loading}
+      disabled={disabled}
+      onClick={onClick}
+      leftIcon={icon}
+      className={cn("gap-2", sizeClass, className)}
+    >
+      {children}
+    </Button>
+  )
+}
+
+export function BadgeButton({ loading, disabled, size, icon, onClick, className, children, badge, badgePosition = 'left' }: BadgeButtonProps) {
+  const sizeClass = getSizeClasses(size)
+  const buttonSize = getButtonSize(size)
+  
+  const leftIcon = badgePosition === 'left' ? badge : icon
+  const rightIcon = badgePosition === 'right' ? badge : undefined
+  
+  return (
+    <Button 
+      variant="default"
+      size={buttonSize}
+      loading={loading}
+      disabled={disabled}
+      onClick={onClick}
+      leftIcon={leftIcon}
+      rightIcon={rightIcon}
+      className={cn("gap-2", sizeClass, className)}
+    >
+      {children}
+    </Button>
+  )
+}
+
+// ========== MIGRATED FEATURE-SPECIFIC BUTTONS (NOW USE STYLE-FIRST VARIANTS) ==========
+
 export function StartAssessmentButton({ onClick, disabled, loading }: ActionButtonProps) {
   return (
-    <Button onClick={onClick} disabled={disabled || loading} className="gap-2">
-      {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+    <PrimaryButton 
+      onClick={onClick} 
+      disabled={disabled} 
+      loading={loading} 
+      icon={<Play className="h-4 w-4" />}
+    >
       Start Assessment
-    </Button>
+    </PrimaryButton>
   )
 }
 
 export function SubmitSolutionButton({ onClick, disabled, loading }: ActionButtonProps) {
   return (
-    <Button onClick={onClick} disabled={disabled || loading} className="gap-2">
-      {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+    <PrimaryButton 
+      onClick={onClick} 
+      disabled={disabled} 
+      loading={loading} 
+      icon={<Send className="h-4 w-4" />}
+    >
       Submit Solution
-    </Button>
+    </PrimaryButton>
   )
 }
 
 export function SaveDraftButton({ onClick, disabled, loading }: ActionButtonProps) {
   return (
-    <Button variant="outline" onClick={onClick} disabled={disabled || loading} className="gap-2">
-      {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+    <SecondaryButton 
+      onClick={onClick} 
+      disabled={disabled} 
+      loading={loading} 
+      icon={<Save className="h-4 w-4" />}
+    >
       Save Draft
-    </Button>
+    </SecondaryButton>
   )
 }
 
@@ -121,25 +295,25 @@ export function ActionButtons() {
 
 export function CreateAssessmentButton({ onClick }: { onClick?: () => void }) {
   return (
-    <Button onClick={onClick} className="gap-2">
-      <Plus className="h-4 w-4" />
+    <PrimaryButton 
+      onClick={onClick} 
+      icon={<Plus className="h-4 w-4" />}
+    >
       Create Assessment
-    </Button>
+    </PrimaryButton>
   )
 }
 
 export function DeleteButton({ onClick, disabled }: { onClick?: () => void; disabled?: boolean }) {
   return (
-    <Button
-      variant="outline"
+    <DestructiveButton 
+      onClick={onClick} 
+      disabled={disabled} 
       size="sm"
-      onClick={onClick}
-      disabled={disabled}
-      className="gap-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
+      icon={<Trash2 className="h-4 w-4" />}
     >
-      <Trash2 className="h-4 w-4" />
       Delete
-    </Button>
+    </DestructiveButton>
   )
 }
 
@@ -154,43 +328,50 @@ export function TimerButton({ timeRemaining }: { timeRemaining: string }) {
 
 export function MatchButton({ matchPercentage }: { matchPercentage: number }) {
   return (
-    <Button className="gap-2">
-      <Award className="h-4 w-4" />
+    <PrimaryButton 
+      icon={<Award className="h-4 w-4" />}
+    >
       {matchPercentage}% Match
-    </Button>
+    </PrimaryButton>
   )
 }
 
+// Create a WarningButton variant for amber-colored warnings
 export function WarningButton({ onClick, children }: ActionButtonProps) {
   return (
-    <Button
-      variant="outline"
+    <SecondaryButton 
       onClick={onClick}
-      className="gap-2 text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+      icon={<AlertTriangle className="h-4 w-4" />}
+      className="text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700"
     >
-      <AlertTriangle className="h-4 w-4" />
       {children}
-    </Button>
+    </SecondaryButton>
   )
 }
 
 export function ExportButton({ onClick, format = "PDF" }: { onClick?: () => void; format?: string }) {
   return (
-    <Button variant="outline" onClick={onClick} className="gap-2">
-      <Download className="h-4 w-4" />
+    <SecondaryButton 
+      onClick={onClick}
+      icon={<Download className="h-4 w-4" />}
+    >
       Export {format}
-    </Button>
+    </SecondaryButton>
   )
 }
 
 export function ImportButton({ onClick }: { onClick?: () => void }) {
   return (
-    <Button variant="outline" onClick={onClick} className="gap-2">
-      <Upload className="h-4 w-4" />
+    <SecondaryButton 
+      onClick={onClick}
+      icon={<Upload className="h-4 w-4" />}
+    >
       Import
-    </Button>
+    </SecondaryButton>
   )
 }
+
+// ========== SPECIALIZED BUTTONS (KEPT AS COMPLEX COMPONENTS) ==========
 
 export function ExternalLinkButton({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -227,76 +408,83 @@ export function ButtonShowcase() {
   return (
     <div className="space-y-8 p-6 border rounded-lg">
       <div>
-        <h3 className="text-lg font-medium mb-4">Primary Action Buttons</h3>
+        <h3 className="text-lg font-medium mb-4">Style-First Button Variants</h3>
         <div className="flex flex-wrap gap-4">
-          <StartAssessmentButton />
-          <SubmitSolutionButton />
-          <CreateAssessmentButton />
-          <Button className="gap-2">
-            <Award className="h-4 w-4" />
-            View Results
-          </Button>
+          <PrimaryButton icon={<Play className="h-4 w-4" />}>Primary Action</PrimaryButton>
+          <SecondaryButton icon={<Save className="h-4 w-4" />}>Secondary Action</SecondaryButton>
+          <GhostButton icon={<Eye className="h-4 w-4" />}>Ghost Button</GhostButton>
+          <DestructiveButton icon={<Trash2 className="h-4 w-4" />}>Delete</DestructiveButton>
+          <GlassButton icon={<RefreshCw className="h-4 w-4" />}>Glass Effect</GlassButton>
+          <LinkedInButton icon={<ExternalLink className="h-4 w-4" />}>LinkedIn Style</LinkedInButton>
+          <BadgeButton badge={<CheckCircle className="h-4 w-4" />}>With Badge</BadgeButton>
         </div>
       </div>
 
       <div>
-        <h3 className="text-lg font-medium mb-4">Secondary Action Buttons</h3>
+        <h3 className="text-lg font-medium mb-4">Button Sizes & States</h3>
+        <div className="flex flex-wrap gap-4 items-center">
+          <PrimaryButton size="sm">Small</PrimaryButton>
+          <PrimaryButton size="md">Medium</PrimaryButton>
+          <PrimaryButton size="lg">Large</PrimaryButton>
+          <PrimaryButton size="xl">Extra Large</PrimaryButton>
+          <PrimaryButton loading>Loading</PrimaryButton>
+          <PrimaryButton disabled>Disabled</PrimaryButton>
+          <PrimaryButton size="full" className="max-w-xs">Full Width</PrimaryButton>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-lg font-medium mb-4">Legacy Feature-Specific Buttons (Now Using Style-First)</h3>
         <div className="flex flex-wrap gap-4">
+          <StartAssessmentButton />
+          <SubmitSolutionButton />
+          <CreateAssessmentButton />
           <SaveDraftButton />
-          <Button variant="outline" className="gap-2">
-            <Eye className="h-4 w-4" />
-            Preview
-          </Button>
+          <DeleteButton />
           <ExportButton />
           <ImportButton />
         </div>
       </div>
 
       <div>
-        <h3 className="text-lg font-medium mb-4">Navigation Buttons</h3>
-        <NavigationButtons />
-      </div>
-
-      <div>
-        <h3 className="text-lg font-medium mb-4">Status Buttons</h3>
-        <StatusButtons />
-      </div>
-
-      <div>
-        <h3 className="text-lg font-medium mb-4">Utility Buttons</h3>
-        <div className="flex flex-wrap gap-4">
-          <ActionButtons />
-          <DeleteButton />
-          <TimerButton timeRemaining="45:00" />
+        <h3 className="text-lg font-medium mb-4">Specialized Complex Buttons (Kept as Components)</h3>
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium mb-2">Navigation Components</h4>
+            <NavigationButtons />
+          </div>
+          <div>
+            <h4 className="text-sm font-medium mb-2">Status Button Groups</h4>
+            <StatusButtons />
+          </div>
+          <div>
+            <h4 className="text-sm font-medium mb-2">Action Button Groups</h4>
+            <ActionButtons />
+          </div>
+          <div>
+            <h4 className="text-sm font-medium mb-2">Interactive Components</h4>
+            <div className="flex flex-wrap gap-4 items-center">
+              <TimerButton timeRemaining="45:00" />
+              <ToggleButton options={["All", "Active", "Completed"]} />
+              <ExternalLinkButton href="#">Documentation</ExternalLinkButton>
+            </div>
+          </div>
         </div>
       </div>
 
       <div>
-        <h3 className="text-lg font-medium mb-4">Toggle Buttons</h3>
-        <ToggleButton options={["All", "Active", "Completed"]} />
-      </div>
-
-      <div>
-        <h3 className="text-lg font-medium mb-4">Warning and Info Buttons</h3>
+        <h3 className="text-lg font-medium mb-4">Custom Styling Examples</h3>
         <div className="flex flex-wrap gap-4">
-          <WarningButton>End Assessment</WarningButton>
-          <Button variant="destructive" className="gap-2">
-            <Trash2 className="h-4 w-4" />
-            Delete Assessment
-          </Button>
-          <ExternalLinkButton href="#">Documentation</ExternalLinkButton>
-        </div>
-      </div>
-
-      <div>
-        <h3 className="text-lg font-medium mb-4">Button States</h3>
-        <div className="flex flex-wrap gap-4">
-          <Button>Default</Button>
-          <Button disabled>Disabled</Button>
-          <Button className="gap-2">
-            <RefreshCw className="h-4 w-4 animate-spin" />
-            Loading
-          </Button>
+          <PrimaryButton className="bg-gradient-to-r from-purple-500 to-pink-500">Custom Gradient</PrimaryButton>
+          <SecondaryButton className="border-dashed border-2">Dashed Border</SecondaryButton>
+          <GhostButton className="text-green-600 hover:text-green-700">Custom Color</GhostButton>
+          <BadgeButton 
+            badge={<Award className="h-4 w-4 text-yellow-500" />} 
+            badgePosition="right"
+            className="min-w-[200px]"
+          >
+            Right Badge
+          </BadgeButton>
         </div>
       </div>
     </div>
