@@ -1,0 +1,125 @@
+# Bug Prevention & Resolution for AI Development
+
+## 🚨 CRITICAL: BEFORE implementing any feature
+
+1. **Search the bug database FIRST**: [bug-reporting-resolution.md](mdc:docs/implementation/bug-reporting-resolution.md)
+2. **Use search tags** to find similar patterns: #redux-loading #api-undefined #type-mismatch #hydration-error
+3. **Follow established patterns** from resolved bugs instead of recreating solutions
+4. **Copy working code patterns** directly from the bug database
+
+## 🔍 WHEN encountering bugs
+
+1. **Search tags first** using symptoms/error messages in [bug-reporting-resolution.md](mdc:docs/implementation/bug-reporting-resolution.md)
+2. **If found**: Follow the exact resolution pattern provided
+3. **If not found**: Document new bug using the template in the bug database
+4. **Always update prevention checklist** with new learnings
+
+## ⚡ Common AI Mistakes to ALWAYS Avoid
+
+### Redux State Management
+- **❌ NEVER forget**: `state.status = 'succeeded'` in fulfilled cases
+- **❌ NEVER skip**: REHYDRATE action handling when using Redux persist
+- **❌ NEVER assume**: Data exists without null checks
+- **✅ ALWAYS include**: All three async cases (pending/fulfilled/rejected)
+
+### API Integration
+- **❌ NEVER assume**: API response structure matches frontend expectations
+- **❌ NEVER skip**: Input validation with Zod schemas
+- **❌ NEVER forget**: Error handling for all endpoints
+- **✅ ALWAYS validate**: Request and response data
+
+### Database Operations
+- **❌ NEVER create**: N+1 queries (use includes instead)
+- **❌ NEVER skip**: Proper error handling
+- **❌ NEVER assume**: Relations will load automatically
+- **✅ ALWAYS use**: Single queries with includes for related data
+
+### UI Components
+- **❌ NEVER render**: Without null/undefined checks
+- **❌ NEVER skip**: Loading states
+- **❌ NEVER assume**: Props will always exist
+- **✅ ALWAYS check**: Data existence before mapping or accessing
+
+## 🎯 Quick Resolution Patterns
+
+### "Loading forever" → Check Redux status updates
+```typescript
+// ✅ ALWAYS include status updates
+.addCase(fetchData.fulfilled, (state, action) => {
+  state.data = action.payload;
+  state.status = 'succeeded';  // ← AI frequently forgets this
+})
+```
+
+### "Cannot read property 'map'" → Add null checks
+```typescript
+// ✅ ALWAYS check data exists
+if (!roles || roles.length === 0) return <EmptyState />;
+return roles.map(role => <RoleCard key={role.id} role={role} />);
+```
+
+### "Hydration mismatch" → Handle REHYDRATE
+```typescript
+// ✅ ALWAYS handle REHYDRATE
+.addCase(REHYDRATE, (state, action: any) => {
+  if (action.payload?.slice && state.data && state.status === 'idle') {
+    state.status = 'succeeded';
+  }
+})
+```
+
+### "Slow database queries" → Use includes
+```typescript
+// ✅ Single query with includes
+const rolesWithSkills = await prisma.role.findMany({
+  include: { skills: true }
+});
+```
+
+## 📋 Prevention Checklists
+
+### Before Redux Implementation
+- [ ] All async cases update status (pending/fulfilled/rejected)
+- [ ] REHYDRATE case handles status properly
+- [ ] Persist config includes all necessary fields
+- [ ] Component checks status before rendering data
+
+### Before API Implementation
+- [ ] Request/response types defined
+- [ ] Input validation with Zod schemas
+- [ ] Error handling for all endpoints
+- [ ] Response transformation when needed
+
+### Before Database Operations
+- [ ] Use includes for related data
+- [ ] Avoid N+1 queries
+- [ ] Proper error handling
+- [ ] Transaction usage when needed
+
+### Before UI Components
+- [ ] Null/undefined checks before rendering
+- [ ] Loading states handled
+- [ ] Error boundaries implemented
+- [ ] Proper TypeScript prop types
+
+## 🔧 Development Workflow
+
+1. **Start with search**: Look for similar patterns in bug database
+2. **Copy working patterns**: Don't recreate solutions
+3. **Follow prevention checklists**: Based on component type
+4. **Test immediately**: Verify no regressions
+5. **Update bug database**: If you find new patterns
+
+## 🎓 Learning from Bugs
+
+When you encounter a bug:
+- **Document it immediately** using the template
+- **Add searchable tags** for future reference
+- **Include prevention steps** to avoid recurrence
+- **Update relevant checklists** with new learnings
+
+Remember: **The goal is to never solve the same bug twice**. Always check the bug database first!
+
+---
+
+*This rule ensures AI development follows established patterns and prevents recurring bugs.*

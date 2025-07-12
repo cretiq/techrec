@@ -14,6 +14,7 @@ Strategic architectural decisions and core system design patterns:
 
 Comprehensive guides for implementing core platform features:
 
+- **[Bug Database & Resolution](implementation/bug-reporting-resolution.md)** - AI-optimized bug memory system with searchable patterns and solutions
 - **[Role Persistence Implementation](implementation/role-persistence-implementation.md)** - Redux Persist integration for user workflow continuity
 - **[Design System](implementation/design-system.md)** - UI guidelines, color schemes, and component patterns
 - **[Troubleshooting](implementation/troubleshooting.md)** - Common issues and solutions for development workflows
@@ -35,6 +36,12 @@ Production deployment and operational procedures:
 
 - **[Production Activation Guide](deployment/production-activation-guide.md)** - Complete deployment checklist and environment setup
 
+## AI Development Commands
+
+Structured commands for AI-assisted development workflows:
+
+- **[Bug Analyzer Command](commands/bug-analyzer.md)** - Systematic bug analysis and resolution using the bug database
+
 ---
 
 ## Documentation Standards
@@ -44,6 +51,7 @@ Production deployment and operational procedures:
 - **Implementation**: Step-by-step guides for feature development
 - **Features**: Specific functionality documentation and data flows
 - **Deployment**: Production and operational procedures
+- **Commands**: AI-assisted development workflow commands
 
 ### Link Conventions
 - Use relative paths for internal documentation links
