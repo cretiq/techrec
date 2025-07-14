@@ -100,6 +100,13 @@ export interface InternalSavedRole {
   companyName: string; // Added for clarity
   savedAt: string; // ISO Date string
   notes: string | null;
+  
+  // NEW APPLICATION TRACKING FIELDS
+  appliedFor: boolean; // Track if user applied to this role
+  appliedAt: string | null; // When they marked it as applied (ISO Date string)
+  applicationMethod: string | null; // 'easy_apply', 'external', 'manual', 'cover_letter'
+  jobPostingUrl: string | null; // Original job posting URL for reference
+  applicationNotes: string | null; // User notes about the application
 }
 
 /**

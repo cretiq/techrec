@@ -75,6 +75,7 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                       <ul className="menu p-2 shadow-lg bg-base-100 rounded-lg border border-base-300">
                         <li><Link href="/developer/cv-management" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-cv-management-trigger">CV Management</Link></li>
                         <li><Link href="/developer/roles/search" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-role-search-trigger">Role Search</Link></li>
+                        <li><Link href="/developer/saved-roles" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-saved-roles-trigger">Saved Roles</Link></li>
                       </ul>
                     </div>
                   </div>

@@ -532,12 +532,21 @@ model SavedRole {
   roleId      String    @db.ObjectId
   notes       String?
   
+  // NEW APPLICATION TRACKING FIELDS
+  appliedFor      Boolean   @default(false) // Track if user applied to this role
+  appliedAt       DateTime? // When they marked it as applied
+  applicationMethod String? // 'easy_apply', 'external', 'manual', 'cover_letter'
+  jobPostingUrl   String?   // Original job posting URL for reference
+  applicationNotes String?  // User notes about the application
+  
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   @@unique([developerId, roleId])
   @@index([developerId])
   @@index([roleId])
+  @@index([appliedFor]) // NEW: Index for filtering applied roles
+  @@index([appliedAt])  // NEW: Index for date-based queries (heatmap)
   @@map("SavedRole")
 }
 

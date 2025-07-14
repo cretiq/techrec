@@ -26,6 +26,8 @@ import rolesReducer from './features/rolesSlice';
 import matchingReducer from './features/matchingSlice';
 // Import the dashboard reducer
 import dashboardReducer from './features/dashboardSlice';
+// Import the saved roles reducer
+import savedRolesReducer from './features/savedRolesSlice';
 
 // Configuration for persisting selectedRoles slice
 const selectedRolesPersistConfig = {
@@ -55,11 +57,19 @@ const outreachMessagesPersistConfig = {
   whitelist: ['outreachMessages'], // Persist generated outreach messages
 };
 
+// Configuration for persisting saved roles
+const savedRolesPersistConfig = {
+  key: 'savedRoles',
+  storage,
+  whitelist: ['savedRoles', 'totalCount', 'appliedCount'], // Persist core saved roles data
+};
+
 // Apply persistence to specific reducers
 const persistedSelectedRolesReducer = persistReducer(selectedRolesPersistConfig, selectedRolesReducer);
 const persistedRolesReducer = persistReducer(rolesPersistConfig, rolesReducer);
 const persistedCoverLettersReducer = persistReducer(coverLettersPersistConfig, coverLettersReducer);
 const persistedOutreachMessagesReducer = persistReducer(outreachMessagesPersistConfig, outreachMessagesReducer);
+const persistedSavedRolesReducer = persistReducer(savedRolesPersistConfig, savedRolesReducer);
 
 // Combine all reducers with selective persistence
 const combinedReducer = combineReducers({
@@ -75,6 +85,7 @@ const combinedReducer = combineReducers({
   roles: persistedRolesReducer,
   matching: matchingReducer,
   dashboard: dashboardReducer,
+  savedRoles: persistedSavedRolesReducer,
 });
 
 /**
@@ -93,6 +104,7 @@ const rootReducer = (
     storage.removeItem('persist:roles');
     storage.removeItem('persist:coverLetters');
     storage.removeItem('persist:outreachMessages');
+    storage.removeItem('persist:savedRoles');
     
     // Reset all state to initial values by passing undefined state
     return combinedReducer(undefined, action);
@@ -137,6 +149,7 @@ if (process.env.NODE_ENV === 'development') {
         storage.removeItem('persist:roles');
         storage.removeItem('persist:coverLetters');
         storage.removeItem('persist:outreachMessages');
+        storage.removeItem('persist:savedRoles');
         console.log('[Dev Utility] Persisted state cleared successfully');
         console.log('[Dev Utility] Please refresh the page to see the effect');
       } catch (error) {

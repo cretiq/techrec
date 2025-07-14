@@ -16,6 +16,8 @@ import { Role } from "@/types/role"
 import { formatJobType } from "@/utils/mappers"
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleRoleSelection, selectIsRoleSelected, selectSelectedRolesCount, setSelectedRoles, clearRoleSelection, selectSelectedRoles } from '@/lib/features/selectedRolesSlice'
+import { fetchSavedRoles as fetchSavedRolesRedux, selectSavedRoles } from '@/lib/features/savedRolesSlice'
+import MarkAsAppliedButton from '@/components/roles/MarkAsAppliedButton'
 import { 
   searchRoles, 
   selectRoles, 
@@ -49,7 +51,7 @@ interface SavedRole {
 
 export default function RolesSearch2Page() {
   const { data: session, status } = useSession()
-  const [savedRoles, setSavedRoles] = useState<SavedRole[]>([])
+  const savedRoles = useSelector(selectSavedRoles)
   const [currentFilters, setCurrentFilters] = useState<SearchParameters>({
     limit: 10
   })
@@ -92,7 +94,7 @@ export default function RolesSearch2Page() {
     }
 
     if (status === 'authenticated') {
-      fetchSavedRoles()
+      dispatch(fetchSavedRolesRedux({ includeRoleDetails: true }))
       // Fetch user skills profile for match scoring
       dispatch(fetchUserSkillProfile())
     }
@@ -190,40 +192,6 @@ export default function RolesSearch2Page() {
     setCurrentFilters(filters)
   }
 
-  const fetchSavedRoles = async () => {
-    try {
-      const response = await fetch('/api/developers/me/saved-roles')
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          setSavedRoles([])
-        } else {
-          throw new Error(`Failed to fetch saved roles: ${response.status}`)
-        }
-      } else {
-        const data = await response.json()
-        
-        let savedRolesData: SavedRole[]
-        if (data.length > 0 && typeof data[0] === 'object' && data[0].roleId) {
-          savedRolesData = data.map((item: any) => ({
-            ...item,
-            savedAt: new Date(item.savedAt)
-          }))
-        } else if (data.length > 0 && typeof data[0] === 'string') {
-          savedRolesData = data.map((roleId: string) => ({
-            roleId,
-            savedAt: new Date()
-          }))
-        } else {
-          savedRolesData = []
-        }
-        
-        setSavedRoles(savedRolesData)
-      }
-    } catch (error: any) {
-      console.error('[RolesSearch2Page] Error fetching saved roles:', error)
-    }
-  }
 
   // All roles are already filtered by the API based on search parameters
   const filteredRoles = roles.filter((role) => {
@@ -239,27 +207,38 @@ export default function RolesSearch2Page() {
       return
     }
 
-    const isSaved = savedRoles.some(role => role.roleId === roleId)
-    const optimisticSavedRoles = isSaved
-      ? savedRoles.filter(role => role.roleId !== roleId)
-      : [...savedRoles, { roleId, savedAt: new Date() }]
+    // Find the role data from current roles
+    const roleToSave = roles.find(role => role.id === roleId)
+    if (!roleToSave) {
+      toast({
+        title: 'Error',
+        description: 'Role data not found',
+        variant: 'destructive',
+      })
+      return
+    }
 
-    setSavedRoles(optimisticSavedRoles)
+    const isSaved = savedRoles.some(role => role.roleId === roleId)
 
     try {
-      const response = await fetch(`/api/developers/me/saved-roles`, {
+      const response = await fetch(`/api/developer/me/saved-roles`, {
         method: isSaved ? 'DELETE' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(isSaved ? { roleId } : { roleData: roleToSave }),
       })
 
       if (response.ok) {
+        // Refresh Redux state to maintain consistency
+        dispatch(fetchSavedRolesRedux({ includeRoleDetails: true }))
+        
         if (isSaved) {
-          setSavedRoles(savedRoles.filter(role => role.roleId !== roleId))
           toast({
             title: 'Success',
             description: 'Role removed from saved roles',
           })
         } else {
-          setSavedRoles([...savedRoles, { roleId, savedAt: new Date() }])
           toast({
             title: 'Success',
             description: 'Role saved successfully',
@@ -274,7 +253,7 @@ export default function RolesSearch2Page() {
         variant: 'destructive',
       })
     }
-  }, [session?.user, savedRoles, router, toast])
+  }, [session?.user, savedRoles, roles, router, toast])
 
   const handleApply = (roleId: string) => {
     if (!session?.user) {
@@ -528,6 +507,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
     handleWriteTo(role)
   }, [handleWriteTo, role])
 
+
   if (!role) return null
 
   return (
@@ -671,35 +651,47 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                     </div>
                     
                     {/* Action Buttons Section */}
-                    <div className="flex justify-between items-center w-full px-2">
-                      {/* Left: Application Button */}
-                      <div className="flex-shrink-0">
-                        {role.applicationInfo ? (
-                          <ApplicationActionButton
-                            applicationInfo={role.applicationInfo}
+                    <div className="space-y-3 w-full">
+                      {/* Top Row: Application and Write to Buttons */}
+                      <div className="flex justify-between items-center w-full px-2">
+                        {/* Left: Application Button */}
+                        <div className="flex-shrink-0">
+                          {role.applicationInfo ? (
+                            <ApplicationActionButton
+                              applicationInfo={role.applicationInfo}
+                              disabled={!session?.user}
+                              data-testid={`role-search-button-apply-action-${role.id}`}
+                            />
+                          ) : (
+                            <Button size="sm" disabled className="text-xs px-3" data-testid={`role-search-button-apply-disabled-${role.id}`}>
+                              Apply Now
+                            </Button>
+                          )}
+                        </div>
+
+                        {/* Right: Write to Button */}
+                        <div className="flex-shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleWriteClick}
                             disabled={!session?.user}
-                            data-testid={`role-search-button-apply-action-${role.id}`}
-                          />
-                        ) : (
-                          <Button size="sm" disabled className="text-xs px-3" data-testid={`role-search-button-apply-disabled-${role.id}`}>
-                            Apply Now
+                            leftIcon={<PenTool className="h-3 w-3" />}
+                            title={!session?.user ? "Login to use Writing Help" : "Get writing assistance"}
+                            data-testid={`role-search-button-write-trigger-${role.id}`}
+                          >
+                            Write to
                           </Button>
-                        )}
+                        </div>
                       </div>
 
-                      {/* Right: Write to Button */}
-                      <div className="flex-shrink-0">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleWriteClick}
-                          disabled={!session?.user}
-                          leftIcon={<PenTool className="h-3 w-3" />}
-                          title={!session?.user ? "Login to use Writing Help" : "Get writing assistance"}
-                          data-testid={`role-search-button-write-trigger-${role.id}`}
-                        >
-                          Write to
-                        </Button>
+                      {/* Bottom Row: Mark as Applied Button (Full Width) */}
+                      <div className="w-full px-2">
+                        <MarkAsAppliedButton
+                          role={role}
+                          className="w-full"
+                          data-testid={`role-search-button-mark-applied-${role.id}`}
+                        />
                       </div>
                     </div>
                   </CardFooter>

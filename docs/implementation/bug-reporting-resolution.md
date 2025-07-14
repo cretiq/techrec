@@ -5,7 +5,7 @@
 ## Search Tags Index
 
 **State Management**: #redux-loading #status-stuck #hydration-mismatch #state-undefined  
-**API Integration**: #api-undefined #type-mismatch #response-format #fetch-error  
+**API Integration**: #api-undefined #type-mismatch #response-format #fetch-error #data-consistency #dual-source  
 **Database**: #n-plus-one #query-error #prisma-relation #connection-timeout  
 **UI Components**: #render-loop #loading-forever #hydration-error #client-server-mismatch  
 **TypeScript**: #type-error #any-usage #import-missing #generic-issue  
@@ -161,6 +161,53 @@ const transformedData = {
 
 ---
 
+### Bug: Dual Data Source State Inconsistency [#data-consistency #dual-source #api-integration]
+**Quick Fix**: Standardize on single data source with consistent ID transformation  
+**Component**: Integration-Frontend-Backend  
+**Recurrence Risk**: High (AI often creates multiple data sources for convenience)  
+**Resolution Time**: 90-120 minutes  
+
+**Root Cause**: Multiple API endpoints returning same data with different ID formats causing Redux state synchronization failures between components  
+**Prevention**: Always use single source of truth for shared data with consistent response format  
+
+**Code Pattern**:
+```typescript
+// ❌ Dual data sources with inconsistent formats
+// API 1: /api/developer/saved-roles (internal IDs)
+{ roleId: "internal-uuid-123", appliedFor: true }
+
+// API 2: /api/developer/me/saved-roles (external IDs) 
+{ roleId: "external-id-456", appliedFor: true }
+
+// ✅ Standardized data source with consistent ID transformation
+// Both APIs return external IDs:
+const transformedSavedRoles = savedRoles.map(savedRole => {
+  const externalIdMatch = savedRole.notes?.match(/External ID: (.+)/);
+  const externalRoleId = externalIdMatch ? externalIdMatch[1] : savedRole.role?.id;
+  
+  return {
+    ...savedRole,
+    roleId: externalRoleId, // Use external ID consistently
+    role: savedRole.role ? {
+      ...savedRole.role,
+      id: externalRoleId // Transform nested IDs too
+    } : null
+  };
+});
+
+// ✅ Redux selectors work with standardized IDs
+export const selectSavedRoleByRoleId = (roleId: string) => (state: RootState) =>
+  state.savedRoles.savedRoles.find(role => role.roleId === roleId);
+
+// ✅ Components use unified Redux state
+const { isApplied, isSaved } = useSavedRoleStatus(role.id); // Works consistently
+```
+
+**AI Search Terms**: data inconsistency, dual source, state mismatch, role ID transformation, Redux state sync  
+**Prevention Checklist**: Single data source, consistent ID format, unified state management, API response standardization  
+
+---
+
 ## Prevention Patterns by Component
 
 ### Redux State Management
@@ -176,6 +223,9 @@ const transformedData = {
 - [ ] Error handling for all endpoints
 - [ ] Response transformation when needed
 - [ ] Loading states managed properly
+- [ ] Consistent ID format across all endpoints
+- [ ] Single source of truth for shared data
+- [ ] Unified state management approach
 
 ### Database Operations
 - [ ] Use includes for related data
