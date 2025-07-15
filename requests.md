@@ -12,6 +12,7 @@
   - [Feature Request #18: Style-First Button System Refactoring](#feature-request-18-style-first-button-system-refactoring)
   - [Feature Request #19: Role Card Consistency Between Saved Roles and Search Results](#feature-request-19-role-card-consistency-between-saved-roles-and-search-results)
   - [Feature Request #20: Instant Navigation Response with Loading States](#feature-request-20-instant-navigation-response-with-loading-states)
+  - [Feature Request #21: Simplify Developer Dashboard UI Elements](#feature-request-21-simplify-developer-dashboard-ui-elements)
 - [📋 Recently Completed Features](#-recently-completed-features)
   - [Feature Request #17: "Mark as Applied" Role Tracking System](#feature-request-17-mark-as-applied-role-tracking-system)
   - [Feature Request #8: Button Styling Consistency and Coherence](#feature-request-8-button-styling-consistency-and-coherence)
@@ -58,7 +59,7 @@
 - ✅ Post-signup success message on sign-in page → **Moved to Feature Request #11**
 - ✅ Gamified developer welcome dashboard → **Moved to Feature Request #12**
 - ✅ Developer Dashboard UI/UX Simplification → **Moved to Feature Request #13**
-
+- ✅ Simplify Developer Dashboard UI Elements → **Moved to Feature Request #21**
 
 
 ---
@@ -122,7 +123,7 @@
 
 ### Feature Request #11: Post-Signup Success Message on Sign-In Page
 
-**Status:** Planning Phase
+**Status:** Ready for Development
 **Priority:** Medium
 
 **Goal:** To provide clear feedback to a user after they have successfully created an account, informing them that their account is ready and they can now sign in.
@@ -139,34 +140,36 @@
 
 1.  **Backend (Sign-up API):** The registration API route (`/api/auth/register/route.ts`) will, upon successful account creation, redirect the user to the sign-in page with a success query parameter (e.g., `/auth/signin?signup=success`).
 2.  **Frontend (Sign-in Page):** The sign-in page (`/app/auth/signin/page.tsx`) will read the query parameter from the URL.
-3.  **UI Display:** If the `signup=success` parameter is present, a dismissible success alert will be rendered on the page, displaying the confirmation message.
+3.  **UI Display:** If the `signup=success` parameter is present, render a subtle **Success** component (or `Alert` variant="success" if no dedicated component exists) **in place of** the default heading text. This component should replace the string "Welcome to TechRec\nSign in to access your dashboard" with a concise confirmation message and may include a close/dismiss action.
 
 **Acceptance Criteria:**
 
 - [ ] On successful registration, the user is redirected to `/auth/signin?signup=success`.
 - [ ] The sign-in page checks for the `signup=success` query parameter on load.
-- [ ] If the parameter is present, an alert component is displayed with the text: "Your account has been successfully created. You can now sign in with your email."
-- [ ] The alert is styled with a success theme (e.g., green background/border).
-- [ ] The message should be displayed prominently under the "Welcome to TechRec" heading.
+- [ ] If the parameter is present, render a subtle **Success** component (or `Alert` variant="success" if no dedicated component exists) **in place of** the default heading text. This component should replace the string "Welcome to TechRec\nSign in to access your dashboard" with a concise confirmation message and may include a close/dismiss action.
+- [ ] The success component uses the existing success styling (Alert variant="success" or dedicated Success component).
+- [ ] The default heading text ("Welcome to TechRec / Sign in to access your dashboard") is replaced by the success message component.
 - [ ] The message does not appear on subsequent visits to the sign-in page (i.e., when the query parameter is not present).
 
 **Questions to Resolve:**
 
-- [ ] What should be the exact styling of the success message? Should it use the existing `Alert` component?
-- [ ] Should the success message be dismissible by the user? (Recommended: Yes, for a cleaner UI after they've read it).
-- [ ] Are there different sign-in pages for different user types (e.g., developer vs. company) that need this logic, or does `app/auth/signin/page.tsx` handle all cases?
+**Questions Resolved:**
+
+- [x] **Styling of success message**: ✅ Use existing *Success* component (or `Alert` variant="success") for styling.
+- [x] **Dismissibility & placement**: ✅ Message should be subtle, replace the default heading text on the sign-in component, and can be dismissible.
+- [x] **Multiple sign-in pages?** ✅ Only one sign-in page exists (`app/auth/signin/page.tsx`), so implementation targets that file.
 
 **Dependencies:**
 
 - [ ] Modification of `app/api/auth/register/route.ts` to include the redirect with a query parameter.
 - [ ] Modification of `app/auth/signin/page.tsx` to handle the query parameter and display the message.
-- [ ] An existing, styleable `Alert` component for displaying the message.
+- [ ] An existing, styleable **Success** component (or `Alert` component with success variant) for displaying the message.
 
 ---
 
 ### Feature Request #16: GitHub-Style Application Activity Visualization Grid
 
-**Status:** Planning Phase (Blocked - Dependency Required)
+**Status:** Ready for Development
 **Priority:** Medium
 
 **Goal:** Create a GitHub-style contribution heatmap that visualizes job application activity over time, showing which days developers applied for jobs with color intensity indicating application volume.
@@ -234,23 +237,15 @@
 - [x] **Dashboard Placement**: ✅ Under roadmap in developer dashboard
 - [x] **Historical Data**: ✅ One year of aggregated data
 
-**Critical Dependency Identified:**
+✅ **Blocking Dependency Resolved**: "Mark as Applied" role tracking system completed ([Feature Request #17](#feature-request-17-"mark-as-applied"-role-tracking-system)). This feature now has the required application data source.
 
-⚠️ **BLOCKING ISSUE**: This feature requires a **"Mark as Applied" feature** that doesn't currently exist. The user identified that there's no way to track when developers apply for roles, which is essential for the heatmap data.
+**Updated Dependencies:**
 
-**Required Prerequisite Feature:**
-- **New Feature Request Needed**: "Mark as Applied" role tracking system
-- **Scope**: Allow users to easily mark roles as "applied" and connect them to their developer account
-- **Priority**: Must be completed before this heatmap feature can be implemented
-
-**Dependencies:**
-
-- [ ] **🚨 NEW FEATURE REQUIRED**: "Mark as Applied" role tracking system (blocking dependency)
-- [ ] New API endpoint `/api/developer/application-activity`
-- [ ] New component `ApplicationHeatmap.tsx` with calendar grid logic
-- [ ] Integration into developer dashboard layout (under roadmap)
-- [ ] Daily aggregation logic for application counts
-- [ ] DaisyUI theme integration for color scheme
+ - [ ] New API endpoint `/api/developer/application-activity`
+ - [ ] New component `ApplicationHeatmap.tsx` with calendar grid logic
+ - [ ] Integration into developer dashboard layout (under roadmap)
+ - [ ] Daily aggregation logic for application counts
+ - [ ] DaisyUI theme integration for color scheme
 
 ---
 
@@ -564,6 +559,64 @@ Based on the answered questions, comprehensive research must be conducted on:
 - [ ] Performance optimizations for smooth transitions
 - [ ] Updated client-layout.tsx with enhanced navigation links
 - [ ] Route-level loading.tsx files for consistent loading experience
+
+---
+
+### Feature Request #21: Simplify Developer Dashboard UI Elements
+
+**Status:** Planning Phase
+**Priority:** Medium
+
+**Goal:** Streamline the developer dashboard by removing non-essential copy and UI elements to improve clarity and reduce cognitive load.
+
+**User Story:** As a developer, when I open my dashboard I want to immediately see only the most relevant progress and points information, uncluttered by redundant text or actions, so that I can focus on my job-search journey without distraction.
+
+**Success Metrics:**
+
+- Reduced visual clutter measured via heuristic evaluation scores
+- Faster average time (-X%) for users to locate key stats in usability testing
+- Lower bounce rate for dashboard page
+
+**Technical Implementation Plan:**
+
+1. **OnboardingRoadmap / “In Progress” Card**
+   - Remove header subtitle block: “Your Journey to Success Complete these milestones to unlock your full potential on TechRec”.
+   - Remove progress subtitle “Your Progress 3 of 5 milestones completed”.
+   - Remove tooltip/subtitle under each milestone card (“Start your journey by uploading your CV for AI analysis”).
+
+2. **PointsBalance Component**
+   - Omit subscription tier label.
+   - Omit “earned”, “used”, and “recent activity” stats rows.
+   - Add tooltip on the circular points indicator that shows “Points available”.
+
+3. **Quick Actions Card**
+   - Delete the entire Quick Actions card (buttons and container) from the right column.
+
+4. **State Management & API**
+   - No changes to data-fetching API shape; components will simply stop rendering unused fields.
+   - Ensure selectors used by removed components are still referenced elsewhere or clean up unused code in follow-up refactor.
+
+**Acceptance Criteria:**
+
+- [ ] Dashboard renders with no “Quick Actions” section.
+- [ ] “In Progress” card shows roadmap only; no additional subtitles or progress text.
+- [ ] Each milestone card no longer contains subtitle text.
+- [ ] PointsBalance shows only circular balance with tooltip “Points available” on hover; no subscription tier, earned, used, or recent activity rows.
+- [ ] All removed UI elements are absent across desktop and mobile breakpoints.
+- [ ] No regressions in dashboard load performance or errors.
+
+**Questions to Resolve:**
+
+- Should the tooltip follow existing DaisyUI tooltip pattern or custom implementation?
+- Is any of the removed data required elsewhere (e.g., subscription tier for upsell messaging)?
+- Do we need fallback text for screen-readers when removing subtitles?
+
+**Dependencies:**
+
+- Update to `components/dashboard/OnboardingRoadmap.tsx` for copy removal.
+- Update to `components/dashboard/PointsBalance.tsx` for field removal and tooltip.
+- Modification to `components/dashboard/DashboardClient.tsx` layout to drop Quick Actions card.
+- UI/UX review to validate simplified layout meets design guidelines.
 
 ---
 
