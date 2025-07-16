@@ -61,6 +61,18 @@ export async function GET(request: NextRequest) {
             description: true,
             createdAt: true,
           }
+        },
+        cvs: {
+          orderBy: { uploadDate: 'desc' },
+          select: {
+            id: true,
+            filename: true,
+            originalName: true,
+            size: true,
+            uploadDate: true,
+            status: true,
+            mimeType: true,
+          }
         }
       }
     });
@@ -85,7 +97,17 @@ export async function GET(request: NextRequest) {
           earnedAt: ub.earnedAt,
           badge: ub.badge
         })),
-        recentTransactions: developer.pointsTransactions
+        recentTransactions: developer.pointsTransactions,
+        cvs: developer.cvs.map(cv => ({
+          id: cv.id,
+          filename: cv.filename,
+          originalName: cv.originalName,
+          size: cv.size,
+          uploadDate: cv.uploadDate,
+          status: cv.status,
+          mimeType: cv.mimeType
+        })),
+        cvCount: developer.cvs.length
       }
     });
 

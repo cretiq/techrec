@@ -16,7 +16,12 @@ import {
   Plus,
   AlertCircle,
   CheckCircle,
-  Loader2
+  Loader2,
+  FileText,
+  Trash2,
+  Download,
+  Calendar,
+  HardDrive
 } from 'lucide-react';
 
 interface Developer {
@@ -39,6 +44,16 @@ interface Developer {
       tier: string;
     };
   }>;
+  cvs: Array<{
+    id: string;
+    filename: string;
+    originalName: string;
+    size: number;
+    uploadDate: Date;
+    status: string;
+    mimeType: string;
+  }>;
+  cvCount: number;
 }
 
 interface Suggestion {
@@ -83,6 +98,17 @@ export function GamificationAdminClient() {
     description: string;
   }>>([]);
   const [selectedBadge, setSelectedBadge] = useState<string>('');
+
+  // CV management
+  const [cvToDelete, setCvToDelete] = useState<{
+    id: string;
+    filename: string;
+    originalName: string;
+    size: number;
+    uploadDate: Date;
+  } | null>(null);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeletingCv, setIsDeletingCv] = useState(false);
 
   // Debounced search for suggestions
   useEffect(() => {
@@ -287,6 +313,60 @@ export function GamificationAdminClient() {
     loadBadges();
   }, []);
 
+  // Delete CV
+  const deleteCv = async (cvId: string) => {
+    setIsDeletingCv(true);
+    setOperation({ type: 'loading', message: 'Deleting CV...' });
+    
+    try {
+      const response = await fetch(`/api/admin/gamification/cv/${cvId}`, {
+        method: 'DELETE'
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setOperation({ type: 'success', message: 'CV deleted successfully' });
+        // Refresh developer data
+        searchDeveloper();
+      } else {
+        setOperation({ type: 'error', message: data.error || 'Failed to delete CV' });
+      }
+    } catch (error) {
+      setOperation({ type: 'error', message: 'Error deleting CV' });
+    } finally {
+      setIsDeletingCv(false);
+      setIsDeleteConfirmOpen(false);
+      setCvToDelete(null);
+    }
+  };
+
+  // Handle CV deletion confirmation
+  const handleDeleteCvClick = (cv: any) => {
+    setCvToDelete(cv);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  // Format file size
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Format date
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Developer Search */}
@@ -408,6 +488,10 @@ export function GamificationAdminClient() {
                   <div className="text-sm text-base-content/70">Subscription</div>
                   <Badge variant="outline">{selectedDeveloper.subscriptionTier}</Badge>
                 </div>
+                <div>
+                  <div className="text-sm text-base-content/70">CVs Uploaded</div>
+                  <div className="font-semibold">{selectedDeveloper.cvCount}</div>
+                </div>
               </div>
               
               {/* Badges */}
@@ -430,10 +514,11 @@ export function GamificationAdminClient() {
 
           {/* Admin Actions */}
           <Tabs defaultValue="points" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="points">Points</TabsTrigger>
               <TabsTrigger value="xp">XP</TabsTrigger>
               <TabsTrigger value="badges">Badges</TabsTrigger>
+              <TabsTrigger value="cvs">CV Management</TabsTrigger>
             </TabsList>
 
             <TabsContent value="points" className="space-y-4">
@@ -574,6 +659,144 @@ export function GamificationAdminClient() {
                   </Button>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="cvs" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    CV Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {selectedDeveloper.cvs.length === 0 ? (
+                    <div className="text-center py-8">
+                      <FileText className="w-12 h-12 mx-auto text-base-content/40 mb-4" />
+                      <p className="text-base-content/70">No CVs uploaded yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="text-sm text-base-content/70 mb-4">
+                        Total CVs: {selectedDeveloper.cvCount}
+                      </div>
+                      
+                      {/* CV Table */}
+                      <div className="overflow-x-auto">
+                        <table className="table table-zebra w-full">
+                          <thead>
+                            <tr>
+                              <th className="w-[30%]">File Name</th>
+                              <th className="w-[20%]">Size</th>
+                              <th className="w-[20%]">Upload Date</th>
+                              <th className="w-[15%]">Status</th>
+                              <th className="w-[15%]">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedDeveloper.cvs.map((cv) => (
+                              <tr key={cv.id}>
+                                <td>
+                                  <div className="flex items-center gap-2">
+                                    <FileText className="w-4 h-4 text-primary" />
+                                    <div>
+                                      <div className="font-medium text-sm">{cv.originalName}</div>
+                                      <div className="text-xs text-base-content/60">{cv.filename}</div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="flex items-center gap-1">
+                                    <HardDrive className="w-3 h-3 text-base-content/60" />
+                                    <span className="text-sm">{formatFileSize(cv.size)}</span>
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3 text-base-content/60" />
+                                    <span className="text-sm">{formatDate(cv.uploadDate)}</span>
+                                  </div>
+                                </td>
+                                <td>
+                                  <Badge 
+                                    variant={cv.status === 'COMPLETED' ? 'default' : cv.status === 'PENDING' ? 'secondary' : 'destructive'}
+                                    className="text-xs"
+                                  >
+                                    {cv.status}
+                                  </Badge>
+                                </td>
+                                <td>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDeleteCvClick(cv)}
+                                    disabled={isDeletingCv}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Confirmation Modal */}
+              {isDeleteConfirmOpen && cvToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-base-100 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <AlertCircle className="w-6 h-6 text-red-500" />
+                      <h3 className="text-lg font-semibold">Confirm CV Deletion</h3>
+                    </div>
+                    
+                    <div className="space-y-3 mb-6">
+                      <p className="text-base-content/80">
+                        Are you sure you want to delete this CV? This action cannot be undone.
+                      </p>
+                      
+                      <div className="bg-base-200 p-3 rounded-md">
+                        <div className="text-sm">
+                          <div><strong>File:</strong> {cvToDelete.originalName}</div>
+                          <div><strong>Size:</strong> {formatFileSize(cvToDelete.size)}</div>
+                          <div><strong>Uploaded:</strong> {formatDate(cvToDelete.uploadDate)}</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3 justify-end">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setIsDeleteConfirmOpen(false);
+                          setCvToDelete(null);
+                        }}
+                        disabled={isDeletingCv}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => deleteCv(cvToDelete.id)}
+                        disabled={isDeletingCv}
+                        className="flex items-center gap-2"
+                      >
+                        {isDeletingCv ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                        Delete CV
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
