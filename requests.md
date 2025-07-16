@@ -47,6 +47,7 @@
 - **Comprehensive Documentation Architecture & Markdown File Organization** → **Moved to Feature Request #15**
 - **Role Card Consistency Between Saved Roles and Search Results** → **Moved to Feature Request #19**
 - **Instant Navigation Response with Loading States** → **Moved to Feature Request #20**
+- **Admin CV Deletion Feature for GamificationAdminClient** → **Moved to Feature Request #22**
 - 
 - ✅ Smart application routing and Easy Apply detection → **Moved to Feature Request #2**
 - ✅ Enhanced company filtering (descriptions, specialties, names, industries) → **Moved to Feature Request #3**
@@ -66,60 +67,120 @@
 
 ## 💭 Active Feature Requests
 
+### Feature Request #22: Admin CV Deletion Feature for GamificationAdminClient
 
-### Feature Request #9: Comprehensive CV Data Persistence to Developer Database Profile
+**Status:** Ready for Development
+**Priority:** Medium
 
-**Status:** Incomplete / Buggy
-**Priority:** Critical
+**Goal:** Add a comprehensive CV deletion feature to the GamificationAdminClient that allows admins to delete a developer's CV and its associated S3 file, with proper validation, confirmation dialogs, and complete cleanup of related database records.
 
-**Goal:** Fix the broken data persistence flow to ensure all extracted CV data is automatically and seamlessly saved to the developer's database profile, both on initial upload and when AI-driven suggestions are accepted.
+**User Story:** As an admin using the GamificationAdminClient, when I search for a developer I want to see their uploaded CVs and have the ability to delete a specific CV (including its S3 file and all related database records) so that I can help users with data cleanup requests, handle privacy concerns, or resolve storage issues.
 
-**User Story (Revised):** As a developer, when I upload my CV or accept AI-generated improvements, I expect all my information (skills, experience, education, contact details, achievements) to be automatically and correctly saved to my profile in the background. This should happen seamlessly so I can immediately benefit from accurate role matching and profile completion without extra steps or manual data entry.
+**Success Metrics:**
 
-**Identified Bugs / Gaps:**
+- Admins can view all CVs associated with a selected developer
+- CV deletion removes both database records and S3 files completely
+- Proper confirmation dialogs prevent accidental deletions
+- All related database records (CvAnalysis, etc.) are cleaned up
+- Clear feedback on deletion success/failure status
+- Audit trail for admin actions on CV deletions
 
-1.  **Initial Upload Sync Failure**: The background sync (`syncCvDataToProfile`) after a new CV is uploaded is failing silently. While the `CvAnalysis` record is created, the data is **not** propagated to the developer's main profile tables (`Experience`, `Education`, `DeveloperSkill`, etc.).
-2.  **"AI Suggestions" Don't Persist**: When a user accepts AI suggestions on the CV analysis page, the changes are only reflected in the local Redux state. There is **no API call** to update the `CvAnalysis` record in the database or to trigger a profile sync with the new information.
+**Technical Approach:**
 
-**🔧 REVISED IMPLEMENTATION PLAN:**
+**Current System Analysis:**
+- ✅ **CV Deletion Infrastructure Exists**: `/api/cv/[id]` DELETE endpoint already implements complete CV deletion (database + S3)
+- ✅ **S3 Integration Ready**: `utils/s3Storage.ts` has `deleteFileFromS3` function
+- ✅ **Database Operations**: `utils/cvOperations.ts` has `deleteCV` function with transaction support
+- ✅ **Admin API Pattern**: Existing admin endpoints follow consistent authentication/authorization pattern
 
-**Phase 1: Fix and Verify Background Sync Utility (1 day)**
+**Implementation Plan:**
 
-**File: `utils/backgroundProfileSync.ts`**
+1. **New Admin API Endpoint:**
+   - **File**: `app/api/admin/gamification/cv/[id]/route.ts`
+   - **Method**: DELETE
+   - **Authentication**: Session validation + admin email check (consistent with existing pattern)
+   - **Validation**: Verify CV exists and get developer ownership info
+   - **Action**: Call existing `deleteCV` utility function
+   - **Audit Log**: Record admin action with CV metadata (filename, originalName, size, uploadDate)
+   - **Response**: Success/error status with detailed messaging
 
-- [ ] **Investigate & Fix**: Thoroughly debug the existing `syncCvDataToProfile` function. The logic likely fails during data transformation (e.g., incorrect date formats, enum mismatches, or invalid schema mapping). Add robust logging to pinpoint the exact failure point.
-- [ ] **Data Transformation**: Ensure all CV analysis fields are correctly mapped to the `UpdateProfilePayloadSchema`. Pay close attention to nested objects, arrays, and date/enum conversions.
-- [ ] **Error Handling**: Enhance error handling to log detailed error messages to the server console instead of failing silently. This is critical for future debugging.
-- [ ] **Testing**: Create a standalone test script (`scripts/test-profile-sync.js`) to invoke this function with sample `CvAnalysis` data to verify it works reliably before integrating it back into the API routes.
+2. **Enhanced GamificationAdminClient UI:**
+   - **New Tab**: Add "CV Management" tab to existing Tabs component
+   - **CV List Display**: Show all CVs for selected developer with metadata (filename, upload date, size, status)
+   - **Individual Delete Buttons**: One delete button per CV with loading states
+   - **Confirmation Dialog**: Modal confirmation with CV details before deletion
+   - **Bulk Actions**: Optional future enhancement for multiple CV deletion
 
-**Phase 2: Implement "Accept AI Suggestions" Workflow (1.5 days)**
+3. **Developer CV Data Integration:**
+   - **Enhanced Developer Search**: Extend `/api/admin/gamification/developer` to include CV list
+   - **CV Count Display**: Show total CVs in developer overview section
+   - **Real-time Updates**: Refresh CV list after successful deletion
 
-- [ ] **New API Endpoint**: Create a new endpoint: `PUT /api/cv-analysis/[id]`. This endpoint will accept a new `analysisResult` in its request body.
-    - **File**: `app/api/cv-analysis/[id]/route.ts` (implement the `PUT` handler).
-- [ ] **Backend Logic**:
-    - The `PUT` handler must first validate the incoming data against the `UpdateCvAnalysisSchema`.
-    - It will then update the corresponding `CvAnalysis` document in the database with the new `analysisResult`.
-    - **Crucially**, after successfully updating the database, it must call the now-fixed `syncCvDataToProfile` function to ensure the developer's profile is updated with the new information.
-- [ ] **Frontend Integration**:
-    - In `components/analysis/AnalysisResultDisplay.tsx`, modify the `handleAcceptSuggestion` function.
-    - When a user accepts a change, it should make a `PUT` request to the new `/api/cv-analysis/[id]` endpoint, sending the updated `analysisResult` object.
-    - Upon a successful API response, it should update the local Redux state to reflect that the changes are now permanently saved.
+4. **UI/UX Components:**
+   - **CVListTable**: Display CVs in tabular format with key metadata
+   - **DeleteCVButton**: Individual delete button with confirmation flow
+   - **ConfirmationModal**: Reusable modal for deletion confirmation
+   - **Operation Status**: Integrate with existing operation status system
 
-**Phase 3: Re-integrate and Verify End-to-End Flow (1 day)**
+**Acceptance Criteria:**
 
-- [ ] **CV Upload Routes**: Once `backgroundProfileSync.ts` is fixed and verified, re-test the full upload flow for both `/api/cv/upload/route.ts` and `/api/cv/upload-gemini/route.ts` to confirm the initial sync works as expected.
-- [ ] **CV Analysis Update Route**: Verify that editing a CV analysis via the "Accept AI Suggestions" feature correctly updates the database and syncs the profile.
-- [ ] **Remove Redundant Code**: The `save-version` route might become obsolete or need refactoring. Analyze if its functionality is covered by the new `PUT` endpoint and simplify if possible.
+- [ ] **New "CV Management" tab** appears in GamificationAdminClient Tabs component
+- [ ] **CV list display** shows all CVs for selected developer with filename, upload date, size, and status
+- [ ] **Individual delete buttons** for each CV with loading states and proper styling
+- [ ] **Confirmation modal** appears before deletion with CV details and "Are you sure?" messaging
+- [ ] **Admin API endpoint** `/api/admin/gamification/cv/[id]` handles DELETE requests with proper validation
+- [ ] **Complete deletion** removes both database records and S3 files using existing infrastructure
+- [ ] **Related records cleanup** ensures CvAnalysis and other linked records are properly deleted
+- [ ] **Success/error feedback** integrates with existing operation status display system
+- [ ] **Real-time updates** refresh CV list after successful deletion
+- [ ] **Developer overview** shows updated CV count after deletion
+- [ ] **Audit logging** records admin actions for CV deletions with admin email, timestamp, and basic CV metadata (filename, originalName, size, uploadDate)
+- [ ] **Error handling** provides clear feedback for common failure scenarios (CV not found, S3 deletion failure, etc.)
 
-**✅ REVISED ACCEPTANCE CRITERIA:**
+**Design Considerations:**
 
-- [ ] **Initial Upload Sync**: Uploading a new CV successfully populates the developer's `Experience`, `Education`, and `DeveloperSkill` tables in the database.
-- [ ] **Accept Suggestions Persistence**: Accepting an AI suggestion on the CV analysis page triggers a `PUT` request, updates the `CvAnalysis` record, and syncs the changes to the developer's profile.
-- [ ] **Data Integrity**: The developer's profile in the database accurately reflects the data from the latest version of their CV analysis.
-- [ ] **Robust Error Logging**: Any failure in the background sync process is logged with detailed error messages on the server, but does **not** break the user-facing operation (like CV upload).
-- [ ] **No User-Facing Changes**: The entire synchronization process remains invisible to the user.
+- **Leverage Existing Infrastructure**: Use proven `deleteCV` utility and S3 operations
+- **Consistent Admin Patterns**: Follow established admin API authentication and UI patterns
+- **Safe Deletion Flow**: Multiple confirmation steps to prevent accidental data loss
+- **Complete Cleanup**: Ensure all related records are properly deleted in transaction
+- **Performance**: Minimal impact on existing admin dashboard functionality
 
----
+**Questions to Resolve:**
+
+**Questions Resolved:**
+
+- [x] **Does a CV deletion endpoint already exist?** ✅ **RESOLVED**: Yes, `/api/cv/[id]` DELETE endpoint exists with complete database and S3 deletion functionality via `deleteCV` utility.
+
+- [x] **How is S3 file deletion currently handled?** ✅ **RESOLVED**: `utils/s3Storage.ts` provides `deleteFileFromS3` function, already integrated in `deleteCV` utility with proper error handling.
+
+- [x] **What related database records need cleanup?** ✅ **RESOLVED**: `deleteCV` utility already handles CvAnalysis record deletion in transaction with proper cascade rules.
+
+- [x] **What admin authentication pattern should be used?** ✅ **RESOLVED**: Follow existing pattern: session validation + hardcoded admin email list (consistent with other admin endpoints).
+
+- [x] **Should this be a new tab or integrate with existing sections?** ✅ **RESOLVED**: New "CV Management" tab in existing Tabs component for clear separation and feature discoverability.
+
+- [x] **How to handle bulk CV deletion vs individual deletion?** ✅ **RESOLVED**: Start with individual deletion per CV for safety and simplicity. Bulk actions can be future enhancement.
+
+- [x] **What confirmation flow provides adequate safety?** ✅ **RESOLVED**: Modal confirmation dialog with CV details (filename, upload date) and explicit "Are you sure?" messaging before deletion.
+
+- [x] **Should deleted CVs be soft-deleted or permanently removed?** ✅ **RESOLVED**: Hard delete (maintain consistency with existing system pattern for permanent CV removal).
+
+- [x] **What audit logging level is required?** ✅ **RESOLVED**: Include basic CV metadata (filename, originalName, size, uploadDate) along with admin action details in audit trail.
+
+- [x] **Should there be any admin role restrictions?** ✅ **RESOLVED**: Standard admin access sufficient - maintain consistency with existing admin features (no elevated privileges required).
+
+**Dependencies:**
+
+- [ ] **Enhanced developer API endpoint** to include CV list data in search results
+- [ ] **New admin CV deletion endpoint** following existing authentication patterns
+- [ ] **CV Management tab UI** integrated into existing GamificationAdminClient component
+- [ ] **CVListTable component** for displaying developer CVs with metadata
+- [ ] **DeleteCVButton and ConfirmationModal** components for safe deletion flow
+- [ ] **Operation status integration** for deletion feedback using existing system
+- [ ] **Real-time state updates** to refresh CV list after successful deletion
+- [ ] **Audit logging implementation** for admin action tracking with CV metadata (filename, originalName, size, uploadDate)
+- [ ] **Error handling enhancements** for comprehensive failure scenario coverage
+- [ ] **Testing plan** for both API endpoints and UI components
 
 ### Feature Request #11: Post-Signup Success Message on Sign-In Page
 
