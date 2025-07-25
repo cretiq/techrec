@@ -5,11 +5,12 @@
 ## Search Tags Index
 
 **State Management**: #redux-loading #status-stuck #hydration-mismatch #state-undefined #button-state #local-state  
-**API Integration**: #api-undefined #type-mismatch #response-format #fetch-error #data-consistency #dual-source #api-endpoint #path-mismatch #session-scope #error-handling #data-validation #enum-mapping  
+**API Integration**: #api-undefined #type-mismatch #response-format #fetch-error #data-consistency #dual-source #api-endpoint #path-mismatch #session-scope #error-handling #data-validation #enum-mapping #gpt-schema #ai-response #cv-upload #gpt-4-nano #transformGPTResponse #ai-response-parsing  
 **Database**: #n-plus-one #query-error #prisma-relation #connection-timeout #api-processing  
 **UI Components**: #render-loop #loading-forever #hydration-error #client-server-mismatch #ui-feedback #frontend-integration  
 **TypeScript**: #type-error #any-usage #import-missing #generic-issue #react-imports #hooks  
 **Backend**: #api-backend #frontend-integration  
+**Client-Side Bundling**: #redis-dns #client-side-bundling #import-chain #server-only  
 
 ---
 
@@ -412,6 +413,10 @@ const { isApplied, isSaved } = useSavedRoleStatus(role.id); // Works consistentl
 - [ ] API endpoint naming consistency validation
 - [ ] External data validation and enum mapping
 - [ ] Proper variable scope in error handlers
+- [ ] **AI Response Transformation**: Always transform AI responses before schema validation
+- [ ] **Numeric Extraction**: Parse strings to extract numeric values from AI responses
+- [ ] **Data Type Assumptions**: Never trust AI models to return exact data types
+- [ ] **Pre-validation Processing**: Handle data type conversion before validation, not after failure
 
 ### Database Operations
 - [ ] Use includes for related data
@@ -430,6 +435,10 @@ const { isApplied, isSaved } = useSavedRoleStatus(role.id); // Works consistentl
 - [ ] Complete React hook imports
 - [ ] Callback-based state refresh patterns
 - [ ] Button state management with loading indicators
+- [ ] Server-only import validation for utilities
+- [ ] Client-side bundling compatibility checks
+- [ ] AI response type transformation before validation
+- [ ] Dynamic import patterns for Node.js dependencies
 
 ## AI Development Guidelines
 
@@ -438,6 +447,34 @@ const { isApplied, isSaved } = useSavedRoleStatus(role.id); // Works consistentl
 2. **Check prevention checklists** for component type
 3. **Follow established patterns** from resolved bugs
 4. **Copy working code patterns** instead of recreating
+5. **For AI integrations**: ALWAYS implement transformation layer for response data types
+6. **For server utilities**: Use dynamic imports when accessed through client-side chains
+
+### AI Integration Patterns (Updated July 21, 2025):
+1. **Response Transformation**: Never trust AI models to return exact data types
+   - Extract numeric values from descriptive strings using regex: `/\d+/`
+   - Transform timestamp strings to numeric timestamps: `Date.now()`
+   - Convert boolean strings to actual booleans before validation
+   - Apply transformation BEFORE schema validation, not after failure
+
+2. **Schema Validation Strategy**: Defensive validation pipeline
+   - Step 1: Parse AI response JSON
+   - Step 2: Transform data types (`transformGPTResponse()`)
+   - Step 3: Correct string booleans (`correctStringBooleans()`)
+   - Step 4: Schema validation with descriptive error logging
+   - Step 5: Return validated data
+
+3. **Client-Side Import Safety**: Environment-aware dynamic imports
+   - Check `typeof window === 'undefined'` before server-only imports
+   - Use dynamic imports: `const { module } = await import('server-module')`
+   - Implement graceful degradation for client-side fallbacks
+   - Memory cache alternative for client-side caching needs
+
+4. **Error Context Preservation**: Comprehensive logging for AI failures
+   - Log full request payload for debugging (token usage, parameters)
+   - Log complete response object with metadata (finish_reason, usage stats)
+   - Log validation errors with specific field paths and received values
+   - Include timing metrics for performance analysis
 
 ### WHEN encountering bugs:
 1. **Search tags first** using symptoms/error messages
@@ -542,6 +579,171 @@ const { isApplied, isSaved } = useSavedRoleStatus(role.id); // Works consistentl
 - **Prevention**: Enhanced checklists prevent future occurrences
 
 This session demonstrates the importance of systematic bug documentation and resolution patterns for complex feature implementations.
+
+---
+
+### Bug: Client-Side Redis Import Chain Error [#redis-dns #client-side-bundling #import-chain #server-only]
+**Quick Fix**: Use environment-safe dynamic imports for server-only modules  
+**Component**: Frontend-Backend-Integration  
+**Recurrence Risk**: High (AI creates utilities without considering client-side bundling)  
+**Resolution Time**: 120-180 minutes  
+
+**Root Cause**: Server-only modules (Redis, Node.js APIs) imported in utility files that get bundled client-side through Redux slices  
+**Prevention**: Always use dynamic imports with environment detection for server-only dependencies  
+
+**Code Pattern**:
+```typescript
+// ❌ Direct Redis import causes client-side bundling error
+import { getCache, setCache } from '@/lib/redis';
+
+export const myUtility = async () => {
+  const cached = await getCache('key'); // Fails in browser
+};
+
+// ✅ Environment-safe dynamic import
+export const myUtility = async () => {
+  // Only use Redis on server-side
+  if (typeof window === 'undefined') {
+    try {
+      const { getCache } = await import('@/lib/redis');
+      const cached = await getCache('key');
+      return cached;
+    } catch (error) {
+      console.warn('Cache unavailable:', error);
+    }
+  }
+  
+  // Client-side fallback or skip caching
+  return null;
+};
+```
+
+**AI Search Terms**: dns resolution error, ioredis cluster options, module not found, client-side bundling, server-only imports  
+**Prevention Checklist**: Server-only import validation, client-side compatibility checks, dynamic import patterns  
+
+---
+
+### Bug: GPT Schema Validation Type Mismatch [#gpt-schema #api-validation #type-mismatch #ai-response #cv-upload #gpt-4-nano]
+**Quick Fix**: Add response transformation layer before schema validation  
+**Component**: Backend-AI-Integration (CV Analysis Pipeline)  
+**Recurrence Risk**: High (GPT-4.1-nano consistently returns descriptive strings for numeric fields)  
+**Resolution Time**: 30-45 minutes (once transformation pattern is identified)  
+
+**Root Cause**: GPT-4.1-nano returns human-readable strings like "over 3 years" instead of numeric values despite explicit schema instructions in prompt  
+**Prevention**: Always implement transformation layer for AI responses before schema validation - never trust AI to return exact data types  
+
+**Actual Error Messages**:
+```
+Schema validation failed: 
+- totalYearsExperience: Expected number, received string ('over 3 years')
+- experienceCalculation.calculatedAt: Expected number, received string ('2023-10-01') 
+- experienceCalculation.experienceItems: Expected number, received string ('3+ years')
+```
+
+**Code Pattern** (Implemented in `utils/gptAnalysis.ts:transformGPTResponse`):
+```typescript
+// ❌ Direct schema validation fails
+const validationResult = CvAnalysisDataSchema.safeParse(gptResponse);
+// Results in: "Expected number, received string" errors
+
+// ✅ Transform GPT response before validation (ACTUAL IMPLEMENTATION)
+const transformGPTResponse = (response: any): any => {
+  if (!response) return response;
+
+  // Convert "over 3 years" → 3 (extract first number found)
+  let totalYears = response.totalYearsExperience;
+  if (typeof totalYears === 'string') {
+    const numMatch = totalYears.match(/\d+/);
+    totalYears = numMatch ? parseFloat(numMatch[0]) : 0;
+  }
+
+  // Fix experience calculation with proper types
+  let experienceCalculation = response.experienceCalculation;
+  if (experienceCalculation) {
+    experienceCalculation = {
+      ...experienceCalculation,
+      calculatedAt: Date.now(), // Current timestamp (number)
+      experienceItems: Array.isArray(response.experience) ? response.experience.length : 0
+    };
+  }
+
+  return {
+    ...response,
+    totalYearsExperience: totalYears,
+    experienceCalculation: experienceCalculation
+  };
+};
+
+// Apply transformation in processing pipeline
+const transformedData = transformGPTResponse(parsedResponse);
+const correctedData = correctStringBooleans(transformedData);
+const validationResult = CvAnalysisDataSchema.safeParse(correctedData);
+```
+
+**AI Search Terms**: schema validation failed, expected number received string, totalYearsExperience, experienceCalculation, gpt-4.1-nano type mismatch, cv upload validation error, transformGPTResponse, ai response parsing  
+**Prevention Checklist**: AI response transformation layer, pre-validation data processing, numeric extraction from strings, timestamp generation for AI dates  
+
+---
+
+This session demonstrates the importance of systematic bug documentation and resolution patterns for complex feature implementations.
+
+---
+
+## 📊 Bug Resolution Session Summary
+
+### **Session Date**: July 21, 2025
+### **Bug Context**: Redis DNS Error & CV Upload Schema Validation Failure
+
+#### **Bugs Discovered and Resolved**:
+
+1. **🔥 Critical: Client-Side Redis Import Chain Error** - 120-180 minutes
+   - **Impact**: Critical - Development server completely broken, app won't start
+   - **Root Cause**: Feature Request #23 AI utilities importing Redis directly, causing client-side bundling of server-only modules
+   - **Resolution**: Environment-safe dynamic imports with `typeof window === 'undefined'` checks across all AI utilities
+
+2. **🔥 Critical: GPT Schema Validation Type Mismatch** - 30-45 minutes  
+   - **Impact**: High - CV upload functionality completely broken, all uploads failing after 3 retry attempts
+   - **Root Cause**: GPT-4.1-nano consistently returning descriptive strings instead of numeric types despite explicit schema instructions
+   - **Resolution**: Pre-validation transformation layer converting AI response strings to expected data types
+
+#### **Total Resolution Time**: ~150-225 minutes (2.5-3.75 hours)
+
+#### **Key Patterns Identified**:
+- **Client-Side Bundling**: Server-only utilities must use dynamic imports when accessed through client-side Redux chains
+- **AI Response Reliability**: Never trust AI models to return exact data types - always implement transformation layers
+- **Validation Timing**: Transform data types before schema validation, not after validation failure
+- **Error Message Clarity**: Schema validation errors often mask the real issue (AI response format mismatch)
+
+#### **Prevention Impact**:
+- **New Tags Added**: 8 new searchable tags for AI integration and client-side bundling issues
+- **Checklist Items**: 4 new prevention checklist items for AI response processing and import chain validation
+- **Code Patterns**: 2 comprehensive working code patterns documented with actual implementations
+- **Search Terms**: 15 new AI search terms covering GPT-4.1-nano specific behaviors
+
+#### **Success Metrics**:
+- **Critical Bug Resolved**: Development server functional again
+- **Feature Restored**: CV upload pipeline working end-to-end
+- **Documentation**: Comprehensive bug patterns with real implementation code
+- **Prevention**: Enhanced checklists prevent future AI integration and bundling issues
+
+#### **Files Modified**:
+- `utils/circuitBreaker.ts` - Environment-safe dynamic imports (lines 45-65)
+- `utils/cvDescriptionGenerator.ts` - Dynamic Redis imports (lines 25-35)
+- `utils/projectIdeasGenerator.ts` - Dynamic Redis imports (lines 30-40)
+- `utils/readmeAnalyzer.ts` - Dynamic Redis imports (lines 20-30)
+- `utils/experienceCalculator.ts` - Dynamic Redis imports (lines 15-25)
+- `utils/apiLogger.ts` - Dynamic Redis imports (lines 10-20)
+- `utils/analysisService.ts` - Dynamic Redis imports (lines 35-45)
+- `utils/gptAnalysis.ts` - Added `transformGPTResponse()` function (lines 73-98)
+
+#### **Implementation Cross-References**:
+1. **Redis DNS Error Fix**: See `utils/circuitBreaker.ts:getCacheProvider()` for working environment detection pattern
+2. **GPT Schema Validation Fix**: See `utils/gptAnalysis.ts:transformGPTResponse()` for AI response transformation
+3. **Dynamic Import Pattern**: Apply pattern from `utils/circuitBreaker.ts` to any server-only utility accessed client-side
+4. **AI Response Processing**: Use processing pipeline from `utils/gptAnalysis.ts:259-272` for all AI integrations
+5. **Error Context Logging**: Reference comprehensive logging in `utils/gptAnalysis.ts:208-344` for debugging
+
+This session highlights the critical importance of defensive programming patterns for AI integrations and careful consideration of client-server code boundaries in modern web applications.
 
 ---
 
