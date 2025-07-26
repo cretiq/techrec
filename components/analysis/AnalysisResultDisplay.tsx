@@ -27,6 +27,7 @@ import { Accordion, AccordionItem as ShadcnAccordionItem, AccordionTrigger, Acco
 import { CvViewer } from './display/CvViewer';
 import { SuggestionList } from './display/SuggestionList';
 import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
+import { ProjectRecommendationCard } from './ProjectRecommendationCard';
 // Import shared types
 import { 
     CvAnalysisData, 
@@ -497,6 +498,18 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   extractedText={analysisData?.cv?.extractedText} // Pass extracted text
               />
           </main>
+          
+          {/* Project Recommendation Card - Shows for junior developers (≤2 years) only */}
+          {analysisData?.totalYearsExperience !== undefined && analysisData?.isJuniorDeveloper && (
+            <ProjectRecommendationCard
+              totalYearsExperience={analysisData.totalYearsExperience}
+              isJuniorDeveloper={analysisData.isJuniorDeveloper ?? false}
+              onClose={() => {
+                // Optional: Track dismissal analytics
+                console.log('Project recommendation card dismissed');
+              }}
+            />
+          )}
        </div>
 
        {/* Action Buttons - corrected footer */}

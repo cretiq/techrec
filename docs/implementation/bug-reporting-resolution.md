@@ -5,12 +5,13 @@
 ## Search Tags Index
 
 **State Management**: #redux-loading #status-stuck #hydration-mismatch #state-undefined #button-state #local-state  
-**API Integration**: #api-undefined #type-mismatch #response-format #fetch-error #data-consistency #dual-source #api-endpoint #path-mismatch #session-scope #error-handling #data-validation #enum-mapping #gpt-schema #ai-response #cv-upload #gpt-4-nano #transformGPTResponse #ai-response-parsing  
+**API Integration**: #api-undefined #type-mismatch #response-format #fetch-error #data-consistency #dual-source #api-endpoint #path-mismatch #session-scope #error-handling #data-validation #enum-mapping #gpt-schema #ai-response #cv-upload #gpt-4-nano #transformGPTResponse #ai-response-parsing #api-request-format #data-wrapper  
 **Database**: #n-plus-one #query-error #prisma-relation #connection-timeout #api-processing  
-**UI Components**: #render-loop #loading-forever #hydration-error #client-server-mismatch #ui-feedback #frontend-integration  
+**UI Components**: #render-loop #loading-forever #hydration-error #client-server-mismatch #ui-feedback #frontend-integration #missing-import #icon-import  
 **TypeScript**: #type-error #any-usage #import-missing #generic-issue #react-imports #hooks  
 **Backend**: #api-backend #frontend-integration  
 **Client-Side Bundling**: #redis-dns #client-side-bundling #import-chain #server-only  
+**Navigation & UX**: #wrong-destination #wizard-flow #project-ideas #user-expectation  
 
 ---
 
@@ -744,6 +745,162 @@ This session demonstrates the importance of systematic bug documentation and res
 5. **Error Context Logging**: Reference comprehensive logging in `utils/gptAnalysis.ts:208-344` for debugging
 
 This session highlights the critical importance of defensive programming patterns for AI integrations and careful consideration of client-server code boundaries in modern web applications.
+
+---
+
+### Bug: API Request Structure Mismatch [#api-request-format #data-wrapper #fetch-error]
+**Quick Fix**: Wrap request parameters in `data` object to match API schema  
+**Component**: Frontend-API  
+**Recurrence Risk**: High (AI often assumes flat request structure)  
+**Resolution Time**: 15-30 minutes  
+
+**Root Cause**: Client sending parameters at top level but API expects them wrapped in `data` object according to schema validation  
+**Prevention**: Always check API route validation schemas before implementing client calls  
+
+**Code Pattern**:
+```typescript
+// ❌ Flat request structure (causes 400 error)
+const response = await fetch('/api/project-enhancement', {
+  method: 'POST',
+  body: JSON.stringify({
+    action: 'generate-project-ideas',
+    skills: userSkills,
+    experienceLevel: 'beginner'
+  })
+});
+
+// ✅ Wrapped in data object (matches API schema)
+const response = await fetch('/api/project-enhancement', {
+  method: 'POST',
+  body: JSON.stringify({
+    action: 'generate-project-ideas',
+    data: {
+      skills: userSkills,
+      experienceLevel: 'beginner'
+    }
+  })
+});
+```
+
+**AI Search Terms**: 400 error, invalid request format, project enhancement api, data wrapper, request validation  
+**Prevention Checklist**: API schema validation review, request structure alignment, endpoint parameter mapping  
+
+---
+
+### Bug: Missing Icon Import in Component [#missing-import #icon-import #ui-components]
+**Quick Fix**: Add missing icon to import statement  
+**Component**: Frontend-UI  
+**Recurrence Risk**: Medium (AI sometimes forgets to update imports when adding icons)  
+**Resolution Time**: 5-10 minutes  
+
+**Root Cause**: Using Heroicons component without importing it in the import statement  
+**Prevention**: Always verify all icons are imported when adding new UI elements  
+
+**Code Pattern**:
+```typescript
+// ❌ Missing ArrowRightIcon import
+import {
+  LightBulbIcon,
+  ArrowLeftIcon,
+  SparklesIcon
+} from '@heroicons/react/24/outline';
+
+// Later in component:
+<Button rightIcon={<ArrowRightIcon />}> // ReferenceError!
+
+// ✅ Complete icon imports
+import {
+  LightBulbIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,  // Added missing icon
+  SparklesIcon
+} from '@heroicons/react/24/outline';
+```
+
+**AI Search Terms**: ArrowRightIcon not defined, heroicons import missing, icon reference error, missing import  
+**Prevention Checklist**: Icon import verification, component dependency validation, UI element import audit  
+
+---
+
+### Bug: Wrong Navigation Destination for User Intent [#wrong-destination #wizard-flow #project-ideas #user-expectation]
+**Quick Fix**: Analyze user intent and redirect to appropriate workflow  
+**Component**: Frontend-UX  
+**Recurrence Risk**: Medium (AI may reuse existing components without considering user context)  
+**Resolution Time**: Planning phase - requires UX design decision  
+
+**Root Cause**: "Start Building" button on project ideas leads to ProjectEnhancementWizard (designed for CV generation) instead of project development guidance  
+**Prevention**: Always consider user intent and workflow context when implementing navigation  
+
+**Current Flow**:
+```typescript
+// ❌ Misaligned user intent
+Project Ideas → "Start Building" → ProjectEnhancementWizard
+// User expects: Project development guidance
+// Actually gets: CV description generation workflow
+```
+
+**Expected Flow Options**:
+```typescript
+// ✅ Option 1: Project planning page
+Project Ideas → "Start Building" → Project Setup/Planning Page
+
+// ✅ Option 2: Implementation guidance
+Project Ideas → "Start Building" → Development Roadmap/Tutorial
+
+// ✅ Option 3: Detailed project view
+Project Ideas → "Start Building" → Project Details with Next Steps
+```
+
+**AI Search Terms**: wrong navigation, user intent mismatch, wizard flow confusion, project ideas flow  
+**Prevention Checklist**: User journey mapping, workflow context analysis, button action alignment with user expectations  
+
+---
+
+## 📊 Bug Resolution Session Summary
+
+### **Session Date**: July 25, 2025
+### **Feature Context**: Project Enhancement Workflow - Navigation and API Integration
+
+#### **Bugs Discovered and Resolved**:
+
+1. **Import Issues (Alert Components)** - 10-15 minutes
+   - **Impact**: Low - Compilation errors in development
+   - **Root Cause**: Persistent import cache issues, files already correctly imported
+   - **Resolution**: Verified correct imports already in place
+
+2. **API Request Structure Mismatch** - 15-30 minutes
+   - **Impact**: High - 400 errors preventing feature functionality
+   - **Root Cause**: Client sending flat request structure vs API expecting wrapped data
+   - **Resolution**: Wrapped request parameters in data object
+
+3. **Missing Icon Import** - 5-10 minutes
+   - **Impact**: Medium - Runtime errors in UI components
+   - **Root Cause**: ArrowRightIcon used but not imported
+   - **Resolution**: Added missing icon to import statement
+
+4. **Wrong Navigation Destination** - Planning phase
+   - **Impact**: High - Poor user experience, workflow confusion
+   - **Root Cause**: "Start Building" leads to CV wizard instead of project development
+   - **Resolution**: Identified need for UX redesign (pending user decision)
+
+#### **Total Resolution Time**: ~30-55 minutes (active bugs), UX planning required
+
+#### **Key Patterns Identified**:
+- **API Integration**: Schema validation requires careful request structure alignment
+- **Import Management**: Icon additions often missed in import statements
+- **User Experience**: Existing components may not fit new user workflows
+- **Navigation Design**: Button actions must match user intent and expectations
+
+#### **Files Modified**:
+- `app/developer/projects/ideas/page.tsx` - Fixed API request structure and icon import
+- `app/developer/projects/enhance/page.tsx` - Fixed API request structure
+- `docs/implementation/bug-reporting-resolution.md` - Added new bug patterns
+
+#### **Outstanding Issues**:
+- **UX Decision Required**: Determine correct navigation flow for "Start Building" on project ideas
+- **Workflow Design**: Project ideas may need dedicated development guidance instead of CV wizard
+
+This session demonstrates the importance of aligning technical implementation with user intent and careful API integration patterns.
 
 ---
 

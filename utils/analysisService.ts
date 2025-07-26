@@ -2,7 +2,7 @@ import { PrismaClient, AnalysisStatus, CvAnalysis } from '@prisma/client';
 import { downloadS3FileAsBuffer } from './s3Storage';
 import { v4 as uuidv4 } from 'uuid';
 import { analyzeCvWithGPT } from './gptAnalysis';
-import { setCache } from '@/lib/redis';
+// Redis cache will be handled dynamically for server-side only
 import { parseFileContent } from './fileParsers';
 
 const prisma = new PrismaClient();
@@ -181,7 +181,15 @@ export const processCvAnalysis = async (analysisRecordId: string): Promise<void>
     if (recordToProcess.fileHash) {
       const cacheStart = process.hrtime();
       const cacheKey = `${ANALYSIS_CACHE_PREFIX}${recordToProcess.fileHash}`;
-      await setCache(cacheKey, analysisResult);
+      // Cache analysis result (server-side only)
+      if (typeof window === 'undefined') {
+        try {
+          const { setCache } = await import('@/lib/redis');
+          await setCache(cacheKey, analysisResult);
+        } catch (cacheError) {
+          console.warn('Failed to cache analysis result:', cacheError);
+        }
+      }
       timings.cacheUpdate = getElapsedTime(cacheStart);
 
       console.log(`[Analysis ${analysisRecordId}] Cache updated`, {

@@ -69,6 +69,34 @@ const createExampleFromSchema = (schema: any): any => {
   return '';
 };
 
+// Helper function to transform GPT response data types before validation
+const transformGPTResponse = (response: any): any => {
+  if (!response) return response;
+
+  // Convert string experience to number
+  let totalYears = response.totalYearsExperience;
+  if (typeof totalYears === 'string') {
+    const numMatch = totalYears.match(/\d+/);
+    totalYears = numMatch ? parseFloat(numMatch[0]) : 0;
+  }
+
+  // Fix experience calculation object
+  let experienceCalculation = response.experienceCalculation;
+  if (experienceCalculation) {
+    experienceCalculation = {
+      ...experienceCalculation,
+      calculatedAt: Date.now(), // Use current timestamp
+      experienceItems: Array.isArray(response.experience) ? response.experience.length : 0
+    };
+  }
+
+  return {
+    ...response,
+    totalYearsExperience: totalYears,
+    experienceCalculation: experienceCalculation
+  };
+};
+
 // Helper function to recursively correct string booleans in the parsed data
 const correctStringBooleans = (data: any): any => {
   if (Array.isArray(data)) {
@@ -228,9 +256,10 @@ export const analyzeCvWithGPT = async (cvText: string): Promise<z.infer<typeof C
       }
       timings.jsonParse = getElapsedTime(parseStart);
 
-      // Post-processing: Correct string booleans before validation
+      // Post-processing: Transform GPT response and correct string booleans before validation
       const preprocessStart = process.hrtime();
-      const correctedData = correctStringBooleans(parsedResponse);
+      const transformedData = transformGPTResponse(parsedResponse);
+      const correctedData = correctStringBooleans(transformedData);
       timings.preprocess = getElapsedTime(preprocessStart);
       console.log(`Pre-validation processing completed`, {
         attempt: currentAttempt,

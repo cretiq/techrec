@@ -14,6 +14,7 @@
   - [Feature Request #21: Simplify Developer Dashboard UI Elements](#feature-request-21-simplify-developer-dashboard-ui-elements)
   - [Feature Request #23: AI-Powered Project Portfolio Enhancement System](#feature-request-23-ai-powered-project-portfolio-enhancement-system)
   - [Feature Request #24: Comprehensive AI Project Brainstorming System](#feature-request-24-comprehensive-ai-project-brainstorming-system)
+  - [Feature Request #25: Conditional Navigation Based on Authentication Status](#feature-request-25-conditional-navigation-based-authentication-status)
 - [📋 Recently Completed Features](#-recently-completed-features)
   - [Feature Request #17: "Mark as Applied" Role Tracking System](#feature-request-17-mark-as-applied-role-tracking-system)
   - [Feature Request #22: Admin CV Deletion Feature for GamificationAdminClient](#feature-request-22-admin-cv-deletion-feature-for-gamificationadminclient)
@@ -47,6 +48,7 @@
 - Role recommendation engine based on matching scores
 - **AI-Powered Project Portfolio Enhancement System** → **Moved to Feature Request #23**
 - **Comprehensive AI Project Brainstorming System** → **Moved to Feature Request #24**
+- **Conditional Navigation Based on Authentication Status** → **Moved to Feature Request #25**
 - ✅ Create a GitHub-like commit grid/graph for great visualization over applications → **Moved to Feature Request #16**
 - ✅ Style-first button system refactoring (replace feature-specific buttons with reusable style variants) → **Moved to Feature Request #18**
 - **Comprehensive Documentation Architecture & Markdown File Organization** → **Moved to Feature Request #15**
@@ -80,22 +82,22 @@
 **Priority:** High
 **Risk Level:** Medium (Simplified architecture with Redis caching and existing points system)
 
-**Goal:** Create an intelligent project portfolio enhancement system that automatically detects junior developers (≤2 years experience) during CV analysis and provides AI-powered assistance to help them create exceptional CV sections and presentations for their personal projects, using a points-based gamification system to encourage quality portfolio development.
+**Goal:** Create an intelligent project portfolio enhancement system that detects developers with limited project portfolios during CV analysis and provides AI-powered assistance to help them create exceptional CV sections and presentations for their personal projects, using a points-based gamification system to encourage quality portfolio development.
 
-**User Story:** As a junior developer with limited professional experience, when I use the "Get AI suggestions" feature and the system detects ≤2 years of experience, I want to see an intelligent suggestion to enhance my project portfolio so that I can choose between improving descriptions of my existing public GitHub projects or brainstorming new project ideas that will create compelling CV sections and help me stand out to employers.
+**User Story:** As a developer with limited portfolio projects, when I use the "Get AI suggestions" feature and the system detects insufficient project descriptions or limited GitHub activity, I want to see an intelligent suggestion to enhance my project portfolio so that I can improve descriptions of my existing public GitHub projects to create compelling CV sections and help me stand out to employers.
 
 **Success Metrics (Revised for Realistic Expectations):**
 
-- 95%+ of developers with ≤2 years experience see project enhancement suggestions (experience detection must be reliable)
+- 95%+ of developers with limited project portfolios see enhancement suggestions (portfolio detection must be reliable)
 - 40%+ engagement rate with the project enhancement feature (realistic for new complex feature)
 - Average of 1+ projects enhanced per user session (quality over quantity)
 - 70%+ of generated project descriptions are accepted by users (allowing for AI imperfection)
 - Measurable improvement in total CV scores after project enhancements (+10-15 point average improvement)
 - 30%+ of users complete the full enhancement flow (accounting for complexity)
-- Reduced time-to-compelling-CV for junior developers by 50% (conservative estimate)
+- Reduced time-to-compelling-CV for developers with weak portfolios by 50% (conservative estimate)
 
 **Critical Performance Metrics:**
-- Experience detection response time: <500ms (Redis cached results)
+- Portfolio assessment response time: <500ms (Redis cached results)
 - AI generation success rate: >90% with proper fallbacks
 - GitHub API availability: >95% with circuit breaker protection
 - Feature uptime: >99.5% excluding external service dependencies
@@ -129,7 +131,7 @@
 
 **Technical Approach:**
 
-**Phase 1: Experience Detection & Suggestion System Integration**
+**Phase 1: Portfolio Assessment & Suggestion System Integration**
 
 *Current System Integration Points:*
 - ✅ **CV Analysis Infrastructure**: Existing `analyzeCvWithGemini` function extracts experience data
@@ -141,16 +143,16 @@
 *New Implementation Requirements:*
 
 1. **Enhanced CV Analysis Response Format**
-   - **Modify**: Existing Gemini CV analysis prompt in `utils/geminiAnalysis.ts`
-   - **Requirement**: Return consistent format including experience years calculation
-   - **Purpose**: Enable reliable parsing to identify ≤2 years experience for triggering project help
-   - **Format**: Include `totalYearsExperience: number` in analysis response
+   - **Modify**: Create separate portfolio assessment prompt (DO NOT modify existing CV analysis)
+   - **New File**: `utils/portfolioAssessment.ts`
+   - **Purpose**: Assess project portfolio strength without affecting core CV analysis
+   - **Format**: Include `portfolioStrength: 'weak' | 'moderate' | 'strong'` and `projectCount: number`
 
-2. **Experience Calculation Utility**
-   - **File**: `utils/experienceCalculator.ts`
-   - **Function**: `calculateTotalExperience(experience: ExperienceItem[]): number`
-   - **Integration**: Called during CV analysis to determine eligibility
-   - **Trigger**: Show project recommendation when `totalYears <= 2`
+2. **Portfolio Assessment Utility**
+   - **File**: `utils/portfolioAssessment.ts`
+   - **Function**: `assessPortfolioStrength(cvData: CVData): PortfolioAssessment`
+   - **Integration**: Called after CV analysis to determine eligibility
+   - **Trigger**: Show project recommendation when `portfolioStrength === 'weak'` OR `projectCount < 2`
 
 3. **Project Recommendation Card Component**
    - **File**: `components/analysis/ProjectRecommendationCard.tsx`
@@ -158,13 +160,13 @@
    - **Trigger**: Show when experience ≤2 years AND user clicks "Get AI suggestions"
    - **Design**: Purple gradient theme matching AI assistance aesthetic
 
-**Phase 2: Two-Path Selection System**
+**Phase 2: Direct GitHub Project Enhancement**
 
-4. **Project Enhancement Choice Modal**
-   - **File**: `components/analysis/ProjectEnhancementModal.tsx`
-   - **Options**: "Enhance Existing GitHub Projects" vs "Brainstorm New Project Ideas"
-   - **Focus**: Creating exceptional CV sections and presentations (not code enhancement)
-   - **Navigation**: Route to dedicated enhancement pages
+4. **Project Enhancement Entry Point**
+   - **File**: `components/analysis/ProjectRecommendationCard.tsx` 
+   - **Single Action**: "Enhance My GitHub Projects" button
+   - **Focus**: Direct path to GitHub project CV enhancement (no modal confusion)
+   - **Navigation**: Route directly to `/developer/projects/enhance`
    - **Points Integration**: Show points cost for final CV description generation
 
 **Phase 3: Path 1 - GitHub Project CV Enhancement**
@@ -189,22 +191,19 @@
    - **Features**: Project selection, README analysis results, guided question system
    - **Points Integration**: Deduct points only for final CV description generation
 
-**Phase 4: Path 2 - Basic Project Ideas System**
+**Phase 4: Enhanced GitHub Integration & Error Handling**
 
-> **Note**: Advanced project brainstorming functionality has been separated into **Feature Request #24** to focus this feature on core portfolio enhancement. FR #23 includes only basic project idea generation to maintain scope and timeline.
+8. **GitHub API Resilience Layer**
+   - **File**: `utils/githubResilience.ts`
+   - **Features**: Rate limit pre-checking, intelligent request queuing, circuit breaker pattern
+   - **Fallbacks**: Manual project entry when GitHub API unavailable
+   - **User Experience**: Clear messaging about API limitations and alternatives
 
-8. **Simple Project Ideas Page**
-   - **Route**: `/developer/projects/ideas`
-   - **Component**: `components/projects/BasicProjectIdeas.tsx`
-   - **Flow**: Basic skill selection → Simple AI prompt → General project suggestions
-   - **Scope**: Minimal viable implementation (advanced brainstorming in **FR #24**)
-
-9. **Basic AI Ideas Generator**
-   - **Endpoint**: `/api/project-ideas/basic`
-   - **AI Provider**: Gemini only
-   - **Input**: Selected skills from user's existing skill set
-   - **Output**: 3-5 general project ideas with basic descriptions
-   - **Focus**: Simple suggestions to get users started (comprehensive system in **FR #24**)
+9. **Atomic Points Transaction System**
+   - **File**: `utils/atomicPointsManager.ts`
+   - **Features**: Redis-based transaction locks, rollback on failure
+   - **Integration**: Wrap all AI generation calls with atomic points handling
+   - **Reliability**: Prevent points deduction without successful CV generation
 
 **Phase 5: CV Integration & Points System**
 
@@ -261,15 +260,16 @@ model ProjectEnhancement {
 }
 ```
 
-**Experience Caching Strategy (Redis):**
+**Portfolio Assessment Caching Strategy (Redis):**
 ```typescript
 // REDIS CACHE KEYS:
-// `experience:${developerId}` → { totalYears: number, isJunior: boolean, calculatedAt: timestamp }
-// TTL: 24 hours (recalculate daily)
+// `portfolio:${developerId}` → { strength: string, projectCount: number, shouldTrigger: boolean, calculatedAt: timestamp }
+// TTL: 24 hours (recalculate when CV changes)
 
-interface ExperienceCache {
-  totalYears: number;
-  isJuniorDeveloper: boolean;
+interface PortfolioAssessmentCache {
+  strength: 'weak' | 'moderate' | 'strong';
+  projectCount: number;
+  shouldTriggerEnhancement: boolean;
   calculatedAt: number; // timestamp
 }
 ```
@@ -288,51 +288,52 @@ interface ExperienceCache {
 **Acceptance Criteria (CRITICAL ARCHITECTURAL REQUIREMENTS):**
 
 **Foundation Requirements (MUST BE COMPLETED FIRST):**
-- [ ] **Database Schema Corrections**: Fixed unique constraint on ProjectPortfolio.developerId 
-- [ ] **Experience Detection Caching**: Redis caching with 24-hour TTL for experience calculations
+- [ ] **Database Schema Corrections**: Fixed unique constraint on ProjectPortfolio.developerId with migration strategy
+- [ ] **Portfolio Assessment Caching**: Redis caching with 24-hour TTL for portfolio strength calculations
 - [ ] **Circuit Breaker Implementation**: All external APIs (GitHub, Gemini) protected with circuit breaker pattern
-- [ ] **Points Integration**: Leverage existing points system for feature cost control
-- [ ] **Security Hardening**: Enhanced OAuth token management with expiry tracking
-- [ ] **Performance Benchmarks**: Experience detection <500ms, AI generation <5s, GitHub API <2s response times
+- [ ] **Atomic Points Transactions**: Redis-based locks preventing points deduction without successful generation
+- [ ] **GitHub API Resilience**: Rate limit pre-checking, request queuing, and comprehensive fallback mechanisms
+- [ ] **Performance Benchmarks**: Portfolio assessment <500ms, AI generation <5s, GitHub API <2s response times
 
 **Core Feature Requirements:**
-- [x] **Experience Detection**: ✅ **RESOLVED** - Cached system accurately calculates and stores years of experience 
-- [x] **Integration Timing**: ✅ **RESOLVED** - Project recommendation appears based on cached experience data
-- [x] **AI Provider Strategy**: ✅ **RESOLVED** - All AI operations use Gemini with cost tracking and circuit breaker protection
-- [x] **GitHub Integration Scope**: ✅ **RESOLVED** - Public repositories only with circuit breaker and rate limiting
-- [x] **Points Integration**: ✅ **RESOLVED** - Points deducted with cost validation and daily limits
-- [x] **Premium Features Strategy**: ✅ **RESOLVED** - Points-based with usage limits and cost controls
-- [x] **CV Focus**: ✅ **RESOLVED** - Feature focuses on CV presentation with content validation
-- [x] **Success Tracking**: ✅ **RESOLVED** - Total CV score updates with audit trail
+- [ ] **Portfolio Assessment**: Separate analysis system that doesn't modify existing CV analysis functionality
+- [ ] **Integration Timing**: Project recommendation appears based on cached portfolio strength assessment
+- [ ] **AI Provider Strategy**: All AI operations use Gemini with cost tracking and circuit breaker protection
+- [ ] **GitHub Integration Scope**: Public repositories only with comprehensive resilience and fallback mechanisms
+- [ ] **Atomic Points System**: Redis-locked transactions preventing partial failures and cost leakage
+- [ ] **Error Recovery**: Comprehensive fallback strategies for all external API failures
+- [ ] **CV Focus**: Feature focuses exclusively on CV presentation enhancement (no project brainstorming)
+- [ ] **Success Tracking**: Total CV score updates with comprehensive audit trail and rollback capability
 
 **User Experience Requirements:**
-- [ ] **Choice Modal**: Two-path selection with clear cost implications and usage limits
-- [ ] **README Analysis**: AI analysis with 90%+ success rate and fallback mechanisms
-- [ ] **Interactive Enhancement**: Guided questionnaire with auto-save and recovery
-- [ ] **Basic Project Ideas**: Simple skill-based AI suggestions with points validation
-- [ ] **CV Description Generation**: Content follows structure with quality validation
-- [ ] **Profile Integration**: Projects sync with comprehensive error handling
-- [ ] **Dashboard Integration**: Portfolio status with performance optimization
+- [ ] **Direct Enhancement Path**: Single "Enhance My GitHub Projects" button with clear cost display
+- [ ] **README Analysis**: AI analysis with 90%+ success rate and manual entry fallback
+- [ ] **Interactive Enhancement**: Guided questionnaire with auto-save, recovery, and session management
+- [ ] **GitHub API Fallbacks**: Manual project entry available when GitHub API fails
+- [ ] **CV Description Generation**: Content follows "Problem → Solution → Impact" structure with quality validation
+- [ ] **Profile Integration**: Projects sync with comprehensive error handling and rollback capability
+- [ ] **Dashboard Integration**: Portfolio enhancement status with real-time feedback and progress tracking
 
 **System Reliability Requirements:**
-- [ ] **Points Integration**: Feature costs controlled through existing points system with proper deduction
-- [ ] **Error Handling**: 99.5% uptime with graceful degradation for all external service failures
-- [ ] **Performance Monitoring**: Experience caching in Redis with circuit breaker metrics
-- [ ] **Security Validation**: Content sanitization, token rotation, cross-user access prevention
-- [ ] **Scalability Validation**: System tested for <1,000 users with Redis caching performance
+- [ ] **Atomic Transactions**: All AI generations wrapped in Redis-locked atomic transactions
+- [ ] **Error Handling**: 99.5% uptime with graceful degradation and comprehensive fallback strategies
+- [ ] **Performance Monitoring**: Portfolio assessment caching in Redis with circuit breaker metrics
+- [ ] **GitHub API Resilience**: Rate limit management, request queuing, and circuit breaker protection
+- [ ] **Security Validation**: Content sanitization, OAuth token management, and cross-user access prevention
+- [ ] **Scalability Validation**: System tested for concurrent users with Redis performance under load
 
 **Questions to Resolve:**
 
-- [x] **GitHub Integration Scope**: ✅ **RESOLVED** - Public repositories only with active user guidance
-- [x] **Project Limit**: ✅ **RESOLVED** - Unlimited assistance with points-based final submission system
-- [x] **AI Provider Strategy**: ✅ **RESOLVED** - Gemini exclusively for all operations
-- [x] **Premium Features**: ✅ **RESOLVED** - Points deduction model aligned with gamification strategy
-- [x] **Integration Timing**: ✅ **RESOLVED** - Integrate with "Get AI suggestions" flow for strategic experience analysis
-- [x] **Portfolio Sharing**: ✅ **RESOLVED** - Focus on CV section creation rather than code enhancement
-- [x] **Success Tracking**: ✅ **RESOLVED** - Total CV score updates when projects incorporated
-- [x] **Content Quality**: ✅ **RESOLVED** - Consistent Gemini response format for reliable experience parsing
-- [ ] **Brainstorming Conversation Flow**: To be tested and optimized during implementation
-- [ ] **Mobile Experience**: Deferred to future iteration
+- [x] **GitHub Integration Scope**: ✅ **RESOLVED** - Public repositories only with comprehensive resilience layer
+- [x] **Project Limit**: ✅ **RESOLVED** - Unlimited assistance with atomic points-based final submission system
+- [x] **AI Provider Strategy**: ✅ **RESOLVED** - Gemini exclusively with circuit breaker protection
+- [x] **Portfolio Assessment**: ✅ **RESOLVED** - Separate assessment system without modifying core CV analysis
+- [x] **Integration Timing**: ✅ **RESOLVED** - Direct integration with portfolio strength assessment
+- [x] **Feature Scope**: ✅ **RESOLVED** - GitHub project enhancement only (no project brainstorming)
+- [x] **Success Tracking**: ✅ **RESOLVED** - CV score updates with comprehensive audit trail
+- [x] **Error Recovery**: ✅ **RESOLVED** - Manual fallbacks for all external API dependencies
+- [ ] **Database Migration Strategy**: Define rollback plan for schema changes
+- [ ] **Mobile Experience**: Responsive design for GitHub OAuth and project enhancement flows
 
 #### Error Handling & Resilience Strategy
 
@@ -495,213 +496,411 @@ interface ExperienceCache {
 - ⚠️ **Circuit breakers MUST be tested before external API integration** - System stability
 - ⚠️ **Points integration MUST be validated before AI features** - Cost control
 
-### Feature Request #24: Comprehensive AI Project Brainstorming System
+### Feature Request #24: AI-Powered Project Ideas Generation & Planning System
 
-**Status:** Blocked by Feature Request #23
+**Status:** Ready for Development
 **Priority:** High
-**Dependency:** Requires FR #23 (AI-Powered Project Portfolio Enhancement System) to be completed first
+**Dependency:** None (Standalone system)
 
-**Goal:** Create a comprehensive AI-powered project brainstorming system that guides junior developers through an intelligent questionnaire to generate personalized, compelling project ideas with detailed implementation plans, focusing on real-world problem solving that creates strong CV narratives.
+**Goal:** Create an AI-powered project ideas generation system that guides developers through an intelligent questionnaire with brainstorming prompts, generates 2-3 personalized project suggestions, and provides detailed project planning when a specific idea is selected.
 
-**User Story:** As a junior developer, when I need project ideas for my portfolio, I want to go through an intelligent questionnaire that understands my skills and interests, then receive a detailed, personalized project plan with clear WHY/WHAT/HOW structure and step-by-step implementation guidance, so that I can build meaningful projects that solve real problems and create compelling stories for my CV.
+**User Story:** As a developer looking for project ideas, when I click "Get new project ideas" I want to go through a questionnaire with helpful brainstorming prompts and pill suggestions, then receive 2-3 project ideas with difficulty levels and recommended tech stacks, so that I can select one and get a detailed project plan to start building.
 
 **Success Metrics:**
 
-- 80%+ of users complete the full questionnaire flow
-- 90%+ of generated project ideas are rated as "relevant" by users
-- Average project plan length: 500-1000 words with actionable steps
-- 60%+ of users save at least one generated project idea
-- 40%+ of users restart questionnaire to generate additional ideas
-- Generated project plans include clear problem statement, solution approach, and impact metrics
+- 85%+ of users complete the questionnaire with brainstorming prompts
+- 90%+ of users select at least one project card from generated suggestions
+- AI generates exactly 2-3 relevant project ideas per session
+- 75%+ of users proceed to view detailed project plan after card selection
+- Average time from "Get new project ideas" to project selection: <5 minutes
+- Generated projects include appropriate difficulty levels and tech stack recommendations
 
 #### Technical Architecture
 
-**Questionnaire Flow Design:**
+**Enhanced Questionnaire Flow Design with State Management:**
 
-1. **Skill Selection Step**
-   - **Data Source**: Query existing `DeveloperSkill` table for user's current skills
-   - **UI**: Multi-select interface with search/filter capability
-   - **Custom Skills**: Allow users to add skills not in their profile
-   - **Validation**: Minimum 2 skills required, maximum 8 skills recommended
+1. **Smart Questionnaire with Brainstorming Support & Auto-Save**
+   - **Question**: "Do you have any problem in your everyday life that could be solved with software?"
+   - **UI Pattern**: Text input (optional) + Brainstorming pill buttons below
+   - **Pill Examples**: "Organize my schedule", "Track my expenses", "Find nearby services", "Learn new skills", "Stay in touch with friends"
+   - **User Experience**: Users can type custom answers OR click pills for instant suggestions
+   - **State Management**: Auto-save every 30 seconds, session recovery on page refresh
+   - **Input Resolution**: Clear hierarchy - custom text overrides pills, combined when both present
 
-2. **Problem Identification Step**
-   - **Primary Question**: "Do you or anyone close to you have a problem that could be solved with an app?"
-   - **Conditional Input**: If yes → text area for problem description (max 500 chars)
-   - **Alternative Options**: Pre-defined problem categories if user needs inspiration
+2. **Additional Context Questions (Each with Pills & State Management)**
+   - **Project Scope**: "How much time can you dedicate?"
+     - Pills: "Weekend project", "1-2 weeks", "1 month", "2+ months"
+     - Validation: At least one option must be selected or custom text provided
+   - **Learning Goals**: "What would you like to learn/improve?"
+     - Pills: "New framework", "Backend skills", "Mobile development", "UI/UX design", "Database management"
+     - Multi-select: Users can select multiple pills or add custom goals
+   - **Target Users**: "Who would use this app?"
+     - Pills: "Just me", "Friends/family", "General public", "Small businesses", "Developers"
+     - Single-select: One primary audience with option for custom text
+   - **Platform Preference**: "What type of app interests you?"
+     - Pills: "Web app", "Mobile app", "Desktop app", "API/Backend", "Chrome extension"
+     - Single-select: One platform focus with technical rationale
 
-3. **Context Gathering Steps**
-   - **Project Scope**: "How much time can you dedicate?" (Weekend project, 1-2 weeks, 1 month, 2+ months)
-   - **Learning Goals**: "What would you like to learn/improve?" (New technology, specific skill, general experience)
-   - **Target Users**: "Who would use this app?" (Personal use, Friends/family, General public, Businesses)
-   - **Platform Preference**: "What type of app interests you?" (Web app, Mobile app, Desktop app, API/Backend)
+3. **AI Generation Workflow with Robust Error Handling**
+   - **Input Validation**: Verify questionnaire completeness, validate CV skills data availability
+   - **Input Processing**: Resolve pills vs text conflicts, combine multi-select responses
+   - **Process**: Fill validated prompt template → Gemini AI with circuit breaker → Generate exactly 2-3 project suggestions
+   - **Output Validation**: JSON schema validation, fallback generation if response malformed
+   - **Fallback Strategy**: Template-based project generation if AI fails, quality scoring for outputs
+
+4. **Project Selection & Detailed Planning Architecture**
+   - **Card Display**: Title, difficulty level, recommended skills/tools, time estimate
+   - **Card Selection**: Click card → Navigate to `/developer/projects/plan/[sessionId]/[projectId]`
+   - **Detailed Plan Page**: Dedicated route with comprehensive project planning
+   - **Plan Content**: Generated project breakdown, development phases, setup instructions, resource links
+   - **Plan Generation**: Separate AI call to generate detailed implementation guidance
+   - **Session Persistence**: Store selected project and plan data in database and session storage
+   - **Navigation State**: Breadcrumb navigation back to project cards, option to start new session
 
 **AI Prompt Engineering:**
 
 ```typescript
-interface BrainstormingPromptTemplate {
+interface ProjectIdeasPromptTemplate {
   systemPrompt: string;
   userContext: {
-    skills: string[];
-    customSkills: string[];
-    problemStatement?: string;
-    projectScope: string;
-    learningGoals: string;
-    targetUsers: string;
-    platformPreference: string;
+    cvSkills: string[]; // From existing CV/profile
+    problemStatement?: string; // Custom text or pill selection
+    projectScope: string; // Time commitment pill
+    learningGoals: string; // Skills to improve pill  
+    targetUsers: string; // Audience pill
+    platformPreference: string; // Platform pill
   };
 }
 
-const BRAINSTORMING_SYSTEM_PROMPT = `
-You are an expert software development mentor helping junior developers create compelling portfolio projects. 
+const PROJECT_IDEAS_SYSTEM_PROMPT = `
+You are an expert software development mentor helping developers generate practical project ideas.
 
-Generate a detailed project idea that:
-1. Solves a real-world problem (creates compelling CV story)
-2. Uses the specified technologies appropriately
-3. Is achievable within the given timeframe
-4. Demonstrates practical skills to employers
-5. Has clear value proposition and impact metrics
+CRITICAL: You MUST output exactly 3 project suggestions as a valid JSON array. No other text.
 
-Structure your response as:
-**WHY**: Problem statement and importance (2-3 sentences)
-**WHAT**: Project description and key features (3-4 bullet points)  
-**HOW**: Implementation approach and architecture (4-5 bullet points)
-**TECH STACK**: Recommended technologies with justification
-**DEVELOPMENT PLAN**: 6-8 step implementation roadmap
-**HOSTING & DEPLOYMENT**: Recommended platforms and setup
-**SUCCESS METRICS**: How to measure project impact
-**CV STORY**: How to present this project professionally
+Based on the provided context, generate exactly 3 diverse project suggestions.
 
-Keep technical complexity appropriate for junior developers while ensuring the project demonstrates real problem-solving skills.
+For each project, provide:
+- **id**: Unique identifier (use incremental numbers 1, 2, 3)
+- **title**: Catchy, descriptive project name (max 60 characters)
+- **difficulty**: MUST be exactly one of: "Beginner", "Intermediate", or "Advanced"
+- **skills**: Array of 3-5 specific technologies/skills from user's CV or requested learning goals
+- **tools**: Array of 2-4 recommended development tools (IDEs, frameworks, libraries)
+- **description**: Brief overview of what the project does (100-150 words)
+- **timeEstimate**: Realistic development time matching the user's time commitment
+- **keyFeatures**: Array of exactly 3-4 main features/capabilities
+
+Requirements:
+1. Match the user's existing skill level and stated learning goals
+2. Fit within the specified time commitment exactly
+3. Be appropriate for the target user base specified
+4. Use the preferred platform/technology exclusively
+5. Address the problem statement if provided, ignore if nonsensical
+6. Create variety across the 3 suggestions (different complexity levels and approaches)
+7. Ensure all skills are technically relevant and achievable
+
+CRITICAL: Output ONLY a valid JSON array. No markdown, no explanations, no additional text.
 `;
 ```
 
 **Database Schema:**
 
 ```typescript
-model ProjectBrainstormingSession {
+model ProjectIdeasSession {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   developerId     String   @db.ObjectId
   developer       Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
   
-  // Questionnaire responses
-  selectedSkills   String[] // Skills from DeveloperSkill table
-  customSkills     String[] // User-added skills
-  problemStatement String?  // User's problem description
-  projectScope     String   // Time commitment
-  learningGoals    String   // What they want to learn
-  targetUsers      String   // Who will use the app
-  platformPreference String // Type of application
+  // Questionnaire responses with auto-save support
+  problemStatement String?  // Custom text or pill selection
+  problemStatementPills String[] @default([]) // Selected pill values
+  projectScope     String?  // Time commitment pill
+  learningGoals    String[] @default([]) // Multi-select pills + custom
+  targetUsers      String?  // Single-select audience
+  platformPreference String? // Platform pill
   
-  // AI generated content
-  aiResponse       String   // Full AI-generated project plan
-  projectTitle     String   // Extracted project title
-  problemSummary   String   // WHY section summary
-  solutionSummary  String   // WHAT section summary
-  techStack        String[] // Recommended technologies
+  // Session state management
+  currentStep      Int      @default(0) // Current questionnaire step
+  isComplete       Boolean  @default(false) // All required fields filled
+  lastAutoSave     DateTime @default(now()) // Last auto-save timestamp
   
-  // Metadata
+  // Generated project ideas (JSON array of 3 projects)
+  generatedProjects Json?    // Array of ProjectIdea objects (nullable until generated)
+  selectedProjectId String?  // Which project card was selected
+  detailedPlan     Json?     // Generated detailed plan for selected project
+  
+  // Error handling and retry logic
   pointsUsed       Int      @default(0)
-  isBookmarked     Boolean  @default(false)
-  userRating       Int?     // 1-5 star rating
+  generationStatus String   @default("draft") // draft, validating, generating, completed, error, failed
+  generationAttempts Int    @default(0) // Number of generation attempts
+  lastError        String?  // Last error message for debugging
+  
+  // Session management
+  isActive         Boolean  @default(true) // Session is active
+  expiresAt        DateTime? // Session expiry for cleanup
   
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   
   @@index([developerId, createdAt])
-  @@index([isBookmarked])
+  @@index([generationStatus, isActive])
+  @@index([isActive, expiresAt])
 }
+
+// Enhanced TypeScript interface for project ideas
+interface ProjectIdea {
+  id: string;
+  title: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  skills: string[];
+  tools: string[];
+  description: string;
+  timeEstimate: string;
+  keyFeatures: string[];
+}
+
+// Session state management interface
+interface QuestionnaireState {
+  sessionId: string;
+  currentStep: number;
+  responses: {
+    problemStatement?: string;
+    problemStatementPills: string[];
+    projectScope?: string;
+    learningGoals: string[];
+    targetUsers?: string;
+    platformPreference?: string;
+  };
+  isComplete: boolean;
+  lastSaved: Date;
+}
+
+// Detailed plan interface
+interface ProjectDetailedPlan {
+  projectId: string;
+  phases: ProjectPhase[];
+  setupInstructions: string[];
+  resourceLinks: ResourceLink[];
+  implementationGuide: string;
+  testingStrategy: string;
+  deploymentSteps: string[];
+}
+```
 ```
 
 **API Endpoints:**
 
-- `GET /api/brainstorming/skills` - Get user's existing skills for questionnaire
-- `POST /api/brainstorming/session` - Create new brainstorming session
-- `POST /api/brainstorming/generate` - Generate AI project idea with points deduction
-- `GET /api/brainstorming/history` - Get user's previous brainstorming sessions
-- `PUT /api/brainstorming/session/[id]` - Update session (bookmark, rating)
-- `DELETE /api/brainstorming/session/[id]` - Delete brainstorming session
+- `POST /api/project-ideas/session` - Create new project ideas session (starts as draft)
+- `PUT /api/project-ideas/session/[id]/auto-save` - Auto-save questionnaire responses (every 30 seconds)
+- `PUT /api/project-ideas/session/[id]/validate` - Validate questionnaire completeness before generation
+- `POST /api/project-ideas/session/[id]/generate` - Generate 2-3 AI project suggestions with atomic points deduction
+- `GET /api/project-ideas/session/[id]` - Get session state, questionnaire responses, and generated projects
+- `PUT /api/project-ideas/session/[id]/select` - Mark which project card was selected
+- `POST /api/project-ideas/session/[id]/plan/[projectId]` - Generate detailed project plan for selected project
+- `GET /api/project-ideas/history` - Get user's previous idea generation sessions
+- `DELETE /api/project-ideas/session/[id]` - Delete session and cleanup resources
+- `POST /api/project-ideas/session/[id]/retry` - Retry failed generation with fallback strategies
 
 **Component Architecture:**
 
-- `components/brainstorming/BrainstormingWizard.tsx` - Main wizard container
-- `components/brainstorming/SkillSelectionStep.tsx` - Skill selection with custom input
-- `components/brainstorming/ProblemIdentificationStep.tsx` - Problem gathering
-- `components/brainstorming/ContextGatheringStep.tsx` - Additional context questions
-- `components/brainstorming/ProjectPlanDisplay.tsx` - AI response formatting
-- `components/brainstorming/SessionHistory.tsx` - Previous sessions management
+- `components/project-ideas/ProjectIdeasWizard.tsx` - Main questionnaire container with auto-save and state management
+- `components/project-ideas/QuestionStep.tsx` - Individual question with text input + pill buttons + validation
+- `components/project-ideas/BrainstormingPills.tsx` - Reusable pill button component with selection state
+- `components/project-ideas/AutoSaveIndicator.tsx` - Visual indicator for auto-save status and session recovery
+- `components/project-ideas/ProjectCardGrid.tsx` - Display 2-3 generated project cards with error states
+- `components/project-ideas/ProjectCard.tsx` - Individual project card (title, difficulty, skills, time estimate)
+- `components/project-ideas/ProjectPlanPage.tsx` - Dedicated route for detailed project plan (/plan/[sessionId]/[projectId])
+- `components/project-ideas/SessionRecovery.tsx` - Component for recovering from interrupted sessions
+- `components/project-ideas/SessionHistory.tsx` - Previous idea generation sessions with status indicators
+- `components/project-ideas/GenerationFallback.tsx` - Error handling and retry mechanisms for failed generations
 
 #### Implementation Plan
 
-**Phase 1: Questionnaire Foundation (Week 1)**
-- Database schema implementation and migrations
-- Basic questionnaire wizard with skill selection
-- Integration with existing DeveloperSkill data
-- Custom skill input and validation
+**Phase 1: Foundation & Session Management (Week 1)**
+- Enhanced database schema implementation (`ProjectIdeasSession` model with state management)
+- Session creation, auto-save infrastructure, and recovery mechanisms
+- Basic questionnaire wizard with pill buttons and input conflict resolution
+- Client-side state management with auto-save every 30 seconds
 
-**Phase 2: AI Integration (Week 2)**
-- Gemini AI prompt engineering and testing
-- Points system integration for AI generation
-- Response parsing and structured data extraction
-- Error handling and fallback mechanisms
+**Phase 2: Robust AI Generation (Week 2)**
+- Enhanced Gemini AI prompt template with strict JSON output requirements
+- Atomic points system integration with Redis-locked transactions
+- Comprehensive JSON response validation with schema checking
+- Fallback generation strategies and error recovery mechanisms
+- Circuit breaker pattern for AI API calls
 
-**Phase 3: User Experience (Week 3)**
-- Project plan display with rich formatting
-- Session history and bookmarking functionality
-- User rating and feedback system
-- Restart questionnaire capability
+**Phase 3: Project Cards & Error Handling (Week 3)**
+- `ProjectCardGrid` component with comprehensive error states and retry mechanisms
+- Individual `ProjectCard` with enhanced display (time estimates, quality indicators)
+- Card selection with proper session persistence and navigation state management
+- Auto-save indicator and session recovery UI components
 
-**Phase 4: Advanced Features (Week 4)**
-- Session management and organization
-- Export functionality for project plans
-- Integration with portfolio enhancement system (FR #23)
-- Performance optimization and caching
+**Phase 4: Detailed Planning & Polish (Week 4)**
+- Dedicated project plan page (`/plan/[sessionId]/[projectId]`) with separate AI generation
+- Detailed implementation guidance with structured project phases
+- Session history management with status indicators and cleanup
+- Comprehensive error boundaries and fallback strategies throughout the system
 
 #### Acceptance Criteria
 
-**Foundation Requirements:**
-- [ ] **Skill Integration**: Questionnaire loads user's existing skills from DeveloperSkill table
-- [ ] **Custom Skills**: Users can add skills not in their profile with validation
-- [ ] **Problem Gathering**: "WHY" question with conditional text input and character limits
-- [ ] **Context Questions**: 4 additional simple questions to gather project context
-- [ ] **Database Storage**: Complete questionnaire responses and AI outputs stored persistently
+**Questionnaire Requirements:**
+- [ ] **Smart Questions**: Each question has text input (optional) + brainstorming pill buttons with clear selection states
+- [ ] **Problem Question**: "Do you have any problem in your everyday life that could be solved with software?" with curated example pills
+- [ ] **Context Questions**: Project scope, learning goals (multi-select), target users, platform preference with proper validation
+- [ ] **Input Conflict Resolution**: Clear hierarchy when both pills and custom text provided (custom text takes precedence)
+- [ ] **Auto-Save**: Questionnaire responses auto-saved every 30 seconds with visual indicator
+- [ ] **Session Recovery**: Users can resume interrupted sessions after browser refresh or navigation
+- [ ] **Form Validation**: Comprehensive validation before allowing "Start generating Ideas" with clear error messages
 
 **AI Generation Requirements:**
-- [ ] **Prompt Template**: Optimized Gemini prompt generating WHY/WHAT/HOW structure
-- [ ] **Points Integration**: AI generation costs points with proper validation
-- [ ] **Response Quality**: 90%+ of responses include all required sections (WHY, WHAT, HOW, etc.)
-- [ ] **Technical Appropriateness**: Generated projects match user's skill level and timeframe
-- [ ] **CV Focus**: All projects include clear problem-solving narrative for CV presentation
+- [ ] **Robust Gemini Integration**: Uses enhanced Gemini AI with circuit breaker protection and retry mechanisms
+- [ ] **CV Skills Integration**: Automatically includes user's existing CV/profile skills with fallback for missing data
+- [ ] **Exact Output Control**: AI generates exactly 2-3 diverse project suggestions with JSON schema validation
+- [ ] **Structured Output Validation**: Each project validated for required fields with quality scoring
+- [ ] **Atomic Points Integration**: Points deduction with Redis-locked atomic transactions preventing partial failures
+- [ ] **Fallback Generation**: Template-based project generation when AI fails with retry mechanisms
 
-**User Experience Requirements:**
-- [ ] **Session Management**: Users can view, bookmark, rate, and delete previous sessions
-- [ ] **Restart Capability**: Users can easily start new questionnaire from any point
-- [ ] **Response Formatting**: AI responses displayed with clear section headers and readable formatting
-- [ ] **Export Functionality**: Users can export project plans in readable format
-- [ ] **Integration**: Seamless connection to portfolio enhancement system from FR #23
+**Project Cards Display:**
+- [ ] **Enhanced Card Grid**: Generated projects displayed with loading states, error states, and retry options
+- [ ] **Rich Card Content**: Each card shows title, difficulty, skills/tools, time estimate, and quality indicators
+- [ ] **Robust Card Selection**: Clicking card navigates to dedicated plan page with proper session persistence
+- [ ] **Visual Design**: Cards use consistent styling with difficulty indicators, tech stack badges, and status indicators
+- [ ] **Responsive Layout**: Grid adapts to all screen sizes with proper loading and error state handling
 
-**Performance & Reliability:**
-- [ ] **Response Time**: AI generation completes within 10 seconds
-- [ ] **Error Handling**: Graceful handling of AI failures with retry mechanisms
-- [ ] **Data Persistence**: All user inputs auto-saved to prevent data loss
-- [ ] **Scalability**: System handles concurrent questionnaire sessions efficiently
+**Project Planning Architecture:**
+- [ ] **Dedicated Plan Page**: Separate route `/plan/[sessionId]/[projectId]` with comprehensive implementation guidance
+- [ ] **Structured Planning Content**: Project breakdown, development phases, setup instructions, resource links, testing strategy
+- [ ] **Navigation State Management**: Breadcrumb navigation, session persistence, and proper state management across routes
+- [ ] **Plan Generation**: Separate AI call for detailed plan generation with fallback strategies
+- [ ] **Session Management**: Complete session lifecycle with creation, persistence, cleanup, and expiry handling
+- [ ] **Error Recovery**: Comprehensive error boundaries with user-friendly recovery options throughout the system
 
 #### Dependencies
 
-**Blocking Dependency:**
-- [x] **Feature Request #23**: Must be completed first to provide portfolio enhancement foundation
+**No Blocking Dependencies:** This is a standalone feature that doesn't require FR #23
 
 **Technical Dependencies:**
-- [ ] **Database Schema**: ProjectBrainstormingSession table implementation
-- [ ] **AI Infrastructure**: Enhanced Gemini integration with prompt templates
-- [ ] **Points System**: Integration with existing gamification for cost control
-- [ ] **UI Components**: Multi-step wizard with form validation and state management
-- [ ] **Data Integration**: Access to existing DeveloperSkill data for questionnaire
-- [ ] **Storage System**: Session persistence and history management
+- [ ] **Enhanced Database Schema**: `ProjectIdeasSession` table with session management, auto-save, and error tracking
+- [ ] **Robust AI Infrastructure**: Gemini integration with circuit breaker, retry mechanisms, and fallback generation
+- [ ] **Atomic Points System**: Redis-locked transaction integration with existing gamification system
+- [ ] **Advanced UI Components**: Questionnaire wizard with auto-save, pill buttons, error handling, and session recovery
+- [ ] **Profile Integration**: Reliable access to CV skills data with fallback strategies for missing data
+- [ ] **Session State Management**: Auto-save, recovery, persistence, and cleanup across navigation and browser refresh
+- [ ] **Routing Infrastructure**: Dedicated routes for questionnaire, cards, and detailed planning with proper state management
 
 **Integration Dependencies:**
-- [ ] **Portfolio System**: Connection to FR #23 for seamless project enhancement workflow
-- [ ] **User Dashboard**: Integration point for accessing brainstorming sessions
-- [ ] **Profile System**: Skills data synchronization and custom skill management
+- [ ] **User Dashboard**: "Get new project ideas" entry point with proper session management
+- [ ] **Navigation System**: Comprehensive routing with breadcrumbs, state persistence, and error boundaries
+- [ ] **Profile System**: Read access to user's CV skills with error handling for incomplete profiles
+- [ ] **Error Monitoring**: Integration with logging and monitoring systems for AI failures and session issues
+- [ ] **Cache Management**: Redis integration for session state, auto-save, and atomic transactions
+
+### Feature Request #25: Conditional Navigation Based on Authentication Status
+
+**Status:** Planning Phase
+**Priority:** Medium
+
+**Goal:** Improve user experience and navigation clarity by hiding developer-specific navigation links when users are not authenticated, only showing relevant navigation options for unauthenticated visitors.
+
+**User Story:** As an unauthenticated visitor to TechRec, when I view the site header navigation, I want to see only relevant navigation options (like login/signup) rather than developer-specific links I cannot access, so that the interface is clear and I'm not confused by links that require authentication.
+
+**Success Metrics:**
+
+- Clear navigation experience for unauthenticated users
+- Elimination of confusing developer-specific links for visitors
+- Maintained full navigation functionality for authenticated users
+- Zero impact on existing authenticated user workflows
+- Improved conversion rate for signup by reducing confusion
+
+**Technical Approach:**
+
+**Current Navigation Analysis:**
+```tsx
+// Currently visible to all users regardless of authentication:
+- Home (links to "/developer/dashboard") 
+- Dashboard (links to "/developer/dashboard")
+- Features dropdown:
+  - CV Management ("/developer/cv-management")
+  - Role Search ("/developer/roles/search")
+  - Saved Roles ("/developer/saved-roles")
+```
+
+**Implementation Strategy:**
+
+1. **Conditional Navigation Rendering**
+   - Wrap developer-specific navigation in conditional rendering based on `session` state
+   - Use existing `useSession` hook from NextAuth for authentication status
+   - Maintain existing component structure with minimal changes
+
+2. **Navigation Link Classification**
+   - **Always Visible**: Logo, Login/Signup buttons, theme toggles
+   - **Authenticated Only**: Home, Dashboard, Features dropdown with developer routes
+   - **Future Consideration**: Public pages (about, pricing, etc.) if needed
+
+3. **Enhanced UX for Unauthenticated Users**
+   - Keep clean, minimal navigation focused on conversion
+   - Emphasize signup/login call-to-action
+   - Remove cognitive load from irrelevant navigation options
+
+**Code Changes Required:**
+
+```tsx
+// In components/client-layout.tsx - SessionAwareLayout component
+// Wrap developer navigation in session check:
+
+{session && (
+  <nav className="hidden md:flex items-center gap-6" data-testid="nav-desktop-menu">
+    <Link href="/developer/dashboard" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors">
+      Home
+    </Link>
+    <Link href="/developer/dashboard" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors">
+      Dashboard
+    </Link>
+    <div className="relative group" data-testid="nav-desktop-dropdown-features">
+      {/* Features dropdown content */}
+    </div>
+  </nav>
+)}
+```
+
+**Mobile Navigation Considerations:**
+- Apply same conditional logic to mobile navigation menu
+- Ensure mobile menu button only appears when there's content to show
+- Maintain responsive design patterns
+
+**Acceptance Criteria:**
+
+- [ ] **Unauthenticated Navigation**: When user is not logged in, navigation shows only logo, login, and signup options
+- [ ] **Authenticated Navigation**: When user is logged in, full navigation (Home, Dashboard, Features) appears as before
+- [ ] **Session State Integration**: Uses existing `useSession` hook for authentication state detection
+- [ ] **Mobile Responsive**: Conditional navigation works correctly on all device sizes
+- [ ] **No Functional Regression**: All existing authenticated user navigation remains unchanged
+- [ ] **Clean Unauthenticated UI**: Unauthenticated navigation is clean and focused on conversion
+- [ ] **Consistent Styling**: All navigation elements maintain existing DaisyUI styling and themes
+- [ ] **Test Coverage**: Updated data-testid attributes work correctly for both authenticated and unauthenticated states
+- [ ] **Performance**: No performance impact from conditional rendering logic
+- [ ] **Accessibility**: Navigation remains accessible with proper ARIA labels in both states
+
+**Design Considerations:**
+
+- **Unauthenticated State**: Simple, clean navigation emphasizing signup conversion
+- **Authenticated State**: Full developer navigation as currently implemented
+- **Transition Smoothness**: Seamless navigation changes during login/logout
+- **Visual Consistency**: Maintain brand styling and theme integration
+
+**Questions to Resolve:**
+
+- [ ] Should we add any public navigation links for unauthenticated users (About, Pricing, etc.)?
+- [ ] Do we need any intermediate navigation states during authentication loading?
+- [ ] Should mobile menu button be hidden when no authenticated navigation is available?
+- [ ] Any specific analytics tracking needed for navigation visibility states?
+
+**Dependencies:**
+
+- [ ] **Existing Authentication**: Leverages current NextAuth `useSession` implementation
+- [ ] **Component Structure**: Minimal changes to existing `client-layout.tsx` structure
+- [ ] **Styling System**: Uses existing DaisyUI classes and theme system
+- [ ] **Test Infrastructure**: Updates existing data-testid patterns for testing
+- [ ] **Session Management**: No changes needed to authentication logic
 
 ### Feature Request #11: Post-Signup Success Message on Sign-In Page
 

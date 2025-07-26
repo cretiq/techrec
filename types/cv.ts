@@ -190,6 +190,15 @@ export const CvAnalysisDataSchema = z.object({
   education: z.array(EducationItemSchema).nullable().optional(),
   achievements: z.array(AchievementSchema).nullable().optional(),
   
+  // Experience calculation fields for project enhancement recommendations
+  totalYearsExperience: z.number().nullable().optional(),
+  isJuniorDeveloper: z.boolean().nullable().optional(),
+  experienceCalculation: z.object({
+    calculatedAt: z.number().optional(),
+    experienceItems: z.number().optional(),
+    method: z.enum(['ai_analysis', 'manual_calculation']).optional()
+  }).nullable().optional(),
+  
   // Add the nested CV relation for extracted text
   cv: z.object({
     extractedText: z.string().nullable().optional()

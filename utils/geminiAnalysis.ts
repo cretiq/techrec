@@ -1,6 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { z } from 'zod';
 import { CvAnalysisDataSchema } from '@/types/cv';
+import { geminiCircuitBreaker } from '@/utils/circuitBreaker';
+import { traceGeminiCall, logGeminiAPI, LogLevel } from '@/utils/apiLogger';
+import { calculateTotalExperience } from '@/utils/experienceCalculator';
 
 // Initialize Google AI client (requires GOOGLE_AI_API_KEY environment variable)
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '', );
@@ -93,7 +96,15 @@ export const analyzeCvWithGemini = async (cvText: string): Promise<z.infer<typeo
         name: "string",
         proficiency: "Basic|Conversational|Fluent|Native"
       }
-    ]
+    ],
+    // Experience calculation fields for project enhancement recommendations
+    totalYearsExperience: "number",
+    isJuniorDeveloper: "boolean",
+    experienceCalculation: {
+      calculatedAt: "number",
+      experienceItems: "number",
+      method: "ai_analysis"
+    }
   };
 
   const prompt = `
@@ -114,6 +125,15 @@ Guidelines:
 9. For dates, use formats like "2023-01" or "2023" or "Present"
 10. Be conservative with skill level assessment - default to "Intermediate" if unclear
 
+CRITICAL: Experience Calculation Requirements:
+11. Calculate totalYearsExperience by analyzing all work experience dates
+12. For date ranges, calculate duration between start and end dates
+13. For "current" positions, calculate from start date to present (${new Date().toISOString().slice(0, 7)})
+14. Handle overlapping experiences by merging date ranges to avoid double-counting
+15. Convert total experience to years as a decimal (e.g., 2.5 years)
+16. Set isJuniorDeveloper to true if totalYearsExperience <= 2, false otherwise
+17. Fill experienceCalculation with current timestamp (${Date.now()}), count of experience items, and method "ai_analysis"
+
 CV Text:
 ${cvText}
 
@@ -122,20 +142,48 @@ Return ONLY the JSON object, no explanatory text:`;
   try {
     console.log(`[Gemini Analysis] Sending request to Gemini model: ${geminiModel}`);
     
-    // Get the generative model
-    const model = genAI.getGenerativeModel({ 
-      model: geminiModel,
-      generationConfig: {
-        temperature: 0.1, // Low temperature for consistent parsing
-        topK: 40,
-        topP: 0.8,
-        maxOutputTokens: 8192,
-      },
-    });
+    // Use circuit breaker protection for Gemini API call
+    const circuitResult = await geminiCircuitBreaker.execute(
+      async () => {
+        return await traceGeminiCall(
+          'cv-analysis',
+          async () => {
+            // Get the generative model
+            const model = genAI.getGenerativeModel({ 
+              model: geminiModel,
+              generationConfig: {
+                temperature: 0.1, // Low temperature for consistent parsing
+                topK: 40,
+                topP: 0.8,
+                maxOutputTokens: 8192,
+              },
+            });
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const content = response.text();
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const content = response.text();
+            
+            logGeminiAPI('cv-analysis', LogLevel.INFO, `Received response from Gemini model`, {
+              contentLength: content.length,
+              model: geminiModel,
+              estimatedTokens
+            });
+            
+            return content;
+          },
+          { 
+            includeRequest: false, // Don't log CV content for privacy
+            includeResponse: false // Don't log response for privacy
+          }
+        );
+      }
+    );
+
+    if (!circuitResult.success) {
+      throw circuitResult.error || new Error('Circuit breaker prevented API call');
+    }
+
+    const content = circuitResult.data;
 
     if (!content) {
       throw new Error('Gemini response is empty');
@@ -172,11 +220,75 @@ Return ONLY the JSON object, no explanatory text:`;
       throw new Error(`Gemini response doesn't match expected schema: ${JSON.stringify(validationResult.error.flatten().fieldErrors)}`);
     }
 
+    const result = validationResult.data;
+
+    // Fallback experience calculation if AI didn't provide it or provided incorrect data
+    if (!result.totalYearsExperience || typeof result.totalYearsExperience !== 'number') {
+      logGeminiAPI('cv-analysis', LogLevel.WARN, 'AI did not provide experience calculation, using fallback', {
+        aiProvidedValue: result.totalYearsExperience,
+        experienceCount: result.experience?.length || 0
+      });
+
+      if (result.experience && result.experience.length > 0) {
+        try {
+          // Convert experience items to the format expected by calculateTotalExperience
+          const experienceItems = result.experience.map(exp => ({
+            startDate: new Date(exp.startDate || Date.now()),
+            endDate: exp.endDate ? new Date(exp.endDate) : (exp.current ? new Date() : new Date()),
+            current: exp.current || false,
+            title: exp.title || 'Unknown',
+            company: exp.company || 'Unknown',
+            description: exp.description || '',
+            location: exp.location || null,
+            responsibilities: [],
+            achievements: exp.achievements || [],
+            teamSize: null,
+            techStack: [],
+            id: '',
+            developerId: '',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }));
+
+          const calculatedYears = calculateTotalExperience(experienceItems);
+          
+          result.totalYearsExperience = calculatedYears;
+          result.isJuniorDeveloper = calculatedYears <= 2;
+          result.experienceCalculation = {
+            calculatedAt: Date.now(),
+            experienceItems: experienceItems.length,
+            method: 'manual_calculation'
+          };
+
+          logGeminiAPI('cv-analysis', LogLevel.INFO, 'Fallback experience calculation completed', {
+            calculatedYears,
+            isJuniorDeveloper: result.isJuniorDeveloper,
+            experienceItems: experienceItems.length
+          });
+        } catch (calcError) {
+          logGeminiAPI('cv-analysis', LogLevel.ERROR, 'Fallback experience calculation failed', {
+            error: calcError instanceof Error ? calcError.message : String(calcError),
+            experienceCount: result.experience?.length || 0
+          });
+          
+          // Set safe defaults
+          result.totalYearsExperience = 0;
+          result.isJuniorDeveloper = true;
+          result.experienceCalculation = {
+            calculatedAt: Date.now(),
+            experienceItems: result.experience?.length || 0,
+            method: 'manual_calculation'
+          };
+        }
+      }
+    }
+
     const elapsedTime = getElapsedTime(startTime);
     console.log(`[Gemini Analysis] Analysis completed successfully in ${elapsedTime.toFixed(2)}ms`);
-    console.log(`[Gemini Analysis] Extracted: ${validationResult.data.skills?.length || 0} skills, ${validationResult.data.experience?.length || 0} experiences, ${validationResult.data.education?.length || 0} education entries`);
+    console.log(`[Gemini Analysis] Extracted: ${result.skills?.length || 0} skills, ${result.experience?.length || 0} experiences, ${result.education?.length || 0} education entries`);
+    console.log(`[Gemini Analysis] Experience calculation: ${result.totalYearsExperience} years, junior developer: ${result.isJuniorDeveloper}`);
 
-    return validationResult.data;
+    return result;
 
   } catch (error) {
     const elapsedTime = getElapsedTime(startTime);
