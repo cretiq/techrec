@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui-daisy/button';
 import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { ApiFailureModal } from '@/components/ui-daisy/ApiFailureModal';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '@/lib/store';
 import {
@@ -36,6 +37,7 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
     const [isSaving, setIsSaving] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isSuggesting, setIsSuggesting] = useState(false);
+    const [showApiFailureModal, setShowApiFailureModal] = useState(false);
 
     // Calculate accordion section keys
     const accordionSectionKeys = useMemo(() => {
@@ -79,11 +81,17 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
             });
         } catch (error: any) {
             console.error("Error getting suggestions:", error);
-            toast({
-                title: "Suggestions Error",
-                description: error.message || 'Could not generate suggestions.',
-                variant: "destructive",
-            });
+            
+            // Check if this is a retry exhaustion error
+            if (error?.error === 'RETRY_EXHAUSTED' || error.message?.includes('RETRY_EXHAUSTED') || typeof error === 'string' && error.includes('RETRY_EXHAUSTED')) {
+                setShowApiFailureModal(true);
+            } else {
+                toast({
+                    title: "Suggestions Error",
+                    description: error.message || 'Could not generate suggestions.',
+                    variant: "destructive",
+                });
+            }
         } finally {
             setIsSuggesting(false);
         }
@@ -175,7 +183,14 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
     };
 
     return (
-        <div className={`flex gap-2 ${className || ''}`} data-testid="cv-management-analysis-action-buttons">
+        <>
+            <ApiFailureModal
+                isOpen={showApiFailureModal}
+                onClose={() => setShowApiFailureModal(false)}
+                title="AI Service Temporarily Unavailable"
+                feature="CV suggestions generation"
+            />
+            <div className={`flex gap-2 ${className || ''}`} data-testid="cv-management-analysis-action-buttons">
             <Button 
                 onClick={handleExpandAll} 
                 variant="outline" 
@@ -241,6 +256,7 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
                 )}
                 {isSaving ? 'Saving...' : (hasUnsavedChanges ? 'Save Changes' : 'All Changes Saved')}
             </Button>
-        </div>
+            </div>
+        </>
     );
 }
