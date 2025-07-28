@@ -33,9 +33,9 @@ test.describe('Authentication Flow', () => {
       // Try to submit empty form
       await authPage.submitLoginForm();
       
-      // Should show validation errors
-      await expect(authPage.emailInput).toHaveAttribute('required');
-      await expect(authPage.passwordInput).toHaveAttribute('required');
+      // Should show validation error messages (react-hook-form validation)
+      await expect(authPage.page.locator('text=Please enter a valid email.')).toBeVisible();
+      await expect(authPage.page.locator('text=Password is required.')).toBeVisible();
     });
 
     test('should validate email format', async () => {

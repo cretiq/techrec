@@ -189,10 +189,19 @@ Return ONLY the JSON object, no explanatory text:`;
       throw new Error('Gemini response is empty');
     }
 
-    console.log(`[Gemini Analysis] Received response. Length: ${content.length} characters`);
+    console.log(`[Gemini Analysis] Received response. Type: ${typeof content}, Length: ${typeof content === 'string' ? (content as string).length : 'N/A'} characters`);
+
+    // Ensure content is a string before processing
+    if (typeof content !== 'string') {
+      console.error('[Gemini Analysis] Response content is not a string:', content);
+      throw new Error(`Expected string response from Gemini API, got ${typeof content}`);
+    }
+
+    // Now we know content is a string, cast it for TypeScript
+    const contentString = content as string;
 
     // Clean the response to extract JSON (Gemini sometimes includes markdown formatting)
-    let cleanedContent = content.trim();
+    let cleanedContent = contentString.trim();
     
     // Remove markdown code blocks if present
     cleanedContent = cleanedContent.replace(/```json\n?/g, '').replace(/```\n?/g, '');
@@ -208,7 +217,7 @@ Return ONLY the JSON object, no explanatory text:`;
       parsedData = JSON.parse(cleanedContent);
     } catch (parseError) {
       console.error('[Gemini Analysis] JSON parsing failed:', parseError);
-      console.error('[Gemini Analysis] Raw content:', content.substring(0, 500) + '...');
+      console.error('[Gemini Analysis] Raw content:', contentString.substring(0, 500) + '...');
       throw new Error(`Failed to parse Gemini response as JSON: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
     }
 

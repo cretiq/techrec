@@ -1,11 +1,11 @@
 import { Page, expect } from '@playwright/test';
 
 export interface QuestionnaireAnswers {
-  problem?: string;
-  skills?: string;
-  experience?: string;
-  timeframe?: string;
-  preferences?: string;
+  problem?: string;      // Step 1: Problem statement (textarea)
+  timeframe?: string;    // Step 2: Project scope (1-2 weeks, 1 month, etc.)
+  skills?: string;       // Step 3: Learning goals (New framework, Backend skills, etc.)
+  experience?: string;   // Step 4: Target users (Just me, General public, etc.)
+  preferences?: string;  // Step 5: Platform preference (Web app, Mobile app, etc.)
 }
 
 export class ProjectIdeasPage {
@@ -17,29 +17,52 @@ export class ProjectIdeasPage {
     await this.page.waitForLoadState('networkidle');
   }
 
-  // Actions - Questionnaire Flow
+  // Actions - Questionnaire Flow (5 steps)
   async fillQuestionnaire(answers: QuestionnaireAnswers) {
     // Wait for questionnaire to load
-    await this.page.waitForSelector('textarea, input[type="text"]');
+    await this.page.waitForSelector('textarea');
 
+    // Step 1: Problem statement
     if (answers.problem) {
       const problemField = this.page.locator('textarea').first();
       await problemField.fill(answers.problem);
     }
+    await this.clickContinue();
 
+    // Step 2: Project scope (timeframe)
+    if (answers.timeframe) {
+      const scopeButton = this.page.locator(`button:has-text("${answers.timeframe}")`).first();
+      await scopeButton.click();
+    }
+    await this.clickContinue();
+
+    // Step 3: Learning goals (skills)
     if (answers.skills) {
-      const skillsField = this.page.locator('input[placeholder*="skills" i], textarea').nth(1);
-      if (await skillsField.count() > 0) {
-        await skillsField.fill(answers.skills);
-      }
+      const learningButton = this.page.locator(`button:has-text("${answers.skills}")`).first();
+      await learningButton.click();
     }
+    await this.clickContinue();
 
+    // Step 4: Target users
     if (answers.experience) {
-      const experienceField = this.page.locator('select, input[type="radio"]').first();
-      if (await experienceField.count() > 0) {
-        await experienceField.selectOption(answers.experience);
-      }
+      const usersButton = this.page.locator(`button:has-text("${answers.experience}")`).first();
+      await usersButton.click();
     }
+    await this.clickContinue();
+
+    // Step 5: Platform preference (final step)
+    if (answers.preferences) {
+      const platformButton = this.page.locator(`button:has-text("${answers.preferences}")`).first();
+      await platformButton.click();
+    }
+    
+    // Now on final step - ready to generate
+  }
+
+  async clickContinue() {
+    const continueButton = this.page.locator('button:has-text("Continue")');
+    await continueButton.click();
+    await this.page.waitForTimeout(500); // Wait for step transition
   }
 
   async clickGetStarted() {
@@ -47,15 +70,14 @@ export class ProjectIdeasPage {
   }
 
   async generateIdeas() {
-    // Look for the generate button
-    const generateButton = this.page.locator(
-      'button:has-text("Generate Ideas"), button:has-text("Start Generating"), button[type="submit"]'
-    ).first();
+    // Wait for the final step to load and generate button to be available
+    await this.page.waitForSelector('button:has-text("Generate Project Ideas")', { timeout: 10000 });
     
+    const generateButton = this.page.locator('button:has-text("Generate Project Ideas")');
     await generateButton.click();
     
-    // Wait for generation to complete
-    await this.page.waitForSelector('[data-testid*="project"], .project-card, .idea-card', {
+    // Wait for generation to complete - look for the results section
+    await this.page.waitForSelector('h2:has-text("Project Ideas for You"), [data-testid*="project"], .project-card, .idea-card', {
       timeout: 30000 // AI generation can take time
     });
   }
@@ -76,7 +98,8 @@ export class ProjectIdeasPage {
   }
 
   async expectQuestionnaireVisible() {
-    await expect(this.page.locator('textarea, form')).toBeVisible();
+    // Look for the specific questionnaire elements that exist
+    await expect(this.page.locator('textarea')).toBeVisible();
   }
 
   async expectIdeasGenerated(minimumCount: number = 1) {
@@ -126,9 +149,7 @@ export class ProjectIdeasPage {
   }
 
   get generateButton() {
-    return this.page.locator(
-      'button:has-text("Generate"), button:has-text("Start Generating"), button[type="submit"]'
-    ).first();
+    return this.page.locator('button:has-text("Generate Project Ideas")');
   }
 
   get projectCards() {

@@ -28,6 +28,8 @@ import matchingReducer from './features/matchingSlice';
 import dashboardReducer from './features/dashboardSlice';
 // Import the saved roles reducer
 import savedRolesReducer from './features/savedRolesSlice';
+// Import the project enhancement reducer
+import projectEnhancementReducer from './features/projectEnhancementSlice';
 
 // Configuration for persisting selectedRoles slice
 const selectedRolesPersistConfig = {
@@ -86,6 +88,7 @@ const combinedReducer = combineReducers({
   matching: matchingReducer,
   dashboard: dashboardReducer,
   savedRoles: persistedSavedRolesReducer,
+  projectEnhancement: projectEnhancementReducer,
 });
 
 /**

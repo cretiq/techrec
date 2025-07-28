@@ -69,7 +69,7 @@ fi
 
 echo ""
 echo -e "${BLUE}📁 Test artifacts available at:${NC}"
-echo "   - HTML Report: test-results/html/index.html"
+echo "   - HTML Report: playwright-report/index.html"
 echo "   - Screenshots: test-results/"
 echo "   - Videos: test-results/"
 

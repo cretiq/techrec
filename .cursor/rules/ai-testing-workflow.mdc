@@ -1,0 +1,287 @@
+---
+description: AI-driven testing workflow and autonomous testing patterns for Claude Code with terminal-blocking solutions
+alwaysApply: true
+---
+
+# AI-Driven Testing Workflow
+
+## **❌ CRITICAL: Terminal-Chat Impairing Problem**
+
+### **The Problem**
+- **Blocking Commands**: Test commands like `npm run test:*` block the chat terminal
+- **Manual Intervention**: User must manually Ctrl+C or background processes
+- **Workflow Disruption**: Breaks autonomous AI testing capabilities
+- **Lost Context**: Chat becomes unresponsive during test execution
+
+### **✅ The Solution: Autonomous Background Testing**
+
+**Use `is_background: true` parameter for all test commands:**
+```typescript
+// ❌ NEVER: Blocking execution
+run_terminal_cmd({ command: "npm run test:auth", is_background: false })
+
+// ✅ ALWAYS: Background execution
+run_terminal_cmd({ command: "npm run test:auth", is_background: true })
+```
+
+**Monitor completion through file-based results:**
+```typescript
+// 1. Start test in background
+run_terminal_cmd({ command: "npm run test:auth", is_background: true })
+
+// 2. Wait for completion  
+run_terminal_cmd({ command: "sleep 15 && echo 'Checking results...'", is_background: false })
+
+// 3. Analyze results from files
+read_file({ target_file: "test-results/results.json" })
+```
+
+## **🤖 Autonomous Testing Workflow**
+
+### **Step 1: Background Test Execution**
+```typescript
+// Start tests autonomously without blocking chat
+run_terminal_cmd({ 
+  command: "npm run test:project-ideas > test-results/project-test.log 2>&1", 
+  is_background: true 
+})
+```
+
+### **Step 2: Completion Monitoring**
+```typescript
+// Check if tests are still running
+run_terminal_cmd({ 
+  command: "ps aux | grep playwright | wc -l", 
+  is_background: false 
+})
+
+// Wait for completion
+run_terminal_cmd({ 
+  command: "sleep 20 && echo 'Tests should be complete'", 
+  is_background: false 
+})
+```
+
+### **Step 3: Autonomous Result Analysis**
+```typescript
+// Read structured results
+read_file({ target_file: "test-results/results.json" })
+
+// Extract failure information
+grep_search({ query: '"status": "failed"', include_pattern: "test-results/results.json" })
+
+// Analyze specific errors
+grep_search({ query: '"error"', include_pattern: "test-results/results.json" })
+```
+
+### **Step 4: Autonomous Issue Resolution**
+```typescript
+// Based on results, identify and fix issues:
+// - Port mismatches (3000 vs 3001)
+// - JavaScript errors (content.trim is not a function)
+// - Redux store missing reducers
+// - Selector mismatches in Page Objects
+```
+
+### **Step 5: Autonomous Re-testing**
+```typescript
+// Fix issues and re-run tests autonomously
+run_terminal_cmd({ 
+  command: "npm run test:auth", 
+  is_background: true 
+})
+// Continue monitoring and analysis cycle
+```
+
+## **Before Starting Any Feature Work**
+
+1. **Run baseline tests** to ensure existing functionality works:
+   ```bash
+   npm run test:auth  # Verify authentication still works
+   ```
+
+2. **Analyze the feature requirements** and identify:
+   - User flows to be tested
+   - Page Objects needed
+   - Edge cases and error scenarios
+
+## **Test-Driven Development with AI**
+
+### **1. Feature Planning Phase**
+- Use Claude to analyze user stories and suggest test scenarios
+- Create test stubs before implementation:
+  ```typescript
+  test.describe('New Feature: [Feature Name]', () => {
+    test('should [expected behavior]', async () => {
+      // TODO: Implement after feature is built
+    });
+  });
+  ```
+
+### **2. Page Object Creation**
+- Create Page Objects for new UI elements before implementation
+- Follow the pattern in [e2e-testing.mdc](mdc:.cursor/rules/e2e-testing.mdc)
+- Reference existing patterns: [AuthPage.ts](mdc:tests/pages/AuthPage.ts), [ProjectIdeasPage.ts](mdc:tests/pages/ProjectIdeasPage.ts)
+
+### **3. Implementation Phase**
+- Run relevant tests frequently during development:
+  ```bash
+  npm run test:[feature-name]  # Test specific feature being worked on
+  ```
+- Use test failures to guide implementation
+- Let failing tests show what needs to be implemented next
+
+## **When to Run Tests During Development**
+
+| **Development Phase** | **Command** | **Frequency** |
+|----------------------|-------------|---------------|
+| **Starting work** | `npm run test:auth` | Once per session |
+| **Active development** | `npm run test:[feature]` | Every 15-30 minutes |
+| **Feature complete** | `./run-reliable-tests.sh` | Before commit |
+| **Before code review** | `npm run test:user-flows` | Always |
+| **Before deployment** | `npm run test:e2e` | Always |
+
+## **🔧 Common Issues & Autonomous Solutions**
+
+### **Port Mismatches**
+```typescript
+// Problem: Tests expect localhost:3001, server runs on localhost:3000
+// Solution: Update playwright.config.ts
+baseURL: process.env.BASE_URL || 'http://localhost:3000',
+webServer: { url: 'http://localhost:3000' }
+```
+
+### **JavaScript Errors in AI Generation**
+```typescript
+// Problem: content.trim is not a function
+// Solution: Add type checking in Gemini response processing
+if (typeof content !== 'string') {
+  throw new Error(`Expected string response from Gemini API, got ${typeof content}`);
+}
+const contentString = content as string;
+let cleanedContent = contentString.trim();
+```
+
+### **Redux Store Issues**
+```typescript
+// Problem: Missing reducer causes "client-side exception"
+// Solution: Add missing reducers to store.ts
+import projectEnhancementReducer from './features/projectEnhancementSlice';
+// Add to combinedReducer
+projectEnhancement: projectEnhancementReducer,
+```
+
+### **Test Selector Mismatches**
+```typescript
+// Problem: Tests expect different UI elements than implementation
+// Solution: Update Page Objects to match actual implementation
+// Use generic selectors: button:has-text("Generate Project Ideas")
+// Instead of: [data-testid="generate-button"]
+```
+
+## **AI Testing Commands (Background Execution)**
+
+### **Quick Development Loop** (Autonomous - 2-5 minutes)
+```typescript
+// ✅ Autonomous execution - no chat blocking
+run_terminal_cmd({ command: "npm run test:auth", is_background: true })
+// Wait and analyze results automatically
+run_terminal_cmd({ command: "sleep 15", is_background: false })
+read_file({ target_file: "test-results/results.json" })
+```
+
+### **Comprehensive Validation** (Autonomous - 10-15 minutes)
+```typescript
+// ✅ Full validation without manual intervention
+run_terminal_cmd({ command: "./run-reliable-tests.sh", is_background: true })
+run_terminal_cmd({ command: "sleep 30", is_background: false })
+read_file({ target_file: "test-results/results.json" })
+```
+
+### **Targeted Testing** (Autonomous)
+```typescript
+// ✅ Specific test execution with autonomous monitoring
+run_terminal_cmd({ 
+  command: "npx playwright test --grep 'authentication' --project=chromium", 
+  is_background: true 
+})
+```
+
+## **Test Creation Triggers**
+
+**✅ Always Create Tests When:**
+- Adding new user-facing features
+- Fixing bugs (regression prevention)
+- Modifying authentication/authorization
+- Changing critical user flows
+- Adding new API endpoints used by frontend
+
+**🚀 Quick Test Creation Pattern:**
+1. Copy existing test structure from [user-flows/](mdc:tests/user-flows/)
+2. Modify Page Objects or create new ones in [pages/](mdc:tests/pages/)
+3. Update test data in [test-user-setup.ts](mdc:tests/e2e/utils/test-user-setup.ts) if needed
+4. Follow naming conventions from [e2e-testing.mdc](mdc:.cursor/rules/e2e-testing.mdc)
+
+## **Error Prevention Strategy**
+
+### **Pre-Implementation**
+- Write test stubs before coding
+- Define expected behavior in tests
+- Create Page Objects for new UI elements
+
+### **During Implementation**
+- Run tests frequently to catch issues early
+- Use test failures to guide development
+- Add tests for edge cases as you discover them
+
+### **Post-Implementation**
+- Run full test suite before committing
+- Add regression tests for any bugs found
+- Update existing tests if behavior changes
+
+## **AI Development Integration**
+
+- **Use Claude to analyze test failures** and suggest fixes
+- **Let AI suggest test scenarios** based on feature requirements  
+- **Have AI review test coverage** and identify gaps
+- **Use AI to refactor and maintain test code** as features evolve
+
+## **🎯 Autonomous Testing Success Indicators**
+
+- ✅ **Autonomous Execution**: Tests run without manual intervention or chat blocking
+- ✅ **Background Processing**: All test commands use `is_background: true`
+- ✅ **File-Based Monitoring**: Results analyzed from `test-results/results.json`
+- ✅ **Self-Healing**: AI detects and fixes common issues automatically
+- ✅ **Reliable Results**: >95% pass rate with consistent execution
+- ✅ **Fast Feedback**: Complete autonomous cycle in <5 minutes
+- ✅ **Comprehensive Coverage**: All user flows tested autonomously
+- ✅ **Issue Resolution**: Problems identified and fixed without user input
+
+## **📝 Key Autonomous Testing Patterns**
+
+### **Always Use Background Execution**
+```typescript
+// ✅ CORRECT: Non-blocking autonomous testing
+run_terminal_cmd({ command: "npm run test:auth", is_background: true })
+
+// ❌ WRONG: Blocks chat and requires manual intervention  
+run_terminal_cmd({ command: "npm run test:auth", is_background: false })
+```
+
+### **File-Based Result Analysis**
+```typescript
+// 1. Execute tests in background
+// 2. Wait for completion
+// 3. Read structured results from files
+// 4. Analyze failures programmatically
+// 5. Apply fixes autonomously
+// 6. Re-run if needed
+```
+
+### **Autonomous Error Resolution**
+- Port mismatches → Update `playwright.config.ts`
+- JavaScript errors → Add type checking
+- Redux issues → Register missing reducers
+- Selector mismatches → Update Page Objects
+
+Reference: [AI Testing Strategy](mdc:testing/ai-driven-testing-strategy.md) and [E2E Testing Guidelines](mdc:.cursor/rules/e2e-testing.mdc) for complete methodology.

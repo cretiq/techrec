@@ -1,0 +1,137 @@
+---
+description: E2E testing patterns, conventions, and best practices for Playwright tests
+globs: tests/**/*.ts,tests/**/*.spec.ts,**/*.test.ts
+alwaysApply: false
+---
+
+# E2E Testing Guidelines
+
+## **Test File Organization**
+
+- **Page Objects**: Store in `tests/pages/` - reusable interaction patterns
+- **User Flows**: Store in `tests/user-flows/` - complete user journey tests  
+- **API Tests**: Store in `tests/api/` - backend endpoint validation
+- **Component Tests**: Store in `tests/components/` - individual UI component tests
+
+Reference: [AI Testing Strategy](mdc:testing/ai-driven-testing-strategy.md)
+
+## **Test Creation Pattern**
+
+**✅ Always Create Tests For:**
+- New user flows or features
+- Critical business logic changes  
+- Bug fixes (regression prevention)
+- Authentication/authorization changes
+- Data-sensitive operations
+
+**📋 Test Creation Checklist:**
+1. **Identify the user flow** - What does the user want to accomplish?
+2. **Map the happy path** - Normal successful flow
+3. **Map edge cases** - Error states, validation failures
+4. **Create Page Objects** - Reusable interaction patterns
+5. **Write comprehensive tests** - Cover all scenarios
+
+## **Page Object Model Conventions**
+
+```typescript
+// ✅ Good: Clear, semantic page object
+export class FeaturePage {
+  constructor(public page: Page) {}
+
+  // Navigation methods
+  async goto() {
+    await this.page.goto('/feature');
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  // Action methods
+  async performAction(data: ActionData) {
+    await this.waitForFormReady();
+    await this.fillForm(data);
+    await this.submitForm();
+  }
+
+  // Assertion methods  
+  async expectActionSuccess() {
+    await expect(this.page).toHaveURL(/.*\/success/);
+  }
+
+  // Element getters with defensive selectors
+  get submitButton() {
+    return this.page.locator('button[type="submit"], button:has-text("Submit")');
+  }
+}
+```
+
+## **Test Structure Convention**
+
+```typescript
+import { test, expect } from '@playwright/test';
+import { FeaturePage } from '../pages/FeaturePage';
+import { AuthPage } from '../pages/AuthPage';
+
+test.describe('Feature Name User Flow', () => {
+  let featurePage: FeaturePage;
+  let authPage: AuthPage;
+
+  test.beforeEach(async ({ page }) => {
+    featurePage = new FeaturePage(page);
+    authPage = new AuthPage(page);
+    
+    // Setup authenticated state
+    await authPage.goto();
+    await authPage.login('junior@test.techrec.com', 'testpass123');
+    await authPage.expectLoginSuccess();
+  });
+
+  test.describe('Happy Path', () => {
+    test('should complete successful flow', async () => {
+      // Arrange
+      const testData = { /* test data */ };
+      
+      // Act
+      await featurePage.goto();
+      await featurePage.performAction(testData);
+      
+      // Assert
+      await featurePage.expectActionSuccess();
+    });
+  });
+
+  test.describe('Error Handling', () => {
+    test('should handle validation errors', async () => {
+      // Test error scenarios
+    });
+  });
+});
+```
+
+## **Test Data Management**
+
+- Use `TEST_USERS` from [test-user-setup.ts](mdc:tests/e2e/utils/test-user-setup.ts)
+- Create isolated test data for each test
+- Clean up test data in global teardown if needed
+- Use meaningful test data that reflects real user scenarios
+
+## **Test Naming Conventions**
+
+- **Files**: `feature-name.spec.ts` (kebab-case)
+- **Describe blocks**: `Feature Name User Flow` (Title Case)
+- **Test cases**: `should perform expected action` (lowercase, descriptive)
+
+## **When to Run Tests**
+
+Reference the [AI Testing Strategy](mdc:testing/ai-driven-testing-strategy.md) for complete workflow:
+
+- **Before Feature Work**: `npm run test:auth`
+- **During Development**: `npm run test:feature-name`  
+- **After Feature Complete**: `./run-reliable-tests.sh`
+- **Before Deployment**: `npm run test:e2e`
+
+## **Error Prevention**
+
+- **Write tests before implementing features** (TDD approach)
+- **Add regression tests for every bug fix**
+- **Test cross-browser compatibility** for critical flows
+- **Validate error states and edge cases**
+- **Use semantic selectors** that won't break with UI changes

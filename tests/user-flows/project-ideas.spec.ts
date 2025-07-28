@@ -8,9 +8,10 @@ test.describe('Project Ideas Generation Flow (FR24)', () => {
 
   const sampleAnswers: QuestionnaireAnswers = {
     problem: 'I need a productivity app to manage my daily tasks and track my habits',
-    skills: 'JavaScript, React, TypeScript',
-    experience: 'intermediate',
-    timeframe: '2-3 months'
+    timeframe: '1-2 weeks',    // Step 2: Project scope
+    skills: 'New framework',   // Step 3: Learning goals  
+    experience: 'General public', // Step 4: Target users
+    preferences: 'Web app'     // Step 5: Platform preference
   };
 
   test.beforeEach(async ({ page }) => {
@@ -35,8 +36,8 @@ test.describe('Project Ideas Generation Flow (FR24)', () => {
       
       await projectIdeasPage.fillQuestionnaire(sampleAnswers);
       
-      // Verify form was filled
-      await expect(projectIdeasPage.problemInput).toHaveValue(sampleAnswers.problem || '');
+      // Verify we reached the final step (Generate button should be visible)
+      await expect(projectIdeasPage.generateButton).toBeVisible();
     });
 
     test('should show validation error for empty form', async () => {

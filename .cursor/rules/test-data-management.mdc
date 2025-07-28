@@ -1,0 +1,213 @@
+---
+description: Test data management, user setup, and database seeding patterns for E2E tests
+globs: tests/**/*.ts,**/test-*.ts
+---
+
+# Test Data Management
+
+## **Test User Strategy**
+
+### **Predefined Test Users**
+Use standardized test users from [test-user-setup.ts](mdc:tests/e2e/utils/test-user-setup.ts):
+
+```typescript
+// ✅ Good: Use predefined test users
+import { TEST_USERS } from '../e2e/utils/test-user-setup';
+
+const testUser = TEST_USERS.junior_developer;
+await authPage.login(testUser.email, testUser.password);
+```
+
+### **Available Test Users**
+- `TEST_USERS.junior_developer` - For basic feature testing
+- `TEST_USERS.experienced_developer` - For advanced feature testing  
+- `TEST_USERS.new_user` - For onboarding flow testing
+
+## **Test Data Isolation**
+
+### **Global Setup Pattern**
+Reference [global-setup.ts](mdc:tests/global-setup.ts) for database seeding:
+
+```typescript
+// Global setup runs once before all tests
+await ensureTestUsersExist();  // Creates test users in database
+```
+
+### **Test Isolation**
+Each test should start with clean, predictable state:
+
+```typescript
+test.beforeEach(async ({ page }) => {
+  // Setup clean authentication state
+  await authPage.goto();
+  await authPage.login(testUser.email, testUser.password);
+  await authPage.expectLoginSuccess();
+});
+```
+
+## **Test Data Patterns**
+
+### **Static Test Data**
+For predictable, reusable test scenarios:
+
+```typescript
+const SAMPLE_PROJECT_DATA = {
+  title: 'Test Project',
+  description: 'A sample project for testing',
+  technologies: ['TypeScript', 'React'],
+  difficulty: 'intermediate'
+};
+```
+
+### **Dynamic Test Data**
+For unique data that avoids conflicts:
+
+```typescript
+const uniqueData = {
+  email: `test-${Date.now()}@example.com`,
+  projectName: `Test Project ${Math.random().toString(36).substr(2, 9)}`
+};
+```
+
+### **Realistic Test Data**
+Use data that reflects real user scenarios:
+
+```typescript
+const REALISTIC_USER_INPUTS = {
+  problem: 'I need a productivity app to manage my daily tasks and track my habits',
+  skills: 'JavaScript, React, TypeScript, Node.js',
+  experience: 'intermediate',
+  timeframe: '2-3 months'
+};
+```
+
+## **Database State Management**
+
+### **Pre-Test Setup**
+- Use [ensureTestUsersExist()](mdc:tests/e2e/utils/test-user-setup.ts) in global setup
+- Create necessary test data before tests run
+- Ensure consistent database state across test runs
+
+### **Post-Test Cleanup** 
+- Clean up test data that might affect other tests
+- Reset user state between tests
+- Clear any generated content that persists
+
+## **Test Data Organization**
+
+### **Shared Test Data**
+Store reusable test data in [test-data-helper.ts](mdc:tests/e2e/utils/test-data-helper.ts):
+
+```typescript
+export const QUESTIONNAIRE_SAMPLES = {
+  webApp: {
+    problem: 'Need a task management solution',
+    skills: 'React, TypeScript',
+    timeframe: '2-3 months'
+  },
+  mobileApp: {
+    problem: 'Mobile productivity app needed',
+    skills: 'React Native, JavaScript', 
+    timeframe: '1-2 months'
+  }
+};
+```
+
+### **Test-Specific Data**
+Keep test-specific data close to the test:
+
+```typescript
+test('should handle complex project requirements', async () => {
+  const complexProjectData = {
+    // Complex test scenario data here
+  };
+  
+  await projectPage.createProject(complexProjectData);
+});
+```
+
+## **Mock Data Strategy**
+
+### **API Response Mocking**
+Mock external API responses for consistent testing:
+
+```typescript
+// Mock GitHub API responses
+await page.route('**/api/github/**', route => {
+  route.fulfill({
+    status: 200,
+    body: JSON.stringify(mockGitHubRepos)
+  });
+});
+```
+
+### **AI Response Mocking**
+Mock AI generation for predictable test results:
+
+```typescript
+// Mock Gemini AI responses for project generation
+await page.route('**/api/generate-project-ideas', route => {
+  route.fulfill({
+    status: 200,
+    body: JSON.stringify(mockProjectIdeas)
+  });
+});
+```
+
+## **Environment-Specific Data**
+
+### **Test Environment Configuration**
+Use environment-specific test data:
+
+```typescript
+const TEST_CONFIG = {
+  baseUrl: process.env.TEST_BASE_URL || 'http://localhost:3001',
+  testUser: process.env.TEST_USER_EMAIL || 'junior@test.techrec.com',
+  testPassword: process.env.TEST_USER_PASSWORD || 'testpass123'
+};
+```
+
+### **Development vs CI/CD**
+Adjust test data based on environment:
+
+```typescript
+const isCI = process.env.CI === 'true';
+const testTimeout = isCI ? 60000 : 30000;  // Longer timeouts in CI
+```
+
+## **Data Validation**
+
+### **Test Data Validation**
+Validate test data before using in tests:
+
+```typescript
+test.beforeEach(async () => {
+  // Verify test user exists
+  expect(TEST_USERS.junior_developer.email).toBeDefined();
+  expect(TEST_USERS.junior_developer.password).toBeDefined();
+});
+```
+
+### **Test Result Validation**
+Validate generated data meets expectations:
+
+```typescript
+test('should generate valid project ideas', async () => {
+  await projectIdeasPage.generateIdeas();
+  
+  const projectCount = await projectIdeasPage.getProjectCardCount();
+  expect(projectCount).toBeGreaterThan(0);
+  expect(projectCount).toBeLessThanOrEqual(5);
+});
+```
+
+## **Best Practices**
+
+- ✅ **Use predefined test users** for consistent authentication
+- ✅ **Keep test data realistic** to catch real user issues  
+- ✅ **Isolate test data** to prevent test interference
+- ✅ **Clean up after tests** to maintain database consistency
+- ✅ **Version test data** with the tests that use it
+- ❌ **Don't use production data** in tests
+- ❌ **Don't rely on external APIs** without mocking
+- ❌ **Don't create data that persists** across test runs
