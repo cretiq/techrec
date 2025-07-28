@@ -191,7 +191,7 @@ export function useSuggestionsFetcher() {
     try {
       dispatch({ type: 'suggestions/setLoading', payload: true });
 
-      const response = await fetch('/api/cv-improvement-gemini', {
+      const response = await fetch('/api/cv-improvement', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

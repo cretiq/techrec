@@ -1,68 +1,34 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { selectAIProvider } from "@/utils/aiProviderSelector"
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Initialize Google AI client
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
 const PLATFORM_CONSTRAINTS = {
   linkedin: {
     maxLength: 300,
-    style: "professional and personable",
-    tones: ["Professional", "Friendly Professional", "Enthusiastic"]
+    style: "professional and concise",
   },
   email: {
     maxLength: 500,
-    style: "formal but warm",
-    tones: ["Formal", "Semi-Formal", "Conversational"]
+    style: "formal but personable",
   },
   twitter: {
     maxLength: 280,
     style: "casual and engaging",
-    tones: ["Casual", "Friendly", "Direct"]
   },
   github: {
     maxLength: 400,
-    style: "technical and collaborative",
-    tones: ["Technical", "Collaborative", "Mentorship-focused"]
+    style: "technical and straightforward",
   },
 }
 
 export async function POST(req: Request) {
   try {
-    console.log("[Outreach API] Received request")
-    const session = await getServerSession(authOptions)
-    
-    if (!session) {
-      console.log("[Outreach API] Unauthorized - no session")
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+    const { recipientInfo, context, platform } = await req.json()
 
-    const { 
-      developerProfile, 
-      roleInfo, 
-      recipientInfo,
-      context,
-      connectionPoints,
-      platform 
-    } = await req.json()
-
-    console.log("[Outreach API] Request data:", {
-      hasProfile: !!developerProfile,
-      hasRoleInfo: !!roleInfo,
-      hasRecipientInfo: !!recipientInfo,
-      platform,
-      recipientName: recipientInfo?.name
-    })
-
-    if (!developerProfile || !roleInfo || !recipientInfo || !platform) {
-      console.log("[Outreach API] Missing required fields:", {
-        developerProfile: !!developerProfile,
-        roleInfo: !!roleInfo,
-        recipientInfo: !!recipientInfo,
-        platform: !!platform
-      })
+    if (!recipientInfo || !context || !platform) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -70,109 +36,78 @@ export async function POST(req: Request) {
     }
 
     const constraints = PLATFORM_CONSTRAINTS[platform as keyof typeof PLATFORM_CONSTRAINTS]
-    const { provider, model } = selectAIProvider("outreach")
-
-    console.log("[Outreach API] AI Provider selected:", { provider, model })
-
-    // Build a comprehensive profile summary
-    const profileSummary = `
-    Developer: ${developerProfile.firstName} ${developerProfile.lastName}
-    Title: ${developerProfile.title || 'Software Developer'}
-    Bio: ${developerProfile.bio || 'Experienced developer'}
-    Years of Experience: ${developerProfile.yearsOfExperience || 'Not specified'}
-    Key Skills: ${developerProfile.skills?.slice(0, 5).map((s: any) => s.name).join(', ') || 'Various technical skills'}
-    Recent Achievement: ${developerProfile.achievements?.[0]?.title || 'Multiple technical achievements'}
-    `
 
     const prompt = `
-    As an expert in professional networking and relationship building, create 3 variations of personalized outreach messages.
-    
-    CONTEXT:
-    I am a ${developerProfile.title || 'developer'} interested in the ${roleInfo.title} position at ${recipientInfo.company}.
-    
-    MY BACKGROUND:
-    ${profileSummary}
-    
-    ROLE DETAILS:
-    - Title: ${roleInfo.title}
-    - Key Requirements: ${roleInfo.requirements?.slice(0, 3).join(', ') || 'Not specified'}
-    - Skills Needed: ${roleInfo.skills?.slice(0, 5).join(', ') || 'Not specified'}
-    
-    RECIPIENT:
-    - Name: ${recipientInfo.name}
-    - Title: ${recipientInfo.title || 'Professional at ' + recipientInfo.company}
-    - Company: ${recipientInfo.company}
-    
-    CONNECTION POINTS:
-    ${connectionPoints?.map((point: string) => `- ${point}`).join('\n') || '- Professional interest in the role'}
-    
-    ADDITIONAL CONTEXT:
-    ${context || 'No additional context provided'}
-    
-    PLATFORM SPECIFICATIONS:
-    - Platform: ${platform}
-    - Maximum Length: ${constraints.maxLength} characters
-    - Style: ${constraints.style}
-    - Available Tones: ${constraints.tones.join(', ')}
-    
-    Create 3 unique message variations that:
-    1. Start with a personalized greeting using the recipient's name
-    2. Establish a genuine connection based on the connection points
-    3. Briefly highlight 1-2 relevant qualifications from my background
-    4. Express specific interest in the role and company
-    5. End with a clear, actionable next step
-    6. Use a different tone for each variation (from the available tones)
-    7. Stay within the character limit for ${platform}
-    
-    Return the messages in the following JSON format:
-    {
-      "variations": [
-        {
-          "content": "complete message text",
-          "platform": "${platform}",
-          "tone": "tone used (from available tones)"
-        }
-      ]
-    }
+      As an expert in professional networking, create 3 variations of an outreach message with the following specifications:
+      
+      Platform: ${platform}
+      Maximum Length: ${constraints.maxLength} characters
+      Style: ${constraints.style}
+      
+      Recipient Information:
+      ${recipientInfo}
+      
+      Context/Purpose:
+      ${context}
+      
+      Create 3 unique message variations that:
+      1. Are appropriate for the platform
+      2. Show personalization based on recipient info
+      3. Clearly communicate the purpose
+      4. Include a specific call to action
+      5. Stay within character limit
+      
+      Return the messages in the following JSON format:
+      {
+        "variations": [
+          {
+            "content": "message text",
+            "platform": "${platform}"
+          }
+        ]
+      }
+
+      Return ONLY a valid JSON object. Do not include any explanatory text before or after the JSON.
     `
 
-    if (provider === 'openai') {
-      console.log("[Outreach API] Using OpenAI provider")
-      const { default: OpenAI } = await import('openai')
-      const openai = new OpenAI()
-      
-      const completion = await openai.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: model,
-        temperature: 0.8,
-        response_format: { type: "json_object" },
-      })
+    try {
+        // Get the generative model
+        const model = genAI.getGenerativeModel({ 
+            model: geminiModel,
+            generationConfig: {
+                temperature: 0.7,
+                topK: 40,
+                topP: 0.8,
+                maxOutputTokens: 2048,
+            },
+        });
 
-      const result = JSON.parse(completion.choices[0].message.content || '{"variations":[]}')
-      console.log("[Outreach API] OpenAI result:", { variationsCount: result.variations?.length || 0 })
-      return NextResponse.json(result)
-    } else {
-      console.log("[Outreach API] Using Gemini provider")
-      const { GoogleGenerativeAI } = await import('@google/generative-ai')
-      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!)
-      const geminiModel = genAI.getGenerativeModel({ model: model })
-      
-      const result = await geminiModel.generateContent(prompt + "\n\nIMPORTANT: Return ONLY valid JSON, no markdown formatting or code blocks.")
-      const response = await result.response
-      const text = response.text()
-      
-      // Clean up the response if needed
-      const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      const parsedResult = JSON.parse(cleanedText)
-      console.log("[Outreach API] Gemini result:", { variationsCount: parsedResult.variations?.length || 0 })
-      
-      return NextResponse.json(parsedResult)
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const content = response.text();
+
+        if (!content) {
+            throw new Error("Gemini response did not contain content.");
+        }
+
+        // Clean the response to extract JSON
+        const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        const variations = JSON.parse(cleanedContent);
+
+        return NextResponse.json({
+            ...variations,
+            provider: 'gemini'
+        });
+    } catch (geminiError) {
+        console.error("Gemini API call failed:", geminiError);
+        throw new Error(`Gemini API Error: ${geminiError instanceof Error ? geminiError.message : 'Unknown error'}`);
     }
+
   } catch (error) {
-    console.error("Outreach message generation error:", error)
+    console.error("Outreach message generation error (Gemini):", error)
     return NextResponse.json(
       { error: "Failed to generate outreach messages" },
       { status: 500 }
     )
   }
-}
+} 

@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import OpenAI from 'openai';
-import crypto from 'crypto'; // For hashing input data
-import { getCache, setCache } from '@/lib/redis'; // Import cache functions
-// Import Zod schemas
-import { CvImprovementRequestSchema, CvImprovementResponseSchema } from '@/types/cv';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import crypto from 'crypto';
+import { getCache, setCache } from '@/lib/redis';
+import { CvImprovementRequestSchema, CvImprovementResponseSchema, EnhancedCvImprovementResponseSchema } from '@/types/cv';
 import { z } from 'zod';
 // Import validation utilities
 import { 
@@ -14,14 +13,11 @@ import {
   sanitizeSuggestionsData 
 } from '@/utils/cvSuggestionValidation';
 
-// Initialize OpenAI client (requires OPENAI_API_KEY)
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize Google AI client
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
-const gptModel = process.env.GPT_MODEL || "gpt-4.1-nano-2025-04-14";
-
-const SUGGESTION_CACHE_PREFIX = 'cv_suggestion:';
+const SUGGESTION_CACHE_PREFIX = 'cv_suggestion_gemini:';
 const SUGGESTION_CACHE_TTL_SECONDS = 60 * 60; // 1 hour TTL
 
 // Retry configuration
@@ -29,37 +25,43 @@ const MAX_RETRY_ATTEMPTS = 7;
 const RETRY_DELAY_MS = 1000; // 1 second delay between retries
 
 /**
- * Generates CV improvement suggestions with retry mechanism and validation
+ * Generates CV improvement suggestions with retry mechanism and validation for Gemini
  * @param cvData - The CV data to analyze
- * @param systemPrompt - The system prompt for OpenAI
- * @param userPrompt - The user prompt for OpenAI
+ * @param prompt - The prompt for Gemini
  * @returns Validated suggestions response
  */
-async function generateSuggestionsWithRetry(
-  cvData: any, 
-  systemPrompt: string, 
-  userPrompt: string
-): Promise<any> {
+async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): Promise<any> {
   let lastError: Error | null = null;
   
   for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
     console.log(`🔄 [cv-improvement] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} - Generating suggestions...`);
+    console.log(`🤖 [cv-improvement] Using model: ${geminiModel}`);
     
     try {
-      // --- OpenAI API Call --- 
-      const completion = await openai.chat.completions.create({
-        model: gptModel,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.5 + (attempt - 1) * 0.1, // Slightly increase temperature on retries
+      // Get the generative model
+      const model = genAI.getGenerativeModel({ 
+        model: geminiModel,
+        generationConfig: {
+          temperature: 0.3 + (attempt - 1) * 0.1, // Slightly increase temperature on retries
+          topK: 20,
+          topP: 0.6,
+          maxOutputTokens: 2048,
+        },
       });
 
-      const content = completion.choices[0]?.message?.content;
+      const apiCallStartTime = Date.now();
+      console.log(`📞 [cv-improvement] Attempt ${attempt} - Making API call to Gemini...`);
+      
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const content = response.text();
+
+      const apiCallDuration = Date.now() - apiCallStartTime;
+      console.log(`⏱️ [cv-improvement] Attempt ${attempt} - Gemini API call completed in: ${apiCallDuration}ms`);
+
       if (!content) {
-        throw new Error('OpenAI response content is empty.');
+        console.error(`❌ [cv-improvement] Attempt ${attempt} - Gemini response content is empty`);
+        throw new Error('Gemini response content is empty.');
       }
       
       console.log(`📥 [cv-improvement] Attempt ${attempt} - Received response (length: ${content.length})`);
@@ -67,30 +69,22 @@ async function generateSuggestionsWithRetry(
       // Clean and parse the response
       let rawSuggestions;
       try {
-        console.log('🧹 [cv-improvement] Cleaning OpenAI response...');
-        let cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        
-        // Remove any trailing comma or incomplete JSON elements
-        cleanedContent = cleanedContent.replace(/,\s*$/, ''); // Remove trailing comma
-        cleanedContent = cleanedContent.replace(/,\s*"reasoning"\s*$/, ''); // Remove malformed trailing "reasoning"
-        cleanedContent = cleanedContent.replace(/,\s*]\s*}$/, ']}'); // Fix malformed array closure
+        console.log('🧹 [cv-improvement] Cleaning Gemini response...');
+        // Clean the response to extract JSON (Gemini sometimes includes markdown formatting)
+        const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        console.log(`📏 [cv-improvement] Attempt ${attempt} - Cleaned content length: ${cleanedContent.length}`);
         
         rawSuggestions = JSON.parse(cleanedContent);
-        console.log('✅ [cv-improvement] Successfully parsed JSON response');
-        
-        // Additional cleanup: ensure suggestions array doesn't contain string elements
-        if (rawSuggestions.suggestions && Array.isArray(rawSuggestions.suggestions)) {
-          rawSuggestions.suggestions = rawSuggestions.suggestions.filter(suggestion => 
-            typeof suggestion === 'object' && suggestion !== null && typeof suggestion !== 'string'
-          );
-        }
+        console.log(`✅ [cv-improvement] Attempt ${attempt} - Successfully parsed JSON response`);
+        console.log(`📊 [cv-improvement] Attempt ${attempt} - Parsed object keys: ${Object.keys(rawSuggestions)}`);
         
         // Sanitize the data
         rawSuggestions = sanitizeSuggestionsData(rawSuggestions);
         
       } catch (parseError) {
         console.error(`❌ [cv-improvement] Attempt ${attempt} - JSON parse failed:`, parseError);
-        throw new Error(`Invalid JSON received from OpenAI: ${parseError}`);
+        console.error(`❌ [cv-improvement] Attempt ${attempt} - Raw content:`, content);
+        throw new Error(`Invalid JSON received from Gemini: ${parseError}`);
       }
 
       // Validate the response using our clever validation
@@ -104,10 +98,22 @@ async function generateSuggestionsWithRetry(
           console.log(`⚠️ [cv-improvement] Attempt ${attempt} - Warnings:`, validation.warnings);
         }
         
-        // Return the validated and cleaned suggestions
+        // Return the validated and cleaned suggestions (using enhanced format)
         return {
           suggestions: validation.qualitySuggestions,
+          summary: {
+            totalSuggestions: validation.qualitySuggestions.length,
+            highPriority: validation.qualitySuggestions.filter(s => (s as any).priority === 'high').length,
+            categories: {
+              experienceBullets: validation.qualitySuggestions.filter(s => (s as any).type === 'experience_bullet').length,
+              educationGaps: validation.qualitySuggestions.filter(s => (s as any).type === 'education_gap').length,
+              missingSkills: validation.qualitySuggestions.filter(s => (s as any).type === 'missing_skill').length,
+              summaryImprovements: validation.qualitySuggestions.filter(s => (s as any).type === 'summary_improvement').length,
+              generalImprovements: validation.qualitySuggestions.filter(s => (s as any).type === 'general_improvement').length,
+            }
+          },
           fromCache: false,
+          provider: 'gemini',
           attempt: attempt,
           validationWarnings: validation.warnings
         };
@@ -127,7 +133,19 @@ async function generateSuggestionsWithRetry(
             console.log(`✅ [cv-improvement] Using ${validation.qualitySuggestions.length} partial suggestions as fallback`);
             return {
               suggestions: validation.qualitySuggestions,
+              summary: {
+                totalSuggestions: validation.qualitySuggestions.length,
+                highPriority: 0,
+                categories: {
+                  experienceBullets: 0,
+                  educationGaps: 0,
+                  missingSkills: 0,
+                  summaryImprovements: 0,
+                  generalImprovements: validation.qualitySuggestions.length,
+                }
+              },
               fromCache: false,
+              provider: 'gemini',
               attempt: attempt,
               fallback: true,
               validationWarnings: validation.warnings,
@@ -159,88 +177,134 @@ async function generateSuggestionsWithRetry(
 
 // Helper to create a stable hash from JSON data
 const createDataHash = (data: any): string => {
-    const stringifiedData = JSON.stringify(data); // Ensure consistent order if possible, though stringify isn't guaranteed
+    const stringifiedData = JSON.stringify(data);
     return crypto.createHash('sha256').update(stringifiedData).digest('hex');
 };
 
-// Re-define the plain schema object locally for the prompt
+// Define the improvement suggestion schema for Gemini
 const improvementSuggestionPlainSchema = {
-  type: "object",
-  properties: {
-    suggestions: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          section: { type: "string", description: "e.g., 'summary', 'experience[0].description', 'skills'" },
-          originalText: { type: ["string", "null"], description: "The original text snippet being improved, if applicable." },
-          suggestionType: { type: "string", enum: ["wording", "add_content", "remove_content", "reorder", "format"], description: "Type of suggestion." },
-          suggestedText: { type: ["string", "null"], description: "The suggested replacement text, if applicable." },
-          reasoning: { type: "string", description: "Explanation for the suggestion." },
-        },
-        required: ["section", "suggestionType", "reasoning"],
-      },
-    },
-  },
-  required: ["suggestions"],
+    suggestions: [
+        {
+            section: "string",
+            originalText: "string or null",
+            suggestionType: "wording|add_content|remove_content|reorder|format",
+            suggestedText: "string or null",
+            reasoning: "string"
+        }
+    ]
 };
 
 export async function POST(request: Request) {
+  const requestStartTime = Date.now();
+  console.log('🚀 [cv-improvement] ===== REQUEST START =====');
+  
   try {
-    console.log('Received CV improvement suggestion request...');
+    // --- Authentication ---
+    console.log('🔐 [cv-improvement] Checking authentication...');
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
+      console.log('❌ [cv-improvement] Unauthorized request');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    console.log('✅ [cv-improvement] Authenticated user:', session.user.id);
 
-    // --- Validate Request Body --- 
-    let rawBody = await request.json();
+    // --- Parse Request Body ---
+    console.log('📥 [cv-improvement] Parsing request body...');
+    let rawBody;
+    try {
+      rawBody = await request.json();
+      console.log('📊 [cv-improvement] Raw request body keys:', Object.keys(rawBody));
+      console.log('📊 [cv-improvement] Request body structure:');
+      Object.entries(rawBody).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          console.log(`  - ${key}: Array with ${value.length} items`);
+        } else if (typeof value === 'object' && value !== null) {
+          console.log(`  - ${key}: Object with keys [${Object.keys(value).join(', ')}]`);
+        } else {
+          console.log(`  - ${key}: ${typeof value} (length: ${value?.toString?.()?.length || 0})`);
+        }
+      });
+    } catch (parseError) {
+      console.error('❌ [cv-improvement] Failed to parse request body:', parseError);
+      return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 });
+    }
+
+    // --- Validate Request Body ---
+    console.log('🔍 [cv-improvement] Validating request schema...');
     const validationResult = CvImprovementRequestSchema.safeParse(rawBody);
     if (!validationResult.success) {
-       console.error('Invalid CV data for improvement request:', validationResult.error.flatten());
+       console.error('❌ [cv-improvement] Schema validation failed:', validationResult.error.flatten());
+       console.error('❌ [cv-improvement] Field errors:', JSON.stringify(validationResult.error.flatten().fieldErrors, null, 2));
         return NextResponse.json(
             { error: 'Invalid CV data format', details: validationResult.error.flatten().fieldErrors }, 
             { status: 400 }
         );
     }
-    const cvData = validationResult.data; // Use validated data
+    const cvData = validationResult.data;
+    console.log('✅ [cv-improvement] Schema validation passed');
 
-    // --- Cache Check ---
-    const dataHash = createDataHash(cvData);
-    const cacheKey = `${SUGGESTION_CACHE_PREFIX}${dataHash}`;
-    console.log('Calculated suggestion cache key:', cacheKey);
+    // --- Generate suggestions (no caching) ---
+    console.log('🤖 [cv-improvement] Generating suggestions with Gemini...');
+    console.log('🤖 [cv-improvement] Model:', geminiModel);
+    console.log('🤖 [cv-improvement] CV data summary:');
+    console.log(`  - Contact Info: ${cvData.contactInfo ? 'Present' : 'Missing'}`);
+    console.log(`  - About: ${cvData.about ? `${cvData.about.length} chars` : 'Missing'}`);
+    console.log(`  - Skills: ${cvData.skills ? `${cvData.skills.length} items` : 'Missing'}`);
+    console.log(`  - Experience: ${cvData.experience ? `${cvData.experience.length} items` : 'Missing'}`);
+    console.log(`  - Education: ${cvData.education ? `${cvData.education.length} items` : 'Missing'}`);
+    console.log(`  - Achievements: ${cvData.achievements ? `${cvData.achievements.length} items` : 'Missing'}`);
 
-    const cachedSuggestions = await getCache<z.infer<typeof CvImprovementResponseSchema>>(cacheKey);
-    if (cachedSuggestions) {
-        console.log('Returning cached suggestions for hash:', dataHash);
-        return NextResponse.json({ ...cachedSuggestions, fromCache: true });
+    // --- Enhanced prompt for Gemini ---
+    const prompt = `You are an expert career coach and CV reviewer. Analyze the provided CV data (in JSON format) and provide specific, actionable suggestions for improvement. 
+
+Focus on:
+- Clarity and readability
+- Impact and action verbs
+- Quantifiable results and achievements
+- Professional terminology
+- ATS optimization
+- Tailoring to software engineering/tech roles
+
+CV Data:
+${JSON.stringify(cvData, null, 2)}
+
+Provide suggestions in the following JSON format:
+{
+  "suggestions": [
+    {
+      "section": "specific section path (e.g., 'about', 'experience[0].description', 'skills')",
+      "originalText": "the current text (or null if adding new content)",
+      "suggestionType": "wording|add_content|remove_content|reorder|format",
+      "suggestedText": "the improved text (or null if removing content)", 
+      "reasoning": "clear explanation of why this improvement helps"
     }
-    console.log('No cached suggestions found.');
+  ]
+}
 
-    // --- If not cached, proceed to OpenAI --- 
-    console.log('Generating improvement suggestions for CV data...');
-
-    // --- Prompt Engineering --- 
-    const systemPrompt = `You are an expert career coach and CV reviewer. Analyze the provided CV data (in JSON format) and provide specific, actionable suggestions for improvement. Focus on clarity, impact, action verbs, quantifiable results, and tailoring to common job requirements (e.g., software engineering roles). Structure your response ONLY as a valid JSON object matching this schema: ${JSON.stringify(improvementSuggestionPlainSchema)}. For each suggestion, provide the section, original text (if applicable), suggestion type, suggested text (if applicable), and clear reasoning.`;
-
-    const userPrompt = `CV Data:\n\n${JSON.stringify(cvData, null, 2)}`;
+Return ONLY the JSON object above - no markdown formatting, no explanations.`;
 
     // --- Generate suggestions with retry mechanism ---
-    const validatedSuggestions = await generateSuggestionsWithRetry(cvData, systemPrompt, userPrompt);
+    console.log("Gemini Prompt:", prompt)
+    const finalResponse = await generateSuggestionsWithRetryGemini(cvData, prompt);
 
-    console.log('Successfully generated and validated improvement suggestions.');
+    const totalProcessingTime = Date.now() - requestStartTime;
+    console.log('⏱️ [cv-improvement] Total processing time:', totalProcessingTime, 'ms');
+    console.log('🎉 [cv-improvement] ===== REQUEST SUCCESS =====');
 
-    // --- Store successful result in Cache --- 
-    await setCache(cacheKey, validatedSuggestions, SUGGESTION_CACHE_TTL_SECONDS);
-    console.log('Stored suggestions in cache.');
-
-    return NextResponse.json(validatedSuggestions);
+    return NextResponse.json(finalResponse);
 
   } catch (error: any) {
-    console.error('Error generating CV improvement suggestions:', error);
+    const totalErrorTime = Date.now() - requestStartTime;
+    console.error('💥 [cv-improvement] ===== REQUEST FAILED =====');
+    console.error('💥 [cv-improvement] Error after:', totalErrorTime, 'ms');
+    console.error('💥 [cv-improvement] Error type:', error.constructor.name);
+    console.error('💥 [cv-improvement] Error message:', error.message);
+    console.error('💥 [cv-improvement] Error stack:', error.stack);
+
     // Basic error check for API key missing
-    if (error.message?.includes('OPENAI_API_KEY')) {
-        return NextResponse.json({ error: 'OpenAI API key not configured.' }, { status: 500 });
+    if (error.message?.includes('Google AI API key')) {
+      console.error('💥 [cv-improvement] Missing Google AI API key');
+      return NextResponse.json({ error: 'Google AI API key not configured.' }, { status: 500 });
     }
     
     // Check if this is a retry exhaustion error

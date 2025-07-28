@@ -223,7 +223,7 @@ export function CoverLetterCreator({
 
       console.log("Sending request data:", JSON.stringify(requestData, null, 2))
 
-      const response = await fetch("/api/generate-cover-letter-gemini", {
+      const response = await fetch("/api/generate-cover-letter", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

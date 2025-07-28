@@ -258,7 +258,7 @@ export function OutreachMessageGenerator({
       }
 
       console.log(`[OutreachMessageGenerator] Sending request to API:`, requestData)
-      const response = await fetch("/api/generate-outreach", {
+      const response = await fetch("/api/generate-outreach-gemini", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

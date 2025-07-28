@@ -19,7 +19,7 @@ import {
   updateCoverLetterTone,
   updateCoverLetterHiringManager
 } from '@/lib/features/coverLettersSlice'
-import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown } from "lucide-react"
+import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
@@ -208,7 +208,7 @@ export function CoverLetterCreator({ role, generationTrigger, onGenerationComple
 
       console.log("Sending request data:", JSON.stringify(requestData, null, 2))
 
-      const response = await fetch("/api/generate-cover-letter-gemini", {
+      const response = await fetch("/api/generate-cover-letter", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

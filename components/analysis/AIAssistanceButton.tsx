@@ -35,7 +35,7 @@ export function AIAssistanceButton({
     
     try {
       // Use Gemini endpoint for CV improvement (enhanced with debugging)
-      const response = await fetch('/api/cv-improvement-gemini', {
+      const response = await fetch('/api/cv-improvement', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

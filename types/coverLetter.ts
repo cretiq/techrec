@@ -53,7 +53,7 @@ export interface CoverLetterData {
   tone?: CoverLetterTone;
   requestType?: RequestType;
   hiringManager?: string;
-  provider?: 'openai' | 'gemini';
+  provider: 'gemini';
   cached?: boolean;
   fallback?: boolean;
 }

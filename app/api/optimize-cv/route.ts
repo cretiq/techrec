@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
-import OpenAI from "openai"
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const openai = new OpenAI()
-
-const gptModel = process.env.GPT_MODEL || "gpt-4o-mini-2024-07-18";
+// Initialize Google AI client
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
 export async function POST(req: Request) {
   try {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       Job Description:
       ${jobDescription}
 
-      Provide suggestions in the following format:
+      Provide suggestions in the following JSON format:
       {
         "suggestions": [
           {
@@ -41,19 +41,45 @@ export async function POST(req: Request) {
           }
         ]
       }
+
+      Return ONLY a valid JSON object. Do not include any explanatory text before or after the JSON.
     `
 
-    const completion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: gptModel,
-      response_format: { type: "json_object" },
-    })
+    try {
+        // Get the generative model
+        const model = genAI.getGenerativeModel({ 
+            model: geminiModel,
+            generationConfig: {
+                temperature: 0.3,
+                topK: 40,
+                topP: 0.8,
+                maxOutputTokens: 4096,
+            },
+        });
 
-    const suggestions = JSON.parse(completion.choices[0].message.content || "[]")
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const content = response.text();
 
-    return NextResponse.json(suggestions)
+        if (!content) {
+            throw new Error("Gemini response did not contain content.");
+        }
+
+        // Clean the response to extract JSON
+        const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        const suggestions = JSON.parse(cleanedContent);
+
+        return NextResponse.json({
+            ...suggestions,
+            provider: 'gemini'
+        });
+    } catch (geminiError) {
+        console.error("Gemini API call failed:", geminiError);
+        throw new Error(`Gemini API Error: ${geminiError instanceof Error ? geminiError.message : 'Unknown error'}`);
+    }
+
   } catch (error) {
-    console.error("CV optimization error:", error)
+    console.error("CV optimization error (Gemini):", error)
     return NextResponse.json(
       { error: "Failed to optimize CV" },
       { status: 500 }

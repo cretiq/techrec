@@ -1,63 +1,104 @@
 import { NextResponse } from "next/server"
-import OpenAI from "openai"
-// import { DeveloperProfile } from "@/types/developer" // Removed old import
-import { InternalProfile, InternalSkill, InternalAchievement } from "@/types/types"; // Relative path attempt
-const openai = new OpenAI()
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { 
+  CoverLetterRequestData, 
+  CoverLetterRequestSchema,
+  CoverLetterValidationError,
+  CoverLetterGenerationError,
+  WORD_BOUNDS
+} from "@/types/coverLetter";
+import { validateLetterOutput, enforceWordCount, sanitizeInput } from "@/utils/coverLetterOutput";
+import { getCache, setCache } from "@/lib/redis";
 
-const gptModel = process.env.GPT_MODEL || "gpt-4o-mini-2024-07-18";
+// Initialize Google AI client
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
+const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
-interface RoleInfo {
-  title: string
-  description: string
-  requirements: string[]
-  skills: string[]
-}
+// Cache configuration
+const CACHE_TTL_MINUTES = 10; // 10 minutes cache for generated letters
+const CACHE_TTL_SECONDS = CACHE_TTL_MINUTES * 60;
 
-interface CompanyInfo {
-  name: string
-  location: string // Location still needed?
-  remote: boolean
-  attractionPoints: string[]
-}
-
-interface JobSourceInfo {
-  source?: string
-}
-
-// Update to use InternalProfile
-interface CoverLetterRequestData {
-  developerProfile: InternalProfile 
-  roleInfo: RoleInfo
-  companyInfo: CompanyInfo
-  jobSourceInfo: JobSourceInfo
+/**
+ * Generates a cache key for cover letter generation
+ * Key includes essential parameters that affect generation output
+ */
+function generateCacheKey(data: CoverLetterRequestData): string {
+  const keyParts = [
+    'cover-letter',
+    data.developerProfile.id,
+    data.roleInfo.title,
+    data.companyInfo.name,
+    data.requestType || 'coverLetter',
+    data.tone || 'formal',
+    data.hiringManager || 'none',
+    data.jobSourceInfo?.source || 'none'
+  ];
+  
+  return keyParts.join(':').replace(/[^a-zA-Z0-9:-]/g, '_');
 }
 
 export async function POST(req: Request) {
-    console.log("Generating cover letter")
+    console.log("Generating cover letter with Gemini")
   try {
-    const data: CoverLetterRequestData = await req.json()
-    // console.log("Data received:", JSON.stringify(data, null, 2))
-    const { developerProfile, roleInfo, companyInfo, jobSourceInfo } = data
+    const rawData = await req.json()
+    
+    // Validate request data with Zod
+    const data: CoverLetterRequestData = CoverLetterRequestSchema.parse(rawData)
+
+    // Generate cache key and check for cached result
+    const cacheKey = generateCacheKey(data);
+    console.log(`[Cache] Checking cache for key: ${cacheKey}`);
+    
+    const cachedResult = await getCache<{ letter: string; provider: string }>(cacheKey);
+    if (cachedResult) {
+      console.log(`[Cache] Cache HIT for key: ${cacheKey}`);
+      return NextResponse.json({
+        letter: cachedResult.letter,
+        provider: cachedResult.provider,
+        cached: true
+      });
+    }
+    
+    console.log(`[Cache] Cache MISS for key: ${cacheKey}. Proceeding with generation.`);
+
+    // Destructure with defaults
+    const {
+      developerProfile,
+      roleInfo,
+      companyInfo,
+      jobSourceInfo = {},
+      hiringManager,
+      achievements: providedAchievements,
+      requestType = "coverLetter",
+      tone = "formal",
+    } = data
+
+    // Import helper utils dynamically (avoids circular in edge runtimes)
+    const { pickCoreSkills, rankRoleKeywords, deriveAchievements } = await import("@/utils/coverLetter")
+
+    const keywords = rankRoleKeywords(roleInfo)
+    const coreSkills = pickCoreSkills(developerProfile.skills)
+    const achievements = deriveAchievements(developerProfile, providedAchievements)
 
     console.log("-".repeat(40));
     console.log("DEVELOPER PROFILE DATA");
     console.log("-".repeat(40));
-    console.log("[generate-cover-letter] DeveloperProfile:", JSON.stringify(developerProfile, null, 2))
-    
+    console.log("DeveloperProfile:", developerProfile)
+
     console.log("-".repeat(40));
     console.log("ROLE INFORMATION");
     console.log("-".repeat(40));
-    console.log("[generate-cover-letter] RoleInfo:", JSON.stringify(roleInfo, null, 2))
-    
+    console.log("RoleInfo:", roleInfo)
+
     console.log("-".repeat(40));
     console.log("COMPANY INFORMATION");
     console.log("-".repeat(40));
-    console.log("[generate-cover-letter] CompanyInfo:", JSON.stringify(companyInfo, null, 2))
-    
+    console.log("CompanyInfo:", companyInfo)
+
     console.log("-".repeat(40));
     console.log("JOB SOURCE INFORMATION");
     console.log("-".repeat(40));
-    console.log("[generate-cover-letter] JobSourceInfo:", JSON.stringify(jobSourceInfo, null, 2))
+    console.log("JobSourceInfo:", jobSourceInfo)
 
     if (!roleInfo || !companyInfo || !developerProfile) {
       return NextResponse.json(
@@ -66,95 +107,145 @@ export async function POST(req: Request) {
       )
     }
 
-    // Construct contact info string safely
-    const contactString = [
-        developerProfile.contactInfo?.phone,
-        developerProfile.profileEmail || developerProfile.email // Use profileEmail first, fallback to main email
-    ].filter(Boolean).join(' | ');
-    
-    // Construct optional links string
-    const links = [
-        developerProfile.contactInfo?.linkedin,
-        developerProfile.contactInfo?.github,
-        developerProfile.contactInfo?.website // Use website from contactInfo
-    ].filter(Boolean);
-    const optionalLinksString = links.length > 0 ? `Optional Links: ${links.join(' | ')}` : '';
+    const prompt = `SYSTEM:
+You are an elite career-coach copywriter who crafts concise, metrics-driven ${requestType === "coverLetter" ? "cover letters" : "outreach messages"} with a ${tone} yet professional voice.
 
-    const prompt = `
-Generate a professional and compelling cover letter for a software developer applying for a specific role. The goal is to capture the hiring manager's attention and secure an interview.
+USER:
+<HEADER>
+Name: ${developerProfile.name} | Email: ${developerProfile.profileEmail ?? developerProfile.email} | Phone: ${developerProfile.contactInfo?.phone ?? "N/A"}
 
-The letter is for the position of ${roleInfo.title} at ${companyInfo.name}.
+<COMPANY>
+Name: ${companyInfo.name}
+Location: ${companyInfo.location ?? "N/A"}
+Fact: "${companyInfo.attractionPoints?.[0] ?? ""}"
 
-Here is information about the company:
-${companyInfo.name ? `Address the letter to ${companyInfo.name}.` : ''}
-${companyInfo.location ? `The company is located in ${companyInfo.location}.` : ''}
-${companyInfo.remote ? `The company is a remote position.` : ''}
-${companyInfo.attractionPoints ? `The company is known for ${companyInfo.attractionPoints.join(', ')}.` : ''}
+<ROLE>
+Title: ${roleInfo.title}
+TopKeywords: ${keywords.join(", ")}
 
-Here is information about the job:
-${roleInfo.title ? `The job is for a ${roleInfo.title}.` : ''}
-${roleInfo.description ? `The job description is: ${roleInfo.description}.` : ''}
-${roleInfo.requirements ? `The requirements for the job are: ${roleInfo.requirements.join(', ')}.` : ''}
-${roleInfo.skills ? `The skills required for the job are: ${roleInfo.skills.join(', ')}.` : ''}
+<APPLICANT SNAPSHOT>
+Professional Title: ${developerProfile.title ?? "Software Developer"}
+CoreSkills: ${coreSkills.join(", ")}
+KeyAchievements:
+${achievements.map((a) => `- ${a}`).join("\n")}
 
-Here is information about the applicant:
-${developerProfile.name ? `Name: ${developerProfile.name}` : ''}
-${developerProfile.profileEmail ? `Email: ${developerProfile.profileEmail}` : ''}
-${developerProfile.contactInfo?.phone ? `Phone: ${developerProfile.contactInfo?.phone}` : ''}
-${developerProfile.contactInfo?.linkedin ? `LinkedIn: ${developerProfile.contactInfo?.linkedin}` : ''}
-${developerProfile.contactInfo?.github ? `GitHub: ${developerProfile.contactInfo?.github}` : ''}
-${developerProfile.contactInfo?.website ? `Website: ${developerProfile.contactInfo?.website}` : ''}
+<TASK>
+Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} that follows this structure:
+1. Greeting: "Dear ${hiringManager ?? "Hiring Team"},".
+2. Hook: cite role title + single company fact.
+3. Proof: weave achievements & 3 keywords naturally.
+4. Alignment: explain how skills solve company need.
+5. CTA & sign-off.
 
-${developerProfile.name}'s Skills:
-${developerProfile.skills.map((skill: InternalSkill) => `- ${skill.name} (${skill.level})`).join('\n')} {/* Added explicit type and level */}
-
-${jobSourceInfo.source ? `Mention where you saw the job posting: ${jobSourceInfo.source}.` : ''}
-
-  ---
-Please follow these guidelines when drafting the cover letter:
-
-1. Start with a personalized greeting addressed to a specific individual or team (e.g., “Dear [Hiring Manager Name]”).
-2. In the opening paragraph, mention the role title and express genuine enthusiasm for this position at [Company Name].
-3. Tailor the letter by referencing one or two specific company details (e.g., mission, recent project, or value) to demonstrate your research and alignment.
-4. Highlight 2–3 key achievements or experiences, using concrete metrics (e.g., “increased API performance by 40%”).
-5. Integrate 3–4 important keywords or requirements from the job posting to pass automated screening.
-6. Weave a concise story that shows how your skills directly solved a problem or added value, avoiding jargon and clichés.
-7. Maintain an authentic, first‑person voice throughout; let your personality shine in a professional tone.
-8. Keep the total length between 200–300 words (approximately one page) to ensure readability.
-9. Use clear, logical structure—short paragraphs, one‑inch margins, and a header with your contact info.
-10. Close with a strong call to action, thanking the reader and expressing your eagerness to discuss how you can contribute.
-
-Important notes:
-    - Do not lie
-    - Do not make up skills
-    - Do not make up experience
-    - Do not make up metrics
-    - Always use information that you can find and make out of information that is provided in the request
-
-Please generate only the final cover letter text without restating these instructions.
+Rules:
+• First-person, no clichés, no invented data.
+• Address the named person exactly.
+• Within specified word count.
+• Do NOT use asterisks (*), bullet points, bold formatting (**), or any markdown.
+• Write in plain paragraph format only.
+• Output ONLY the final letter text (no markdown, no extra commentary).
 `
 
     console.log("=".repeat(80));
     console.log("COVER LETTER GENERATION REQUEST");
     console.log("=".repeat(80));
-    console.log("Generated Prompt:", prompt) // Log the final prompt for debugging
+    console.log("Generated Prompt:", prompt)
 
-    const completion = await openai.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: gptModel,
-      temperature: 0.5,
-    })
+    try {
+        // Get the generative model
+        const model = genAI.getGenerativeModel({ 
+            model: geminiModel,
+            generationConfig: {
+                temperature: 0.5,
+                topK: 40,
+                topP: 0.8,
+                maxOutputTokens: 512,
+            },
+        });
 
-    return NextResponse.json({
-      letter: completion.choices[0].message.content,
-    })
+        const geminiResult = await model.generateContent(prompt);
+        const response = await geminiResult.response;
+        let letterContent = response.text();
+
+        if (!letterContent) {
+            throw new CoverLetterGenerationError("Gemini response did not contain letter content.");
+        }
+
+        // Sanitize the output
+        // letterContent = sanitizeInput(letterContent);
+
+        // Enforce word count limits
+        const maxWords = WORD_BOUNDS[requestType].max;
+        // letterContent = enforceWordCount(letterContent, maxWords);
+
+        // Validate the generated letter
+        const validation = validateLetterOutput(letterContent, requestType);
+        if (!validation.isValid) {
+            throw new CoverLetterValidationError(
+                `Generated letter failed validation: ${validation.errors.join(', ')}`,
+                { 
+                    errors: validation.errors,
+                    warnings: validation.warnings,
+                    wordCount: validation.wordCount
+                }
+            );
+        }
+
+        const result = {
+            letter: letterContent.trim(),
+            provider: 'gemini' as const
+        };
+
+        // Cache the successfully generated result
+        try {
+          await setCache(cacheKey, result, CACHE_TTL_SECONDS);
+          console.log(`[Cache] Successfully cached result for key: ${cacheKey}`);
+        } catch (cacheError) {
+          console.error(`[Cache] Failed to cache result for key: ${cacheKey}`, cacheError);
+          // Don't fail the request if caching fails
+        }
+
+        return NextResponse.json(result)
+    } catch (geminiError) {
+        console.error("Gemini API call failed:", geminiError);
+        throw new CoverLetterGenerationError(
+          `Gemini API Error: ${geminiError instanceof Error ? geminiError.message : 'Unknown error'}`,
+          { provider: 'gemini', originalError: geminiError }
+        );
+    }
+
   } catch (error) {
-    console.error("Cover letter generation error:", error)
-    // Provide more detail in the error response if possible
+    console.error("Cover letter generation error (Gemini):", error);
+    
+    // Handle validation errors specifically
+    if (error.name === 'ZodError') {
+      return NextResponse.json(
+        { 
+          error: "Invalid request data", 
+          details: error.errors,
+          code: "VALIDATION_ERROR"
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Handle custom cover letter errors
+    if (error instanceof CoverLetterValidationError || error instanceof CoverLetterGenerationError) {
+      return NextResponse.json(
+        { 
+          error: error.message, 
+          code: error.code,
+          meta: error.meta 
+        },
+        { status: error instanceof CoverLetterValidationError ? 400 : 500 }
+      );
+    }
+    
+    // Handle generic errors
     const errorMessage = error instanceof Error ? error.message : "Failed to generate cover letter";
     return NextResponse.json(
-      { error: errorMessage },
+      { error: errorMessage, code: "INTERNAL_ERROR" },
       { status: 500 }
-    )
+    );
   }
-}
+} 

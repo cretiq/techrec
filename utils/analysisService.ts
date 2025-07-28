@@ -1,7 +1,7 @@
 import { PrismaClient, AnalysisStatus, CvAnalysis } from '@prisma/client';
 import { downloadS3FileAsBuffer } from './s3Storage';
 import { v4 as uuidv4 } from 'uuid';
-import { analyzeCvWithGPT } from './gptAnalysis';
+import { analyzeCvWithGemini } from './geminiAnalysis';
 // Redis cache will be handled dynamically for server-side only
 import { parseFileContent } from './fileParsers';
 
@@ -139,23 +139,30 @@ export const processCvAnalysis = async (analysisRecordId: string): Promise<void>
       memory: getMemoryUsage()
     });
 
-    // 6. Analyze with GPT
-    currentStep = 'gpt_analysis';
+    // 6. Perform Gemini Analysis
     const gptStart = process.hrtime();
-    console.log(`[Analysis ${analysisRecordId}] Starting GPT analysis`, {
-      step: currentStep,
-      textLength: parsedText.length
-    });
+    console.log(`[Analysis ${analysisRecordId}] Starting Gemini analysis...`);
 
-    const analysisResult = await analyzeCvWithGPT(parsedText);
-    timings.gptAnalysis = getElapsedTime(gptStart);
+    let analysisResult;
+    try {
+      analysisResult = await analyzeCvWithGemini(parsedText);
+      timings.geminiAnalysis = getElapsedTime(gptStart);
 
-    console.log(`[Analysis ${analysisRecordId}] GPT analysis completed`, {
-      step: currentStep,
-      elapsedMs: timings.gptAnalysis,
-      resultSize: JSON.stringify(analysisResult).length,
-      memory: getMemoryUsage()
-    });
+      console.log(`[Analysis ${analysisRecordId}] Gemini analysis completed.`, {
+        elapsedMs: timings.geminiAnalysis,
+        resultSize: JSON.stringify(analysisResult).length,
+        memory: getMemoryUsage()
+      });
+    } catch (geminiError) {
+      console.error(`[Analysis ${analysisRecordId}] Error during Gemini analysis`, {
+        step: currentStep,
+        error: geminiError instanceof Error ? geminiError.message : 'Unknown error',
+        stack: geminiError instanceof Error ? geminiError.stack : undefined,
+        elapsedMs: getElapsedTime(gptStart),
+        memory: getMemoryUsage()
+      });
+      throw new Error(`Gemini analysis failed: ${geminiError instanceof Error ? geminiError.message : 'Unknown error'}`);
+    }
 
     // 7. Update DB with results
     currentStep = 'save_results';

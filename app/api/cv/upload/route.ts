@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Buffer } from 'buffer'; // Import Buffer
 import { AnalysisStatus, PrismaClient } from '@prisma/client'; // Import PrismaClient
 import { parseFileContent } from '@/utils/fileParsers'; // Import parser
-import { analyzeCvWithGPT } from '@/utils/gptAnalysis'; // Import analyser
+import { analyzeCvWithGemini } from '@/utils/geminiAnalysis'; // Import analyser
 import crypto from 'crypto'; // Import crypto for hashing
 import { syncCvDataToProfile } from '@/utils/backgroundProfileSync'; // Import background sync
 
@@ -101,10 +101,10 @@ export async function POST(request: Request) {
       console.log(`[Analysis ${newCV.id}] Parsed file content, text length: ${parsedContent.text.length}.`);
       console.log('[Upload Route] Parsed Text Length:', parsedContent?.text?.length);
 
-      // 4. Analyze with GPT
-      const analysisResult = await analyzeCvWithGPT(parsedContent.text);
-      console.log(`[Analysis ${newCV.id}] GPT analysis completed.`);
-      console.log('[Upload Route] GPT Analysis Result (structure check):', analysisResult ? Object.keys(analysisResult) : 'null');
+      // 4. Analyze with Gemini
+      const analysisResult = await analyzeCvWithGemini(parsedContent.text);
+      console.log(`[Analysis ${newCV.id}] Gemini analysis completed.`);
+      console.log('[Upload Route] Gemini Analysis Result (structure check):', analysisResult ? Object.keys(analysisResult) : 'null');
 
       // 5. Calculate Improvement Score (Example: based on completeness)
       let score = 0;

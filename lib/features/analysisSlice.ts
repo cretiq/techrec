@@ -268,7 +268,7 @@ export const analysisSlice = createSlice({
           // Update the current analysis ID to the new version
           // NOTE: This ID change is handled in AnalysisResultDisplay by updating the URL
           // to prevent infinite loops in CVManagementPage useEffect
-          state.currentAnalysisId = payload.analysisId;
+          // state.currentAnalysisId = payload.analysisId;
           // Update original data to match current data (no unsaved changes)
           state.originalData = state.analysisData ? JSON.parse(JSON.stringify(state.analysisData)) : null;
           state.status = 'succeeded';
