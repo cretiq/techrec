@@ -7,6 +7,12 @@ import { getCache, setCache } from '@/lib/redis'; // Import cache functions
 // Import Zod schemas
 import { CvImprovementRequestSchema, CvImprovementResponseSchema } from '@/types/cv';
 import { z } from 'zod';
+// Import validation utilities
+import { 
+  validateCvSuggestionsOutput, 
+  isValidCvSuggestionsResponse, 
+  sanitizeSuggestionsData 
+} from '@/utils/cvSuggestionValidation';
 
 // Initialize OpenAI client (requires OPENAI_API_KEY)
 const openai = new OpenAI({
@@ -17,6 +23,139 @@ const gptModel = process.env.GPT_MODEL || "gpt-4.1-nano-2025-04-14";
 
 const SUGGESTION_CACHE_PREFIX = 'cv_suggestion:';
 const SUGGESTION_CACHE_TTL_SECONDS = 60 * 60; // 1 hour TTL
+
+// Retry configuration
+const MAX_RETRY_ATTEMPTS = 7;
+const RETRY_DELAY_MS = 1000; // 1 second delay between retries
+
+/**
+ * Generates CV improvement suggestions with retry mechanism and validation
+ * @param cvData - The CV data to analyze
+ * @param systemPrompt - The system prompt for OpenAI
+ * @param userPrompt - The user prompt for OpenAI
+ * @returns Validated suggestions response
+ */
+async function generateSuggestionsWithRetry(
+  cvData: any, 
+  systemPrompt: string, 
+  userPrompt: string
+): Promise<any> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
+    console.log(`🔄 [cv-improvement] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} - Generating suggestions...`);
+    
+    try {
+      // --- OpenAI API Call --- 
+      const completion = await openai.chat.completions.create({
+        model: gptModel,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.5 + (attempt - 1) * 0.1, // Slightly increase temperature on retries
+      });
+
+      const content = completion.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('OpenAI response content is empty.');
+      }
+      
+      console.log(`📥 [cv-improvement] Attempt ${attempt} - Received response (length: ${content.length})`);
+      
+      // Clean and parse the response
+      let rawSuggestions;
+      try {
+        console.log('🧹 [cv-improvement] Cleaning OpenAI response...');
+        let cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        
+        // Remove any trailing comma or incomplete JSON elements
+        cleanedContent = cleanedContent.replace(/,\s*$/, ''); // Remove trailing comma
+        cleanedContent = cleanedContent.replace(/,\s*"reasoning"\s*$/, ''); // Remove malformed trailing "reasoning"
+        cleanedContent = cleanedContent.replace(/,\s*]\s*}$/, ']}'); // Fix malformed array closure
+        
+        rawSuggestions = JSON.parse(cleanedContent);
+        console.log('✅ [cv-improvement] Successfully parsed JSON response');
+        
+        // Additional cleanup: ensure suggestions array doesn't contain string elements
+        if (rawSuggestions.suggestions && Array.isArray(rawSuggestions.suggestions)) {
+          rawSuggestions.suggestions = rawSuggestions.suggestions.filter(suggestion => 
+            typeof suggestion === 'object' && suggestion !== null && typeof suggestion !== 'string'
+          );
+        }
+        
+        // Sanitize the data
+        rawSuggestions = sanitizeSuggestionsData(rawSuggestions);
+        
+      } catch (parseError) {
+        console.error(`❌ [cv-improvement] Attempt ${attempt} - JSON parse failed:`, parseError);
+        throw new Error(`Invalid JSON received from OpenAI: ${parseError}`);
+      }
+
+      // Validate the response using our clever validation
+      console.log(`🔍 [cv-improvement] Attempt ${attempt} - Validating response quality...`);
+      const validation = validateCvSuggestionsOutput(rawSuggestions);
+      
+      if (validation.isValid && validation.qualitySuggestions.length > 0) {
+        console.log(`✅ [cv-improvement] Attempt ${attempt} - SUCCESS! Generated ${validation.qualitySuggestions.length} valid suggestions`);
+        
+        if (validation.warnings.length > 0) {
+          console.log(`⚠️ [cv-improvement] Attempt ${attempt} - Warnings:`, validation.warnings);
+        }
+        
+        // Return the validated and cleaned suggestions
+        return {
+          suggestions: validation.qualitySuggestions,
+          fromCache: false,
+          attempt: attempt,
+          validationWarnings: validation.warnings
+        };
+      } else {
+        const errorMessage = `Validation failed: ${validation.errors.join(', ')}`;
+        console.log(`❌ [cv-improvement] Attempt ${attempt} - ${errorMessage}`);
+        console.log(`📊 [cv-improvement] Attempt ${attempt} - Validation details:`, {
+          suggestionCount: validation.suggestionCount,
+          errors: validation.errors,
+          warnings: validation.warnings
+        });
+        
+        if (attempt === MAX_RETRY_ATTEMPTS) {
+          // On final attempt, try fallback response creation
+          console.log(`🔄 [cv-improvement] Final attempt - Creating fallback response...`);
+          if (validation.qualitySuggestions.length > 0) {
+            console.log(`✅ [cv-improvement] Using ${validation.qualitySuggestions.length} partial suggestions as fallback`);
+            return {
+              suggestions: validation.qualitySuggestions,
+              fromCache: false,
+              attempt: attempt,
+              fallback: true,
+              validationWarnings: validation.warnings,
+              validationErrors: validation.errors
+            };
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+    } catch (error: any) {
+      lastError = error;
+      console.error(`❌ [cv-improvement] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} failed:`, error.message);
+      
+      if (attempt < MAX_RETRY_ATTEMPTS) {
+        console.log(`⏳ [cv-improvement] Waiting ${RETRY_DELAY_MS}ms before retry ${attempt + 1}...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+      }
+    }
+  }
+  
+  // If all attempts failed, throw a specific error for UI handling
+  console.error(`💥 [cv-improvement] All ${MAX_RETRY_ATTEMPTS} attempts failed. Last error:`, lastError?.message);
+  const error = new Error(`RETRY_EXHAUSTED: Failed to generate valid suggestions after ${MAX_RETRY_ATTEMPTS} attempts: ${lastError?.message}`);
+  (error as any).code = 'RETRY_EXHAUSTED';
+  throw error;
+}
 
 // Helper to create a stable hash from JSON data
 const createDataHash = (data: any): string => {
@@ -86,100 +225,8 @@ export async function POST(request: Request) {
 
     const userPrompt = `CV Data:\n\n${JSON.stringify(cvData, null, 2)}`;
 
-    // --- OpenAI API Call --- 
-     // Using a different model potentially more suited for creative/suggestive tasks
-    const completion = await openai.chat.completions.create({
-        model: gptModel, 
-        messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.5, // Slightly higher temperature for more varied suggestions
-    });
-
-    const content = completion.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error('OpenAI response content is empty.');
-    }
-    
-    console.log('Received raw suggestion JSON from OpenAI:', content.substring(0, 200) + '...');
-    
-    let rawSuggestions;
-    try {
-        // Clean the response to extract JSON (OpenAI sometimes includes markdown formatting or malformed trailing data)
-        console.log('🧹 [cv-improvement] Cleaning OpenAI response...');
-        let cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        
-        // Remove any trailing comma or incomplete JSON elements
-        cleanedContent = cleanedContent.replace(/,\s*$/, ''); // Remove trailing comma
-        cleanedContent = cleanedContent.replace(/,\s*"reasoning"\s*$/, ''); // Remove malformed trailing "reasoning"
-        cleanedContent = cleanedContent.replace(/,\s*]\s*}$/, ']}'); // Fix malformed array closure
-        
-        console.log('📏 [cv-improvement] Cleaned content length:', cleanedContent.length);
-        console.log('🔍 [cv-improvement] Cleaned content preview:', cleanedContent.substring(0, 300) + '...');
-        
-        rawSuggestions = JSON.parse(cleanedContent);
-        console.log('✅ [cv-improvement] Successfully parsed cleaned JSON response');
-        console.log('📊 [cv-improvement] Parsed object keys:', Object.keys(rawSuggestions));
-        
-        // Additional cleanup: ensure suggestions array doesn't contain string elements
-        if (rawSuggestions.suggestions && Array.isArray(rawSuggestions.suggestions)) {
-            rawSuggestions.suggestions = rawSuggestions.suggestions.filter(suggestion => 
-                typeof suggestion === 'object' && suggestion !== null && typeof suggestion !== 'string'
-            );
-            console.log('🔍 [cv-improvement] Filtered suggestions count:', rawSuggestions.suggestions.length);
-        }
-        
-    } catch (parseError) {
-        console.error('❌ [cv-improvement] Failed to parse suggestion JSON:', parseError);
-        console.error('❌ [cv-improvement] Raw content:', content);
-        throw new Error('Invalid JSON received from OpenAI for suggestions.');
-    }
-
-    // --- Validate OpenAI Response with Zod schema --- 
-    console.log('🔍 [cv-improvement] Validating response against schema...');
-    const suggestionValidation = CvImprovementResponseSchema.safeParse(rawSuggestions);
-    
-    let validatedSuggestions;
-    if (!suggestionValidation.success) {
-        console.error('❌ [cv-improvement] Schema validation FAILED:', suggestionValidation.error.flatten());
-        console.error('❌ [cv-improvement] Invalid JSON structure:', JSON.stringify(rawSuggestions, null, 2)); 
-        
-        // Attempt to create a minimal valid response from available data
-        console.log('🔄 [cv-improvement] Attempting to create fallback response...');
-        const fallbackSuggestions = [];
-        
-        if (rawSuggestions.suggestions && Array.isArray(rawSuggestions.suggestions)) {
-            rawSuggestions.suggestions.forEach((suggestion, index) => {
-                if (typeof suggestion === 'object' && suggestion !== null) {
-                    // Try to create a minimal valid suggestion
-                    const fallbackSuggestion = {
-                        section: suggestion.section || 'general',
-                        originalText: suggestion.originalText || null,
-                        suggestionType: suggestion.suggestionType || 'wording',
-                        suggestedText: suggestion.suggestedText || '',
-                        reasoning: suggestion.reasoning || 'AI-generated improvement suggestion'
-                    };
-                    fallbackSuggestions.push(fallbackSuggestion);
-                }
-            });
-        }
-        
-        if (fallbackSuggestions.length > 0) {
-            console.log('✅ [cv-improvement] Created fallback response with', fallbackSuggestions.length, 'suggestions');
-            validatedSuggestions = {
-                suggestions: fallbackSuggestions,
-                fromCache: false
-            };
-        } else {
-            throw new Error(`Suggestion response did not match schema and no fallback possible. Errors: ${JSON.stringify(suggestionValidation.error.flatten().fieldErrors)}`);
-        }
-    } else {
-        validatedSuggestions = suggestionValidation.data;
-        console.log('✅ [cv-improvement] Schema validation PASSED');
-        console.log('📊 [cv-improvement] Validated suggestions count:', validatedSuggestions.suggestions.length);
-    }
+    // --- Generate suggestions with retry mechanism ---
+    const validatedSuggestions = await generateSuggestionsWithRetry(cvData, systemPrompt, userPrompt);
 
     console.log('Successfully generated and validated improvement suggestions.');
 
@@ -187,7 +234,7 @@ export async function POST(request: Request) {
     await setCache(cacheKey, validatedSuggestions, SUGGESTION_CACHE_TTL_SECONDS);
     console.log('Stored suggestions in cache.');
 
-    return NextResponse.json({ ...validatedSuggestions, fromCache: false });
+    return NextResponse.json(validatedSuggestions);
 
   } catch (error: any) {
     console.error('Error generating CV improvement suggestions:', error);
@@ -195,6 +242,17 @@ export async function POST(request: Request) {
     if (error.message?.includes('OPENAI_API_KEY')) {
         return NextResponse.json({ error: 'OpenAI API key not configured.' }, { status: 500 });
     }
+    
+    // Check if this is a retry exhaustion error
+    if (error.code === 'RETRY_EXHAUSTED' || error.message?.includes('RETRY_EXHAUSTED')) {
+        console.error('💥 [cv-improvement] All retry attempts exhausted');
+        return NextResponse.json({ 
+            error: 'RETRY_EXHAUSTED', 
+            message: 'AI service is currently experiencing issues. Please try again in a few minutes.',
+            userMessage: 'We apologize for the technical difficulties. Our AI service is temporarily having issues generating CV suggestions.'
+        }, { status: 503 }); // Service Unavailable
+    }
+    
     return NextResponse.json({ error: error.message || 'Failed to get improvement suggestions.' }, { status: 500 });
   }
 } 

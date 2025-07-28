@@ -120,6 +120,10 @@ export const fetchSuggestions = createAsyncThunk(
       });
       if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
+          // Pass through the full error object for retry exhaustion cases
+          if (errorData.error === 'RETRY_EXHAUSTED') {
+            return rejectWithValue(errorData);
+          }
           return rejectWithValue(errorData.error || `Failed to get suggestions (${response.status})`);
       }
       const result = await response.json(); // Expects { suggestions: CvImprovementSuggestion[] }

@@ -6,6 +6,12 @@ import crypto from 'crypto';
 import { getCache, setCache } from '@/lib/redis';
 import { CvImprovementRequestSchema, CvImprovementResponseSchema, EnhancedCvImprovementResponseSchema } from '@/types/cv';
 import { z } from 'zod';
+// Import validation utilities
+import { 
+  validateCvSuggestionsOutput, 
+  isValidCvSuggestionsResponse, 
+  sanitizeSuggestionsData 
+} from '@/utils/cvSuggestionValidation';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
@@ -13,6 +19,160 @@ const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
 const SUGGESTION_CACHE_PREFIX = 'cv_suggestion_gemini:';
 const SUGGESTION_CACHE_TTL_SECONDS = 60 * 60; // 1 hour TTL
+
+// Retry configuration
+const MAX_RETRY_ATTEMPTS = 7;
+const RETRY_DELAY_MS = 1000; // 1 second delay between retries
+
+/**
+ * Generates CV improvement suggestions with retry mechanism and validation for Gemini
+ * @param cvData - The CV data to analyze
+ * @param prompt - The prompt for Gemini
+ * @returns Validated suggestions response
+ */
+async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): Promise<any> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
+    console.log(`🔄 [cv-improvement-gemini] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} - Generating suggestions...`);
+    
+    try {
+      // Get the generative model
+      const model = genAI.getGenerativeModel({ 
+        model: geminiModel,
+        generationConfig: {
+          temperature: 0.3 + (attempt - 1) * 0.1, // Slightly increase temperature on retries
+          topK: 20,
+          topP: 0.6,
+          maxOutputTokens: 2048,
+        },
+      });
+
+      const apiCallStartTime = Date.now();
+      console.log(`📞 [cv-improvement-gemini] Attempt ${attempt} - Making API call to Gemini...`);
+      
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const content = response.text();
+
+      const apiCallDuration = Date.now() - apiCallStartTime;
+      console.log(`⏱️ [cv-improvement-gemini] Attempt ${attempt} - Gemini API call completed in: ${apiCallDuration}ms`);
+
+      if (!content) {
+        console.error(`❌ [cv-improvement-gemini] Attempt ${attempt} - Gemini response content is empty`);
+        throw new Error('Gemini response content is empty.');
+      }
+      
+      console.log(`📥 [cv-improvement-gemini] Attempt ${attempt} - Received response (length: ${content.length})`);
+      
+      // Clean and parse the response
+      let rawSuggestions;
+      try {
+        console.log('🧹 [cv-improvement-gemini] Cleaning Gemini response...');
+        // Clean the response to extract JSON (Gemini sometimes includes markdown formatting)
+        const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        console.log(`📏 [cv-improvement-gemini] Attempt ${attempt} - Cleaned content length: ${cleanedContent.length}`);
+        
+        rawSuggestions = JSON.parse(cleanedContent);
+        console.log(`✅ [cv-improvement-gemini] Attempt ${attempt} - Successfully parsed JSON response`);
+        console.log(`📊 [cv-improvement-gemini] Attempt ${attempt} - Parsed object keys: ${Object.keys(rawSuggestions)}`);
+        
+        // Sanitize the data
+        rawSuggestions = sanitizeSuggestionsData(rawSuggestions);
+        
+      } catch (parseError) {
+        console.error(`❌ [cv-improvement-gemini] Attempt ${attempt} - JSON parse failed:`, parseError);
+        console.error(`❌ [cv-improvement-gemini] Attempt ${attempt} - Raw content:`, content);
+        throw new Error(`Invalid JSON received from Gemini: ${parseError}`);
+      }
+
+      // Validate the response using our clever validation
+      console.log(`🔍 [cv-improvement-gemini] Attempt ${attempt} - Validating response quality...`);
+      const validation = validateCvSuggestionsOutput(rawSuggestions);
+      
+      if (validation.isValid && validation.qualitySuggestions.length > 0) {
+        console.log(`✅ [cv-improvement-gemini] Attempt ${attempt} - SUCCESS! Generated ${validation.qualitySuggestions.length} valid suggestions`);
+        
+        if (validation.warnings.length > 0) {
+          console.log(`⚠️ [cv-improvement-gemini] Attempt ${attempt} - Warnings:`, validation.warnings);
+        }
+        
+        // Return the validated and cleaned suggestions (using enhanced format)
+        return {
+          suggestions: validation.qualitySuggestions,
+          summary: {
+            totalSuggestions: validation.qualitySuggestions.length,
+            highPriority: validation.qualitySuggestions.filter(s => (s as any).priority === 'high').length,
+            categories: {
+              experienceBullets: validation.qualitySuggestions.filter(s => (s as any).type === 'experience_bullet').length,
+              educationGaps: validation.qualitySuggestions.filter(s => (s as any).type === 'education_gap').length,
+              missingSkills: validation.qualitySuggestions.filter(s => (s as any).type === 'missing_skill').length,
+              summaryImprovements: validation.qualitySuggestions.filter(s => (s as any).type === 'summary_improvement').length,
+              generalImprovements: validation.qualitySuggestions.filter(s => (s as any).type === 'general_improvement').length,
+            }
+          },
+          fromCache: false,
+          provider: 'gemini',
+          attempt: attempt,
+          validationWarnings: validation.warnings
+        };
+      } else {
+        const errorMessage = `Validation failed: ${validation.errors.join(', ')}`;
+        console.log(`❌ [cv-improvement-gemini] Attempt ${attempt} - ${errorMessage}`);
+        console.log(`📊 [cv-improvement-gemini] Attempt ${attempt} - Validation details:`, {
+          suggestionCount: validation.suggestionCount,
+          errors: validation.errors,
+          warnings: validation.warnings
+        });
+        
+        if (attempt === MAX_RETRY_ATTEMPTS) {
+          // On final attempt, try fallback response creation
+          console.log(`🔄 [cv-improvement-gemini] Final attempt - Creating fallback response...`);
+          if (validation.qualitySuggestions.length > 0) {
+            console.log(`✅ [cv-improvement-gemini] Using ${validation.qualitySuggestions.length} partial suggestions as fallback`);
+            return {
+              suggestions: validation.qualitySuggestions,
+              summary: {
+                totalSuggestions: validation.qualitySuggestions.length,
+                highPriority: 0,
+                categories: {
+                  experienceBullets: 0,
+                  educationGaps: 0,
+                  missingSkills: 0,
+                  summaryImprovements: 0,
+                  generalImprovements: validation.qualitySuggestions.length,
+                }
+              },
+              fromCache: false,
+              provider: 'gemini',
+              attempt: attempt,
+              fallback: true,
+              validationWarnings: validation.warnings,
+              validationErrors: validation.errors
+            };
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+    } catch (error: any) {
+      lastError = error;
+      console.error(`❌ [cv-improvement-gemini] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} failed:`, error.message);
+      
+      if (attempt < MAX_RETRY_ATTEMPTS) {
+        console.log(`⏳ [cv-improvement-gemini] Waiting ${RETRY_DELAY_MS}ms before retry ${attempt + 1}...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+      }
+    }
+  }
+  
+  // If all attempts failed, throw a specific error for UI handling
+  console.error(`💥 [cv-improvement-gemini] All ${MAX_RETRY_ATTEMPTS} attempts failed. Last error:`, lastError?.message);
+  const error = new Error(`RETRY_EXHAUSTED: Failed to generate valid suggestions after ${MAX_RETRY_ATTEMPTS} attempts: ${lastError?.message}`);
+  (error as any).code = 'RETRY_EXHAUSTED';
+  throw error;
+}
 
 // Helper to create a stable hash from JSON data
 const createDataHash = (data: any): string => {
@@ -179,192 +339,19 @@ ${JSON.stringify(cvData)}
 
 Return ONLY the JSON object above - no markdown formatting, no explanations.`;
 
-    try {
-        // Get the generative model
-        console.log('🔧 [cv-improvement-gemini] Initializing Gemini model...');
-        const model = genAI.getGenerativeModel({ 
-            model: geminiModel,
-            generationConfig: {
-                temperature: 0.3, // Lower for more focused responses
-                topK: 20,         // Reduce for more deterministic output
-                topP: 0.6,        // Lower for more focused suggestions
-                maxOutputTokens: 2048, // Reduced since we want 5-8 suggestions
-            },
-        });
-        console.log('🔧 [cv-improvement-gemini] Model configuration:', {
-            model: geminiModel,
-            temperature: 0.3,
-            topK: 20,
-            topP: 0.6,
-            maxOutputTokens: 2048,
-        });
+    // --- Generate suggestions with retry mechanism ---
+    const finalResponse = await generateSuggestionsWithRetryGemini(cvData, prompt);
 
-        // Prepare prompt with detailed data
-        console.log('📝 [cv-improvement-gemini] Prompt length:', prompt.length, 'characters');
-        console.log('📝 [cv-improvement-gemini] CV data JSON size:', JSON.stringify(cvData).length, 'bytes');
+    // --- Store successful result in Cache --- 
+    console.log('💾 [cv-improvement-gemini] Storing result in cache...');
+    await setCache(cacheKey, finalResponse, SUGGESTION_CACHE_TTL_SECONDS);
+    console.log('✅ [cv-improvement-gemini] Cached successfully with TTL:', SUGGESTION_CACHE_TTL_SECONDS, 'seconds');
 
-        const apiCallStartTime = Date.now();
-        console.log('📞 [cv-improvement-gemini] Making API call to Gemini...');
-        
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const content = response.text();
+    const totalProcessingTime = Date.now() - requestStartTime;
+    console.log('⏱️ [cv-improvement-gemini] Total processing time:', totalProcessingTime, 'ms');
+    console.log('🎉 [cv-improvement-gemini] ===== REQUEST SUCCESS =====');
 
-        const apiCallDuration = Date.now() - apiCallStartTime;
-        console.log('⏱️ [cv-improvement-gemini] Gemini API call completed in:', apiCallDuration, 'ms');
-
-        if (!content) {
-            console.error('❌ [cv-improvement-gemini] Gemini response content is empty');
-            throw new Error('Gemini response content is empty.');
-        }
-        
-        console.log('📥 [cv-improvement-gemini] Received response from Gemini');
-        console.log('📏 [cv-improvement-gemini] Response length:', content.length, 'characters');
-        console.log('🔍 [cv-improvement-gemini] Response preview (first 300 chars):', content.substring(0, 300) + '...');
-        
-        let rawSuggestions;
-        try {
-            console.log('🧹 [cv-improvement-gemini] Cleaning response (removing markdown formatting)...');
-            // Clean the response to extract JSON (Gemini sometimes includes markdown formatting)
-            const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-            console.log('📏 [cv-improvement-gemini] Cleaned content length:', cleanedContent.length);
-            console.log('🔍 [cv-improvement-gemini] Cleaned content preview:', cleanedContent.substring(0, 200) + '...');
-            
-            rawSuggestions = JSON.parse(cleanedContent);
-            console.log('✅ [cv-improvement-gemini] Successfully parsed JSON response');
-            console.log('📊 [cv-improvement-gemini] Parsed object keys:', Object.keys(rawSuggestions));
-        } catch (parseError) {
-            console.error('❌ [cv-improvement-gemini] Failed to parse suggestion JSON:', parseError);
-            console.error('❌ [cv-improvement-gemini] Raw content:', content);
-            throw new Error('Invalid JSON received from Gemini for suggestions.');
-        }
-
-        // --- Validate Gemini Response with Enhanced Zod schema --- 
-        console.log('🔍 [cv-improvement-gemini] Validating response against enhanced schema...');
-        
-        let validatedSuggestions;
-        const suggestionValidation = EnhancedCvImprovementResponseSchema.safeParse(rawSuggestions);
-        
-        if (!suggestionValidation.success) {
-            console.error('❌ [cv-improvement-gemini] Enhanced schema validation FAILED');
-            console.error('❌ [cv-improvement-gemini] Validation errors:', suggestionValidation.error.flatten());
-            console.error('❌ [cv-improvement-gemini] Raw suggestions object:', JSON.stringify(rawSuggestions, null, 2)); 
-            
-            // Fallback to legacy schema for backward compatibility
-            console.log('🔄 [cv-improvement-gemini] Attempting legacy schema validation...');
-            const legacyValidation = CvImprovementResponseSchema.safeParse(rawSuggestions);
-            if (legacyValidation.success) {
-                console.log('✅ [cv-improvement-gemini] Legacy schema validation PASSED - converting to enhanced format...');
-                // Convert legacy format to enhanced format
-                validatedSuggestions = {
-                    suggestions: legacyValidation.data.suggestions.map((suggestion, index) => ({
-                        id: `legacy_${Date.now()}_${index}`,
-                        type: "general_improvement" as const,
-                        section: suggestion.section,
-                        title: `${suggestion.suggestionType} improvement`,
-                        reasoning: suggestion.reasoning,
-                        suggestedContent: suggestion.suggestedText || '',
-                        originalContent: suggestion.originalText || null,
-                        priority: "medium" as const,
-                        confidence: 0.8,
-                    })),
-                    summary: {
-                        totalSuggestions: legacyValidation.data.suggestions.length,
-                        highPriority: 0,
-                        categories: {
-                            experienceBullets: 0,
-                            educationGaps: 0,
-                            missingSkills: 0,
-                            summaryImprovements: 0,
-                            generalImprovements: legacyValidation.data.suggestions.length,
-                        }
-                    },
-                    fromCache: legacyValidation.data.fromCache,
-                    provider: 'gemini'
-                };
-                console.log('✅ [cv-improvement-gemini] Legacy conversion successful');
-                console.log('📊 [cv-improvement-gemini] Converted suggestions count:', validatedSuggestions.suggestions.length);
-            } else {
-                throw new Error(`Both enhanced and legacy schema validation failed. Errors: ${JSON.stringify(suggestionValidation.error.flatten().fieldErrors)}`);
-            }
-        } else {
-            validatedSuggestions = suggestionValidation.data;
-            console.log('✅ [cv-improvement-gemini] Enhanced schema validation PASSED');
-            console.log('📊 [cv-improvement-gemini] Enhanced suggestions count:', validatedSuggestions.suggestions.length);
-            console.log('📈 [cv-improvement-gemini] Suggestion breakdown:', {
-                total: validatedSuggestions.summary.totalSuggestions,
-                highPriority: validatedSuggestions.summary.highPriority,
-                categories: validatedSuggestions.summary.categories
-            });
-        }
-        
-        // Enhanced quality filtering for structured suggestions
-        const qualitySuggestions = validatedSuggestions.suggestions.filter(suggestion => {
-            // Enhanced filtering criteria for structured suggestions
-            return suggestion.reasoning.length > 20 && 
-                   suggestion.suggestedContent.length > 5 &&
-                   suggestion.confidence >= 0.5;
-        });
-        
-        console.log('📊 [cv-improvement-gemini] Quality-filtered suggestions count:', qualitySuggestions.length);
-        
-        // Log each quality suggestion for debugging
-        qualitySuggestions.forEach((suggestion, index) => {
-            console.log(`🔍 [cv-improvement-gemini] Enhanced Suggestion ${index + 1}:`, {
-                id: suggestion.id,
-                type: suggestion.type,
-                section: suggestion.section,
-                title: suggestion.title,
-                priority: suggestion.priority,
-                confidence: suggestion.confidence,
-                reasoningLength: suggestion.reasoning.length,
-                contentLength: suggestion.suggestedContent.length
-            });
-        });
-
-        // Update the suggestions in the response with enhanced structure
-        const finalResponse = {
-            ...validatedSuggestions,
-            suggestions: qualitySuggestions,
-            summary: {
-                ...validatedSuggestions.summary,
-                totalSuggestions: qualitySuggestions.length,
-                // Recalculate category counts based on filtered suggestions
-                categories: {
-                    experienceBullets: qualitySuggestions.filter(s => s.type === 'experience_bullet').length,
-                    educationGaps: qualitySuggestions.filter(s => s.type === 'education_gap').length,
-                    missingSkills: qualitySuggestions.filter(s => s.type === 'missing_skill').length,
-                    summaryImprovements: qualitySuggestions.filter(s => s.type === 'summary_improvement').length,
-                    generalImprovements: qualitySuggestions.filter(s => s.type === 'general_improvement').length,
-                }
-            }
-        };
-
-        // --- Store successful result in Cache --- 
-        console.log('💾 [cv-improvement-gemini] Storing result in cache...');
-        await setCache(cacheKey, finalResponse, SUGGESTION_CACHE_TTL_SECONDS);
-        console.log('✅ [cv-improvement-gemini] Cached successfully with TTL:', SUGGESTION_CACHE_TTL_SECONDS, 'seconds');
-
-        const totalProcessingTime = Date.now() - requestStartTime;
-        console.log('⏱️ [cv-improvement-gemini] Total processing time:', totalProcessingTime, 'ms');
-        console.log('📊 [cv-improvement-gemini] Performance breakdown:');
-        console.log(`  - Auth + validation: ~100ms`);
-        console.log(`  - Cache lookup: ~${Date.now() - requestStartTime - apiCallDuration - 100}ms`);
-        console.log(`  - Gemini API call: ${apiCallDuration}ms`);
-        console.log(`  - Response processing: ~${totalProcessingTime - apiCallDuration - 100}ms`);
-        console.log('📈 [cv-improvement-gemini] Optimization targets:');
-        if (apiCallDuration > 5000) console.log('  ⚠️  Gemini API call is slow (>5s) - consider prompt optimization');
-        if (totalProcessingTime > 8000) console.log('  ⚠️  Total time is slow (>8s) - review overall flow');
-        console.log('🎉 [cv-improvement-gemini] ===== REQUEST SUCCESS =====');
-
-        return NextResponse.json({ ...finalResponse, fromCache: false, provider: 'gemini' });
-
-    } catch (geminiError: any) {
-        console.error('❌ [cv-improvement-gemini] Gemini API error:', geminiError);
-        console.error('❌ [cv-improvement-gemini] Error type:', geminiError.constructor.name);
-        console.error('❌ [cv-improvement-gemini] Error message:', geminiError.message);
-        throw new Error(`Gemini API call failed: ${geminiError.message}`);
-    }
+    return NextResponse.json(finalResponse);
 
   } catch (error: any) {
     const totalErrorTime = Date.now() - requestStartTime;
@@ -379,6 +366,17 @@ Return ONLY the JSON object above - no markdown formatting, no explanations.`;
         console.error('💥 [cv-improvement-gemini] Missing Google AI API key');
         return NextResponse.json({ error: 'Google AI API key not configured.' }, { status: 500 });
     }
+    
+    // Check if this is a retry exhaustion error
+    if (error.code === 'RETRY_EXHAUSTED' || error.message?.includes('RETRY_EXHAUSTED')) {
+        console.error('💥 [cv-improvement-gemini] All retry attempts exhausted');
+        return NextResponse.json({ 
+            error: 'RETRY_EXHAUSTED', 
+            message: 'AI service is currently experiencing issues. Please try again in a few minutes.',
+            userMessage: 'We apologize for the technical difficulties. Our AI service is temporarily having issues generating CV suggestions.'
+        }, { status: 503 }); // Service Unavailable
+    }
+    
     return NextResponse.json({ error: error.message || 'Failed to get improvement suggestions.' }, { status: 500 });
   }
 } 
