@@ -14,11 +14,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
 import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
 import { cn } from '@/lib/utils';
-import { RefreshCw, Download, BarChart3 } from 'lucide-react';
+import { RefreshCw, Download, BarChart3, Rocket } from 'lucide-react';
+import { ProjectEnhancementModal } from '@/components/analysis/ProjectEnhancementModal';
 
 export default function CVManagementPage() {
     const [originalMimeType, setOriginalMimeType] = useState<string>('application/pdf'); // Keep this for now
     const [showGuidedCreation, setShowGuidedCreation] = useState(false);
+    const [showProjectEnhancementModal, setShowProjectEnhancementModal] = useState(false);
 
     // Get Redux dispatch
     const dispatch: AppDispatch = useDispatch();
@@ -150,6 +152,31 @@ export default function CVManagementPage() {
         
         // Optionally redirect to show the created profile
         // This would require creating an initial CV/analysis from the profile data
+    };
+
+    // Calculate total years of experience from CV data
+    const calculateTotalExperience = (analysisData: any): number => {
+        if (!analysisData?.experience || !Array.isArray(analysisData.experience)) {
+            return 0;
+        }
+
+        let totalMonths = 0;
+        const now = new Date();
+
+        analysisData.experience.forEach((exp: any) => {
+            if (exp.startDate) {
+                const startDate = new Date(exp.startDate);
+                const endDate = exp.endDate ? new Date(exp.endDate) : now;
+                
+                if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+                    const monthsDiff = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                                     (endDate.getMonth() - startDate.getMonth());
+                    totalMonths += Math.max(0, monthsDiff);
+                }
+            }
+        });
+
+        return Math.round((totalMonths / 12) * 10) / 10; // Round to 1 decimal place
     };
 
     return (
@@ -289,6 +316,15 @@ export default function CVManagementPage() {
                                             >
                                                 View Analysis
                                             </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setShowProjectEnhancementModal(true)}
+                                                leftIcon={<Rocket className="h-4 w-4" />}
+                                                data-testid="cv-management-action-project-enhancement"
+                                            >
+                                                Enhance Projects
+                                            </Button>
                                         </div>
                                         <div className="flex items-center gap-4">
                                             <div className="text-sm text-muted-foreground">
@@ -337,6 +373,15 @@ export default function CVManagementPage() {
                 <GuidedProfileCreation
                     onComplete={handleGuidedCreationComplete}
                     onCancel={() => setShowGuidedCreation(false)}
+                />
+            )}
+
+            {/* Project Enhancement Modal */}
+            {showProjectEnhancementModal && (
+                <ProjectEnhancementModal
+                    isOpen={showProjectEnhancementModal}
+                    onClose={() => setShowProjectEnhancementModal(false)}
+                    totalYearsExperience={analysisData ? calculateTotalExperience(analysisData) : 0}
                 />
             )}
 
