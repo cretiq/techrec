@@ -72,7 +72,7 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
 
         setIsSuggesting(true);
         try {
-            await dispatch(fetchSuggestions(analysisId)).unwrap();
+            await dispatch(fetchSuggestions(analysisData)).unwrap();
             toast({
                 title: "Suggestions Generated",
                 description: "AI improvement suggestions are ready.",

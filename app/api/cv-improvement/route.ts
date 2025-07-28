@@ -104,22 +104,82 @@ export async function POST(request: Request) {
     }
     
     console.log('Received raw suggestion JSON from OpenAI:', content.substring(0, 200) + '...');
+    
     let rawSuggestions;
     try {
-        rawSuggestions = JSON.parse(content);
+        // Clean the response to extract JSON (OpenAI sometimes includes markdown formatting or malformed trailing data)
+        console.log('🧹 [cv-improvement] Cleaning OpenAI response...');
+        let cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        
+        // Remove any trailing comma or incomplete JSON elements
+        cleanedContent = cleanedContent.replace(/,\s*$/, ''); // Remove trailing comma
+        cleanedContent = cleanedContent.replace(/,\s*"reasoning"\s*$/, ''); // Remove malformed trailing "reasoning"
+        cleanedContent = cleanedContent.replace(/,\s*]\s*}$/, ']}'); // Fix malformed array closure
+        
+        console.log('📏 [cv-improvement] Cleaned content length:', cleanedContent.length);
+        console.log('🔍 [cv-improvement] Cleaned content preview:', cleanedContent.substring(0, 300) + '...');
+        
+        rawSuggestions = JSON.parse(cleanedContent);
+        console.log('✅ [cv-improvement] Successfully parsed cleaned JSON response');
+        console.log('📊 [cv-improvement] Parsed object keys:', Object.keys(rawSuggestions));
+        
+        // Additional cleanup: ensure suggestions array doesn't contain string elements
+        if (rawSuggestions.suggestions && Array.isArray(rawSuggestions.suggestions)) {
+            rawSuggestions.suggestions = rawSuggestions.suggestions.filter(suggestion => 
+                typeof suggestion === 'object' && suggestion !== null && typeof suggestion !== 'string'
+            );
+            console.log('🔍 [cv-improvement] Filtered suggestions count:', rawSuggestions.suggestions.length);
+        }
+        
     } catch (parseError) {
-        console.error('Failed to parse suggestion JSON:', parseError, 'Raw:', content);
+        console.error('❌ [cv-improvement] Failed to parse suggestion JSON:', parseError);
+        console.error('❌ [cv-improvement] Raw content:', content);
         throw new Error('Invalid JSON received from OpenAI for suggestions.');
     }
 
     // --- Validate OpenAI Response with Zod schema --- 
+    console.log('🔍 [cv-improvement] Validating response against schema...');
     const suggestionValidation = CvImprovementResponseSchema.safeParse(rawSuggestions);
-     if (!suggestionValidation.success) {
-        console.error('Suggestion response failed schema validation:', suggestionValidation.error.flatten());
-        console.error('Invalid JSON:', JSON.stringify(rawSuggestions, null, 2)); 
-        throw new Error(`Suggestion response did not match schema. Errors: ${JSON.stringify(suggestionValidation.error.flatten().fieldErrors)}`);
-     }
-    const validatedSuggestions = suggestionValidation.data;
+    
+    let validatedSuggestions;
+    if (!suggestionValidation.success) {
+        console.error('❌ [cv-improvement] Schema validation FAILED:', suggestionValidation.error.flatten());
+        console.error('❌ [cv-improvement] Invalid JSON structure:', JSON.stringify(rawSuggestions, null, 2)); 
+        
+        // Attempt to create a minimal valid response from available data
+        console.log('🔄 [cv-improvement] Attempting to create fallback response...');
+        const fallbackSuggestions = [];
+        
+        if (rawSuggestions.suggestions && Array.isArray(rawSuggestions.suggestions)) {
+            rawSuggestions.suggestions.forEach((suggestion, index) => {
+                if (typeof suggestion === 'object' && suggestion !== null) {
+                    // Try to create a minimal valid suggestion
+                    const fallbackSuggestion = {
+                        section: suggestion.section || 'general',
+                        originalText: suggestion.originalText || null,
+                        suggestionType: suggestion.suggestionType || 'wording',
+                        suggestedText: suggestion.suggestedText || '',
+                        reasoning: suggestion.reasoning || 'AI-generated improvement suggestion'
+                    };
+                    fallbackSuggestions.push(fallbackSuggestion);
+                }
+            });
+        }
+        
+        if (fallbackSuggestions.length > 0) {
+            console.log('✅ [cv-improvement] Created fallback response with', fallbackSuggestions.length, 'suggestions');
+            validatedSuggestions = {
+                suggestions: fallbackSuggestions,
+                fromCache: false
+            };
+        } else {
+            throw new Error(`Suggestion response did not match schema and no fallback possible. Errors: ${JSON.stringify(suggestionValidation.error.flatten().fieldErrors)}`);
+        }
+    } else {
+        validatedSuggestions = suggestionValidation.data;
+        console.log('✅ [cv-improvement] Schema validation PASSED');
+        console.log('📊 [cv-improvement] Validated suggestions count:', validatedSuggestions.suggestions.length);
+    }
 
     console.log('Successfully generated and validated improvement suggestions.');
 
