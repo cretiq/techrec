@@ -1,0 +1,142 @@
+<testsuites id="" name="" tests="20" failures="0" skipped="15" errors="0" time="48.014486000000005">
+<testsuite name="e2e/user-flows/cv-management-get-suggestions.spec.ts" timestamp="2025-07-28T21:21:39.204Z" hostname="chromium" tests="4" failures="0" skipped="3" time="87.454" errors="0">
+<testcase name="CV Management - Get Suggestions Flow › should test Get Suggestions button behavior with mock API" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="21.869">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping suggestions test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should handle get suggestions with no analysis data" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="21.58">
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should show error handling for suggestions API failure" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="21.757">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping error handling test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should verify suggestions display integration with accordion sections" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="22.248">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping accordion integration test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="e2e/user-flows/cv-management-get-suggestions.spec.ts" timestamp="2025-07-28T21:21:39.204Z" hostname="firefox" tests="4" failures="0" skipped="3" time="63.411" errors="0">
+<testcase name="CV Management - Get Suggestions Flow › should test Get Suggestions button behavior with mock API" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="21.873">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping suggestions test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should handle get suggestions with no analysis data" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="22.485">
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should show error handling for suggestions API failure" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="9.943">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping error handling test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should verify suggestions display integration with accordion sections" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="9.11">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping accordion integration test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="e2e/user-flows/cv-management-get-suggestions.spec.ts" timestamp="2025-07-28T21:21:39.204Z" hostname="webkit" tests="4" failures="0" skipped="3" time="29.754" errors="0">
+<testcase name="CV Management - Get Suggestions Flow › should test Get Suggestions button behavior with mock API" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="7.39">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping suggestions test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should handle get suggestions with no analysis data" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="7.413">
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should show error handling for suggestions API failure" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="7.525">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping error handling test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should verify suggestions display integration with accordion sections" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="7.426">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping accordion integration test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="e2e/user-flows/cv-management-get-suggestions.spec.ts" timestamp="2025-07-28T21:21:39.204Z" hostname="Mobile Chrome" tests="4" failures="0" skipped="3" time="21.037" errors="0">
+<testcase name="CV Management - Get Suggestions Flow › should test Get Suggestions button behavior with mock API" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="5.149">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping suggestions test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should handle get suggestions with no analysis data" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="5.547">
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should show error handling for suggestions API failure" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="5.286">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping error handling test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should verify suggestions display integration with accordion sections" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="5.055">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping accordion integration test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="e2e/user-flows/cv-management-get-suggestions.spec.ts" timestamp="2025-07-28T21:21:39.204Z" hostname="Mobile Safari" tests="4" failures="0" skipped="3" time="13.375" errors="0">
+<testcase name="CV Management - Get Suggestions Flow › should test Get Suggestions button behavior with mock API" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="4.404">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping suggestions test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should handle get suggestions with no analysis data" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="4.192">
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should show error handling for suggestions API failure" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="2.519">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping error handling test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="CV Management - Get Suggestions Flow › should verify suggestions display integration with accordion sections" classname="e2e/user-flows/cv-management-get-suggestions.spec.ts" time="2.26">
+<properties>
+<property name="skip" value="No existing CV analysis found - skipping accordion integration test">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>

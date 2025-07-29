@@ -17,6 +17,7 @@ import {
     saveAnalysisVersion,
     type AnalysisStatus
 } from '@/lib/features/analysisSlice';
+import { setSuggestions } from '@/lib/features/suggestionsSlice';
 
 interface AnalysisActionButtonsProps {
     className?: string;
@@ -74,7 +75,14 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
 
         setIsSuggesting(true);
         try {
-            await dispatch(fetchSuggestions(analysisData)).unwrap();
+            const response = await dispatch(fetchSuggestions(analysisData)).unwrap();
+            console.log('🎉 [AnalysisActionButtons] Suggestions received, syncing to suggestionsSlice...');
+            console.log('📊 [AnalysisActionButtons] Response structure:', response);
+            
+            // Dispatch the full response to suggestionsSlice for UI components
+            dispatch(setSuggestions(response));
+            console.log('✅ [AnalysisActionButtons] Successfully synced suggestions to suggestionsSlice');
+            
             toast({
                 title: "Suggestions Generated",
                 description: "AI improvement suggestions are ready.",

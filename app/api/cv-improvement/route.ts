@@ -255,33 +255,52 @@ export async function POST(request: Request) {
     console.log(`  - Achievements: ${cvData.achievements ? `${cvData.achievements.length} items` : 'Missing'}`);
 
     // --- Enhanced prompt for Gemini ---
-    const prompt = `You are an expert career coach and CV reviewer. Analyze the provided CV data (in JSON format) and provide specific, actionable suggestions for improvement. 
+    const prompt = `You are an expert career coach and CV reviewer. Analyze the provided CV data (in JSON format) and provide specific, actionable suggestions for improvement.
 
-Focus on:
+CRITICAL: You must use EXACT section names and suggestion types as specified below.
+
+**VALID SECTIONS** (use exactly as written):
+- contactInfo, contactInfo.email, contactInfo.phone, contactInfo.name
+- about, summary
+- skills, experience, education, achievements, certificates
+- experience[0], experience[1], experience[2] (for specific experience items)
+- experience[0].description, experience[1].description (for experience descriptions)
+- experience[0].responsibilities, experience[1].responsibilities (for experience bullets)
+- education[0], education[1], education[2] (for specific education items)
+- general (for overall CV improvements)
+
+**VALID SUGGESTION TYPES** (use exactly one of these):
+- wording (improve existing text)
+- add_content (add new information)
+- remove_content (remove unnecessary content)
+- reorder (change order of items)
+- format (improve formatting/structure)
+
+**FOCUS AREAS:**
 - Clarity and readability
-- Impact and action verbs
+- Impact and action verbs  
 - Quantifiable results and achievements
 - Professional terminology
 - ATS optimization
 - Tailoring to software engineering/tech roles
 
-CV Data:
+**CV DATA:**
 ${JSON.stringify(cvData, null, 2)}
 
-Provide suggestions in the following JSON format:
+**REQUIRED OUTPUT FORMAT** (return ONLY this JSON structure):
 {
   "suggestions": [
     {
-      "section": "specific section path (e.g., 'about', 'experience[0].description', 'skills')",
-      "originalText": "the current text (or null if adding new content)",
-      "suggestionType": "wording|add_content|remove_content|reorder|format",
-      "suggestedText": "the improved text (or null if removing content)", 
-      "reasoning": "clear explanation of why this improvement helps"
+      "section": "exact section name from valid list above",
+      "originalText": "current text being improved or null",
+      "suggestionType": "exact type from valid list above", 
+      "suggestedText": "improved text or null if removing",
+      "reasoning": "detailed explanation (minimum 20 characters, maximum 300 characters)"
     }
   ]
 }
 
-Return ONLY the JSON object above - no markdown formatting, no explanations.`;
+Return ONLY the JSON object - no markdown code blocks, no explanations, no additional text.`;
 
     // --- Generate suggestions with retry mechanism ---
     console.log("Gemini Prompt:", prompt)

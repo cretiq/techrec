@@ -3,6 +3,7 @@ import type { RootState } from '../store';
 import { CvAnalysisData, CvImprovementSuggestion } from '@/types/cv'; // Import relevant types
 import { set } from 'lodash'; // For applying suggestions
 import { getProviderEndpoints } from '@/utils/aiProviderSelector';
+import { setSuggestions } from './suggestionsSlice'; // Import action from suggestionsSlice
 
 // Define the possible status values
 export type AnalysisStatus = 'idle' | 'loading' | 'succeeded' | 'failed' | 'suggesting' | 'analyzing';
@@ -111,24 +112,52 @@ export const saveAnalysisVersion = createAsyncThunk(
 export const fetchSuggestions = createAsyncThunk(
   'analysis/fetchSuggestions',
   async (cvData: CvAnalysisData, { rejectWithValue }) => {
+    console.log('🚀 [fetchSuggestions] Starting suggestion fetch...');
+    console.log('📊 [fetchSuggestions] CV data keys:', Object.keys(cvData));
+    
     try {
       const { cvImprovement } = getProviderEndpoints();
+      console.log('🌐 [fetchSuggestions] Using endpoint:', cvImprovement);
+      
       const response = await fetch(cvImprovement, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cvData)
       });
+      
+      console.log('📡 [fetchSuggestions] Response status:', response.status);
+      console.log('📡 [fetchSuggestions] Response ok:', response.ok);
+      
       if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
+          console.error('❌ [fetchSuggestions] Error response:', errorData);
           // Pass through the full error object for retry exhaustion cases
           if (errorData.error === 'RETRY_EXHAUSTED') {
             return rejectWithValue(errorData);
           }
           return rejectWithValue(errorData.error || `Failed to get suggestions (${response.status})`);
       }
-      const result = await response.json(); // Expects { suggestions: CvImprovementSuggestion[] }
-      return result.suggestions as CvImprovementSuggestion[];
+      
+      const result = await response.json();
+      console.log('✅ [fetchSuggestions] Success response received');
+      console.log('📊 [fetchSuggestions] Response keys:', Object.keys(result));
+      console.log('📊 [fetchSuggestions] Response structure:', {
+        hasSuggestions: !!result.suggestions,
+        suggestionsLength: result.suggestions?.length || 0,
+        hasSummary: !!result.summary,
+        provider: result.provider,
+        fromCache: result.fromCache
+      });
+      
+      // Log first suggestion for debugging
+      if (result.suggestions && result.suggestions.length > 0) {
+        console.log('🔍 [fetchSuggestions] First suggestion:', result.suggestions[0]);
+      }
+      
+      // Return the full response so we can dispatch to suggestionsSlice
+      return result;
     } catch (error: any) {
+      console.error('💥 [fetchSuggestions] Exception:', error);
       return rejectWithValue(error.message || 'An unknown error occurred while fetching suggestions');
     }
   }
@@ -215,14 +244,33 @@ export const analysisSlice = createSlice({
       })
       // Fetch Suggestions handlers
       .addCase(fetchSuggestions.pending, (state) => {
+        console.log('⏳ [Redux] fetchSuggestions.pending - Setting status to suggesting');
         state.status = 'suggesting';
         state.error = null; // Clear previous errors
       })
       .addCase(fetchSuggestions.fulfilled, (state, action) => {
+        console.log('✅ [Redux] fetchSuggestions.fulfilled - Received suggestions response');
+        console.log('📊 [Redux] Full response structure:', action.payload);
+        
+        const response = action.payload;
+        const suggestions = response.suggestions || [];
+        
+        console.log('📊 [Redux] Suggestions length:', suggestions.length);
+        console.log('📊 [Redux] First suggestion:', suggestions[0] || 'No suggestions');
+        
         state.status = 'succeeded'; // Back to succeeded after suggestions load
-        state.suggestions = action.payload;
+        state.suggestions = suggestions;
+        
+        console.log('📊 [Redux] State updated - total suggestions:', state.suggestions.length);
+        console.log('🔄 [Redux] Will dispatch to suggestionsSlice to sync UI state');
+        
+        // Note: We'll dispatch to suggestionsSlice in the component after this completes
       })
       .addCase(fetchSuggestions.rejected, (state, action) => {
+        console.error('❌ [Redux] fetchSuggestions.rejected - Error occurred');
+        console.error('❌ [Redux] Error payload:', action.payload);
+        console.error('❌ [Redux] Error message:', action.error.message);
+        
         state.status = 'failed'; // Or back to 'succeeded' if suggestions are optional?
         state.error = action.payload as string ?? action.error.message ?? 'Failed to fetch suggestions';
         state.suggestions = []; // Clear suggestions on error
