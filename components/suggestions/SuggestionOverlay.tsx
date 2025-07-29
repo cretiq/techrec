@@ -340,17 +340,24 @@ export function SuggestionOverlay({
                 data-testid={`suggestion-overlay-list-${section}`}
               >
                 <AnimatePresence mode="popLayout">
-                  {filteredAndSortedSuggestions.map((suggestion) => (
-                    <SuggestionItem
-                      key={suggestion.id}
-                      suggestion={suggestion}
-                      isAccepted={acceptedSuggestions.has(suggestion.id)}
-                      isDeclined={declinedSuggestions.has(suggestion.id)}
-                      isPending={!acceptedSuggestions.has(suggestion.id) && !declinedSuggestions.has(suggestion.id)}
-                      onAccept={onAcceptSuggestion}
-                      onDecline={onDeclineSuggestion}
-                    />
-                  ))}
+                  {filteredAndSortedSuggestions.map((suggestion, index) => {
+                    // Ensure unique key, fallback to index if id is missing or duplicate
+                    const uniqueKey = suggestion.id && suggestion.id.trim() !== '' 
+                      ? `${suggestion.id}-${section}-${index}` 
+                      : `${section}-suggestion-${index}`;
+                    
+                    return (
+                      <SuggestionItem
+                        key={uniqueKey}
+                        suggestion={suggestion}
+                        isAccepted={acceptedSuggestions.has(suggestion.id)}
+                        isDeclined={declinedSuggestions.has(suggestion.id)}
+                        isPending={!acceptedSuggestions.has(suggestion.id) && !declinedSuggestions.has(suggestion.id)}
+                        onAccept={onAcceptSuggestion}
+                        onDecline={onDeclineSuggestion}
+                      />
+                    );
+                  })}
                 </AnimatePresence>
 
                 {filteredAndSortedSuggestions.length === 0 && (

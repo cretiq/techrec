@@ -38,14 +38,15 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
     console.log(`🤖 [cv-improvement] Using model: ${geminiModel}`);
     
     try {
-      // Get the generative model
+      // Get the generative model with optimized settings for structured output
       const model = genAI.getGenerativeModel({ 
         model: geminiModel,
         generationConfig: {
-          temperature: 0.3 + (attempt - 1) * 0.1, // Slightly increase temperature on retries
-          topK: 20,
-          topP: 0.6,
-          maxOutputTokens: 2048,
+          temperature: 0.2, // Lower temperature for more consistent, structured output
+          topK: 10, // Reduce randomness in token selection
+          topP: 0.4, // More focused probability distribution
+          maxOutputTokens: 1500, // Reduce to encourage concise responses
+          candidateCount: 1, // Only generate one candidate to avoid inconsistency
         },
       });
 
@@ -66,24 +67,56 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
       
       console.log(`📥 [cv-improvement] Attempt ${attempt} - Received response (length: ${content.length})`);
       
-      // Clean and parse the response
+      // Clean and parse the response with enhanced cleaning
       let rawSuggestions;
       try {
         console.log('🧹 [cv-improvement] Cleaning Gemini response...');
-        // Clean the response to extract JSON (Gemini sometimes includes markdown formatting)
-        const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        console.log(`📏 [cv-improvement] Raw content preview: ${content.substring(0, 200)}...`);
+        
+        // Enhanced cleaning for common Gemini formatting issues
+        let cleanedContent = content
+          // Remove markdown code blocks
+          .replace(/```json\s*\n?/gi, '')
+          .replace(/```\s*\n?/gi, '')
+          // Remove any leading/trailing explanatory text
+          .replace(/^[^{]*({.*})[^}]*$/s, '$1')
+          // Remove any trailing commas before closing brackets
+          .replace(/,(\s*[}\]])/g, '$1')
+          // Fix common JSON issues
+          .replace(/(['"])\s*:\s*\n\s*/g, '$1: ')
+          .trim();
+        
         console.log(`📏 [cv-improvement] Attempt ${attempt} - Cleaned content length: ${cleanedContent.length}`);
+        console.log(`📏 [cv-improvement] Cleaned content preview: ${cleanedContent.substring(0, 200)}...`);
+        
+        // Attempt to find valid JSON if cleaning didn't work
+        if (!cleanedContent.startsWith('{')) {
+          const jsonMatch = cleanedContent.match(/{[\s\S]*}/);
+          if (jsonMatch) {
+            cleanedContent = jsonMatch[0];
+            console.log(`🔍 [cv-improvement] Extracted JSON from content: ${cleanedContent.substring(0, 100)}...`);
+          }
+        }
         
         rawSuggestions = JSON.parse(cleanedContent);
         console.log(`✅ [cv-improvement] Attempt ${attempt} - Successfully parsed JSON response`);
         console.log(`📊 [cv-improvement] Attempt ${attempt} - Parsed object keys: ${Object.keys(rawSuggestions)}`);
+        
+        // Log suggestion array details before sanitization
+        if (rawSuggestions.suggestions && Array.isArray(rawSuggestions.suggestions)) {
+          console.log(`📊 [cv-improvement] Suggestions array length: ${rawSuggestions.suggestions.length}`);
+          rawSuggestions.suggestions.forEach((item, index) => {
+            console.log(`📊 [cv-improvement] Item ${index}: ${typeof item} ${typeof item === 'object' ? JSON.stringify(Object.keys(item)) : `"${item}"`}`);
+          });
+        }
         
         // Sanitize the data
         rawSuggestions = sanitizeSuggestionsData(rawSuggestions);
         
       } catch (parseError) {
         console.error(`❌ [cv-improvement] Attempt ${attempt} - JSON parse failed:`, parseError);
-        console.error(`❌ [cv-improvement] Attempt ${attempt} - Raw content:`, content);
+        console.error(`❌ [cv-improvement] Attempt ${attempt} - Raw content (first 500 chars):`, content.substring(0, 500));
+        console.error(`❌ [cv-improvement] Attempt ${attempt} - Cleaned content (first 500 chars):`, cleanedContent?.substring(0, 500));
         throw new Error(`Invalid JSON received from Gemini: ${parseError}`);
       }
 
@@ -254,10 +287,14 @@ export async function POST(request: Request) {
     console.log(`  - Education: ${cvData.education ? `${cvData.education.length} items` : 'Missing'}`);
     console.log(`  - Achievements: ${cvData.achievements ? `${cvData.achievements.length} items` : 'Missing'}`);
 
-    // --- Enhanced prompt for Gemini ---
-    const prompt = `You are an expert career coach and CV reviewer. Analyze the provided CV data (in JSON format) and provide specific, actionable suggestions for improvement.
+    // --- Enhanced prompt for Gemini with stricter formatting ---
+    const prompt = `You are an expert career coach and CV reviewer. Analyze the provided CV data and provide specific, actionable suggestions for improvement.
 
-CRITICAL: You must use EXACT section names and suggestion types as specified below.
+CRITICAL FORMATTING REQUIREMENTS:
+1. Return ONLY valid JSON - no markdown, no code blocks, no additional text
+2. Each suggestion MUST be a complete JSON object with all required fields
+3. Do NOT include any trailing commas, strings, or malformed elements
+4. The "suggestions" array must contain ONLY properly formatted objects
 
 **VALID SECTIONS** (use exactly as written):
 - contactInfo, contactInfo.email, contactInfo.phone, contactInfo.name
@@ -287,7 +324,7 @@ CRITICAL: You must use EXACT section names and suggestion types as specified bel
 **CV DATA:**
 ${JSON.stringify(cvData, null, 2)}
 
-**REQUIRED OUTPUT FORMAT** (return ONLY this JSON structure):
+**EXACT OUTPUT FORMAT** (return ONLY this valid JSON):
 {
   "suggestions": [
     {
@@ -295,12 +332,19 @@ ${JSON.stringify(cvData, null, 2)}
       "originalText": "current text being improved or null",
       "suggestionType": "exact type from valid list above", 
       "suggestedText": "improved text or null if removing",
-      "reasoning": "detailed explanation (minimum 20 characters, maximum 300 characters)"
+      "reasoning": "detailed explanation (20-300 characters)"
     }
   ]
 }
 
-Return ONLY the JSON object - no markdown code blocks, no explanations, no additional text.`;
+VALIDATION RULES:
+- Each suggestion must have exactly these 5 fields: section, originalText, suggestionType, suggestedText, reasoning
+- All values must be strings or null (no nested objects or arrays)
+- The suggestions array must contain only suggestion objects, no strings or other data types
+- Reasoning must be between 20-300 characters
+- Return 3-8 high-quality suggestions maximum
+
+Return ONLY the JSON object above. Do not include any explanatory text, markdown formatting, or additional content.`;
 
     // --- Generate suggestions with retry mechanism ---
     console.log("Gemini Prompt:", prompt)

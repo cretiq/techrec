@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 6
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -49,7 +49,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
@@ -58,14 +58,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 60000
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/filipmellqvist/CursorProjects/techrec/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 1
         },
         "id": "firefox",
         "name": "firefox",
@@ -74,14 +74,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 60000
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/filipmellqvist/CursorProjects/techrec/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 1
         },
         "id": "webkit",
         "name": "webkit",
@@ -90,14 +90,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 60000
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/filipmellqvist/CursorProjects/techrec/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 1
         },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
@@ -106,14 +106,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 60000
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/filipmellqvist/CursorProjects/techrec/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 1
         },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
@@ -122,14 +122,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 60000
+        "timeout": 30000
       }
     ],
     "shard": null,
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.53.2",
-    "workers": 6,
+    "workers": 1,
     "webServer": {
       "command": "npm run dev",
       "url": "http://localhost:3000",
@@ -139,29 +139,29 @@
   },
   "suites": [
     {
-      "title": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-      "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
+      "title": "e2e/api/cv-improvement-malformed-response.spec.ts",
+      "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "CV Management - Get Suggestions Flow",
-          "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
+          "title": "CV Improvement API - Retry Mechanism & Response Handling",
+          "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
           "line": 4,
           "column": 6,
           "specs": [
             {
-              "title": "should test Get Suggestions button behavior with mock API",
+              "title": "should retry and succeed after initial malformed response",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [
                     {
                       "type": "skip",
-                      "description": "No existing CV analysis found - skipping suggestions test"
+                      "description": "No existing CV analysis found - skipping retry test"
                     }
                   ],
                   "expectedStatus": "skipped",
@@ -172,16 +172,16 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "skipped",
-                      "duration": 21869,
+                      "duration": 3045,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-28T21:21:39.793Z",
+                      "startTime": "2025-07-29T13:57:36.099Z",
                       "annotations": [
                         {
                           "type": "skip",
-                          "description": "No existing CV analysis found - skipping suggestions test"
+                          "description": "No existing CV analysis found - skipping retry test"
                         }
                       ],
                       "attachments": []
@@ -190,56 +190,22 @@
                   "status": "skipped"
                 }
               ],
-              "id": "8b20b3655b31cea57582-bd15534897125c7aa63b",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 17,
+              "id": "4e4d540f13a4125db48b-58ef384dba47dddc7346",
+              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
+              "line": 12,
               "column": 3
             },
             {
-              "title": "should handle get suggestions with no analysis data",
+              "title": "should handle malformed Gemini responses with trailing string elements",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 21580,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:21:39.815Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-e2f2b491a33c77fa9aba",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 98,
-              "column": 3
-            },
-            {
-              "title": "should show error handling for suggestions API failure",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [
                     {
                       "type": "skip",
-                      "description": "No existing CV analysis found - skipping error handling test"
+                      "description": "No existing CV analysis found - skipping malformed response test"
                     }
                   ],
                   "expectedStatus": "skipped",
@@ -247,19 +213,19 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
                       "status": "skipped",
-                      "duration": 21757,
+                      "duration": 1239,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-28T21:21:39.800Z",
+                      "startTime": "2025-07-29T13:57:39.292Z",
                       "annotations": [
                         {
                           "type": "skip",
-                          "description": "No existing CV analysis found - skipping error handling test"
+                          "description": "No existing CV analysis found - skipping malformed response test"
                         }
                       ],
                       "attachments": []
@@ -268,22 +234,22 @@
                   "status": "skipped"
                 }
               ],
-              "id": "8b20b3655b31cea57582-9b1800c6eb69608f0bb2",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 120,
+              "id": "4e4d540f13a4125db48b-46052f8075c72764ad39",
+              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
+              "line": 108,
               "column": 3
             },
             {
-              "title": "should verify suggestions display integration with accordion sections",
+              "title": "should handle completely malformed JSON responses gracefully",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [
                     {
                       "type": "skip",
-                      "description": "No existing CV analysis found - skipping accordion integration test"
+                      "description": "No existing CV analysis found - skipping malformed JSON test"
                     }
                   ],
                   "expectedStatus": "skipped",
@@ -291,229 +257,19 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "skipped",
-                      "duration": 22248,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:21:39.801Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping accordion integration test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-462b550f1efeedb96eac",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 164,
-              "column": 3
-            },
-            {
-              "title": "should test Get Suggestions button behavior with mock API",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping suggestions test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 4,
-                      "status": "skipped",
-                      "duration": 21873,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:21:39.787Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping suggestions test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-48b36437eec38a69dbea",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 17,
-              "column": 3
-            },
-            {
-              "title": "should handle get suggestions with no analysis data",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 5,
-                      "status": "passed",
-                      "duration": 22485,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:21:39.794Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-903a96b583720faf7089",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 98,
-              "column": 3
-            },
-            {
-              "title": "should show error handling for suggestions API failure",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping error handling test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 1,
-                      "status": "skipped",
-                      "duration": 9943,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:03.523Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping error handling test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-901d351f4c8c1e4ba6e0",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 120,
-              "column": 3
-            },
-            {
-              "title": "should verify suggestions display integration with accordion sections",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping accordion integration test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 2,
-                      "status": "skipped",
-                      "duration": 9110,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:03.532Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping accordion integration test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-2696acd212f7f1783985",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 164,
-              "column": 3
-            },
-            {
-              "title": "should test Get Suggestions button behavior with mock API",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping suggestions test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 8,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "skipped",
-                      "duration": 7390,
+                      "duration": 913,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-28T21:22:03.521Z",
+                      "startTime": "2025-07-29T13:57:40.533Z",
                       "annotations": [
                         {
                           "type": "skip",
-                          "description": "No existing CV analysis found - skipping suggestions test"
+                          "description": "No existing CV analysis found - skipping malformed JSON test"
                         }
                       ],
                       "attachments": []
@@ -522,164 +278,42 @@
                   "status": "skipped"
                 }
               ],
-              "id": "8b20b3655b31cea57582-e7fc8562cccae0ddc829",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 17,
+              "id": "4e4d540f13a4125db48b-b8fc10d2a9950be20457",
+              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
+              "line": 184,
               "column": 3
             },
             {
-              "title": "should handle get suggestions with no analysis data",
+              "title": "should successfully process valid Gemini responses",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 9,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 7413,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:03.751Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-a80e90c640f82bb1cf0f",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 98,
-              "column": 3
-            },
-            {
-              "title": "should show error handling for suggestions API failure",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [
                     {
                       "type": "skip",
-                      "description": "No existing CV analysis found - skipping error handling test"
+                      "description": "No existing CV analysis found - skipping valid response test"
                     }
                   ],
                   "expectedStatus": "skipped",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 10,
-                      "parallelIndex": 5,
-                      "status": "skipped",
-                      "duration": 7525,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:05.026Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping error handling test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-7f5173941bef5919745d",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 120,
-              "column": 3
-            },
-            {
-              "title": "should verify suggestions display integration with accordion sections",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping accordion integration test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 11,
-                      "parallelIndex": 4,
-                      "status": "skipped",
-                      "duration": 7426,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:05.076Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping accordion integration test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-f57ed54a5e72931a74e9",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 164,
-              "column": 3
-            },
-            {
-              "title": "should test Get Suggestions button behavior with mock API",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping suggestions test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 12,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "skipped",
-                      "duration": 5149,
+                      "duration": 858,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-28T21:22:13.227Z",
+                      "startTime": "2025-07-29T13:57:41.448Z",
                       "annotations": [
                         {
                           "type": "skip",
-                          "description": "No existing CV analysis found - skipping suggestions test"
+                          "description": "No existing CV analysis found - skipping valid response test"
                         }
                       ],
                       "attachments": []
@@ -688,242 +322,42 @@
                   "status": "skipped"
                 }
               ],
-              "id": "8b20b3655b31cea57582-d8d947b1672cc518c43c",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 17,
+              "id": "4e4d540f13a4125db48b-18524eed7628aae9278b",
+              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
+              "line": 228,
               "column": 3
             },
             {
-              "title": "should handle get suggestions with no analysis data",
+              "title": "should show API failure modal when all 7 retries fail",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 13,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 5547,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:13.162Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-cd371925f32791189154",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 98,
-              "column": 3
-            },
-            {
-              "title": "should show error handling for suggestions API failure",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [
                     {
                       "type": "skip",
-                      "description": "No existing CV analysis found - skipping error handling test"
+                      "description": "No existing CV analysis found - skipping retry exhaustion test"
                     }
                   ],
                   "expectedStatus": "skipped",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 14,
-                      "parallelIndex": 4,
-                      "status": "skipped",
-                      "duration": 5286,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:14.077Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping error handling test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-ce2f21dc78ec9d583647",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 120,
-              "column": 3
-            },
-            {
-              "title": "should verify suggestions display integration with accordion sections",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping accordion integration test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 15,
-                      "parallelIndex": 5,
-                      "status": "skipped",
-                      "duration": 5055,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:14.077Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping accordion integration test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-ef4288ba5a05318b29e9",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 164,
-              "column": 3
-            },
-            {
-              "title": "should test Get Suggestions button behavior with mock API",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping suggestions test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 16,
-                      "parallelIndex": 2,
-                      "status": "skipped",
-                      "duration": 4404,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:16.192Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping suggestions test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-af048fb4d6ff592ab08d",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 17,
-              "column": 3
-            },
-            {
-              "title": "should handle get suggestions with no analysis data",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 17,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 4192,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:16.266Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-008b6307a0490522355c",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 98,
-              "column": 3
-            },
-            {
-              "title": "should show error handling for suggestions API failure",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping error handling test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 18,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "skipped",
-                      "duration": 2519,
+                      "duration": 822,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-28T21:22:19.734Z",
+                      "startTime": "2025-07-29T13:57:42.308Z",
                       "annotations": [
                         {
                           "type": "skip",
-                          "description": "No existing CV analysis found - skipping error handling test"
+                          "description": "No existing CV analysis found - skipping retry exhaustion test"
                         }
                       ],
                       "attachments": []
@@ -932,53 +366,9 @@
                   "status": "skipped"
                 }
               ],
-              "id": "8b20b3655b31cea57582-ba2d973101b09652a871",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 120,
-              "column": 3
-            },
-            {
-              "title": "should verify suggestions display integration with accordion sections",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping accordion integration test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 19,
-                      "parallelIndex": 3,
-                      "status": "skipped",
-                      "duration": 2260,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-28T21:22:20.003Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping accordion integration test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "8b20b3655b31cea57582-b393ecd1644aa2156dcc",
-              "file": "e2e/user-flows/cv-management-get-suggestions.spec.ts",
-              "line": 164,
+              "id": "4e4d540f13a4125db48b-6dfcc1e36ca1f95afe9b",
+              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
+              "line": 290,
               "column": 3
             }
           ]
@@ -988,10 +378,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-07-28T21:21:34.629Z",
-    "duration": 48014.486000000004,
-    "expected": 5,
-    "skipped": 15,
+    "startTime": "2025-07-29T13:57:31.853Z",
+    "duration": 11320.824,
+    "expected": 0,
+    "skipped": 5,
     "unexpected": 0,
     "flaky": 0
   }

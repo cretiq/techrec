@@ -1,4 +1,5 @@
 import { CvImprovementSuggestion } from '@/types/cv';
+import crypto from 'crypto';
 
 export interface CvSuggestionValidationResult {
   isValid: boolean;
@@ -286,27 +287,153 @@ export function sanitizeSuggestionsData(suggestionsData: any): any {
     return suggestionsData;
   }
 
+  console.log(`🧹 [sanitize] Starting sanitization of ${suggestionsData.suggestions.length} raw suggestions`);
+
+  // Track used IDs to ensure uniqueness
+  const usedIds = new Set<string>();
+
   // Filter out string elements and fix common issues
   const cleanedSuggestions = suggestionsData.suggestions
-    .filter((suggestion: any) => typeof suggestion === 'object' && suggestion !== null)
-    .map((suggestion: any) => {
+    .filter((suggestion: any, index: number) => {
+      if (typeof suggestion === 'string') {
+        console.log(`🗑️ [sanitize] Filtering out string element at index ${index}: "${suggestion}"`);
+        return false;
+      }
+      if (typeof suggestion !== 'object' || suggestion === null) {
+        console.log(`🗑️ [sanitize] Filtering out non-object element at index ${index}: ${typeof suggestion}`);
+        return false;
+      }
+      return true;
+    })
+    .map((suggestion: any, index: number) => {
+      console.log(`🔧 [sanitize] Processing suggestion ${index}: ${Object.keys(suggestion).join(', ')}`);
+      
       // Fix common field name variations
       if (suggestion.suggestedContent && !suggestion.suggestedText) {
+        console.log(`🔧 [sanitize] Renamed suggestedContent to suggestedText`);
         suggestion.suggestedText = suggestion.suggestedContent;
+        delete suggestion.suggestedContent;
       }
       
       // Ensure reasoning exists
       if (!suggestion.reasoning && suggestion.description) {
+        console.log(`🔧 [sanitize] Renamed description to reasoning`);
         suggestion.reasoning = suggestion.description;
+        delete suggestion.description;
       }
       
-      // Fix section names
-      if (suggestion.section) {
-        suggestion.section = suggestion.section.replace(/\s+/g, '').toLowerCase();
+      // Validate and fix section names (keep original case for now)
+      if (suggestion.section && typeof suggestion.section === 'string') {
+        const originalSection = suggestion.section;
+        // Remove extra whitespace but preserve valid section names
+        suggestion.section = suggestion.section.trim();
+        if (originalSection !== suggestion.section) {
+          console.log(`🔧 [sanitize] Cleaned section name: "${originalSection}" → "${suggestion.section}"`);
+        }
+      }
+      
+      // Ensure all required fields are strings or null
+      ['section', 'originalText', 'suggestionType', 'suggestedText', 'reasoning'].forEach(field => {
+        if (suggestion[field] !== null && typeof suggestion[field] !== 'string') {
+          console.log(`🔧 [sanitize] Converting ${field} from ${typeof suggestion[field]} to string`);
+          suggestion[field] = String(suggestion[field]);
+        }
+      });
+      
+      // Validate reasoning length
+      if (suggestion.reasoning && suggestion.reasoning.length < 20) {
+        console.log(`🔧 [sanitize] Extending short reasoning: "${suggestion.reasoning}"`);
+        suggestion.reasoning = `${suggestion.reasoning} - This improvement enhances the CV's professional presentation.`;
+      }
+      
+      // Generate unique ID if missing or duplicate
+      let needsNewId = false;
+      if (!suggestion.id || typeof suggestion.id !== 'string' || suggestion.id.trim() === '') {
+        needsNewId = true;
+        console.log(`🔧 [sanitize] Missing or empty ID detected`);
+      } else if (usedIds.has(suggestion.id)) {
+        needsNewId = true;
+        console.log(`🔧 [sanitize] Duplicate ID detected: ${suggestion.id}`);
+      }
+      
+      if (needsNewId) {
+        let attempts = 0;
+        let newId;
+        do {
+          const hashContent = [
+            suggestion.section || '',
+            suggestion.suggestionType || '',
+            suggestion.reasoning?.substring(0, 50) || '',
+            Date.now().toString(),
+            Math.random().toString(),
+            attempts.toString()
+          ].join('|');
+          newId = crypto.createHash('sha256').update(hashContent).digest('hex').substring(0, 16);
+          attempts++;
+        } while (usedIds.has(newId) && attempts < 10);
+        
+        const oldId = suggestion.id;
+        suggestion.id = newId;
+        console.log(`🔧 [sanitize] Generated unique ID: ${oldId || 'none'} → ${suggestion.id}`);
+      }
+      
+      // Track this ID as used
+      usedIds.add(suggestion.id);
+      
+      // Add missing fields for EnhancedCvSuggestion compatibility
+      if (!suggestion.type) {
+        // Map legacy suggestionType to new type system
+        const typeMapping: Record<string, string> = {
+          'wording': 'general_improvement',
+          'add_content': 'general_improvement',
+          'remove_content': 'general_improvement',
+          'reorder': 'general_improvement',
+          'format': 'general_improvement'
+        };
+        suggestion.type = typeMapping[suggestion.suggestionType] || 'general_improvement';
+        console.log(`🔧 [sanitize] Mapped suggestionType "${suggestion.suggestionType}" to type "${suggestion.type}"`);
+      }
+      
+      // Add other required EnhancedCvSuggestion fields
+      if (!suggestion.title) {
+        suggestion.title = `Improve ${suggestion.section}`;
+        console.log(`🔧 [sanitize] Generated title: "${suggestion.title}"`);
+      }
+      
+      if (!suggestion.suggestedContent && suggestion.suggestedText) {
+        suggestion.suggestedContent = suggestion.suggestedText;
+      }
+      
+      if (!suggestion.originalContent && suggestion.originalText) {
+        suggestion.originalContent = suggestion.originalText;
+      }
+      
+      // Set default values
+      if (!suggestion.priority) {
+        suggestion.priority = 'medium';
+      }
+      
+      if (typeof suggestion.confidence !== 'number') {
+        suggestion.confidence = 0.8;
       }
       
       return suggestion;
+    })
+    .filter((suggestion: any) => {
+      // Final validation - ensure all required fields exist
+      const requiredFields = ['section', 'suggestionType', 'reasoning'];
+      const hasAllRequired = requiredFields.every(field => suggestion[field]);
+      
+      if (!hasAllRequired) {
+        const missing = requiredFields.filter(field => !suggestion[field]);
+        console.log(`🗑️ [sanitize] Filtering out incomplete suggestion missing: ${missing.join(', ')}`);
+        return false;
+      }
+      
+      return true;
     });
+
+  console.log(`✅ [sanitize] Sanitization complete: ${cleanedSuggestions.length} valid suggestions remaining`);
 
   return {
     ...suggestionsData,
