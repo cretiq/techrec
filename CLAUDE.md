@@ -918,6 +918,125 @@ npm run build 2>&1 | head -50
 
 ---
 
+## 🧪 TEST-DRIVEN DEVELOPMENT MASTERY
+
+### Contemporary Testing Philosophy
+**TechRec** embraces modern Test-Driven Development (TDD) practices with Playwright as the primary E2E testing framework. Every new feature must follow the testing loop: **Plan → Test → Implement → Validate → Refine**.
+
+### Core Testing Principles
+1. **Test-First Mindset**: Write tests before implementing features
+2. **Comprehensive Coverage**: Unit, Integration, and End-to-End testing
+3. **Real User Scenarios**: Playwright tests simulate actual user workflows  
+4. **Continuous Validation**: Tests run in CI/CD pipeline
+5. **Documentation Through Tests**: Tests serve as living documentation
+
+### Testing Framework Integration
+**Primary Tools**:
+- **Playwright**: End-to-end testing with real browser automation
+- **Jest**: Unit and integration testing
+- **Testing Library**: Component testing utilities
+- **MSW (Mock Service Worker)**: API mocking for reliable tests
+
+### Test-Driven Development Workflow
+**Step-by-Step Process**:
+1. **Feature Planning**: Define user stories and acceptance criteria
+2. **Test Design**: Create Playwright tests representing user workflows
+3. **Red Phase**: Run tests (they should fail initially)
+4. **Implementation**: Build minimal code to make tests pass
+5. **Green Phase**: Verify all tests pass
+6. **Refactor Phase**: Improve code while maintaining test success
+7. **Integration**: Ensure new tests work with existing test suite
+
+### Playwright Testing Standards
+**Essential Patterns**:
+```typescript
+// ✅ User-Centric Test Design
+test('user can apply AI suggestions to improve CV content', async ({ page }) => {
+  // Given: User has CV with suggestions available
+  await page.goto('/cv-management');
+  await page.click('[data-testid="get-suggestions-button"]');
+  await page.waitForSelector('[data-testid="suggestion-overlay-about"]');
+  
+  // When: User accepts a suggestion
+  await page.click('[data-testid="suggestion-accept-button"]');
+  
+  // Then: Content is updated and highlighted green
+  await expect(page.locator('.bg-green-100')).toBeVisible();
+  await expect(page.locator('[data-testid="suggestion-overlay-about"]')).not.toBeVisible();
+});
+
+// ✅ Test Data Management
+const testUser = {
+  email: 'test@example.com',
+  cvData: { /* realistic test data */ }
+};
+
+// ✅ Reliable Selectors - Always use data-testid
+await page.click('[data-testid="profile-experience-add-button"]');
+```
+
+### Testing Commands Reference
+**Essential Commands** (see `@claude-instructions/testing-commands.md` for complete reference):
+```bash
+# Run all Playwright tests
+npm run test:e2e
+
+# Run specific test file
+npx playwright test cv-suggestions.spec.ts
+
+# Run tests in headed mode (visible browser)
+npx playwright test --headed
+
+# Debug specific test
+npx playwright test --debug cv-suggestions.spec.ts
+
+# Generate test report
+npx playwright show-report
+
+# Update test snapshots
+npx playwright test --update-snapshots
+```
+
+### Feature Development Integration
+**Mandatory Testing Workflow**:
+1. **Before Coding**: Reference `@claude-instructions/testing-commands.md` for testing approach
+2. **Test Creation**: Design Playwright tests covering all user workflows
+3. **Implementation**: Build feature to satisfy test requirements
+4. **Validation**: Run complete test suite to ensure no regressions
+5. **Documentation**: Update test documentation with new patterns
+
+### Quality Assurance Framework
+**Testing Requirements for Every Feature**:
+- ✅ **User Journey Tests**: Complete workflows from start to finish
+- ✅ **Error Handling Tests**: Graceful degradation scenarios
+- ✅ **Mobile Responsiveness**: Cross-device functionality
+- ✅ **Performance Tests**: Load time and interaction speed
+- ✅ **Accessibility Tests**: Screen reader and keyboard navigation
+- ✅ **Data Integrity Tests**: State persistence and synchronization
+
+### Test File Organization
+```
+tests/
+├── e2e/                    # Playwright end-to-end tests
+│   ├── cv-management/      # CV-related user workflows  
+│   ├── gamification/       # XP, points, achievements testing
+│   ├── subscription/       # Payment and tier testing
+│   └── auth/              # Authentication workflows
+├── integration/           # API and component integration
+├── unit/                  # Individual function testing
+└── fixtures/             # Reusable test data and utilities
+```
+
+### AI-Assisted Testing Excellence
+**Proactive Testing Approach**:
+- **Always consult `@claude-instructions/testing-commands.md` before implementing features**
+- **Design tests that represent real user value and workflows**
+- **Create comprehensive test scenarios covering happy path and edge cases**
+- **Maintain test reliability through proper selectors and wait conditions**
+- **Document testing patterns for future reference and team learning**
+
+---
+
 *This guide serves as the comprehensive reference for developing within the TechRec codebase. Follow these guidelines consistently to maintain code quality, architectural integrity, and development efficiency. Updated through strategic memory optimization to capture enterprise-grade development patterns and AI collaboration excellence.*
 
-**Last Strategic Optimization**: July 14, 2025 - Enhanced with critical bug resolution mastery, advanced debugging excellence, and comprehensive feature implementation patterns. Integrated systematic bug documentation workflows, data consistency validation protocols, and hybrid state management approaches. Comprehensive daily memory sync capturing Feature Request #17 implementation excellence with simultaneous resolution of 6 critical bugs and establishment of prevention patterns for future development.
+**Last Strategic Optimization**: July 29, 2025 - **MAJOR TESTING INTEGRATION UPDATE**: Comprehensive Test-Driven Development mastery section added with Playwright as primary E2E framework. Enhanced with contemporary TDD practices, user-centric test design, and comprehensive AI feature testing patterns. Integrated `@claude-instructions/testing-commands.md` reference system for systematic testing workflow adoption. Established testing-first mindset for all feature development with complete user journey coverage and accessibility testing integration. Full documentation update supporting proactive test creation and maintenance excellence.
