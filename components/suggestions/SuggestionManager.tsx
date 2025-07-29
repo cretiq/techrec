@@ -17,6 +17,10 @@ import {
   selectSuggestionsError,
   selectSuggestionsStats
 } from '@/lib/features/suggestionsSlice';
+import { 
+  updateAnalysisData,
+  selectCurrentAnalysisData
+} from '@/lib/features/analysisSlice';
 import { SuggestionOverlay } from './SuggestionOverlay';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -43,6 +47,7 @@ export function SuggestionManager({
   const isLoading = useSelector(selectSuggestionsLoading);
   const error = useSelector(selectSuggestionsError);
   const stats = useSelector(selectSuggestionsStats);
+  const currentAnalysisData = useSelector(selectCurrentAnalysisData);
 
   // Filter suggestions for this section/target
   const sectionSuggestions = suggestions.filter(suggestion => {
@@ -55,33 +60,55 @@ export function SuggestionManager({
   const handleAcceptSuggestion = useCallback(async (suggestionId: string) => {
     try {
       const suggestion = suggestions.find(s => s.id === suggestionId);
-      if (!suggestion) return;
+      if (!suggestion) {
+        console.error('Suggestion not found:', suggestionId);
+        return;
+      }
 
-      // Dispatch accept action
+      console.log('🎯 [SuggestionManager] Accepting suggestion:', {
+        id: suggestionId,
+        section: suggestion.section,
+        suggestedContent: suggestion.suggestedContent,
+        currentData: currentAnalysisData?.[suggestion.section as keyof typeof currentAnalysisData]
+      });
+
+      // Step 1: Update the actual CV data in the analysis slice
+      if (currentAnalysisData && suggestion.suggestedContent) {
+        dispatch(updateAnalysisData({ 
+          path: suggestion.section, 
+          value: suggestion.suggestedContent 
+        }));
+        console.log('✅ [SuggestionManager] Updated analysis data for section:', suggestion.section);
+      } else {
+        console.warn('⚠️ [SuggestionManager] Cannot update CV data - missing data or content:', {
+          hasAnalysisData: !!currentAnalysisData,
+          hasSuggestedContent: !!suggestion.suggestedContent
+        });
+      }
+
+      // Step 2: Mark suggestion as accepted in suggestions slice
       dispatch(acceptSuggestion({ 
         suggestionId, 
         appliedContent: suggestion.suggestedContent 
       }));
 
-      // Show success toast
+      // Step 3: Show success toast
       toast({
         title: "Suggestion Applied!",
         description: `"${suggestion.title}" has been applied to your ${suggestion.section} section.`,
       });
 
-      // TODO: Here we would integrate with the CV data update logic
-      // For now, we just update the suggestion status
-      console.log('Applied suggestion:', suggestion);
+      console.log('✅ [SuggestionManager] Successfully applied suggestion:', suggestion.id);
       
     } catch (error) {
-      console.error('Error accepting suggestion:', error);
+      console.error('❌ [SuggestionManager] Error accepting suggestion:', error);
       toast({
         title: "Error Applying Suggestion",
-        description: "Please try again later.",
+        description: "Failed to update your CV data. Please try again.",
         variant: "destructive",
       });
     }
-  }, [suggestions, dispatch, toast]);
+  }, [suggestions, dispatch, toast, currentAnalysisData]);
 
   // Handle declining a suggestion
   const handleDeclineSuggestion = useCallback(async (suggestionId: string) => {

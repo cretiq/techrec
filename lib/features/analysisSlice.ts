@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import { CvAnalysisData, CvImprovementSuggestion } from '@/types/cv'; // Import relevant types
-import { set } from 'lodash'; // For applying suggestions
+import _ from 'lodash'; // For applying suggestions
 import { getProviderEndpoints } from '@/utils/aiProviderSelector';
 import { setSuggestions } from './suggestionsSlice'; // Import action from suggestionsSlice
 
@@ -180,14 +180,14 @@ export const analysisSlice = createSlice({
     updateAnalysisData: (state, action: PayloadAction<{ path: string; value: any }>) => {
       if (state.analysisData) {
         // Use lodash set for deep updates
-        set(state.analysisData, action.payload.path, action.payload.value);
+        _.set(state.analysisData, action.payload.path, action.payload.value);
       }
     },
     // Action to apply a suggestion to the data
     applySuggestion: (state, action: PayloadAction<CvImprovementSuggestion>) => {
       const suggestion = action.payload;
       if (state.analysisData && suggestion.suggestedText !== null && suggestion.suggestedText !== undefined) {
-        set(state.analysisData, suggestion.section, suggestion.suggestedText);
+        _.set(state.analysisData, suggestion.section, suggestion.suggestedText);
       }
       // Remove the applied suggestion from the list
       state.suggestions = state.suggestions.filter(s => 

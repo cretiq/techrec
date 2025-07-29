@@ -139,20 +139,20 @@
   },
   "suites": [
     {
-      "title": "e2e/api/cv-improvement-malformed-response.spec.ts",
-      "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
+      "title": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
+      "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "CV Improvement API - Retry Mechanism & Response Handling",
-          "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
+          "title": "CV Suggestions - Accept/Apply Functionality",
+          "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
           "line": 4,
           "column": 6,
           "specs": [
             {
-              "title": "should retry and succeed after initial malformed response",
+              "title": "should accept suggestion and update CV data permanently",
               "ok": true,
               "tags": [],
               "tests": [
@@ -161,7 +161,7 @@
                   "annotations": [
                     {
                       "type": "skip",
-                      "description": "No existing CV analysis found - skipping retry test"
+                      "description": "No existing CV analysis found - cannot test suggestion acceptance"
                     }
                   ],
                   "expectedStatus": "skipped",
@@ -172,16 +172,20 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "skipped",
-                      "duration": 3045,
+                      "duration": 2362,
                       "errors": [],
-                      "stdout": [],
+                      "stdout": [
+                        {
+                          "text": "Skipping test - no existing CV analysis found\n"
+                        }
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-29T13:57:36.099Z",
+                      "startTime": "2025-07-29T14:23:33.700Z",
                       "annotations": [
                         {
                           "type": "skip",
-                          "description": "No existing CV analysis found - skipping retry test"
+                          "description": "No existing CV analysis found - cannot test suggestion acceptance"
                         }
                       ],
                       "attachments": []
@@ -190,13 +194,13 @@
                   "status": "skipped"
                 }
               ],
-              "id": "4e4d540f13a4125db48b-58ef384dba47dddc7346",
-              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
+              "id": "73b6d1459176c57abfb2-67780d66473ff7ae65e8",
+              "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
               "line": 12,
               "column": 3
             },
             {
-              "title": "should handle malformed Gemini responses with trailing string elements",
+              "title": "should handle suggestion acceptance errors gracefully",
               "ok": true,
               "tags": [],
               "tests": [
@@ -205,7 +209,7 @@
                   "annotations": [
                     {
                       "type": "skip",
-                      "description": "No existing CV analysis found - skipping malformed response test"
+                      "description": "No existing CV analysis found"
                     }
                   ],
                   "expectedStatus": "skipped",
@@ -216,16 +220,16 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "skipped",
-                      "duration": 1239,
+                      "duration": 1044,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-29T13:57:39.292Z",
+                      "startTime": "2025-07-29T14:23:36.231Z",
                       "annotations": [
                         {
                           "type": "skip",
-                          "description": "No existing CV analysis found - skipping malformed response test"
+                          "description": "No existing CV analysis found"
                         }
                       ],
                       "attachments": []
@@ -234,13 +238,13 @@
                   "status": "skipped"
                 }
               ],
-              "id": "4e4d540f13a4125db48b-46052f8075c72764ad39",
-              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
-              "line": 108,
+              "id": "73b6d1459176c57abfb2-19cf0e3387530512141b",
+              "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
+              "line": 144,
               "column": 3
             },
             {
-              "title": "should handle completely malformed JSON responses gracefully",
+              "title": "should maintain suggestion state after page refresh",
               "ok": true,
               "tags": [],
               "tests": [
@@ -249,7 +253,7 @@
                   "annotations": [
                     {
                       "type": "skip",
-                      "description": "No existing CV analysis found - skipping malformed JSON test"
+                      "description": "No existing CV analysis found"
                     }
                   ],
                   "expectedStatus": "skipped",
@@ -260,16 +264,16 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "skipped",
-                      "duration": 913,
+                      "duration": 1060,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-29T13:57:40.533Z",
+                      "startTime": "2025-07-29T14:23:37.278Z",
                       "annotations": [
                         {
                           "type": "skip",
-                          "description": "No existing CV analysis found - skipping malformed JSON test"
+                          "description": "No existing CV analysis found"
                         }
                       ],
                       "attachments": []
@@ -278,97 +282,9 @@
                   "status": "skipped"
                 }
               ],
-              "id": "4e4d540f13a4125db48b-b8fc10d2a9950be20457",
-              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
-              "line": 184,
-              "column": 3
-            },
-            {
-              "title": "should successfully process valid Gemini responses",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping valid response test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "skipped",
-                      "duration": 858,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-29T13:57:41.448Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping valid response test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4e4d540f13a4125db48b-18524eed7628aae9278b",
-              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
-              "line": 228,
-              "column": 3
-            },
-            {
-              "title": "should show API failure modal when all 7 retries fail",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - skipping retry exhaustion test"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "skipped",
-                      "duration": 822,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-29T13:57:42.308Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - skipping retry exhaustion test"
-                        }
-                      ],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4e4d540f13a4125db48b-6dfcc1e36ca1f95afe9b",
-              "file": "e2e/api/cv-improvement-malformed-response.spec.ts",
-              "line": 290,
+              "id": "73b6d1459176c57abfb2-b65e339b64ed20f7658a",
+              "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
+              "line": 215,
               "column": 3
             }
           ]
@@ -378,10 +294,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-07-29T13:57:31.853Z",
-    "duration": 11320.824,
+    "startTime": "2025-07-29T14:23:32.781Z",
+    "duration": 5579.067999999999,
     "expected": 0,
-    "skipped": 5,
+    "skipped": 3,
     "unexpected": 0,
     "flaky": 0
   }

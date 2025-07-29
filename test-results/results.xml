@@ -1,40 +1,24 @@
-<testsuites id="" name="" tests="5" failures="0" skipped="5" errors="0" time="11.320824">
-<testsuite name="e2e/api/cv-improvement-malformed-response.spec.ts" timestamp="2025-07-29T13:57:35.863Z" hostname="chromium" tests="5" failures="0" skipped="5" time="6.877" errors="0">
-<testcase name="CV Improvement API - Retry Mechanism &amp; Response Handling › should retry and succeed after initial malformed response" classname="e2e/api/cv-improvement-malformed-response.spec.ts" time="3.045">
+<testsuites id="" name="" tests="3" failures="0" skipped="3" errors="0" time="5.5790679999999995">
+<testsuite name="e2e/user-flows/test-suggestion-acceptance.spec.ts" timestamp="2025-07-29T14:23:33.458Z" hostname="chromium" tests="3" failures="0" skipped="3" time="4.466" errors="0">
+<testcase name="CV Suggestions - Accept/Apply Functionality › should accept suggestion and update CV data permanently" classname="e2e/user-flows/test-suggestion-acceptance.spec.ts" time="2.362">
 <properties>
-<property name="skip" value="No existing CV analysis found - skipping retry test">
+<property name="skip" value="No existing CV analysis found - cannot test suggestion acceptance">
 </property>
 </properties>
 <skipped>
 </skipped>
 </testcase>
-<testcase name="CV Improvement API - Retry Mechanism &amp; Response Handling › should handle malformed Gemini responses with trailing string elements" classname="e2e/api/cv-improvement-malformed-response.spec.ts" time="1.239">
+<testcase name="CV Suggestions - Accept/Apply Functionality › should handle suggestion acceptance errors gracefully" classname="e2e/user-flows/test-suggestion-acceptance.spec.ts" time="1.044">
 <properties>
-<property name="skip" value="No existing CV analysis found - skipping malformed response test">
+<property name="skip" value="No existing CV analysis found">
 </property>
 </properties>
 <skipped>
 </skipped>
 </testcase>
-<testcase name="CV Improvement API - Retry Mechanism &amp; Response Handling › should handle completely malformed JSON responses gracefully" classname="e2e/api/cv-improvement-malformed-response.spec.ts" time="0.913">
+<testcase name="CV Suggestions - Accept/Apply Functionality › should maintain suggestion state after page refresh" classname="e2e/user-flows/test-suggestion-acceptance.spec.ts" time="1.06">
 <properties>
-<property name="skip" value="No existing CV analysis found - skipping malformed JSON test">
-</property>
-</properties>
-<skipped>
-</skipped>
-</testcase>
-<testcase name="CV Improvement API - Retry Mechanism &amp; Response Handling › should successfully process valid Gemini responses" classname="e2e/api/cv-improvement-malformed-response.spec.ts" time="0.858">
-<properties>
-<property name="skip" value="No existing CV analysis found - skipping valid response test">
-</property>
-</properties>
-<skipped>
-</skipped>
-</testcase>
-<testcase name="CV Improvement API - Retry Mechanism &amp; Response Handling › should show API failure modal when all 7 retries fail" classname="e2e/api/cv-improvement-malformed-response.spec.ts" time="0.822">
-<properties>
-<property name="skip" value="No existing CV analysis found - skipping retry exhaustion test">
+<property name="skip" value="No existing CV analysis found">
 </property>
 </properties>
 <skipped>
