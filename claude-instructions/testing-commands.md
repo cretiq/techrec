@@ -89,6 +89,21 @@ await this.page.waitForSelector('h2:has-text("Results")', {
 
 // Look for loading states
 await expect(this.page.locator('text=Generating...')).toBeVisible();
+
+// Test CV suggestion workflows
+test('user can accept AI suggestions and see green highlighting', async ({ page }) => {
+  // Given: User has CV with suggestions available
+  await page.goto('/cv-management');
+  await page.click('[data-testid="get-suggestions-button"]');
+  await page.waitForSelector('[data-testid="suggestion-overlay-about"]');
+  
+  // When: User accepts a suggestion
+  await page.click('[data-testid="suggestion-accept-button"]');
+  
+  // Then: Content is updated and highlighted green
+  await expect(page.locator('.bg-green-100')).toBeVisible();
+  await expect(page.locator('[data-testid="suggestion-overlay-about"]')).not.toBeVisible();
+});
 ```
 
 ### **Test Data Strategy**
@@ -161,6 +176,18 @@ npm run test:project-ideas
 **Command**: `npm run test:e2e:headed`
 **When to use**: Visual debugging, seeing what tests are doing
 
+### @test-suggestions
+**Description**: Test CV improvement suggestions workflow (accept/decline/highlighting)
+**Usage**: `@test-suggestions`
+**Command**: `npx playwright test cv-management-get-suggestions.spec.ts`
+**When to use**: After suggestion feature changes, UI updates, or AI integration work
+
+### @test-component
+**Description**: Test specific component in isolation
+**Usage**: `@test-component [component-name]`
+**Command**: `npx playwright test --grep "[component-name]"`
+**When to use**: Component-specific testing, focused debugging
+
 ## 🚀 Advanced Testing Workflows
 
 ### **🔄 Iterative Development with Tests**
@@ -229,15 +256,160 @@ npm run test:project-ideas
 - **Fallback Handling**: Test when AI services fail
 - **Result Validation**: Verify AI-generated content quality
 
+## 🧪 Test-Driven Development with Playwright
+
+### **TDD Loop Implementation**
+```typescript
+// 1. RED PHASE - Write failing test first
+test('user can manage experience entries with inline editing', async ({ page }) => {
+  // This test should fail initially - feature doesn't exist yet
+  await page.goto('/cv-management');
+  await page.click('[data-testid="experience-edit-button"]');
+  await page.fill('[data-testid="experience-title-input"]', 'Senior Developer');
+  await page.click('[data-testid="experience-save-button"]');
+  await expect(page.locator('[data-testid="experience-title"]')).toContainText('Senior Developer');
+});
+
+// 2. GREEN PHASE - Implement minimal code to pass
+// Build just enough functionality to make the test pass
+
+// 3. REFACTOR PHASE - Improve code while keeping tests green
+// Enhance implementation while maintaining test success
+```
+
+### **Component Testing Patterns**
+```typescript
+// Test component states and user interactions
+class ComponentTestPage {
+  constructor(public page: Page) {}
+
+  async testLoadingState() {
+    await expect(this.page.locator('[data-testid="loading-spinner"]')).toBeVisible();
+  }
+
+  async testErrorState() {
+    await expect(this.page.locator('[data-testid="error-message"]')).toBeVisible();
+  }
+
+  async testSuccessState() {
+    await expect(this.page.locator('[data-testid="success-indicator"]')).toBeVisible();
+  }
+
+  async testEmptyState() {
+    await expect(this.page.locator('[data-testid="empty-state"]')).toBeVisible();
+  }
+}
+```
+
+### **User-Centric Test Design**
+```typescript
+// Focus on user value, not implementation details
+test('user can improve their CV with AI suggestions', async ({ page }) => {
+  // User story: As a user, I want to get AI suggestions to improve my CV
+  
+  // Setup: User has a CV uploaded
+  await setupUserWithCV(page);
+  
+  // Action: User requests suggestions
+  await page.click('[data-testid="get-suggestions-button"]');
+  await page.waitForSelector('[data-testid="suggestion-overlay"]');
+  
+  // Verification: User sees actionable suggestions
+  await expect(page.locator('[data-testid="suggestion-item"]')).toHaveCount.greaterThan(0);
+  
+  // Action: User accepts a suggestion
+  await page.click('[data-testid="suggestion-accept-button"]').first();
+  
+  // Verification: Content is updated with visual feedback
+  await expect(page.locator('.bg-green-100')).toBeVisible();
+  await expect(page.locator('[data-testid="suggestion-overlay"]')).not.toBeVisible();
+});
+```
+
+### **Data-Driven Testing**
+```typescript
+// Test multiple scenarios with different data sets
+const testScenarios = [
+  { userLevel: 'junior', expectedSuggestions: 5 },
+  { userLevel: 'senior', expectedSuggestions: 3 },
+  { userLevel: 'expert', expectedSuggestions: 1 }
+];
+
+for (const scenario of testScenarios) {
+  test(`${scenario.userLevel} user gets appropriate suggestions`, async ({ page }) => {
+    await setupUser(page, scenario.userLevel);
+    await requestSuggestions(page);
+    await expect(page.locator('[data-testid="suggestion-item"]'))
+      .toHaveCount(scenario.expectedSuggestions);
+  });
+}
+```
+
+### **Accessibility Testing Integration**
+```typescript
+// Include accessibility testing in your TDD workflow
+test('suggestion interface is accessible', async ({ page }) => {
+  await page.goto('/cv-management');
+  
+  // Test keyboard navigation
+  await page.keyboard.press('Tab');
+  await expect(page.locator('[data-testid="get-suggestions-button"]')).toBeFocused();
+  
+  // Test screen reader labels
+  await expect(page.locator('[data-testid="suggestion-accept-button"]'))
+    .toHaveAttribute('aria-label', /accept.*suggestion/i);
+  
+  // Test color contrast (via visual comparison)
+  await expect(page.locator('.bg-green-100')).toHaveCSS('background-color', 'rgb(220, 252, 231)');
+});
+```
+
 ## 📊 Success Metrics & Monitoring
 
+### **Quality Assurance Metrics**
 - **Test Coverage**: >90% of user flows covered
 - **Pass Rate**: >95% consistent success rate
 - **Execution Time**: <5 minutes for quick feedback
 - **Maintenance Overhead**: Tests update easily with UI changes
 - **Bug Detection**: Catch issues before user reports
 
+### **TDD Implementation Metrics**
+- **Test-First Development**: New features start with failing tests
+- **Red-Green-Refactor Cycles**: Complete TDD loop for each feature
+- **Test Reliability**: Consistent results across multiple runs
+- **User Story Coverage**: Every user story has corresponding E2E tests
+
+### **Development Integration Success**
+- **Pre-Commit Testing**: All commits pass core test suite
+- **Feature Branch Validation**: Complete testing before merge
+- **Deployment Confidence**: Full test suite passes before production
+- **Regression Prevention**: New bugs immediately get test coverage
+
+## 🎯 Strategic Testing Integration
+
+### **Claude AI Development Workflow**
+1. **Always Reference This Document**: Consult `@claude-instructions/testing-commands.md` before feature work
+2. **Test-Driven Feature Development**: Write tests before implementing features
+3. **Comprehensive User Journey Coverage**: Focus on complete user workflows
+4. **Continuous Quality Assurance**: Use testing to guide architectural decisions
+
+### **Proactive Testing Excellence**
+- **Feature Planning**: Every new feature gets test strategy planning
+- **Implementation Validation**: Tests verify feature meets requirements
+- **Regression Protection**: Existing functionality protected by test suite
+- **Documentation Through Tests**: Tests serve as living feature documentation
+
+---
+
+**Enhanced Focus Areas**:
+- Contemporary Test-Driven Development practices
+- Playwright as primary E2E testing framework
+- User-centric test design over implementation-focused testing  
+- Comprehensive coverage of AI features and workflows
+- Accessibility and performance testing integration
+
 Refer to: 
 - [AI Testing Strategy](mdc:testing/ai-driven-testing-strategy.md)
 - [E2E Testing Guidelines](mdc:.cursor/rules/e2e-testing.mdc)
-- [Test Data Management](mdc:.cursor/rules/test-data-management.mdc) 
+- [Test Data Management](mdc:.cursor/rules/test-data-management.mdc)
+- [CLAUDE.md - Testing Section](mdc:CLAUDE.md#test-driven-development-mastery) 
