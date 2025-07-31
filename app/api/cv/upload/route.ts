@@ -209,38 +209,35 @@ export async function POST(request: Request) {
 
       console.log(`[Analysis ${newCV.id}] Calculated improvement score: ${improvementScore}`);
 
-      // 6. Save analysis result to CvAnalysis collection
-      const cvAnalysisCreateData = {
-          developerId: newCV.developerId,
-          cvId: newCV.id,
-          originalName: newCV.originalName,
-          mimeType: newCV.mimeType,
-          size: newCV.size,
-          s3Key: newCV.s3Key,
-          fileHash: fileHash, // Save the calculated hash
-          status: AnalysisStatus.COMPLETED,
-          analysisResult: analysisResult as any,
-          analyzedAt: new Date(),
-      };
-      console.log('[Upload Route] Data for prisma.cvAnalysis.create:', cvAnalysisCreateData);
-      const savedAnalysis = await prisma.cvAnalysis.create({ data: cvAnalysisCreateData });
-      console.log(`[Upload Route] Saved CvAnalysis record ID: ${savedAnalysis.id}`);
+      // 6. Save analysis result to proper profile tables via background sync
+      console.log('[Upload Route] ⚠️ ARCHITECTURAL CHANGE: Skipping CvAnalysis table creation');
+      console.log('[Upload Route] Using background sync to save to proper single source of truth tables');
+      
+      // Background sync CV data to developer profile (primary data storage)
+      try {
+        console.log(`[Upload Route] Starting profile sync for developer: ${developerId}`);
+        await syncCvDataToProfile(developerId, analysisResult);
+        console.log(`[Upload Route] Profile sync completed successfully`);
+      } catch (syncError) {
+        console.error(`[Upload Route] Profile sync failed:`, syncError);
+        throw new Error('Failed to save CV data to profile. Please try again.');
+      }
 
-      // 7. Update original CV record with final status, score, and analysis link
+      // 7. Update original CV record with final status and score (no analysisId needed)
       const cvUpdateData = {
         status: AnalysisStatus.COMPLETED,
-        analysisId: savedAnalysis.id, 
+        analysisId: null, // No longer using CvAnalysis table
         improvementScore: improvementScore,
         extractedText: parsedContent.text,
       };
       
       console.log('💾 [CV-STORAGE] Database Storage:', {
         cvId: newCV.id,
-        analysisId: savedAnalysis.id,
+        analysisId: null, // Data saved to proper profile tables instead
         improvementScore: improvementScore,
         storageSuccess: true,
         extractedTextLength: parsedContent.text.length,
-        analysisRecordCreated: true,
+        profileDataSaved: true,
         cvRecordUpdated: false // Will be true after next line
       });
       
@@ -249,22 +246,15 @@ export async function POST(request: Request) {
       console.log('💾 [CV-STORAGE] Final Storage Update:', {
         cvRecordUpdated: true,
         finalStatus: AnalysisStatus.COMPLETED,
-        linkedAnalysisId: savedAnalysis.id,
-        totalStorageOperations: 2, // create analysis + update CV
-        storageComplete: true
+        linkedAnalysisId: null, // Using proper profile tables instead
+        totalStorageOperations: 1, // update CV record only
+        storageComplete: true,
+        profileSyncComplete: true
       });
       
       console.log('🔍 [CV-ANALYSIS] === CV UPLOAD FLOW END ===');
 
-      // 8. Background sync CV data to developer profile (silent operation)
-      try {
-        console.log(`[Upload Route] Starting background profile sync for developer: ${developerId}`);
-        await syncCvDataToProfile(developerId, analysisResult);
-        console.log(`[Upload Route] Background profile sync completed successfully`);
-      } catch (syncError) {
-        // Log error but don't throw - this is a background operation that shouldn't affect CV upload
-        console.error(`[Upload Route] Background profile sync failed (non-critical):`, syncError);
-      }
+      // Background sync already completed above as primary data storage method
 
     } catch (analysisError) {
       console.error(`[Analysis ${newCV.id}] Error during analysis process:`, analysisError);

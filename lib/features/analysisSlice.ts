@@ -76,7 +76,7 @@ export const fetchLatestAnalysis = createAsyncThunk(
   }
 );
 
-// New Async Thunk for saving a new version
+// Updated Async Thunk for saving to proper profile tables
 export const saveAnalysisVersion = createAsyncThunk(
   'analysis/saveVersion',
   async (_, { getState, rejectWithValue }) => {
@@ -87,25 +87,89 @@ export const saveAnalysisVersion = createAsyncThunk(
       return rejectWithValue('No analysis data to save');
     }
 
-    console.log(`[saveAnalysisVersion Thunk] Saving new version for ID: ${currentAnalysisId}`);
+    console.log(`[saveAnalysisVersion Thunk] ⚠️ ARCHITECTURAL CHANGE: Saving to proper profile tables instead of CvAnalysis`);
+    console.log(`[saveAnalysisVersion Thunk] Transforming analysis data to profile format`);
+    
     try {
-      const response = await fetch(`/api/cv-analysis/${currentAnalysisId}/save-version`, {
-        method: 'POST',
+      // Transform analysis data to profile update format
+      const profilePayload = {
+        name: analysisData.contactInfo?.name || 'Unknown',
+        title: analysisData.contactInfo?.title || 'Developer',
+        profileEmail: analysisData.contactInfo?.email || null,
+        about: analysisData.about || null,
+        contactInfo: analysisData.contactInfo ? {
+          phone: analysisData.contactInfo.phone || null,
+          address: analysisData.contactInfo.location || null,
+          city: null,
+          country: null,
+          linkedin: analysisData.contactInfo.linkedin || null,
+          github: analysisData.contactInfo.github || null,
+          website: analysisData.contactInfo.website || null,
+        } : null,
+        skills: (analysisData.skills || []).map(skill => ({
+          name: skill.name,
+          category: skill.category || 'General',
+          level: skill.level || 'INTERMEDIATE',
+        })),
+        experience: (analysisData.experience || []).map(exp => ({
+          title: exp.title,
+          company: exp.company,
+          description: exp.description || '',
+          location: exp.location || null,
+          startDate: exp.startDate || new Date().toISOString(),
+          endDate: exp.endDate || null,
+          current: exp.current || false,
+          responsibilities: exp.responsibilities || [],
+          achievements: exp.achievements || [],
+          teamSize: null,
+          techStack: [],
+        })),
+        education: (analysisData.education || []).map(edu => ({
+          degree: edu.degree || null,
+          institution: edu.institution,
+          year: edu.year || new Date().getFullYear().toString(),
+          location: edu.location || null,
+          startDate: edu.startDate || new Date().toISOString(),
+          endDate: edu.endDate || null,
+          gpa: null,
+          honors: [],
+          activities: [],
+        })),
+        achievements: (analysisData.achievements || []).map(ach => ({
+          title: ach.title,
+          description: ach.description,
+          date: ach.date || new Date().toISOString(),
+          url: ach.url || null,
+          issuer: ach.issuer || null,
+        })),
+        customRoles: [], // Preserve existing but don't overwrite
+      };
+
+      console.log(`[saveAnalysisVersion] Calling proper profile update API`);
+      const response = await fetch(`/api/developer/me/profile`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(analysisData)
+        body: JSON.stringify(profilePayload)
       });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error(`[saveAnalysisVersion] Save failed with status ${response.status}:`, errorData.error);
-        return rejectWithValue(errorData.error || `Failed to save analysis version (${response.status})`);
+        console.error(`[saveAnalysisVersion] Profile update failed with status ${response.status}:`, errorData.error);
+        return rejectWithValue(errorData.error || `Failed to save profile data (${response.status})`);
       }
       
       const data = await response.json();
-      console.log('[saveAnalysisVersion Thunk] Save successful, received data:', data); 
-      return data; 
+      console.log('[saveAnalysisVersion Thunk] Profile update successful, received data:', data); 
+      
+      // Return a response format compatible with existing UI expectations
+      return {
+        analysisId: `profile-${data.id}`,
+        success: true,
+        message: 'Profile updated successfully',
+        updatedProfile: data
+      }; 
     } catch (error: any) {
-      console.error('[saveAnalysisVersion] Exception during save:', error);
+      console.error('[saveAnalysisVersion] Exception during profile update:', error);
       return rejectWithValue(error.message || 'An unknown error occurred');
     }
   }
