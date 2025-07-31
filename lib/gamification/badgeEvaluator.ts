@@ -103,10 +103,11 @@ export class BadgeEvaluator {
         return this.evaluateContactInfoComplete(context);
       
       case 'cv_analysis_count':
-        return await this.evaluateCVAnalysisCount(context.userId, req.threshold);
+        return await this.evaluateCVCount(context.userId, req.threshold);
       
       case 'cv_score_threshold':
-        return await this.evaluateCVScoreThreshold(context.userId, req.threshold);
+        // TODO: Implement CV score evaluation using CV.improvementScore field
+        return false; // Temporarily disabled during CvAnalysis removal
       
       case 'suggestions_accepted':
         return await this.evaluateSuggestionsAccepted(context.userId, req.threshold);
@@ -191,31 +192,27 @@ export class BadgeEvaluator {
     return requiredFields.every(field => contact[field]);
   }
 
-  private async evaluateCVAnalysisCount(userId: string, threshold: number): Promise<boolean> {
-    // Use query optimizer for cached CV analysis count
-    const { getCachedCVAnalysisCount } = await import('./queryOptimizer');
-    const count = await getCachedCVAnalysisCount(userId, 'COMPLETED');
+  private async evaluateCVCount(userId: string, threshold: number): Promise<boolean> {
+    // Use query optimizer for cached CV count
+    const { getCachedCVCount } = await import('./queryOptimizer');
+    const count = await getCachedCVCount(userId, 'COMPLETED');
     return count >= threshold;
   }
 
   private async evaluateCVScoreThreshold(userId: string, threshold: number): Promise<boolean> {
-    const bestAnalysis = await prisma.cVAnalysis.findFirst({
-      where: { 
-        developerId: userId,
-        status: 'COMPLETED'
-      },
-      orderBy: { 
-        // Assuming we store overall score in analysisResult
-        createdAt: 'desc'
-      },
-      take: 1
-    });
-
-    if (!bestAnalysis?.analysisResult) return false;
-    
-    // Extract score from analysis result
-    const score = this.extractOverallScore(bestAnalysis.analysisResult);
-    return score >= threshold;
+    // TODO: Implement using CV.improvementScore field after CvAnalysis removal
+    // const bestCV = await prisma.cV.findFirst({
+    //   where: { 
+    //     developerId: userId,
+    //     status: 'COMPLETED'
+    //   },
+    //   orderBy: { 
+    //     improvementScore: 'desc'
+    //   },
+    //   take: 1
+    // });
+    // return bestCV?.improvementScore >= threshold;
+    return false; // Temporarily disabled
   }
 
   private async evaluateSuggestionsAccepted(userId: string, threshold: number): Promise<boolean> {

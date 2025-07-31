@@ -164,9 +164,9 @@ export class GamificationQueryOptimizer {
   }
 
   /**
-   * Optimized CV analysis count query with caching
+   * Optimized CV count query with caching
    */
-  public async getCVAnalysisCount(
+  public async getCVCount(
     userId: string,
     status?: string,
     options: QueryCacheOptions = {}
@@ -174,7 +174,7 @@ export class GamificationQueryOptimizer {
     const cacheKey = `cv_count:${userId}:${status || 'all'}`;
     const cached = await this.getFromCache(cacheKey);
     if (cached !== null) {
-      this.recordMetric('getCVAnalysisCount', 0, true);
+      this.recordMetric('getCVCount', 0, true);
       return cached;
     }
 
@@ -184,12 +184,12 @@ export class GamificationQueryOptimizer {
       whereClause.status = status;
     }
 
-    const count = await prisma.cvAnalysis.count({
+    const count = await prisma.cV.count({
       where: whereClause
     });
 
     const queryTime = Date.now() - startTime;
-    this.recordMetric('getCVAnalysisCount', queryTime, false);
+    this.recordMetric('getCVCount', queryTime, false);
 
     await this.setCache(cacheKey, count, options.ttl || 600); // 10 minute cache
     return count;
@@ -505,8 +505,8 @@ export const queryOptimizer = GamificationQueryOptimizer.getInstance();
 export const getCachedUserProfile = (userId: string) => 
   queryOptimizer.getUserProfileOptimized(userId);
 
-export const getCachedCVAnalysisCount = (userId: string, status?: string) => 
-  queryOptimizer.getCVAnalysisCount(userId, status);
+export const getCachedCVCount = (userId: string, status?: string) => 
+  queryOptimizer.getCVCount(userId, status);
 
 export const getCachedApplicationStats = (userId: string) => 
   queryOptimizer.getApplicationStats(userId);

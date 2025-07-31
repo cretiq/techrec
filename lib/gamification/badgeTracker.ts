@@ -152,13 +152,13 @@ export class BadgeTracker {
         return Math.min(applicationCount / criteria.threshold, 1.0);
         
       case 'cv_analyses_completed':
-        const analysisCount = await prisma.cvAnalysis.count({
+        const cvCount = await prisma.cV.count({
           where: {
             developerId: userId,
             status: 'COMPLETED'
           }
         });
-        return Math.min(analysisCount / criteria.threshold, 1.0);
+        return Math.min(cvCount / criteria.threshold, 1.0);
         
       case 'login_streak':
         const user = await prisma.developer.findUnique({
