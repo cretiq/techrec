@@ -21,7 +21,6 @@ export interface CvUpdateData {
   status?: AnalysisStatus;
   extractedText?: string;
   metadata?: any; // Adjust type as needed
-  analysisId?: string | null;
   improvementScore?: number | null;
 }
 

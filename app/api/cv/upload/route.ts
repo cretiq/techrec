@@ -223,10 +223,9 @@ export async function POST(request: Request) {
         throw new Error('Failed to save CV data to profile. Please try again.');
       }
 
-      // 7. Update original CV record with final status and score (no analysisId needed)
+      // 7. Update original CV record with final status and score
       const cvUpdateData = {
         status: AnalysisStatus.COMPLETED,
-        analysisId: null, // No longer using CvAnalysis table
         improvementScore: improvementScore,
         extractedText: parsedContent.text,
       };

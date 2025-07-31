@@ -597,6 +597,28 @@ npm run seed:roles           # Seed roles data
 ## 🧪 TESTING STRATEGY
 
 ### Testing Requirements
+
+**🚨 CRITICAL AUTHENTICATION RULE**:
+- **ALL CV and developer-related tests MUST authenticate FIRST**
+- **Tests ALWAYS start unauthenticated** - this is the default state
+- **Use `AuthHelper.ensureLoggedIn()` in test.beforeEach()** before any CV operations
+- **Client-side authentication protection** redirects unauthenticated users to `/auth/signin`
+- **Test users**: `junior@test.techrec.com`, `senior@test.techrec.com`, `newbie@test.techrec.com`
+
+**Authentication Pattern Example**:
+```typescript
+import { AuthHelper } from '../utils/auth-helper';
+
+test.beforeEach(async ({ page }) => {
+  // CRITICAL: Always authenticate first before testing CV functionality
+  const auth = new AuthHelper(page);
+  await auth.ensureLoggedIn('junior_developer');
+  
+  // Now can access protected routes
+  await page.goto('/developer/cv-management');
+});
+```
+
 **Mandatory Coverage**:
 - ✅ ALL buttons, links, and interactive elements
 - ✅ ALL form inputs, selects, and textareas

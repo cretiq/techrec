@@ -360,11 +360,20 @@ async function updateProfileDirectly(developerId: string, payload: ProfileUpdate
         },
         experience: {
           deleteMany: {},
-          create: payload.experience?.map(exp => ({
-            ...exp,
-            startDate: new Date(exp.startDate),
-            endDate: exp.endDate ? new Date(exp.endDate) : null
-          })) || []
+          create: payload.experience?.map(exp => {
+            // Safely parse dates, handling invalid date strings
+            const startDate = exp.startDate ? new Date(exp.startDate) : new Date();
+            const endDate = exp.endDate && exp.endDate !== 'Present' && exp.endDate.trim() !== '' 
+              ? new Date(exp.endDate) 
+              : null;
+            
+            // Validate dates are not invalid
+            return {
+              ...exp,
+              startDate: isNaN(startDate.getTime()) ? new Date() : startDate,
+              endDate: endDate && isNaN(endDate.getTime()) ? null : endDate
+            };
+          }) || []
         },
         education: {
           deleteMany: {},

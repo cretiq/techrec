@@ -11,30 +11,33 @@ import {  Button  } from '@/components/ui-daisy/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
-import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
+import { setAnalysis, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
 import { cn } from '@/lib/utils';
 import { RefreshCw, Download, BarChart3, Rocket } from 'lucide-react';
 import { ProjectEnhancementModal } from '@/components/analysis/ProjectEnhancementModal';
 import { ReUploadButton } from '@/components/cv/ReUploadButton';
+import { useSession } from 'next-auth/react';
 
 export default function CVManagementPage() {
+    // ALL HOOKS MUST BE AT THE TOP - React Rules of Hooks
     const [originalMimeType, setOriginalMimeType] = useState<string>('application/pdf'); // Keep this for now
     const [showProjectEnhancementModal, setShowProjectEnhancementModal] = useState(false);
 
-    // Get Redux dispatch
-    const dispatch: AppDispatch = useDispatch();
-
-    // --- URL State Handling --- 
+    // Authentication hooks
+    const { data: session, status } = useSession();
     const router = useRouter();
+    
+    // Redux hooks
+    const dispatch: AppDispatch = useDispatch();
     const searchParams = useSearchParams();
-
-
-    // Select state from Redux
     const analysisIdFromStore = useSelector(selectCurrentAnalysisId);
     const analysisStatus = useSelector(selectAnalysisStatus);
     const analysisData = useSelector(selectCurrentAnalysisData);
 
-    // Function to fetch user's latest CV analysis
+    // Ref hooks
+    const hasInitialLoaded = useRef(false);
+
+    // Callback hooks
     const fetchLatestUserAnalysis = useCallback(async () => {
         try {
             const response = await fetch('/api/cv-analysis/latest');
@@ -43,12 +46,13 @@ export default function CVManagementPage() {
                 const latestAnalysis = await response.json();
                 console.log('[CVManagementPage] Found latest analysis:', latestAnalysis.id);
                 
-                // Load the analysis into Redux
-                dispatch(fetchAnalysisById(latestAnalysis.id));
+                // ARCHITECTURAL CHANGE: Load the analysis data directly from the response
+                // No need to make another API call since /api/cv-analysis/latest returns complete data
+                dispatch(setAnalysis({ id: latestAnalysis.id, data: latestAnalysis }));
                 
                 // NO URL PARAMETERS: Single CV approach doesn't need URL state
                 // The user always sees their latest/current CV
-                console.log('[CVManagementPage] Analysis loaded, no URL parameters needed');
+                console.log('[CVManagementPage] Analysis loaded directly, no URL parameters needed');
             } else if (response.status === 404) {
                 console.log('[CVManagementPage] No latest analysis found - user needs to upload CV');
                 // Keep showing upload/start from scratch options
@@ -76,8 +80,17 @@ export default function CVManagementPage() {
         }, 1000); // 1 second delay
     }, [fetchLatestUserAnalysis]);
 
-    // Track if we've done initial load to prevent duplicate fetches
-    const hasInitialLoaded = useRef(false);
+    // Effect hooks - ALL MUST BE TOGETHER
+    // Authentication effect
+    useEffect(() => {
+        if (status === 'loading') return; // Still loading
+        
+        if (status === 'unauthenticated') {
+            console.log('[CVManagementPage] Unauthenticated user detected, redirecting to signin');
+            router.push('/auth/signin');
+            return;
+        }
+    }, [status, router]);
 
     // SIMPLIFIED: Always use latest analysis approach (no URL parameters)
     useEffect(() => {
@@ -158,6 +171,22 @@ export default function CVManagementPage() {
 
         return Math.round((totalMonths / 12) * 10) / 10; // Round to 1 decimal place
     };
+
+    // Authentication guards - AFTER all hooks are defined
+    if (status === 'loading') {
+        return (
+            <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" data-testid="cv-management-page-loading">
+                <div className="flex justify-center items-center h-40">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+            </div>
+        );
+    }
+
+    // Don't render anything if not authenticated (redirect in progress)
+    if (status === 'unauthenticated') {
+        return null;
+    }
 
     return (
         <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" style={{ animationDelay: '100ms' }} data-testid="cv-management-page-container">

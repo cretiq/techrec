@@ -30,7 +30,9 @@ const initialState: AnalysisState = {
   recentlyUpdatedPaths: [],
 };
 
-// Example Async Thunk for fetching analysis data (adjust API call as needed)
+// DEPRECATED: This function is no longer used after architectural change to single source of truth
+// The /api/cv-analysis/[id] endpoint no longer exists - use setAnalysis with data from /api/cv-analysis/latest instead
+// @deprecated Use setAnalysis action with data from /api/cv-analysis/latest
 export const fetchAnalysisById = createAsyncThunk(
   'analysis/fetchById',
   async (analysisId: string, { rejectWithValue }) => {

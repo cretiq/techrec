@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { AuthHelper } from '../utils/auth-helper';
 
 // Test files path
 const __filename = fileURLToPath(import.meta.url);
@@ -9,10 +10,12 @@ const testFilesPath = path.join(__dirname, '../../fixtures');
 
 test.describe('Upload to Immediate Display Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to CV management page
-    await page.goto('/developer/cv-management');
+    // CRITICAL: Always authenticate first before testing CV functionality
+    const auth = new AuthHelper(page);
+    await auth.ensureLoggedIn('junior_developer');
     
-    // Wait for page to load
+    // Navigate to CV management page (should now be accessible)
+    await page.goto('/developer/cv-management');
     await page.waitForLoadState('networkidle');
   });
 
@@ -49,6 +52,15 @@ test.describe('Upload to Immediate Display Flow', () => {
       const fileInput = page.locator('input[type="file"]');
       await expect(fileInput).toBeVisible();
       await fileInput.setInputFiles(path.join(testFilesPath, 'Filip_Mellqvist_CV.pdf'));
+      
+      // Wait for file to be processed by dropzone
+      await page.waitForTimeout(1000);
+      
+      // Click upload button to trigger the upload
+      const uploadButton = page.locator('[data-testid="cv-management-button-upload-trigger"]');
+      await expect(uploadButton).toBeVisible();
+      await uploadButton.click();
+      console.log('🚀 Upload button clicked - upload initiated');
     }
     
     console.log('⏳ Waiting for CV analysis to complete...');
@@ -125,7 +137,7 @@ test.describe('Upload to Immediate Display Flow', () => {
   test('should use latest analysis approach when navigating via Features menu', async ({ page }) => {
     console.log('🎯 Testing Features → CV Management navigation flow');
     
-    // Navigate to homepage first
+    // User is already authenticated from beforeEach, navigate to homepage
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     

@@ -399,6 +399,50 @@ test('suggestion interface is accessible', async ({ page }) => {
 - **Regression Protection**: Existing functionality protected by test suite
 - **Documentation Through Tests**: Tests serve as living feature documentation
 
+## 🚨 CRITICAL TEST RELIABILITY PRINCIPLES
+
+### **Test Integrity Requirements**
+1. **REAL FUNCTIONALITY TESTING**: Tests MUST perform actual operations, not simulate them
+   - CV upload tests MUST upload real files
+   - Database tests MUST write to actual database
+   - API tests MUST call real endpoints
+   
+2. **IMMEDIATE PROBLEM FLAGGING**: If a test doesn't work as expected:
+   - **STOP** attempting repairs without 100% confidence
+   - **FLAG** the issue immediately to the user
+   - **OFFER** manual testing as alternative
+   - **DOCUMENT** what works vs. what doesn't
+
+3. **HEAD TEST PROTOCOL**: When uncertain about test fixes:
+   - Run a quick validation test first
+   - Report exactly what works and what fails
+   - Let user decide on manual testing vs. continued debugging
+   - Never claim fixes work without verification
+
+### **Test Debugging Hierarchy**
+```
+1. ✅ CONFIDENT FIX: Know exactly what's wrong and how to fix it
+   → Apply fix and validate immediately
+
+2. ⚠️ UNCERTAIN FIX: Suspect the issue but not 100% sure
+   → Run HEAD test, report findings, get user approval
+
+3. 🛑 UNKNOWN ISSUE: Don't understand the root cause
+   → STOP, FLAG to user, suggest manual testing
+```
+
+### **Upload Flow Test Requirements**
+- **File Upload Tests**: MUST use real file uploads, not mocked interactions
+- **Database Integration**: MUST write to actual database tables
+- **End-to-End Validation**: MUST verify complete pipeline (upload → process → display)
+- **Error Handling**: MUST test actual error scenarios, not simulated ones
+
+### **When Tests Are Unreliable**
+- **Document** specific test failures and limitations
+- **Provide** clear guidance on manual testing procedures  
+- **Flag** tests that don't reflect real user workflows
+- **Prioritize** user confidence over test coverage metrics
+
 ---
 
 **Enhanced Focus Areas**:
