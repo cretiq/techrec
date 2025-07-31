@@ -107,7 +107,7 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
             description: `CV ${selectedFile.name} uploaded (ID: ${response.cvId}).`,
             // Optional: Add success style if available
           });
-          onUploadComplete(); // Call the callback to refresh list
+          onUploadComplete('upload-complete'); // Call the callback to refresh list
           // Reset after a short delay to show success state
           setTimeout(() => {
               resetState();

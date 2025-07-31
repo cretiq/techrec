@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { UploadForm } from '@/components/cv/UploadForm';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
 import { AnalysisActionButtons } from '@/components/analysis/AnalysisActionButtons';
 import { ProfileScoringSidebar } from '@/components/cv/ProfileScoringSidebar';
-import { GuidedProfileCreation } from '@/components/cv/GuidedProfileCreation';
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
 import { toast } from "@/components/ui/use-toast";
 import {  Button  } from '@/components/ui-daisy/button';
@@ -16,10 +15,10 @@ import { fetchAnalysisById, clearAnalysis, selectCurrentAnalysisId, selectAnalys
 import { cn } from '@/lib/utils';
 import { RefreshCw, Download, BarChart3, Rocket } from 'lucide-react';
 import { ProjectEnhancementModal } from '@/components/analysis/ProjectEnhancementModal';
+import { ReUploadButton } from '@/components/cv/ReUploadButton';
 
 export default function CVManagementPage() {
     const [originalMimeType, setOriginalMimeType] = useState<string>('application/pdf'); // Keep this for now
-    const [showGuidedCreation, setShowGuidedCreation] = useState(false);
     const [showProjectEnhancementModal, setShowProjectEnhancementModal] = useState(false);
 
     // Get Redux dispatch
@@ -35,45 +34,8 @@ export default function CVManagementPage() {
     const analysisStatus = useSelector(selectAnalysisStatus);
     const analysisData = useSelector(selectCurrentAnalysisData);
 
-    // --- Handler for Upload Completion ---
-    const handleUploadComplete = useCallback((analysisId?: string) => {
-        console.log('[CVManagementPage] handleUploadComplete called with analysisId:', analysisId);
-        
-        // Load the new analysis and update URL
-        if (analysisId) {
-            console.log('[CVManagementPage] Loading analysis:', analysisId);
-            dispatch(fetchAnalysisById(analysisId));
-            
-            // Update the URL to include the analysis ID
-            const params = new URLSearchParams(searchParams.toString());
-            params.set('analysisId', analysisId);
-            const newUrl = `${window.location.pathname}?${params.toString()}`;
-            router.replace(newUrl);
-        }
-    }, [dispatch, searchParams, router]);
-
-    // Auto-load user's latest CV analysis on mount, or load from URL if provided
-    useEffect(() => {
-        const analysisIdFromUrl = searchParams.get('analysisId');
-        
-        if (analysisIdFromUrl) {
-            // URL has specific analysis ID - load it
-            console.log('[CVManagementPage] URL Effect triggered with analysisId:', analysisIdFromUrl);
-            if (analysisIdFromStore !== analysisIdFromUrl) {
-                console.log('[CVManagementPage] Fetching analysis from URL:', analysisIdFromUrl);
-                dispatch(fetchAnalysisById(analysisIdFromUrl));
-            } else {
-                console.log('[CVManagementPage] Analysis already loaded in Redux, skipping fetch');
-            }
-        } else if (!analysisIdFromStore && analysisStatus === 'idle') {
-            // No URL parameter and no analysis loaded - fetch user's latest analysis
-            console.log('[CVManagementPage] No URL param, fetching user\'s latest analysis');
-            fetchLatestUserAnalysis();
-        }
-    }, [searchParams, dispatch, analysisIdFromStore, analysisStatus]);
-
     // Function to fetch user's latest CV analysis
-    const fetchLatestUserAnalysis = async () => {
+    const fetchLatestUserAnalysis = useCallback(async () => {
         try {
             const response = await fetch('/api/cv-analysis/latest');
             
@@ -84,11 +46,9 @@ export default function CVManagementPage() {
                 // Load the analysis into Redux
                 dispatch(fetchAnalysisById(latestAnalysis.id));
                 
-                // Update URL to reflect the loaded analysis (optional - maintains URL state)
-                const params = new URLSearchParams(searchParams.toString());
-                params.set('analysisId', latestAnalysis.id);
-                const newUrl = `${window.location.pathname}?${params.toString()}`;
-                router.replace(newUrl);
+                // NO URL PARAMETERS: Single CV approach doesn't need URL state
+                // The user always sees their latest/current CV
+                console.log('[CVManagementPage] Analysis loaded, no URL parameters needed');
             } else if (response.status === 404) {
                 console.log('[CVManagementPage] No latest analysis found - user needs to upload CV');
                 // Keep showing upload/start from scratch options
@@ -98,7 +58,41 @@ export default function CVManagementPage() {
         } catch (error) {
             console.error('[CVManagementPage] Failed to fetch latest analysis:', error);
         }
-    };
+    }, [dispatch]);
+
+    // --- Handler for Upload Completion ---
+    const handleUploadComplete = useCallback((signal?: string) => {
+        console.log('[CVManagementPage] ✅ handleUploadComplete called with signal:', signal);
+        console.log('[CVManagementPage] ✅ Callback triggered - starting immediate fetch');
+        
+        // Always fetch the latest analysis when upload completes
+        // This ensures we get the user's single "current" CV analysis
+        console.log('[CVManagementPage] 🔄 Upload complete, fetching latest analysis NOW');
+        
+        // Add a small delay to ensure upload processing is complete on server
+        setTimeout(() => {
+            console.log('[CVManagementPage] 🔄 Delayed fetch starting...');
+            fetchLatestUserAnalysis();
+        }, 1000); // 1 second delay
+    }, [fetchLatestUserAnalysis]);
+
+    // Track if we've done initial load to prevent duplicate fetches
+    const hasInitialLoaded = useRef(false);
+
+    // SIMPLIFIED: Always use latest analysis approach (no URL parameters)
+    useEffect(() => {
+        // Skip if already loading
+        if (analysisStatus === 'loading') {
+            return;
+        }
+
+        // If no analysis loaded and not already attempted, fetch user's latest analysis
+        if (!hasInitialLoaded.current && !analysisIdFromStore && analysisStatus === 'idle') {
+            console.log('[CVManagementPage] Loading user\'s latest analysis (single CV approach)');
+            fetchLatestUserAnalysis();
+            hasInitialLoaded.current = true;
+        }
+    }, [analysisIdFromStore, analysisStatus, fetchLatestUserAnalysis]);
 
     useEffect(() => {
         const styles = `
@@ -132,27 +126,13 @@ export default function CVManagementPage() {
     // Only log state changes, not every render
     useEffect(() => {
         console.log('[CVManagementPage] State changed:', {
-            analysisIdFromUrl: searchParams.get('analysisId'),
             analysisStatus,
             analysisIdFromStore,
+            hasAnalysisData: !!analysisData,
         });
-    }, [analysisStatus, analysisIdFromStore, searchParams]);
+    }, [analysisStatus, analysisIdFromStore, analysisData]);
 
 
-    const handleGuidedCreationComplete = async (profileData: any) => {
-        console.log('[CVManagementPage] Guided creation complete:', profileData);
-        
-        // TODO: Save profile data and create initial CV
-        toast({
-            title: "Profile Created!",
-            description: "Your profile has been created. You can now enhance it further.",
-        });
-        
-        setShowGuidedCreation(false);
-        
-        // Optionally redirect to show the created profile
-        // This would require creating an initial CV/analysis from the profile data
-    };
 
     // Calculate total years of experience from CV data
     const calculateTotalExperience = (analysisData: any): number => {
@@ -194,36 +174,11 @@ export default function CVManagementPage() {
                     data-testid="cv-management-entry-section"
                 >
                 <CardContent className="p-8">
-                    <div className="max-w-2xl mx-auto text-center space-y-8">
+                    <div className="max-w-md mx-auto text-center space-y-8">
                         <div data-testid="cv-management-entry-options">
-                            <div className="grid gap-6 md:grid-cols-2">
-                                {/* Upload CV Option */}
-                                <div className="space-y-4" data-testid="cv-management-upload-option">
-                                    <div className="h-32 p-6 border-2 border-dashed border-primary/20 rounded-lg hover:border-primary/40 transition-colors flex items-center justify-center">
-                                        <UploadForm onUploadComplete={handleUploadComplete} />
-                                    </div>
-                                    <p className="text-sm text-base-content/60 text-center">
-                                        Already have a CV? Import & enhance
-                                    </p>
-                                </div>
-
-                                {/* Start from Scratch Option */}
-                                <div className="space-y-4" data-testid="cv-management-scratch-option">
-                                    <Button
-                                        size="lg"
-                                        variant="dashdot"
-                                        className="w-full h-32 flex flex-col gap-2"
-                                        onClick={() => setShowGuidedCreation(true)}
-                                        data-testid="cv-management-start-scratch-button"
-                                    >
-                                        <div className="text-2xl">✨</div>
-                                        <div className="font-semibold">Start from Scratch</div>
-                                        <div className="text-xs text-muted-foreground">Build with guided assistance</div>
-                                    </Button>
-                                    <p className="text-sm text-base-content/60 text-center">
-                                        New to this? We'll guide you
-                                    </p>
-                                </div>
+                            {/* Upload CV Option - Simplified single option */}
+                            <div className="space-y-4" data-testid="cv-management-upload-option">
+                                <UploadForm onUploadComplete={handleUploadComplete} />
                             </div>
                         </div>
                     </div>
@@ -273,19 +228,10 @@ export default function CVManagementPage() {
                                 <CardContent className="py-3">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => {
-                                                    const params = new URLSearchParams(searchParams.toString());
-                                                    params.delete('analysisId');
-                                                    router.replace(`${window.location.pathname}?${params.toString()}`);
-                                                }}
-                                                leftIcon={<RefreshCw className="h-4 w-4" />}
-                                                data-testid="cv-management-action-reupload"
-                                            >
-                                                Re-upload CV
-                                            </Button>
+                                            <ReUploadButton
+                                                analysisData={analysisData}
+                                                onUploadComplete={handleUploadComplete}
+                                            />
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -368,13 +314,6 @@ export default function CVManagementPage() {
                 return null;
             })()}
 
-            {/* Guided Profile Creation Modal */}
-            {showGuidedCreation && (
-                <GuidedProfileCreation
-                    onComplete={handleGuidedCreationComplete}
-                    onCancel={() => setShowGuidedCreation(false)}
-                />
-            )}
 
             {/* Project Enhancement Modal */}
             {showProjectEnhancementModal && (
