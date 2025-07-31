@@ -14,12 +14,18 @@ const ADMIN_EMAILS = [
 ];
 
 // DELETE /api/admin/gamification/cv/[id] - Admin CV deletion
+// Query params:
+// - deleteProfileData=true - Also delete extracted profile data (contactInfo, skills, experience, education)
 export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const params = await context.params;
   const { id } = params;
   
+  // Check for deleteProfileData query parameter
+  const url = new URL(request.url);
+  const deleteProfileData = url.searchParams.get('deleteProfileData') === 'true';
+  
   try {
-    console.log(`[Admin CV Delete] Received DELETE request for CV ID: ${id}`);
+    console.log(`[Admin CV Delete] Received DELETE request for CV ID: ${id}, deleteProfileData: ${deleteProfileData}`);
     
     // Session validation
     const session = await getServerSession(authOptions);
@@ -69,14 +75,87 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 
     console.log('[Admin CV Delete] Audit trail:', JSON.stringify(auditData, null, 2));
 
-    // Perform deletion using existing infrastructure
+    // Track what was deleted
+    const deletedData: any = {
+      cv: true,
+      s3File: true
+    };
+
+    // If requested, delete profile data BEFORE deleting the CV
+    if (deleteProfileData && existingCv.developerId) {
+      console.log(`[Admin CV Delete] Deleting profile data for developer: ${existingCv.developerId}`);
+      
+      try {
+        // Use transaction to ensure all profile data is deleted atomically
+        const profileDeletion = await prisma.$transaction(async (tx) => {
+          // Delete contact info
+          const contactInfo = await tx.contactInfo.deleteMany({
+            where: { developerId: existingCv.developerId }
+          });
+          
+          // Delete developer skills
+          const developerSkills = await tx.developerSkill.deleteMany({
+            where: { developerId: existingCv.developerId }
+          });
+          
+          // Delete experience
+          const experience = await tx.experience.deleteMany({
+            where: { developerId: existingCv.developerId }
+          });
+          
+          // Delete education
+          const education = await tx.education.deleteMany({
+            where: { developerId: existingCv.developerId }
+          });
+          
+          // Delete achievements
+          const achievements = await tx.achievement.deleteMany({
+            where: { developerId: existingCv.developerId }
+          });
+          
+          // Delete projects
+          const projects = await tx.project.deleteMany({
+            where: { developerId: existingCv.developerId }
+          });
+          
+          // Delete project portfolios (and their enhancements via cascade)
+          const projectPortfolios = await tx.projectPortfolio.deleteMany({
+            where: { developerId: existingCv.developerId }
+          });
+          // Note: ProjectEnhancement records are automatically deleted via cascade
+          
+          return {
+            contactInfo: contactInfo.count,
+            developerSkills: developerSkills.count,
+            experience: experience.count,
+            education: education.count,
+            achievements: achievements.count,
+            projects: projects.count,
+            projectPortfolios: projectPortfolios.count
+          };
+        });
+        
+        deletedData.profileData = profileDeletion;
+        console.log('[Admin CV Delete] Profile data deletion counts:', profileDeletion);
+        
+      } catch (profileError) {
+        console.error('[Admin CV Delete] Error deleting profile data:', profileError);
+        // Continue with CV deletion even if profile deletion fails
+        deletedData.profileDataError = profileError instanceof Error ? profileError.message : 'Unknown error';
+      }
+    }
+
+    // Perform CV deletion using existing infrastructure
     await deleteCV(id);
     
     console.log(`[Admin CV Delete] Successfully deleted CV: ${id} by admin: ${session.user.email}`);
     
     return NextResponse.json({
       success: true,
-      message: 'CV deleted successfully',
+      message: deleteProfileData 
+        ? 'CV and associated profile data deleted successfully' 
+        : 'CV deleted successfully',
+      deletedData,
       auditTrail: auditData
     });
 

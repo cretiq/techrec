@@ -101,13 +101,7 @@ export const deleteCV = async (id: string): Promise<CV> => {
       await deleteFileFromS3(cvToDelete.s3Key);
       console.log('[deleteCV] Successfully deleted file from S3.');
 
-      // Delete associated CvAnalysis records
-      const deletedAnalyses = await tx.cvAnalysis.deleteMany({
-        where: { cvId: id },
-      });
-      console.log(`[deleteCV] Successfully deleted ${deletedAnalyses.count} associated CV analysis records.`);
-
-      // Then, delete the CV database record
+      // Delete the CV database record
       const deletedCVRecord = await tx.cV.delete({
         where: { id },
       });

@@ -131,43 +131,12 @@ enum FundingStage {
   PUBLIC
 }
 
-// Add the AnalysisStatus enum here
+// AnalysisStatus enum - kept for CV model compatibility
 enum AnalysisStatus {
   PENDING     // File uploaded, awaiting analysis
   ANALYZING   // Analysis in progress
   COMPLETED   // Analysis finished successfully
   FAILED      // Analysis failed
-}
-
-// Add the CvAnalysis model here
-model CvAnalysis {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  developerId  String    @db.ObjectId
-  developer    Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
-  
-  // Add relation back to the specific CV record
-  cvId         String?   @db.ObjectId @unique
-  cv           CV?       @relation(fields: [cvId], references: [id], onDelete:SetNull)
-
-  originalName String    // Original filename from upload
-  fileHash     String?   // SHA-256 hash of the file content for deduplication
-  s3Key        String    @unique // The key used for the object in S3
-  mimeType     String
-  size         Int
-
-  status       AnalysisStatus @default(PENDING)
-  analysisResult Json?     // Store the structured analysis result from GPT/parser
-  errorMessage String?   // Store error message if analysis failed
-
-  requestedAt  DateTime  @default(now())
-  analyzedAt   DateTime? // Timestamp when analysis completed/failed
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  @@index([developerId, status])
-  // @@index([cvId]) // Temporarily remove index
-  @@map("CvAnalyses")
 }
 
 model Developer {
@@ -194,8 +163,8 @@ model Developer {
   // Subscription fields with constraints
   subscriptionTier     SubscriptionTier @default(FREE)
   subscriptionStatus   String           @default("active") // active, cancelled, expired, past_due
-  subscriptionId       String?          @unique // Stripe subscription ID - must be unique
-  customerId           String?          @unique // Stripe customer ID - must be unique  
+  subscriptionId       String?          // Stripe subscription ID
+  customerId           String?          // Stripe customer ID  
   subscriptionStart    DateTime?
   subscriptionEnd      DateTime?
   
@@ -221,8 +190,6 @@ model Developer {
   // Add relation to CVs
   cvs             CV[]
 
-  // Add relation to CvAnalyses
-  cvAnalyses      CvAnalysis[]
 
   // Gamification relations
   userBadges      UserBadge[]
@@ -615,9 +582,7 @@ model CV {
   extractedText String?   // Store extracted text if needed
   metadata     Json?     // Store any other extracted metadata
 
-  // Add fields for linking analysis result and score
-  analysisId      String?       @unique
-  analysis        CvAnalysis?   
+  // Improvement score field
   improvementScore Float?       
 
   createdAt    DateTime  @default(now())
