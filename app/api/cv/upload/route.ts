@@ -10,6 +10,7 @@ import { parseFileContent } from '@/utils/fileParsers'; // Import parser
 import { analyzeCvWithGemini } from '@/utils/geminiAnalysis'; // Import analyser
 import crypto from 'crypto'; // Import crypto for hashing
 import { syncCvDataToProfile } from '@/utils/backgroundProfileSync'; // Import background sync
+import { clearCachePattern } from '@/lib/redis'; // Import cache invalidation
 
 const prisma = new PrismaClient(); // Instantiate Prisma client
 
@@ -80,6 +81,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: `Invalid file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}` }, { status: 400 });
     }
 
+    if (file.size === 0) {
+      console.log(`Validation failed: Empty file - ${file.size} bytes`);
+      return NextResponse.json({ 
+        error: 'File is empty. Please upload a valid CV file.',
+        details: 'File size cannot be 0 bytes' 
+      }, { status: 400 });
+    }
+
     if (file.size > MAX_FILE_SIZE_BYTES) {
       console.log(`Validation failed: File too large - ${file.size} bytes (Max: ${MAX_FILE_SIZE_MB}MB)`);
       return NextResponse.json({ error: `File size must be less than ${MAX_FILE_SIZE_MB}MB` }, { status: 400 });
@@ -88,9 +97,19 @@ export async function POST(request: Request) {
 
     console.log('File validation passed. Preparing for upload...');
     const fileBuffer = Buffer.from(await file.arrayBuffer());
+    
+    // Additional validation: Check if buffer is actually empty
+    if (fileBuffer.length === 0) {
+      console.log(`Buffer validation failed: Empty buffer despite file.size = ${file.size}`);
+      return NextResponse.json({ 
+        error: 'File content is empty. Please upload a valid CV file.',
+        details: 'File buffer is empty after processing' 
+      }, { status: 400 });
+    }
+    
     // Calculate file hash
     const fileHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
-    console.log(`[Upload Route] Calculated file hash: ${fileHash}`);
+    console.log(`[Upload Route] Calculated file hash: ${fileHash}, buffer size: ${fileBuffer.length}`);
 
     const fileExtension = file.name.split('.').pop() || 'bin'; // Default extension
     const uniqueFilename = `${uuidv4()}.${fileExtension}`;
@@ -129,14 +148,53 @@ export async function POST(request: Request) {
       console.log(`[Analysis ${newCV.id}] Downloaded ${newCV.mimeType} file from S3.`);
 
       // 3. Parse file content
+      console.log('🔍 [CV-ANALYSIS] === CV UPLOAD FLOW START ===');
+      console.log('📥 [CV-INPUT] File Processing:', {
+        cvId: newCV.id,
+        developerId: newCV.developerId,
+        filename: newCV.originalName,
+        mimeType: newCV.mimeType,
+        fileSize: newCV.size,
+        s3Key: newCV.s3Key
+      });
+
       const parsedContent = await parseFileContent(fileBuffer, newCV.mimeType);
-      console.log(`[Analysis ${newCV.id}] Parsed file content, text length: ${parsedContent.text.length}.`);
-      console.log('[Upload Route] Parsed Text Length:', parsedContent?.text?.length);
+      
+      console.log('📄 [CV-PARSING] Parsed Content Analysis:', {
+        textLength: parsedContent.text.length,
+        hasText: parsedContent.text.length > 0,
+        textPreview: parsedContent.text.substring(0, 300) + '...',
+        parsingSuccess: true,
+        estimatedWords: parsedContent.text.split(/\s+/).length,
+        estimatedLines: parsedContent.text.split('\n').length
+      });
 
       // 4. Analyze with Gemini
+      console.log('🧠 [AI-REQUEST] Preparing Gemini Analysis:', {
+        inputTextLength: parsedContent.text.length,
+        estimatedTokens: Math.ceil(parsedContent.text.length / 4),
+        model: 'gemini-1.5-pro',
+        requestType: 'cv_analysis',
+        timestamp: new Date().toISOString()
+      });
+
       const analysisResult = await analyzeCvWithGemini(parsedContent.text);
-      console.log(`[Analysis ${newCV.id}] Gemini analysis completed.`);
-      console.log('[Upload Route] Gemini Analysis Result (structure check):', analysisResult ? Object.keys(analysisResult) : 'null');
+      
+      console.log('🧠 [AI-RESPONSE] Gemini Analysis Complete:', {
+        success: !!analysisResult,
+        responseStructure: analysisResult ? Object.keys(analysisResult) : [],
+        dataQualityMetrics: {
+          hasContactInfo: !!(analysisResult?.contactInfo?.name || analysisResult?.contactInfo?.email),
+          hasAbout: !!(analysisResult?.about && analysisResult.about.length > 0),
+          skillsCount: analysisResult?.skills?.length || 0,
+          experienceCount: analysisResult?.experience?.length || 0,
+          educationCount: analysisResult?.education?.length || 0,
+          achievementsCount: analysisResult?.achievements?.length || 0,
+          languagesCount: analysisResult?.languages?.length || 0,
+          totalYearsExperience: analysisResult?.totalYearsExperience || 0
+        },
+        responseSize: JSON.stringify(analysisResult).length
+      });
 
       // 5. Calculate Improvement Score (Example: based on completeness)
       let score = 0;
@@ -175,9 +233,28 @@ export async function POST(request: Request) {
         improvementScore: improvementScore,
         extractedText: parsedContent.text,
       };
-      console.log(`[Upload Route] Data for updateCV (ID: ${newCV.id}):`, cvUpdateData);
+      
+      console.log('💾 [CV-STORAGE] Database Storage:', {
+        cvId: newCV.id,
+        analysisId: savedAnalysis.id,
+        improvementScore: improvementScore,
+        storageSuccess: true,
+        extractedTextLength: parsedContent.text.length,
+        analysisRecordCreated: true,
+        cvRecordUpdated: false // Will be true after next line
+      });
+      
       await updateCV(newCV.id, cvUpdateData);
-      console.log(`[Upload Route] Updated CV record ID: ${newCV.id}`);
+      
+      console.log('💾 [CV-STORAGE] Final Storage Update:', {
+        cvRecordUpdated: true,
+        finalStatus: AnalysisStatus.COMPLETED,
+        linkedAnalysisId: savedAnalysis.id,
+        totalStorageOperations: 2, // create analysis + update CV
+        storageComplete: true
+      });
+      
+      console.log('🔍 [CV-ANALYSIS] === CV UPLOAD FLOW END ===');
 
       // 8. Background sync CV data to developer profile (silent operation)
       try {
@@ -195,6 +272,16 @@ export async function POST(request: Request) {
         // Update CV status to FAILED if analysis fails
         await updateCV(newCV.id, { status: AnalysisStatus.FAILED });
         console.log(`[Analysis ${newCV.id}] Updated CV status to FAILED.`);
+        
+        // Cache invalidation when analysis fails - clear any cached analysis data for this user
+        try {
+          console.log(`[Analysis ${newCV.id}] Clearing cached analysis data for developer: ${developerId}`);
+          const clearedCount = await clearCachePattern(`cv_analysis:*`);
+          console.log(`[Analysis ${newCV.id}] Cache invalidation completed. Cleared ${clearedCount} cache entries.`);
+        } catch (cacheError) {
+          console.error(`[Analysis ${newCV.id}] Cache invalidation failed (non-critical):`, cacheError);
+        }
+        
       } catch (updateError) {
         console.error(`[Analysis ${newCV.id}] CRITICAL: Failed to update CV status to FAILED after analysis error:`, updateError);
       }

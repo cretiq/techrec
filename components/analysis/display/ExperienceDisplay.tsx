@@ -62,8 +62,44 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<CvExperienceItem[]>(data || []);
 
+  // Convert description to responsibilities array when entering edit mode
+  const prepareDataForEdit = (items: CvExperienceItem[]): CvExperienceItem[] => {
+    return items.map((item, index) => {
+      if (!item.responsibilities || item.responsibilities.length === 0) {
+        if (item.description) {
+          // Parse description into responsibilities array
+          let responsibilities: string[] = [];
+          
+          // Try different parsing methods
+          if (item.description.includes('•') || item.description.includes('-') || item.description.includes('*')) {
+            // Parse bullet points
+            responsibilities = item.description
+              .split(/[•\-\*]\s*/)
+              .map(text => text.trim())
+              .filter(text => text.length > 10); // Only keep substantial content
+          } else {
+            // Split by sentences/paragraphs if no bullet points
+            responsibilities = item.description
+              .split(/\.\s+|\n\s*/)
+              .map(text => text.trim())
+              .filter(text => text.length > 20); // Only keep substantial content
+          }
+          
+          // Ensure we have at least one responsibility
+          if (responsibilities.length === 0) {
+            responsibilities = [item.description.trim()];
+          }
+          
+          return { ...item, responsibilities };
+        }
+      }
+      return item;
+    });
+  };
+
   React.useEffect(() => {
-    setEditData(data || []);
+    const processedData = prepareDataForEdit(data || []);
+    setEditData(processedData);
   }, [data]);
 
   // Helper to notify parent
@@ -153,7 +189,11 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
             <Button variant="default" size="icon" onClick={handleSave} className="h-7 w-7"><Save className="h-4 w-4" /></Button>
           </div>
         ) : (
-          <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => {
+            const processedData = prepareDataForEdit(editData);
+            setEditData(processedData);
+            setIsEditing(true);
+          }} className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
         )}
       </div>
       
@@ -196,14 +236,33 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                     </div>
                   </div>
                   <div>
-                    <Label className="text-xs font-medium block mb-1">Responsibilities/Achievements</Label>
-                    {(exp.responsibilities || []).map((resp, rIndex) => (
-                      <div key={rIndex} className="flex items-center gap-1 mt-1">
-                        <Input value={resp ?? ''} onChange={(e) => handleResponsibilityChange(index, rIndex, e.target.value)} placeholder={`Responsibility ${rIndex + 1}`} className="h-7 text-sm flex-1" />
-                        <Button variant="ghost" size="icon" onClick={() => handleRemoveResponsibility(index, rIndex)} className="h-6 w-6 p-0"><Trash2 className="h-3 w-3" /></Button>
-                      </div>
-                    ))}
-                    <Button variant="outline" size="sm" onClick={() => handleAddResponsibility(index)} className="mt-2 h-7 text-xs"><Plus className="h-3 w-3 mr-1" /> Add Responsibility</Button>
+                    <Label className="text-xs font-medium block mb-2">Responsibilities/Achievements</Label>
+                    <div className="list bg-base-100/30 rounded-lg p-2 mb-2">
+                      {((exp.responsibilities && exp.responsibilities.length > 0) ? exp.responsibilities : ['']).map((resp, rIndex) => (
+                        <div key={rIndex} className="list-row py-1 group">
+                          <div className="text-primary/70 text-sm self-start mt-1">•</div>
+                          <div className="list-col-grow pl-2 flex items-center gap-1">
+                            <Input 
+                              value={resp ?? ''} 
+                              onChange={(e) => handleResponsibilityChange(index, rIndex, e.target.value)} 
+                              placeholder={`Responsibility ${rIndex + 1}`} 
+                              className="h-8 text-sm flex-1 bg-base-100/50" 
+                            />
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleRemoveResponsibility(index, rIndex)} 
+                              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <Trash2 className="h-3 w-3 text-error" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => handleAddResponsibility(index)} className="h-7 text-xs">
+                      <Plus className="h-3 w-3 mr-1" /> Add Responsibility
+                    </Button>
                   </div>
                 </div>
               ) : (
@@ -240,14 +299,34 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                       </div>
                     }
                   </div>
-                  {exp.responsibilities && exp.responsibilities.length > 0 && (
-                    <ul className="mt-2 list-disc list-inside text-sm space-y-1">
-                      {exp.responsibilities.map((resp, rIndex) => (
-                        <li key={rIndex}>
-                          {resp ?? ''}
-                          {/* Inline suggestions removed - using SuggestionManager instead */}
-                        </li>
-                      ))}
+                  {/* Display either responsibilities array or description string using DaisyUI list */}
+                  {((exp.responsibilities && exp.responsibilities.length > 0) || exp.description) && (
+                    <ul className="list bg-base-100/30 rounded-lg mt-3 p-2">
+                      {exp.responsibilities && exp.responsibilities.length > 0 ? (
+                        // Display responsibilities array
+                        exp.responsibilities.map((resp, rIndex) => (
+                          <li key={rIndex} className="list-row py-1.5">
+                            <div className="text-primary/70 text-sm">•</div>
+                            <div className="text-sm text-base-content/90 list-col-grow pl-2">
+                              {resp ?? ''}
+                              {/* Inline suggestions removed - using SuggestionManager instead */}
+                            </div>
+                          </li>
+                        ))
+                      ) : exp.description ? (
+                        // Convert description string to list items
+                        exp.description
+                          .split(/[•\-\*]\s*/)
+                          .filter(item => item.trim().length > 0)
+                          .map((item, rIndex) => (
+                            <li key={rIndex} className="list-row py-1.5">
+                              <div className="text-primary/70 text-sm">•</div>
+                              <div className="text-sm text-base-content/90 list-col-grow pl-2">
+                                {item.trim()}
+                              </div>
+                            </li>
+                          ))
+                      ) : null}
                     </ul>
                   )}
                 </>

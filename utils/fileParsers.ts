@@ -22,6 +22,14 @@ interface ParsedPdfData {
  */
 export const parsePdf = (pdfBuffer: Buffer): Promise<ParsedPdfData> => {
   return new Promise((resolve, reject) => {
+    // Validate buffer before parsing
+    if (!pdfBuffer || pdfBuffer.length === 0) {
+      console.error('PDF Parsing: Buffer is empty or invalid');
+      reject(new Error('PDF buffer is empty or invalid. Cannot parse empty file.'));
+      return;
+    }
+    
+    console.log(`PDF Parsing: Starting with buffer size: ${pdfBuffer.length} bytes`);
     const pdfParser = new PDFParser();
 
     pdfParser.on('pdfParser_dataReady', (pdfData) => {

@@ -52,9 +52,16 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
     }
 
     if (acceptedFiles && acceptedFiles.length > 0) {
-      setSelectedFile(acceptedFiles[0]);
+      const file = acceptedFiles[0];
+      console.log('🔍 [UploadForm] File accepted with details:', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      });
+      
+      setSelectedFile(file);
       setUploadProgress(0);
-      console.log('File accepted:', acceptedFiles[0].name);
     }
   }, [toast]);
 
@@ -79,11 +86,49 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
       return;
     }
 
+    // Enhanced debugging: Check file details before upload
+    console.log('🔍 [UploadForm] Starting upload with file:', {
+      name: selectedFile.name,
+      size: selectedFile.size,
+      type: selectedFile.type,
+      lastModified: selectedFile.lastModified
+    });
+
+    // Verify file has content by reading first few bytes
+    const fileSlice = selectedFile.slice(0, 100);
+    const arrayBuffer = await fileSlice.arrayBuffer();
+    const firstBytes = new Uint8Array(arrayBuffer);
+    console.log('🔍 [UploadForm] File first 10 bytes:', Array.from(firstBytes.slice(0, 10)));
+    
+    if (selectedFile.size === 0) {
+      console.error('❌ [UploadForm] File size is 0 - aborting upload');
+      toast({
+        title: "Upload Error",
+        description: "Selected file is empty. Please select a valid CV file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setUploadState('uploading');
     setUploadProgress(0);
 
     const formData = new FormData();
     formData.append('file', selectedFile);
+    
+    // Debug FormData
+    console.log('🔍 [UploadForm] FormData created. Entries:');
+    for (const [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`  ${key}:`, {
+          name: value.name,
+          size: value.size,
+          type: value.type
+        });
+      } else {
+        console.log(`  ${key}:`, value);
+      }
+    }
 
     try {
       const xhr = new XMLHttpRequest();
