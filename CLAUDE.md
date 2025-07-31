@@ -205,9 +205,23 @@ const validateAIResponse = (response: string, context: RequestContext) => {
 };
 ```
 
-### Database Architecture
-**Key Models** (see `prisma/schema.prisma`):
-- `Developer`: User profiles with gamification fields
+### Database Architecture (Single Source of Truth)
+**✅ CRITICAL ARCHITECTURAL UPDATE (January 2025)**: Complete migration from redundant CvAnalysis table to proper single source of truth tables.
+
+**Core Profile Tables** (see `prisma/schema.prisma`):
+- `Developer`: User profiles with gamification fields, contact info, basic profile data
+- `ContactInfo`: 1:1 with Developer - phone, address, social links
+- `Experience`: 1:Many with Developer - work history with responsibilities and achievements
+- `Education`: 1:Many with Developer - educational background with dates and details
+- `Achievement`: 1:Many with Developer - certifications, awards, accomplishments
+- `DeveloperSkill`: Many:Many junction table with Skill - skill levels and categories
+- `Skill`: Master skill list with categories for consistent skill management
+
+**File Management**:
+- `CV`: File metadata only (S3 keys, upload status, improvement scores)
+- **DEPRECATED**: ~~`CvAnalysis`~~ - No longer used, data migrated to proper profile tables
+
+**Gamification Tables**:
 - `XPTransaction`: XP earning and awarding history
 - `PointsTransaction`: Points spending and earning tracking
 - `UserBadge`: Achievement and badge management
@@ -353,15 +367,24 @@ window.dispatchEvent(new CustomEvent('expandAllSections'));
 ## 🔧 API & BACKEND PATTERNS
 
 ### API Route Structure
-**RESTful Patterns**:
+**✅ UPDATED RESTful Patterns (Single Source of Truth)**:
 ```
 /api/[resource]/[id]/[action]
-- /api/cv/ - CV upload and management
-- /api/cv-analysis/ - AI-powered analysis with retry/versioning
+- /api/cv/ - CV file upload and metadata management
+- /api/developer/me/profile - Complete profile CRUD (single source of truth)
+- /api/developer/me/experience - Experience CRUD operations
+- /api/developer/me/education - Education CRUD operations  
+- /api/developer/me/skills - Skills CRUD operations
+- /api/developer/me/achievements - Achievements CRUD operations
+- /api/cv-analysis/latest - Legacy compatibility (fetches from profile tables)
 - /api/gamification/ - XP, points, achievements, challenges
 - /api/subscription/ - Stripe integration and webhooks
 - /api/generate-* - AI content generation endpoints
 ```
+
+**⚠️ DEPRECATED APIs**:
+- `/api/cv-analysis/[id]/save-version` - Replaced by `/api/developer/me/profile`
+- Direct CvAnalysis table operations - Use proper profile APIs instead
 
 ### Security Patterns
 **Gamification Protection**:
@@ -455,12 +478,15 @@ db.developers.createIndex({ "subscriptionTier": 1, "totalXP": -1 })
 ## 📊 DEVELOPMENT WORKFLOWS
 
 ### User Experience Patterns
-**CV Analysis Flow**:
+**✅ UPDATED CV Analysis Flow (Single Source of Truth)**:
 1. User uploads CV → S3 storage
 2. File parsed using LangChain or custom parsers
-3. Multi-dimensional analysis (ATS, content quality, formatting, impact)
-4. Results cached in Redis (24-hour TTL)
-5. Gamification updates (XP awards, achievement checks)
+3. Multi-dimensional AI analysis (ATS, content quality, formatting, impact) 
+4. **Background sync saves DIRECTLY to proper profile tables** (Developer, Experience, Education, Skills)
+5. UI fetches from proper profile APIs (`/api/developer/me/*`)
+6. Manual edits save via `/api/developer/me/profile` to proper tables
+7. Results cached in Redis with semantic keys (24-hour TTL)
+8. Gamification updates (XP awards, achievement checks)
 
 **Subscription Tier Flow**:
 1. User selects tier upgrade
@@ -540,7 +566,9 @@ export const validateCoverLetterOutput = (content: string, context: ValidationCo
 - **Infinite API calls**: Check useEffect dependencies for unstable references
 - **Form control errors**: Ensure controlled components have both `value` and `onChange`
 - **Redux persistence**: Add necessary fields to persist whitelist
-- **ID mismatches**: Check CV ID vs Analysis ID in URL/store mapping
+- **✅ FIXED - Missing work experience**: Now uses proper Experience table as single source of truth
+- **✅ FIXED - Save functionality**: Redux updates now persist via `/api/developer/me/profile`
+- **✅ FIXED - Data duplication**: Eliminated redundant CvAnalysis table
 - **Cache failures**: Always implement graceful degradation for external services
 - **AI API errors**: Use structured error classes with business context
 - **Validation errors**: Provide specific field-level error messages
@@ -623,8 +651,9 @@ When implementing new features or modifying existing ones, you must adhere to th
 **When to Update Documentation**:
 - After any gamification-related changes (update `GAMIFICATION_STRATEGY.md`)
 - After adding new API endpoints or significant features
-- After architectural changes or new patterns
+- After architectural changes or new patterns (update `docs/architecture/system-architecture.md`)
 - When onboarding information becomes outdated
+- **✅ COMPLETED**: Updated comprehensive architecture documentation in `docs/architecture/`
 
 ---
 
@@ -819,6 +848,9 @@ npm run build 2>&1 | head -50
 - ✅ **Business Logic**: Smart content extraction + professional quality validation
 - ✅ **Brand Integration**: Authentic external service integration with LinkedIn standards
 - ✅ **Feature Traceability**: Complete planning → implementation → completion audit trails
+- ✅ **🆕 DATABASE ARCHITECTURE**: Single source of truth pattern with proper CRUD APIs
+- ✅ **🆕 DATA FLOW INTEGRITY**: Complete CV upload → profile tables → UI display consistency
+- ✅ **🆕 PERSISTENCE RELIABILITY**: Real save functionality replacing Redux-only updates
 
 ### Continuous Improvement Framework
 **Daily Memory Optimization Process** (Enhanced July 10, 2025):
@@ -1230,4 +1262,13 @@ This server log monitoring system provides **unprecedented debugging visibility*
 
 *This guide serves as the comprehensive reference for developing within the TechRec codebase. Follow these guidelines consistently to maintain code quality, architectural integrity, and development efficiency. Updated through strategic memory optimization to capture enterprise-grade development patterns and AI collaboration excellence.*
 
-**Last Strategic Optimization**: July 29, 2025 - **MAJOR TESTING INTEGRATION UPDATE**: Comprehensive Test-Driven Development mastery section added with Playwright as primary E2E framework. Enhanced with contemporary TDD practices, user-centric test design, and comprehensive AI feature testing patterns. Integrated `@claude-instructions/testing-commands.md` reference system for systematic testing workflow adoption. Established testing-first mindset for all feature development with complete user journey coverage and accessibility testing integration. Full documentation update supporting proactive test creation and maintenance excellence.
+**Last Strategic Optimization**: January 31, 2025 - **MAJOR ARCHITECTURAL MODERNIZATION COMPLETE**: 
+- ✅ **Single Source of Truth Migration**: Eliminated redundant CvAnalysis table, implemented proper database architecture
+- ✅ **Data Flow Consistency**: CV upload → background sync → proper profile tables → UI display pipeline
+- ✅ **Real Persistence**: Redux updates now save via `/api/developer/me/profile` to proper database tables
+- ✅ **API Architecture**: Complete CRUD operations for all profile sections using established patterns
+- ✅ **Comprehensive Documentation**: Created `docs/architecture/system-architecture.md` with current state
+- ✅ **Legacy Compatibility**: Maintained UI compatibility during architectural transition
+- ✅ **Issue Resolution**: Fixed missing work experience display and save functionality root causes
+
+Previous Update - July 29, 2025: MAJOR TESTING INTEGRATION UPDATE with Playwright E2E framework and comprehensive TDD practices.
