@@ -1,4 +1,4 @@
-import { PrismaClient, AnalysisStatus, CvAnalysis } from '@prisma/client';
+import { PrismaClient, AnalysisStatus, CV } from '@prisma/client';
 import { downloadS3FileAsBuffer } from './s3Storage';
 import { v4 as uuidv4 } from 'uuid';
 import { analyzeCvWithGemini } from './geminiAnalysis';

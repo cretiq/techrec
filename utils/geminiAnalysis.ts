@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { z } from 'zod';
-import { CvAnalysisDataSchema } from '@/types/cv';
+import { ProfileAnalysisDataSchema } from '@/types/cv';
 import { geminiCircuitBreaker } from '@/utils/circuitBreaker';
 import { traceGeminiCall, logGeminiAPI, LogLevel } from '@/utils/apiLogger';
 import { calculateTotalExperience } from '@/utils/experienceCalculator';
@@ -25,10 +25,10 @@ const estimateTokenCount = (text: string): number => {
 /**
  * Analyzes a CV using Google Gemini and returns structured data.
  * @param cvText - The raw text content of the CV
- * @returns Promise<CvAnalysisData> - Structured CV data
+ * @returns Promise<ProfileAnalysisData> - Structured CV data
  * @throws Error if analysis fails
  */
-export const analyzeCvWithGemini = async (cvText: string): Promise<z.infer<typeof CvAnalysisDataSchema>> => {
+export const analyzeCvWithGemini = async (cvText: string): Promise<z.infer<typeof ProfileAnalysisDataSchema>> => {
   const startTime = process.hrtime();
   const estimatedTokens = estimateTokenCount(cvText);
   
@@ -246,7 +246,7 @@ Return ONLY the JSON object, no explanatory text:`;
     }
 
     // Validate the parsed data against our schema
-    const validationResult = CvAnalysisDataSchema.safeParse(parsedData);
+    const validationResult = ProfileAnalysisDataSchema.safeParse(parsedData);
     if (!validationResult.success) {
       console.error('[Gemini Analysis] Schema validation failed:', validationResult.error.flatten());
       console.error('[Gemini Analysis] Parsed data:', JSON.stringify(parsedData, null, 2));

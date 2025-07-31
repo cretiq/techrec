@@ -7,7 +7,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { CvAnalysisData, ContactInfoData, Skill, ExperienceItem, EducationItem, AchievementItem } from '@/types/cv';
+import { ProfileAnalysisData, ContactInfoData, Skill, ExperienceItem, EducationItem, AchievementItem } from '@/types/cv';
 import { ProfileUpdatePayload } from '@/types/types';
 
 const prisma = new PrismaClient();
@@ -175,7 +175,7 @@ function transformAchievements(cvAchievements: AchievementItem[] | null | undefi
 /**
  * Transform complete CV analysis data to profile update payload
  */
-function transformCvToProfileData(cvAnalysis: CvAnalysisData, existingProfile?: any): ProfileUpdatePayload {
+function transformCvToProfileData(cvAnalysis: ProfileAnalysisData, existingProfile?: any): ProfileUpdatePayload {
   debugLog('Starting CV to profile transformation', { 
     hasContactInfo: !!cvAnalysis.contactInfo,
     skillsCount: cvAnalysis.skills?.length || 0,
@@ -400,7 +400,7 @@ async function updateProfileDirectly(developerId: string, payload: ProfileUpdate
  * @param analysisData - The CV analysis data to sync
  * @returns Promise<void> - Silent operation, errors are logged but not thrown
  */
-export async function syncCvDataToProfile(developerId: string, analysisData: CvAnalysisData): Promise<void> {
+export async function syncCvDataToProfile(developerId: string, analysisData: ProfileAnalysisData): Promise<void> {
   const startTime = Date.now();
   debugLog(`Starting background profile sync for developer: ${developerId}`);
   
@@ -431,7 +431,7 @@ export async function syncCvDataToProfile(developerId: string, analysisData: CvA
 /**
  * Internal sync function with timeout protection
  */
-async function performSync(developerId: string, analysisData: CvAnalysisData, startTime: number): Promise<void> {
+async function performSync(developerId: string, analysisData: ProfileAnalysisData, startTime: number): Promise<void> {
     // Validate inputs
     if (!developerId || typeof developerId !== 'string') {
       errorLog('Invalid developerId provided', { developerId });
@@ -503,7 +503,7 @@ export async function syncCvDataFromAnalysisId(developerId: string, analysisId: 
     }
 
     // Extract analysis data
-    const analysisData = analysisRecord.analysisResult as CvAnalysisData;
+    const analysisData = analysisRecord.analysisResult as ProfileAnalysisData;
     
     if (!analysisData) {
       errorLog('No analysis result data found', { analysisId });

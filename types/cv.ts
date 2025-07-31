@@ -181,8 +181,8 @@ export const validateWithWarnings = <T>(
   };
 };
 
-// Schema for the entire analysis result data structure
-export const CvAnalysisDataSchema = z.object({
+// Schema for the profile data structure (from CV analysis)
+export const ProfileAnalysisDataSchema = z.object({
   contactInfo: ContactInfoSchema.nullable().optional(),
   about: z.string().nullable().optional(),
   skills: z.array(SkillSchema).nullable().optional(),
@@ -205,11 +205,8 @@ export const CvAnalysisDataSchema = z.object({
   }).nullable().optional()
 });
 
-// Schema for the request body of PUT /api/cv-analysis/[id]
-export const UpdateCvAnalysisSchema = CvAnalysisDataSchema;
-
 // Schema for the request body of POST /api/cv-improvement or /api/cv-improvement-gemini
-export const CvImprovementRequestSchema = CvAnalysisDataSchema;
+export const CvImprovementRequestSchema = ProfileAnalysisDataSchema;
 
 // Enhanced schema for structured CV improvement suggestions with interactive UI support
 export const EnhancedCvSuggestionSchema = z.object({
@@ -293,7 +290,9 @@ export type Skill = z.infer<typeof SkillSchema>;
 export type ExperienceItem = z.infer<typeof ExperienceItemSchema>;
 export type EducationItem = z.infer<typeof EducationItemSchema>;
 export type AchievementItem = z.infer<typeof AchievementSchema>;
-export type CvAnalysisData = z.infer<typeof CvAnalysisDataSchema>;
+export type ProfileAnalysisData = z.infer<typeof ProfileAnalysisDataSchema>;
+// Legacy alias for backward compatibility (to be removed)
+export type CvAnalysisData = ProfileAnalysisData;
 export type CvListFilters = z.infer<typeof CvListFilterSchema>;
 
 // Enhanced suggestion types
