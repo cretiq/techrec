@@ -1,5 +1,6 @@
 import { PrismaClient, CV, AnalysisStatus } from '@prisma/client';
 import { deleteFileFromS3 } from './s3Storage'; // Import S3 delete function
+import { clearCachePattern } from '@/lib/redis'; // Import Redis cache clearing function
 
 const prisma = new PrismaClient();
 
@@ -82,11 +83,12 @@ export const updateCV = async (id: string, data: CvUpdateData): Promise<CV> => {
 
 /**
  * Deletes a CV record from the database and its corresponding file from S3.
+ * Also clears related Redis cache entries.
  */
 export const deleteCV = async (id: string): Promise<CV> => {
   console.log('[deleteCV] Deleting CV record with ID:', id);
   try {
-    // First, retrieve the CV to get the S3 key
+    // First, retrieve the CV to get the S3 key and developer ID
     const cvToDelete = await prisma.cV.findUnique({ where: { id } });
     if (!cvToDelete) {
       throw new Error(`CV record with ID ${id} not found.`);
@@ -110,8 +112,40 @@ export const deleteCV = async (id: string): Promise<CV> => {
         where: { id },
       });
       console.log('[deleteCV] Successfully deleted CV record from database.');
+      
       return deletedCVRecord;
     });
+
+    // Clear Redis cache entries after successful database transaction
+    try {
+      console.log('[deleteCV] Clearing Redis cache entries...');
+      
+      // Clear user-specific cache patterns
+      const developerCachePatterns = [
+        `user_profile:${cvToDelete.developerId}*`,     // User profile cache
+        `cv_count:${cvToDelete.developerId}*`,         // CV count cache
+        `app_stats:${cvToDelete.developerId}*`,        // Application stats cache
+        `badge_eval_batch:${cvToDelete.developerId}*`, // Badge evaluation cache
+        `leaderboard:*`,                               // Leaderboard cache (affects all users)
+        `cv-analysis:${id}*`,                          // CV analysis cache
+        `cv-improvement:${id}*`,                       // CV improvement cache
+        `cover-letter:*${cvToDelete.developerId}*`,    // Cover letter cache
+        `outreach-message:*${cvToDelete.developerId}*` // Outreach message cache
+      ];
+
+      let totalClearedKeys = 0;
+      for (const pattern of developerCachePatterns) {
+        const clearedCount = await clearCachePattern(pattern);
+        totalClearedKeys += clearedCount;
+        console.log(`[deleteCV] Cleared ${clearedCount} cache keys for pattern: ${pattern}`);
+      }
+
+      console.log(`[deleteCV] Successfully cleared ${totalClearedKeys} total cache keys.`);
+    } catch (cacheError) {
+      // Cache clearing failure shouldn't prevent CV deletion from succeeding
+      console.warn('[deleteCV] Warning: Failed to clear Redis cache entries:', cacheError);
+      console.warn('[deleteCV] CV deletion succeeded, but cache may contain stale entries');
+    }
 
     return result;
   } catch (error) {

@@ -183,18 +183,30 @@ Return ONLY the JSON object, no explanatory text:`;
       throw circuitResult.error || new Error('Circuit breaker prevented API call');
     }
 
-    const content = circuitResult.data;
+    const rawContent = circuitResult.data;
 
-    if (!content) {
+    if (!rawContent) {
       throw new Error('Gemini response is empty');
     }
 
-    console.log(`[Gemini Analysis] Received response. Type: ${typeof content}, Length: ${typeof content === 'string' ? (content as string).length : 'N/A'} characters`);
+    console.log(`[Gemini Analysis] Received response. Type: ${typeof rawContent}, Length: ${typeof rawContent === 'string' ? (rawContent as string).length : 'N/A'} characters`);
 
-    // Ensure content is a string before processing
+    // Handle new Gemini response format that returns an object with success/data structure
+    let content: string;
+    if (typeof rawContent === 'object' && rawContent !== null && 'success' in rawContent && 'data' in rawContent) {
+      console.log('[Gemini Analysis] Detected structured response format, extracting data field');
+      content = (rawContent as any).data;
+    } else if (typeof rawContent === 'string') {
+      content = rawContent;
+    } else {
+      console.error('[Gemini Analysis] Response content is not a string or structured response object:', rawContent);
+      throw new Error(`Expected string or structured response from Gemini API, got ${typeof rawContent}`);
+    }
+
+    // Ensure content is a string after extraction
     if (typeof content !== 'string') {
-      console.error('[Gemini Analysis] Response content is not a string:', content);
-      throw new Error(`Expected string response from Gemini API, got ${typeof content}`);
+      console.error('[Gemini Analysis] Extracted content is not a string:', content);
+      throw new Error(`Expected string content from Gemini API, got ${typeof content}`);
     }
 
     // Now we know content is a string, cast it for TypeScript
@@ -219,6 +231,18 @@ Return ONLY the JSON object, no explanatory text:`;
       console.error('[Gemini Analysis] JSON parsing failed:', parseError);
       console.error('[Gemini Analysis] Raw content:', contentString.substring(0, 500) + '...');
       throw new Error(`Failed to parse Gemini response as JSON: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+    }
+
+    // Normalize skill levels to match schema expectations (uppercase)
+    if (parsedData.skills && Array.isArray(parsedData.skills)) {
+      parsedData.skills = parsedData.skills.map((skill: any) => {
+        if (skill && typeof skill === 'object' && skill.level) {
+          // Convert title case to uppercase (Expert -> EXPERT, Advanced -> ADVANCED, etc.)
+          skill.level = skill.level.toString().toUpperCase();
+        }
+        return skill;
+      });
+      console.log('[Gemini Analysis] Normalized skill levels to uppercase format');
     }
 
     // Validate the parsed data against our schema

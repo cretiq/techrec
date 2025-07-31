@@ -1,9 +1,11 @@
-import { PrismaClient, CV, CvStatus } from '@prisma/client';
+import { PrismaClient, CV, AnalysisStatus } from '@prisma/client';
 import { createCV, getCV, updateCV, deleteCV, listCVs, CvCreateData, CvUpdateData } from '@/utils/cvOperations';
-import { deleteFileFromS3 } from '@/utils/s3Storage'; // Need to mock this dependency
+import { deleteFileFromS3 } from '@/utils/s3Storage';
+import { clearCachePattern } from '@/lib/redis';
 
-// Mock Prisma Client
-const mockPrisma = {
+// Mock Prisma Client with transaction support
+const mockTransaction = jest.fn();
+const createMockPrisma = () => ({
   cV: {
     create: jest.fn(),
     findUnique: jest.fn(),
@@ -11,14 +13,19 @@ const mockPrisma = {
     update: jest.fn(),
     delete: jest.fn(),
   },
-};
+  cvAnalysis: {
+    deleteMany: jest.fn(),
+  },
+  $transaction: mockTransaction,
+});
+
 jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn(() => mockPrisma),
-  CvStatus: { // Also mock the enum values
-    UPLOADING: 'UPLOADING',
+  PrismaClient: jest.fn().mockImplementation(() => createMockPrisma()),
+  AnalysisStatus: {
+    PENDING: 'PENDING',
     PROCESSING: 'PROCESSING',
-    AVAILABLE: 'AVAILABLE',
-    ERROR: 'ERROR',
+    COMPLETED: 'COMPLETED',
+    FAILED: 'FAILED',
   }
 }));
 
@@ -28,14 +35,30 @@ jest.mock('../s3Storage', () => ({
 }));
 const mockedDeleteFileFromS3 = deleteFileFromS3 as jest.MockedFunction<typeof deleteFileFromS3>;
 
+// Mock Redis cache clearing
+jest.mock('@/lib/redis', () => ({
+  clearCachePattern: jest.fn(),
+}));
+const mockedClearCachePattern = clearCachePattern as jest.MockedFunction<typeof clearCachePattern>;
+
 describe('CV Database Operations', () => {
+  let mockPrisma: ReturnType<typeof createMockPrisma>;
+
   beforeEach(() => {
     // Reset mocks before each test
     jest.clearAllMocks();
-    // Reset S3 mock as well
+    mockPrisma = createMockPrisma();
+    // Reset S3 mock
     mockedDeleteFileFromS3.mockClear();
-    // Set a default valid mock resolution for S3 delete
+    // Reset Redis cache mock
+    mockedClearCachePattern.mockClear();
+    // Set default valid mock resolutions
     mockedDeleteFileFromS3.mockResolvedValue({ $metadata: { httpStatusCode: 204 } });
+    mockedClearCachePattern.mockResolvedValue(5); // Mock clearing 5 cache keys
+    
+    // Mock PrismaClient constructor to return our mock
+    const { PrismaClient } = require('@prisma/client');
+    PrismaClient.mockImplementation(() => mockPrisma);
   });
 
   const sampleCvData: CvCreateData = {
@@ -50,12 +73,14 @@ describe('CV Database Operations', () => {
   const sampleCV: CV = {
     id: 'cv123',
     ...sampleCvData,
-    status: CvStatus.AVAILABLE,
+    status: AnalysisStatus.COMPLETED,
     uploadDate: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
     extractedText: null,
     metadata: null,
+    analysisId: null,
+    improvementScore: null,
   };
 
   // --- createCV --- 
@@ -66,14 +91,14 @@ describe('CV Database Operations', () => {
     expect(mockPrisma.cV.create).toHaveBeenCalledWith({
       data: {
         ...sampleCvData,
-        status: CvStatus.UPLOADING, // Verifies default status
+        status: AnalysisStatus.PENDING, // Verifies default status
       },
     });
   });
 
    it('should call prisma.cV.create with provided status', async () => {
-    mockPrisma.cV.create.mockResolvedValue({ ...sampleCV, status: CvStatus.PROCESSING });
-    const dataWithStatus = { ...sampleCvData, status: CvStatus.PROCESSING };
+    mockPrisma.cV.create.mockResolvedValue({ ...sampleCV, status: AnalysisStatus.PROCESSING });
+    const dataWithStatus = { ...sampleCvData, status: AnalysisStatus.PROCESSING };
     await createCV(dataWithStatus);
     expect(mockPrisma.cV.create).toHaveBeenCalledWith({
       data: dataWithStatus,
@@ -131,7 +156,7 @@ describe('CV Database Operations', () => {
   });
 
   it('should return the updated CV', async () => {
-    const updateData: CvUpdateData = { status: CvStatus.AVAILABLE };
+    const updateData: CvUpdateData = { status: AnalysisStatus.COMPLETED };
      const updatedRecord = { ...sampleCV, ...updateData, updatedAt: new Date() };
     mockPrisma.cV.update.mockResolvedValue(updatedRecord);
     const result = await updateCV('cv123', updateData);
@@ -139,61 +164,139 @@ describe('CV Database Operations', () => {
   });
 
    it('should throw error if prisma update fails', async () => {
-    const updateData: CvUpdateData = { status: CvStatus.ERROR };
+    const updateData: CvUpdateData = { status: AnalysisStatus.FAILED };
     const mockError = new Error('DB Update Failed');
     mockPrisma.cV.update.mockRejectedValue(mockError);
     await expect(updateCV('cv123', updateData)).rejects.toThrow('Failed to update CV record');
   });
 
-  // --- deleteCV ---
-  it('should find CV, call deleteFileFromS3, then call prisma.cV.delete', async () => {
-    mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
-    mockPrisma.cV.delete.mockResolvedValue(sampleCV);
+  // --- deleteCV (Enhanced with Redis Cache Clearing) ---
+  describe('deleteCV', () => {
+    const mockTransactionCallback = jest.fn();
 
-    await deleteCV('cv123');
+    beforeEach(() => {
+      // Setup transaction mock to execute the callback
+      mockTransaction.mockImplementation(async (callback) => {
+        return await callback({
+          cV: mockPrisma.cV,
+          cvAnalysis: mockPrisma.cvAnalysis,
+        });
+      });
+      mockTransactionCallback.mockClear();
+    });
 
-    expect(mockPrisma.cV.findUnique).toHaveBeenCalledTimes(1);
-    expect(mockPrisma.cV.findUnique).toHaveBeenCalledWith({ where: { id: 'cv123' } });
-    expect(mockedDeleteFileFromS3).toHaveBeenCalledTimes(1);
-    expect(mockedDeleteFileFromS3).toHaveBeenCalledWith(sampleCV.s3Key);
-    expect(mockPrisma.cV.delete).toHaveBeenCalledTimes(1);
-    expect(mockPrisma.cV.delete).toHaveBeenCalledWith({ where: { id: 'cv123' } });
-  });
+    it('should execute complete deletion workflow with Redis cache clearing', async () => {
+      // Setup mocks
+      mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
+      mockPrisma.cvAnalysis.deleteMany.mockResolvedValue({ count: 2 });
+      mockPrisma.cV.delete.mockResolvedValue(sampleCV);
 
-   it('should return the deleted CV record', async () => {
-    mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
-    mockPrisma.cV.delete.mockResolvedValue(sampleCV);
+      const result = await deleteCV('cv123');
 
-    const result = await deleteCV('cv123');
-    expect(result).toEqual(sampleCV);
-  });
+      // Verify database operations
+      expect(mockPrisma.cV.findUnique).toHaveBeenCalledWith({ where: { id: 'cv123' } });
+      expect(mockTransaction).toHaveBeenCalledTimes(1);
+      expect(mockedDeleteFileFromS3).toHaveBeenCalledWith(sampleCV.s3Key);
+      expect(mockPrisma.cvAnalysis.deleteMany).toHaveBeenCalledWith({ where: { cvId: 'cv123' } });
+      expect(mockPrisma.cV.delete).toHaveBeenCalledWith({ where: { id: 'cv123' } });
 
-  it('should throw error if CV to delete is not found', async () => {
-    mockPrisma.cV.findUnique.mockResolvedValue(null);
+      // Verify Redis cache clearing
+      expect(mockedClearCachePattern).toHaveBeenCalledTimes(9); // 9 cache patterns
+      expect(mockedClearCachePattern).toHaveBeenCalledWith(`user_profile:${sampleCV.developerId}*`);
+      expect(mockedClearCachePattern).toHaveBeenCalledWith(`cv_count:${sampleCV.developerId}*`);
+      expect(mockedClearCachePattern).toHaveBeenCalledWith(`leaderboard:*`);
+      expect(mockedClearCachePattern).toHaveBeenCalledWith(`cv-analysis:cv123*`);
 
-    await expect(deleteCV('notfound')).rejects.toThrow(
-      'CV record with ID notfound not found.'
-    );
-    expect(mockedDeleteFileFromS3).not.toHaveBeenCalled();
-    expect(mockPrisma.cV.delete).not.toHaveBeenCalled();
-  });
+      expect(result).toEqual(sampleCV);
+    });
 
-   it('should throw error if S3 delete fails', async () => {
-    mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
-    const s3Error = new Error('S3 Delete Failed');
-    mockedDeleteFileFromS3.mockRejectedValue(s3Error);
+    it('should handle Redis cache clearing failure gracefully', async () => {
+      // Setup mocks
+      mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
+      mockPrisma.cvAnalysis.deleteMany.mockResolvedValue({ count: 1 });
+      mockPrisma.cV.delete.mockResolvedValue(sampleCV);
+      
+      // Make cache clearing fail
+      mockedClearCachePattern.mockRejectedValue(new Error('Redis connection failed'));
 
-    await expect(deleteCV('cv123')).rejects.toThrow('Failed to delete CV');
-    expect(mockPrisma.cV.delete).not.toHaveBeenCalled();
-  });
+      const result = await deleteCV('cv123');
 
-   it('should throw error if prisma delete fails (after S3 delete)', async () => {
-    mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
-    const dbError = new Error('DB Delete Failed');
-    mockPrisma.cV.delete.mockRejectedValue(dbError);
+      // Should still complete successfully
+      expect(result).toEqual(sampleCV);
+      expect(mockPrisma.cV.delete).toHaveBeenCalled();
+      expect(mockedClearCachePattern).toHaveBeenCalled();
+    });
 
-    await expect(deleteCV('cv123')).rejects.toThrow('Failed to delete CV');
-    expect(mockedDeleteFileFromS3).toHaveBeenCalledTimes(1); // S3 delete was called
+    it('should throw error if CV to delete is not found', async () => {
+      mockPrisma.cV.findUnique.mockResolvedValue(null);
+
+      await expect(deleteCV('notfound')).rejects.toThrow(
+        'CV record with ID notfound not found.'
+      );
+      
+      expect(mockedDeleteFileFromS3).not.toHaveBeenCalled();
+      expect(mockTransaction).not.toHaveBeenCalled();
+      expect(mockedClearCachePattern).not.toHaveBeenCalled();
+    });
+
+    it('should throw error if S3 delete fails during transaction', async () => {
+      mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
+      const s3Error = new Error('S3 Delete Failed');
+      mockedDeleteFileFromS3.mockRejectedValue(s3Error);
+
+      await expect(deleteCV('cv123')).rejects.toThrow('Failed to delete CV and associated analyses');
+      
+      expect(mockTransaction).toHaveBeenCalled();
+      expect(mockPrisma.cvAnalysis.deleteMany).not.toHaveBeenCalled();
+      expect(mockPrisma.cV.delete).not.toHaveBeenCalled();
+      expect(mockedClearCachePattern).not.toHaveBeenCalled();
+    });
+
+    it('should throw error if database transaction fails', async () => {
+      mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
+      const dbError = new Error('Transaction Failed');
+      mockTransaction.mockRejectedValue(dbError);
+
+      await expect(deleteCV('cv123')).rejects.toThrow('Failed to delete CV and associated analyses');
+      
+      expect(mockTransaction).toHaveBeenCalled();
+      expect(mockedClearCachePattern).not.toHaveBeenCalled();
+    });
+
+    it('should delete associated CV analyses before deleting CV', async () => {
+      mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
+      mockPrisma.cvAnalysis.deleteMany.mockResolvedValue({ count: 3 });
+      mockPrisma.cV.delete.mockResolvedValue(sampleCV);
+
+      await deleteCV('cv123');
+
+      expect(mockPrisma.cvAnalysis.deleteMany).toHaveBeenCalledWith({ where: { cvId: 'cv123' } });
+      expect(mockPrisma.cV.delete).toHaveBeenCalledAfter(mockPrisma.cvAnalysis.deleteMany as jest.Mock);
+    });
+
+    it('should clear all expected cache patterns', async () => {
+      mockPrisma.cV.findUnique.mockResolvedValue(sampleCV);
+      mockPrisma.cvAnalysis.deleteMany.mockResolvedValue({ count: 1 });
+      mockPrisma.cV.delete.mockResolvedValue(sampleCV);
+
+      await deleteCV('cv123');
+
+      const expectedPatterns = [
+        `user_profile:${sampleCV.developerId}*`,
+        `cv_count:${sampleCV.developerId}*`,
+        `app_stats:${sampleCV.developerId}*`,
+        `badge_eval_batch:${sampleCV.developerId}*`,
+        `leaderboard:*`,
+        `cv-analysis:cv123*`,
+        `cv-improvement:cv123*`,
+        `cover-letter:*${sampleCV.developerId}*`,
+        `outreach-message:*${sampleCV.developerId}*`
+      ];
+
+      expectedPatterns.forEach(pattern => {
+        expect(mockedClearCachePattern).toHaveBeenCalledWith(pattern);
+      });
+    });
   });
 
   // --- listCVs ---
@@ -221,27 +324,27 @@ describe('CV Database Operations', () => {
   });
 
   it('should apply status filter correctly', async () => {
-    const filters = { status: CvStatus.AVAILABLE };
+    const filters = { status: AnalysisStatus.COMPLETED };
     mockPrisma.cV.findMany.mockResolvedValue([]);
     await listCVs('dev123', filters);
     expect(mockPrisma.cV.findMany).toHaveBeenCalledWith(expect.objectContaining({
       where: {
         developerId: 'dev123',
-        status: CvStatus.AVAILABLE,
+        status: AnalysisStatus.COMPLETED,
       },
        orderBy: { uploadDate: 'desc' },
     }));
   });
 
   it('should apply multiple filters correctly', async () => {
-    const filters = { originalName: 'report', status: CvStatus.PROCESSING };
+    const filters = { originalName: 'report', status: AnalysisStatus.PROCESSING };
     mockPrisma.cV.findMany.mockResolvedValue([]);
     await listCVs('dev123', filters);
     expect(mockPrisma.cV.findMany).toHaveBeenCalledWith(expect.objectContaining({
       where: {
         developerId: 'dev123',
         originalName: { contains: 'report', mode: 'insensitive' },
-        status: CvStatus.PROCESSING,
+        status: AnalysisStatus.PROCESSING,
       },
        orderBy: { uploadDate: 'desc' },
     }));

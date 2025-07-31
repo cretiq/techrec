@@ -251,4 +251,69 @@ export const getCache = async <T>(key: string): Promise<T | null> => {
     console.error(`[Redis] getCache: Failed to get cache for key ${key}. Error:`, errorDetails);
     return null;
   }
+};
+
+export const deleteCache = async (key: string): Promise<boolean> => {
+  let client: Redis;
+  try {
+    client = await getReadyRedisClient();
+    console.log(`[Redis] deleteCache: Attempting to delete key: ${key}. Client status: ${client.status}`);
+
+    if (client.status !== 'ready' && client.status !== 'connect') {
+        console.error(`[Redis] deleteCache: Client unexpectedly not ready (status: ${client.status}) for key: ${key}. Aborting del.`);
+        return false; 
+    }
+
+    console.log(`[Redis] deleteCache: Executing DEL for key: ${key}`);
+    const result = await client.del(key);
+    
+    if (result > 0) {
+      console.log(`[Redis] deleteCache: Successfully deleted key: ${key}`);
+      return true;
+    } else {
+      console.log(`[Redis] deleteCache: Key not found or already deleted: ${key}`);
+      return false;
+    }
+  } catch (error: unknown) {
+    const errorDetails = error instanceof Error ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : String(error);
+    console.error(`[Redis] deleteCache: Failed to delete cache for key ${key}. Error:`, errorDetails);
+    return false;
+  }
+};
+
+export const clearCachePattern = async (pattern: string): Promise<number> => {
+  let client: Redis;
+  try {
+    client = await getReadyRedisClient();
+    console.log(`[Redis] clearCachePattern: Attempting to clear pattern: ${pattern}. Client status: ${client.status}`);
+
+    if (client.status !== 'ready' && client.status !== 'connect') {
+        console.error(`[Redis] clearCachePattern: Client unexpectedly not ready (status: ${client.status}) for pattern: ${pattern}. Aborting.`);
+        return 0; 
+    }
+
+    console.log(`[Redis] clearCachePattern: Executing SCAN for pattern: ${pattern}`);
+    const keys: string[] = [];
+    const stream = client.scanStream({ match: pattern });
+
+    for await (const chunk of stream) {
+      keys.push(...chunk);
+    }
+
+    if (keys.length > 0) {
+      console.log(`[Redis] clearCachePattern: Found ${keys.length} keys matching pattern: ${pattern}`);
+      console.log(`[Redis] clearCachePattern: Keys to delete: ${keys.join(', ')}`);
+      
+      const result = await client.del(...keys);
+      console.log(`[Redis] clearCachePattern: Successfully deleted ${result} keys for pattern: ${pattern}`);
+      return result;
+    } else {
+      console.log(`[Redis] clearCachePattern: No keys found matching pattern: ${pattern}`);
+      return 0;
+    }
+  } catch (error: unknown) {
+    const errorDetails = error instanceof Error ? JSON.stringify(error, Object.getOwnPropertyNames(error)) : String(error);
+    console.error(`[Redis] clearCachePattern: Failed to clear cache for pattern ${pattern}. Error:`, errorDetails);
+    return 0;
+  }
 }; 
