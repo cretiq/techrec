@@ -30,7 +30,7 @@ import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 import { ProjectRecommendationCard } from './ProjectRecommendationCard';
 // Import shared types
 import { 
-    CvAnalysisData, 
+    ProfileAnalysisData, 
     ContactInfoData, 
     Skill, 
     ExperienceItem, 

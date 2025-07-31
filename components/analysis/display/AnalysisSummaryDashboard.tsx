@@ -5,7 +5,7 @@ import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-dais
 import { Progress } from '@/components/ui/progress';
 import {  Button  } from '@/components/ui-daisy/button';
 import { Wand2, AlertCircle } from 'lucide-react';
-import { CvAnalysisData, CvImprovementSuggestion } from '@/types/cv';
+import { ProfileAnalysisData, CvImprovementSuggestion } from '@/types/cv';
 import { motion } from 'framer-motion';
 
 interface SectionMetrics {
@@ -14,7 +14,7 @@ interface SectionMetrics {
 }
 
 interface AnalysisSummaryDashboardProps {
-  analysisData: CvAnalysisData;
+  analysisData: ProfileAnalysisData;
   suggestions: CvImprovementSuggestion[] | null;
   onGetSuggestions: () => void;
   isSuggesting: boolean;
@@ -30,7 +30,7 @@ export function AnalysisSummaryDashboard({
   const scaleOnHover = { scale: 1.05 };
 
   // Calculate section metrics
-  const calculateSectionMetrics = (section: keyof CvAnalysisData): SectionMetrics => {
+  const calculateSectionMetrics = (section: keyof ProfileAnalysisData): SectionMetrics => {
     const data = analysisData[section];
     if (!data) return { completeness: 0, suggestions: 0 };
 
@@ -68,7 +68,7 @@ export function AnalysisSummaryDashboard({
   };
 
   // Calculate overall metrics
-  const sections: (keyof CvAnalysisData)[] = ['contactInfo', 'about', 'skills', 'experience', 'education'];
+  const sections: (keyof ProfileAnalysisData)[] = ['contactInfo', 'about', 'skills', 'experience', 'education'];
   const sectionMetrics = sections.map(section => ({
     section,
     ...calculateSectionMetrics(section)

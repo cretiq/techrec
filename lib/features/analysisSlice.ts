@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import { CvAnalysisData, CvImprovementSuggestion } from '@/types/cv'; // Import relevant types
+import { ProfileAnalysisData, CvImprovementSuggestion } from '@/types/cv'; // Import relevant types
 import _ from 'lodash'; // For applying suggestions
 import { getProviderEndpoints } from '@/utils/aiProviderSelector';
 import { setSuggestions } from './suggestionsSlice'; // Import action from suggestionsSlice
@@ -11,8 +11,8 @@ export type AnalysisStatus = 'idle' | 'loading' | 'succeeded' | 'failed' | 'sugg
 // Define a type for the analysis state slice
 export interface AnalysisState {
   currentAnalysisId: string | null;
-  analysisData: CvAnalysisData | null; // The editable CV data
-  originalData: CvAnalysisData | null; // Original data for comparison/reset (optional)
+  analysisData: ProfileAnalysisData | null; // The editable CV data
+  originalData: ProfileAnalysisData | null; // Original data for comparison/reset (optional)
   suggestions: CvImprovementSuggestion[];
   status: AnalysisStatus;
   error: string | null;
@@ -45,7 +45,7 @@ export const fetchAnalysisById = createAsyncThunk(
       const data = await response.json(); // Data is now { id, ..., cv: { extractedText: ... } }
       console.log('[fetchAnalysisById Thunk] Fetch successful, received data:', data); 
       // Return the fetched data directly as it now matches the expected structure 
-      // (after CvAnalysisData type was updated)
+      // (after ProfileAnalysisData type was updated)
       return data; 
     } catch (error: any) {
       console.error('[fetchAnalysisById] Exception during fetch:', error);
@@ -177,7 +177,7 @@ export const saveAnalysisVersion = createAsyncThunk(
 // Example Async Thunk for getting suggestions
 export const fetchSuggestions = createAsyncThunk(
   'analysis/fetchSuggestions',
-  async (cvData: CvAnalysisData, { rejectWithValue }) => {
+  async (cvData: ProfileAnalysisData, { rejectWithValue }) => {
     console.log('🚀 [fetchSuggestions] Starting suggestion fetch...');
     console.log('📊 [fetchSuggestions] CV data keys:', Object.keys(cvData));
     
@@ -234,7 +234,7 @@ export const analysisSlice = createSlice({
   initialState,
   reducers: {
     // Action to set the current analysis data directly (e.g., after upload)
-    setAnalysis: (state, action: PayloadAction<{ id: string; data: CvAnalysisData }>) => {
+    setAnalysis: (state, action: PayloadAction<{ id: string; data: ProfileAnalysisData }>) => {
       state.currentAnalysisId = action.payload.id;
       state.analysisData = action.payload.data;
       state.originalData = JSON.parse(JSON.stringify(action.payload.data)); // Deep clone for original
@@ -302,7 +302,7 @@ export const analysisSlice = createSlice({
           const combinedData = {
             ...analysisResultData,
             cv: cvData
-          } as CvAnalysisData; // Assert the combined type
+          } as ProfileAnalysisData; // Assert the combined type
 
           state.status = 'succeeded';
           state.currentAnalysisId = payload.id;
@@ -367,7 +367,7 @@ export const analysisSlice = createSlice({
           const combinedData = {
             ...analysisResultData,
             cv: cvData
-          } as CvAnalysisData;
+          } as ProfileAnalysisData;
 
           state.status = 'succeeded';
           state.currentAnalysisId = payload.id;

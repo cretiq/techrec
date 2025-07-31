@@ -291,8 +291,6 @@ export type ExperienceItem = z.infer<typeof ExperienceItemSchema>;
 export type EducationItem = z.infer<typeof EducationItemSchema>;
 export type AchievementItem = z.infer<typeof AchievementSchema>;
 export type ProfileAnalysisData = z.infer<typeof ProfileAnalysisDataSchema>;
-// Legacy alias for backward compatibility (to be removed)
-export type CvAnalysisData = ProfileAnalysisData;
 export type CvListFilters = z.infer<typeof CvListFilterSchema>;
 
 // Enhanced suggestion types

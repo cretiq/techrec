@@ -26,8 +26,10 @@ import { selectSuggestionsLoading, selectSuggestionsStats, selectSuggestionsErro
 import { useSuggestionsFetcher } from '@/components/suggestions/SuggestionManager';
 import { GamificationDashboard } from '@/components/gamification/GamificationDashboard';
 
+import { ProfileAnalysisData } from '@/types/cv';
+
 interface ProfileScoringSidebarProps {
-  analysisData: any; // TODO: Use proper CvAnalysisData type
+  analysisData: ProfileAnalysisData;
 }
 
 interface SectionScore {
