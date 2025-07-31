@@ -1037,6 +1037,197 @@ tests/
 
 ---
 
+## 🔧 ADVANCED DEBUGGING WORKFLOW WITH SERVER LOG MONITORING
+
+### Background Development Server Management
+**Critical Breakthrough**: Autonomous server log monitoring enables real-time debugging without manual log copying, dramatically improving development velocity and issue resolution accuracy.
+
+### Server Management Protocol
+**✅ MANDATORY Process Management**:
+```bash
+# 1. Always terminate existing processes before starting new ones
+pkill -f "npm run dev"
+
+# 2. Verify processes are cleaned up  
+ps aux | grep "npm run dev" | grep -v grep
+
+# 3. Start server in background with log capture
+nohup npm run dev > server.log 2>&1 &
+
+# 4. IMMEDIATELY validate server startup and port
+sleep 3 && head -10 server.log
+
+# 5. Confirm port assignment (typically shows "Local: http://localhost:3000")
+# If port 3000 is occupied, Next.js will automatically use 3001, 3002, etc.
+```
+
+### Real-Time Server Log Monitoring
+**✅ ESSENTIAL Debugging Commands**:
+```bash
+# Monitor server logs during test execution
+tail -f server.log
+
+# Read server logs after test completion
+cat server.log
+
+# Search for specific errors or patterns
+grep -i "error\|failed\|exception" server.log
+
+# Monitor specific API endpoints
+grep -i "cv-improvement\|upload\|gemini" server.log
+
+# Check recent log entries (last 20 lines)
+tail -20 server.log
+```
+
+### Integrated Test & Debug Workflow
+**✅ COMPLETE Process**:
+1. **Clean Environment Setup**:
+   ```bash
+   # Kill existing processes
+   pkill -f "npm run dev"
+   
+   # Start fresh server with logging
+   nohup npm run dev > server.log 2>&1 &
+   
+   # Validate server startup and port
+   sleep 3 && head -10 server.log
+   ```
+
+2. **Concurrent Test Execution & Log Monitoring**:
+   ```bash
+   # Run test (in one process)
+   npx playwright test specific-test.spec.ts --timeout=30000
+   
+   # Monitor server logs (read from file during/after test)
+   tail -f server.log  # or read server.log file
+   ```
+
+3. **Post-Test Analysis**:
+   ```bash
+   # Analyze complete server logs
+   cat server.log
+   
+   # Search for specific issues
+   grep -i "gemini\|upload\|parsing\|failed" server.log
+   
+   # Clean up processes
+   pkill -f "npm run dev"
+   ```
+
+### Server Log Analysis Patterns
+**✅ KEY Log Signatures to Monitor**:
+
+**Successful Patterns**:
+```
+✅ Ready in 1321ms                           # Server startup success
+✅ GET /developer/cv-management 200         # Page load success  
+✅ POST /api/cv/upload 201                  # File upload success
+✅ [Gemini Analysis] API call completed     # AI processing success
+✅ [Analysis ID] Status updated to COMPLETED # Analysis success
+```
+
+**Error Patterns**:
+```
+❌ File details: { size: 0 }                # Empty file upload
+❌ PDF Parsing: Error calling pdfParser     # PDF parsing failure
+❌ Schema validation failed                 # Data validation issues
+❌ Expected string response from Gemini     # AI response format issues
+❌ Status updated to FAILED                 # Processing failure
+```
+
+### Port Management Best Practices
+**✅ CRITICAL Port Validation**:
+- **Always verify** which port the server starts on by reading server.log
+- **Default behavior**: Port 3000, but auto-increments if occupied (3001, 3002...)
+- **Test configuration**: Ensure Playwright tests target the correct port
+- **Clean shutdown**: Always terminate processes to avoid port conflicts
+
+### Advanced Debugging Capabilities
+**✅ Server Log Benefits**:
+1. **Real-time API monitoring** - See exact request/response data
+2. **Error root cause analysis** - Identify specific failure points  
+3. **Performance monitoring** - Track API call timing and bottlenecks
+4. **Schema validation debugging** - See exact validation failures
+5. **AI provider monitoring** - Monitor Gemini model usage and responses
+6. **File processing debugging** - Track upload, parsing, and analysis steps
+
+### Gemini AI Debugging Mastery
+**✅ Specific Gemini Debug Patterns**:
+```bash
+# Monitor Gemini model usage
+grep -i "gemini model\|using model" server.log
+
+# Track AI response processing  
+grep -i "response.*gemini\|gemini.*response" server.log
+
+# Debug schema validation issues
+grep -i "validation.*failed\|schema.*error" server.log
+
+# Monitor AI processing timing
+grep -i "duration\|completed.*ms" server.log
+```
+
+### Authentication Debugging Excellence
+**✅ NextAuth Session Debug Patterns**:
+```bash
+# Monitor authentication flow and session handling
+grep -i "session\|auth\|unauthorized" server.log
+
+# Track API authentication failures
+grep -i "401\|unauthorized\|authentication failed" server.log
+
+# Monitor development mode authentication bypass
+grep -i "development.*mock\|mock developer" server.log
+
+# Debug upload → display flow with authentication
+grep -i "upload.*complete\|callback.*signal\|fetch.*latest" server.log
+
+# Track immediate display callback mechanism
+grep -i "handleUploadComplete\|upload-complete\|delayed fetch" server.log
+```
+
+**✅ Authentication Debugging Workflow**:
+1. **Pre-test Authentication**: Verify session endpoints work before testing upload flow
+2. **Server Log Monitoring**: Real-time authentication validation during test execution  
+3. **Development Mode Testing**: Use valid MongoDB ObjectID for authentication bypass
+4. **Callback Flow Validation**: Monitor parameter passing and timing in upload callbacks
+5. **Session Scope Verification**: Ensure session retrieval works in error handler contexts
+
+### Process Management Automation
+**✅ Recommended Helper Functions**:
+```bash
+# Add to shell profile (.zshrc, .bashrc)
+function dev-server-start() {
+    pkill -f "npm run dev" 2>/dev/null
+    nohup npm run dev > server.log 2>&1 &
+    sleep 3
+    echo "Server started on:"
+    grep -i "local:" server.log | head -1
+}
+
+function dev-server-logs() {
+    tail -f server.log
+}
+
+function dev-server-stop() {
+    pkill -f "npm run dev"
+    echo "Development server stopped"
+}
+```
+
+### Testing Strategy Integration
+**✅ Enhanced Test Development**:
+1. **Pre-test setup**: Clean server environment with log monitoring
+2. **During test execution**: Real-time server log analysis
+3. **Post-test analysis**: Comprehensive log review for issues
+4. **Issue identification**: Precise error location and context
+5. **Solution verification**: Server logs confirm fixes work correctly
+
+This server log monitoring system provides **unprecedented debugging visibility**, enabling autonomous issue identification and resolution without manual log copying or guesswork.
+
+---
+
 *This guide serves as the comprehensive reference for developing within the TechRec codebase. Follow these guidelines consistently to maintain code quality, architectural integrity, and development efficiency. Updated through strategic memory optimization to capture enterprise-grade development patterns and AI collaboration excellence.*
 
 **Last Strategic Optimization**: July 29, 2025 - **MAJOR TESTING INTEGRATION UPDATE**: Comprehensive Test-Driven Development mastery section added with Playwright as primary E2E framework. Enhanced with contemporary TDD practices, user-centric test design, and comprehensive AI feature testing patterns. Integrated `@claude-instructions/testing-commands.md` reference system for systematic testing workflow adoption. Established testing-first mindset for all feature development with complete user journey coverage and accessibility testing integration. Full documentation update supporting proactive test creation and maintenance excellence.
