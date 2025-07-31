@@ -12,8 +12,7 @@ import { EducationItem as CvEducationItem, CvImprovementSuggestion } from '@/typ
 // Remove old imports
 // import { SuggestionHighlight } from '@/components/suggestions/SuggestionHighlight';
 // import { SuggestionIndicator } from '@/components/suggestions/SuggestionIndicator';
-// Import new component
-import { InlineSuggestion } from '@/components/analysis/InlineSuggestion';
+// Removed InlineSuggestion - using SuggestionManager instead
 
 interface EducationProps {
   data: CvEducationItem[] | null | undefined;
@@ -107,25 +106,7 @@ export function EducationDisplay({ data, onChange, suggestions, onAcceptSuggesti
     setIsEditing(false);
   };
 
-  // Function to render suggestions for a given path
-  const renderInlineSuggestions = (path: string) => {
-    const currentSuggestions = findSuggestionsForPath(suggestions, path);
-    if (isEditing || currentSuggestions.length === 0) {
-    return null;
-  }
-    return (
-      <AnimatePresence>
-        {currentSuggestions.map((suggestion, index) => (
-          <InlineSuggestion
-            key={`${path}-suggestion-${index}`}
-            suggestion={suggestion}
-            onAccept={onAcceptSuggestion}
-            onReject={onRejectSuggestion}
-          />
-        ))}
-      </AnimatePresence>
-    );
-  };
+  // Removed renderInlineSuggestions function - using SuggestionManager instead
 
   // Animation variants for list items (same as Experience)
   const listItemVariants = {
@@ -196,12 +177,12 @@ export function EducationDisplay({ data, onChange, suggestions, onAcceptSuggesti
                       <GraduationCap className="h-4 w-4" />
                       {edu.institution ?? 'Unnamed Institution'}
                     </h3>
-                    {renderInlineSuggestions(createPath('education', index, 'institution'))}
+                    {/* Inline suggestions removed - using SuggestionManager instead */}
                   </div>
                   {edu.degree && 
                     <div className='mt-0.5'>
                       <p className="text-sm text-muted-foreground mb-0.5">{edu.degree}</p>
-                      {renderInlineSuggestions(createPath('education', index, 'degree'))}
+                      {/* Inline suggestions removed - using SuggestionManager instead */}
                     </div>
                   }
                   <div className="flex items-start gap-4 text-xs text-muted-foreground mt-1 mb-0.5">
@@ -211,8 +192,7 @@ export function EducationDisplay({ data, onChange, suggestions, onAcceptSuggesti
                           <Calendar className="h-3 w-3" />
                           {edu.year ?? formatDateRange(edu.startDate, edu.endDate)}
                         </span>
-                        {renderInlineSuggestions(edu.year ? createPath('education', index, 'year') : createPath('education', index, 'startDate'))}
-                        {!edu.year && renderInlineSuggestions(createPath('education', index, 'endDate'))}
+                        {/* Inline suggestions removed - using SuggestionManager instead */}
                       </div>
                     )}
                     {edu.location && (
@@ -221,7 +201,7 @@ export function EducationDisplay({ data, onChange, suggestions, onAcceptSuggesti
                           <MapPin className="h-3 w-3" />
                           {edu.location}
                         </span>
-                        {renderInlineSuggestions(createPath('education', index, 'location'))}
+                        {/* Inline suggestions removed - using SuggestionManager instead */}
                       </div>
                     )}
                   </div>

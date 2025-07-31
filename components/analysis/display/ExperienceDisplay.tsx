@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // Import suggestion-related types and components
 import { ExperienceItem as CvExperienceItem, CvImprovementSuggestion } from '@/types/cv';
-import { InlineSuggestion } from '@/components/analysis/InlineSuggestion';
+// Removed InlineSuggestion - using SuggestionManager instead
 
 interface ExperienceProps {
   data: CvExperienceItem[] | null | undefined;
@@ -130,25 +130,7 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
     setIsEditing(false);
   };
 
-  // Function to render suggestions for a given path
-  const renderInlineSuggestions = (path: string) => {
-    const currentSuggestions = findSuggestionsForPath(suggestions, path);
-    if (isEditing || currentSuggestions.length === 0) {
-      return null;
-    }
-    return (
-      <div className="mt-1 ml-6 space-y-1"> {/* Indent suggestions */}
-        {currentSuggestions.map((suggestion, index) => (
-          <InlineSuggestion
-            key={`${path}-suggestion-${index}`}
-            suggestion={suggestion}
-            onAccept={onAcceptSuggestion}
-            onReject={onRejectSuggestion}
-          />
-        ))}
-      </div>
-    );
-  };
+  // Removed renderInlineSuggestions function - using SuggestionManager instead
 
   // Animation variants for list items
   const listItemVariants = {
@@ -231,11 +213,11 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                       <Briefcase className="h-4 w-4" />
                       {exp.title ?? 'Untitled Role'}
                     </h3>
-                    {renderInlineSuggestions(createPath('experience', index, 'title'))}
+                    {/* Inline suggestions removed - using SuggestionManager instead */}
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-0.5">{exp.company ?? 'Unknown Company'}</p>
-                    {renderInlineSuggestions(createPath('experience', index, 'company'))}
+                    {/* Inline suggestions removed - using SuggestionManager instead */}
                   </div>
                   <div className="flex items-start gap-4 text-xs text-muted-foreground mt-1 mb-0.5">
                     {(exp.startDate || exp.endDate) && 
@@ -244,8 +226,8 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                           <Calendar className="h-3 w-3" />
                           {formatDateSafe(exp.startDate ?? null)} - {formatDateSafe(exp.endDate ?? null)}
                         </span>
-                        {renderInlineSuggestions(createPath('experience', index, 'startDate'))}
-                        {renderInlineSuggestions(createPath('experience', index, 'endDate'))}
+                        {/* Inline suggestions removed - using SuggestionManager instead */}
+                        {/* Inline suggestions removed - using SuggestionManager instead */}
                       </div>
                     }
                     {exp.location && 
@@ -254,7 +236,7 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                           <MapPin className="h-3 w-3" />
                           {exp.location}
                         </span>
-                        {renderInlineSuggestions(createPath('experience', index, 'location'))}
+                        {/* Inline suggestions removed - using SuggestionManager instead */}
                       </div>
                     }
                   </div>
@@ -263,7 +245,7 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                       {exp.responsibilities.map((resp, rIndex) => (
                         <li key={rIndex}>
                           {resp ?? ''}
-                          {renderInlineSuggestions(createPath('experience', index, 'responsibilities', rIndex))}
+                          {/* Inline suggestions removed - using SuggestionManager instead */}
                         </li>
                       ))}
                     </ul>

@@ -16,6 +16,7 @@ export interface AnalysisState {
   suggestions: CvImprovementSuggestion[];
   status: AnalysisStatus;
   error: string | null;
+  recentlyUpdatedPaths: string[]; // Track recently updated paths for green highlighting (serializable array)
 }
 
 // Define the initial state
@@ -26,6 +27,7 @@ const initialState: AnalysisState = {
   suggestions: [],
   status: 'idle',
   error: null,
+  recentlyUpdatedPaths: [],
 };
 
 // Example Async Thunk for fetching analysis data (adjust API call as needed)
@@ -181,6 +183,10 @@ export const analysisSlice = createSlice({
       if (state.analysisData) {
         // Use lodash set for deep updates
         _.set(state.analysisData, action.payload.path, action.payload.value);
+        // Track this path as recently updated for green highlighting
+        if (!state.recentlyUpdatedPaths.includes(action.payload.path)) {
+          state.recentlyUpdatedPaths.push(action.payload.path);
+        }
       }
     },
     // Action to apply a suggestion to the data
@@ -205,6 +211,10 @@ export const analysisSlice = createSlice({
     clearAnalysis: (state) => {
       // Return initialState instead of modifying state directly for a full reset
       return initialState;
+    },
+    // Action to clear recently updated paths (after highlighting fades)
+    clearRecentlyUpdatedPaths: (state) => {
+      state.recentlyUpdatedPaths = [];
     },
   },
   extraReducers: (builder) => {
@@ -335,6 +345,7 @@ export const {
   applySuggestion,
   dismissSuggestion,
   clearAnalysis,
+  clearRecentlyUpdatedPaths,
 } = analysisSlice.actions;
 
 // Selectors
@@ -343,6 +354,7 @@ export const selectCurrentAnalysisId = (state: RootState) => state.analysis.curr
 export const selectOriginalAnalysisData = (state: RootState) => state.analysis.originalData;
 export const selectSuggestions = (state: RootState) => state.analysis.suggestions;
 export const selectAnalysisStatus = (state: RootState): AnalysisStatus => state.analysis.status;
+export const selectRecentlyUpdatedPaths = (state: RootState) => state.analysis.recentlyUpdatedPaths;
 export const selectAnalysisError = (state: RootState) => state.analysis.error;
 
 export default analysisSlice.reducer; 

@@ -4,14 +4,14 @@ import { Textarea } from "@/components/ui-daisy/textarea";
 import {  Button  } from '@/components/ui-daisy/button'; 
 import { Edit, Save, X } from 'lucide-react';
 import { AIAssistanceButton } from '@/components/analysis/AIAssistanceButton';
+import { useHighlightClasses } from '@/utils/suggestionHighlight';
 
 // Import suggestion-related types and components
 import { CvImprovementSuggestion } from '@/types/cv';
 // Remove Highlight/Indicator imports
 // import { SuggestionHighlight } from '@/components/suggestions/SuggestionHighlight';
 // import { SuggestionIndicator } from '@/components/suggestions/SuggestionIndicator';
-// Import the new InlineSuggestion component
-import { InlineSuggestion } from '@/components/analysis/InlineSuggestion';
+// Removed InlineSuggestion - using SuggestionManager instead
 
 interface AboutProps {
   data: string | null | undefined;
@@ -41,6 +41,7 @@ export function AboutDisplay({
   console.log('[AboutDisplay] Rendering with data (length):', data?.length);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<string>(data || '');
+  const highlightClasses = useHighlightClasses('about');
 
   React.useEffect(() => {
     setEditData(data || '');
@@ -88,22 +89,12 @@ export function AboutDisplay({
             className="min-h-[100px] text-sm"
           />
         ) : (
-          <p className="text-sm whitespace-pre-wrap">{editData}</p>
+          <p className={`text-sm whitespace-pre-wrap p-2 rounded-md ${highlightClasses}`}>
+            {editData}
+          </p>
         )}
 
-      {/* Render Inline Suggestions below the content */}
-      {aboutSuggestions.length > 0 && (
-        <div className="mt-3 space-y-2"> {/* Add spacing for suggestions */}
-          {aboutSuggestions.map((suggestion, index) => (
-            <InlineSuggestion
-              key={`${sectionPath}-${index}`}
-              suggestion={suggestion}
-              onAccept={onAcceptSuggestion} // Pass down handlers
-              onReject={onRejectSuggestion} // Pass down handlers
-              />
-            ))}
-          </div>
-        )}
+      {/* Inline suggestions removed - using SuggestionManager instead */}
     </>
   );
 }

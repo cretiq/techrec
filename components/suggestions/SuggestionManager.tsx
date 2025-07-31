@@ -19,7 +19,8 @@ import {
 } from '@/lib/features/suggestionsSlice';
 import { 
   updateAnalysisData,
-  selectCurrentAnalysisData
+  selectCurrentAnalysisData,
+  clearRecentlyUpdatedPaths
 } from '@/lib/features/analysisSlice';
 import { SuggestionOverlay } from './SuggestionOverlay';
 import { useToast } from '@/components/ui/use-toast';
@@ -99,6 +100,11 @@ export function SuggestionManager({
       });
 
       console.log('✅ [SuggestionManager] Successfully applied suggestion:', suggestion.id);
+
+      // Clear the green highlighting after 3 seconds
+      setTimeout(() => {
+        dispatch(clearRecentlyUpdatedPaths());
+      }, 3000);
       
     } catch (error) {
       console.error('❌ [SuggestionManager] Error accepting suggestion:', error);

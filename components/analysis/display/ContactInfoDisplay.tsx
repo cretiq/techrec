@@ -5,14 +5,14 @@ import { Label } from '@/components/ui/label';
 import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X, AlertTriangle, Camera, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/components/ui/use-toast';
+import { useHighlightClasses } from '@/utils/suggestionHighlight';
 
 // Import suggestion-related types and components
 import { CvImprovementSuggestion } from '@/types/cv';
 // Remove old imports
 // import { SuggestionHighlight } from '@/components/suggestions/SuggestionHighlight';
 // import { SuggestionIndicator } from '@/components/suggestions/SuggestionIndicator';
-// Import new component
-import { InlineSuggestion } from '@/components/analysis/InlineSuggestion';
+// Removed InlineSuggestion - using SuggestionManager instead
 
 interface ContactInfoData {
   name?: string | null;
@@ -124,6 +124,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const currentSuggestions = findSuggestionsForField(suggestions, id);
     const hasValue = data[id] && data[id]?.trim() !== '';
     const displayValue = hasValue ? data[id] : <span className='text-muted-foreground/50'>{placeholder}...</span>;
+    const highlightClasses = useHighlightClasses(`contactInfo.${id}`);
 
     return (
       <div key={id} className="mb-3"> {/* Add margin between fields */}
@@ -142,7 +143,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
             />
           </div>
         ) : (
-              <span className="truncate">{displayValue}</span>
+              <span className={`truncate p-1 rounded ${highlightClasses}`}>{displayValue}</span>
           )}
         </div>
         {/* Render suggestions OR gentle prompt below the field if not editing */}
@@ -152,16 +153,8 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
               <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1">
                  <AlertTriangle className="h-3 w-3" /> Consider adding your {label || id}.
               </p>
-            ) : currentSuggestions.length > 0 ? (
-              currentSuggestions.map((suggestion, index) => (
-                <InlineSuggestion
-                  key={`${id}-suggestion-${index}`}
-                  suggestion={suggestion}
-                  onAccept={onAcceptSuggestion}
-                  onReject={onRejectSuggestion}
-                />
-              ))
             ) : null}
+            {/* Inline suggestions removed - using SuggestionManager instead */}
           </div>
         )}
       </div>
@@ -181,6 +174,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const editUrl = editData[id]; // Use editData for input value
     const displayUrl = url?.replace(/^(https?:\/\/)/, '') || '';
     const isValidUrl = hasValue && (url.startsWith('http://') || url.startsWith('https://'));
+    const highlightClasses = useHighlightClasses(`contactInfo.${id}`);
     
     return (
        <div key={id} className="mb-3"> {/* Add margin between fields */}
@@ -201,11 +195,11 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
         ) : (
           hasValue ? (
              isValidUrl ? (
-                 <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline truncate">
+                 <a href={url} target="_blank" rel="noopener noreferrer" className={`text-blue-600 hover:underline truncate p-1 rounded ${highlightClasses}`}>
                        {textPrefix}{displayUrl}
                  </a>
              ) : (
-               <span className="truncate text-red-500" title="Invalid URL format">
+               <span className={`truncate text-red-500 p-1 rounded ${highlightClasses}`} title="Invalid URL format">
                      {textPrefix}{displayUrl}
                </span>
              )
@@ -221,16 +215,8 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
                <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1">
                  <AlertTriangle className="h-3 w-3" /> Consider adding your {id} profile.
                </p>
-             ) : currentSuggestions.length > 0 ? ( // Show suggestions if present and has value
-                 currentSuggestions.map((suggestion, index) => (
-                   <InlineSuggestion
-                     key={`${id}-suggestion-${index}`}
-                     suggestion={suggestion}
-                     onAccept={onAcceptSuggestion}
-                     onReject={onRejectSuggestion}
-                 />
-               ))
              ) : null}
+             {/* Inline suggestions removed - using SuggestionManager instead */}
            </div>
          )}
       </div>

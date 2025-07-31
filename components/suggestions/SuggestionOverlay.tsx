@@ -32,8 +32,7 @@ interface SuggestionOverlayProps {
   onToggleVisibility?: () => void;
 }
 
-type FilterType = 'all' | 'pending' | 'accepted' | 'declined';
-type SortType = 'priority' | 'type' | 'confidence';
+// Removed filter and sort types to simplify UI
 
 export function SuggestionOverlay({
   suggestions,
@@ -48,8 +47,6 @@ export function SuggestionOverlay({
   onToggleVisibility
 }: SuggestionOverlayProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [filter, setFilter] = useState<FilterType>('all');
-  const [sortBy, setSortBy] = useState<SortType>('priority');
 
   // Filter suggestions for this specific section/target
   const sectionSuggestions = useMemo(() => {
@@ -60,65 +57,21 @@ export function SuggestionOverlay({
     });
   }, [suggestions, section, targetId]);
 
-  // Apply filters and sorting
-  const filteredAndSortedSuggestions = useMemo(() => {
-    let filtered = sectionSuggestions;
-
-    // Apply status filter
-    switch (filter) {
-      case 'pending':
-        filtered = filtered.filter(s => 
-          !acceptedSuggestions.has(s.id) && !declinedSuggestions.has(s.id)
-        );
-        break;
-      case 'accepted':
-        filtered = filtered.filter(s => acceptedSuggestions.has(s.id));
-        break;
-      case 'declined':
-        filtered = filtered.filter(s => declinedSuggestions.has(s.id));
-        break;
-      default:
-        // 'all' - no filtering
-        break;
-    }
-
-    // Apply sorting
-    return filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'priority':
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
-          return priorityOrder[b.priority] - priorityOrder[a.priority];
-        case 'confidence':
-          return b.confidence - a.confidence;
-        case 'type':
-          return a.type.localeCompare(b.type);
-        default:
-          return 0;
-      }
-    });
-  }, [sectionSuggestions, filter, sortBy, acceptedSuggestions, declinedSuggestions]);
-
-  // Calculate statistics
-  const stats = useMemo(() => {
-    const total = sectionSuggestions.length;
-    const pending = sectionSuggestions.filter(s => 
+  // Only show pending suggestions (not accepted or declined)
+  const pendingSuggestions = useMemo(() => {
+    return sectionSuggestions.filter(s => 
       !acceptedSuggestions.has(s.id) && !declinedSuggestions.has(s.id)
-    ).length;
-    const accepted = sectionSuggestions.filter(s => 
-      acceptedSuggestions.has(s.id)
-    ).length;
-    const declined = sectionSuggestions.filter(s => 
-      declinedSuggestions.has(s.id)
-    ).length;
-    const highPriority = sectionSuggestions.filter(s => 
-      s.priority === 'high' && !acceptedSuggestions.has(s.id) && !declinedSuggestions.has(s.id)
-    ).length;
-
-    return { total, pending, accepted, declined, highPriority };
+    );
   }, [sectionSuggestions, acceptedSuggestions, declinedSuggestions]);
 
-  // Don't render if no suggestions for this section
-  if (sectionSuggestions.length === 0) {
+  // Calculate statistics - simplified to just pending count
+  const stats = useMemo(() => {
+    const pending = pendingSuggestions.length;
+    return { pending };
+  }, [pendingSuggestions]);
+
+  // Don't render if no pending suggestions for this section
+  if (pendingSuggestions.length === 0) {
     return null;
   }
 
@@ -128,16 +81,10 @@ export function SuggestionOverlay({
   }
 
   const handleAcceptAll = () => {
-    const pendingSuggestions = sectionSuggestions.filter(s => 
-      !acceptedSuggestions.has(s.id) && !declinedSuggestions.has(s.id)
-    );
     pendingSuggestions.forEach(s => onAcceptSuggestion(s.id));
   };
 
   const handleDeclineAll = () => {
-    const pendingSuggestions = sectionSuggestions.filter(s => 
-      !acceptedSuggestions.has(s.id) && !declinedSuggestions.has(s.id)
-    );
     pendingSuggestions.forEach(s => onDeclineSuggestion(s.id));
   };
 
@@ -183,40 +130,12 @@ export function SuggestionOverlay({
                 <div className="flex items-center gap-2 mt-1">
                   <Badge 
                     variant="outline" 
-                    className="text-xs"
-                    data-testid={`suggestion-overlay-total-badge-${section}`}
+                    className="text-xs text-orange-600 border-orange-300"
+                    data-testid={`suggestion-overlay-pending-badge-${section}`}
                   >
-                    {stats.total} total
+                    <Clock className="h-3 w-3 mr-1" />
+                    {stats.pending} suggestion{stats.pending !== 1 ? 's' : ''}
                   </Badge>
-                  {stats.pending > 0 && (
-                    <Badge 
-                      variant="outline" 
-                      className="text-xs text-orange-600 border-orange-300"
-                      data-testid={`suggestion-overlay-pending-badge-${section}`}
-                    >
-                      <Clock className="h-3 w-3 mr-1" />
-                      {stats.pending} pending
-                    </Badge>
-                  )}
-                  {stats.accepted > 0 && (
-                    <Badge 
-                      variant="outline" 
-                      className="text-xs text-green-600 border-green-300"
-                      data-testid={`suggestion-overlay-accepted-badge-${section}`}
-                    >
-                      <CheckCircle2 className="h-3 w-3 mr-1" />
-                      {stats.accepted} applied
-                    </Badge>
-                  )}
-                  {stats.highPriority > 0 && (
-                    <Badge 
-                      variant="outline" 
-                      className="text-xs text-red-600 border-red-300 bg-red-50"
-                      data-testid={`suggestion-overlay-high-priority-badge-${section}`}
-                    >
-                      {stats.highPriority} high priority
-                    </Badge>
-                  )}
                 </div>
               </div>
             </div>
@@ -256,9 +175,9 @@ export function SuggestionOverlay({
             </div>
           </div>
 
-          {/* Controls bar */}
+          {/* Bulk actions - simplified */}
           <AnimatePresence>
-            {isExpanded && (
+            {isExpanded && stats.pending > 0 && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
@@ -266,59 +185,27 @@ export function SuggestionOverlay({
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-primary/10">
-                  <div className="flex items-center gap-3">
-                    {/* Filter dropdown */}
-                    <select
-                      value={filter}
-                      onChange={(e) => setFilter(e.target.value as FilterType)}
-                      className="text-xs border border-base-300 rounded px-2 py-1 bg-base-100"
-                      data-testid={`suggestion-overlay-filter-${section}`}
-                    >
-                      <option value="all">All ({stats.total})</option>
-                      <option value="pending">Pending ({stats.pending})</option>
-                      <option value="accepted">Applied ({stats.accepted})</option>
-                      <option value="declined">Declined ({stats.declined})</option>
-                    </select>
-
-                    {/* Sort dropdown */}
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value as SortType)}
-                      className="text-xs border border-base-300 rounded px-2 py-1 bg-base-100"
-                      data-testid={`suggestion-overlay-sort-${section}`}
-                    >
-                      <option value="priority">Priority</option>
-                      <option value="confidence">Confidence</option>
-                      <option value="type">Type</option>
-                    </select>
-                  </div>
-
-                  {/* Bulk actions */}
-                  {stats.pending > 0 && (
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleDeclineAll}
-                        className="text-xs px-3 py-1 h-7 text-red-600 border-red-300 hover:bg-red-50"
-                        data-testid={`suggestion-overlay-decline-all-${section}`}
-                      >
-                        <XCircle className="h-3 w-3 mr-1" />
-                        Decline All
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={handleAcceptAll}
-                        className="text-xs px-3 py-1 h-7 bg-green-600 hover:bg-green-700"
-                        data-testid={`suggestion-overlay-accept-all-${section}`}
-                      >
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        Accept All
-                      </Button>
-                    </div>
-                  )}
+                <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-primary/10">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDeclineAll}
+                    className="text-xs px-3 py-1 h-7 text-red-600 border-red-300 hover:bg-red-50"
+                    data-testid={`suggestion-overlay-decline-all-${section}`}
+                  >
+                    <XCircle className="h-3 w-3 mr-1" />
+                    Decline All
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleAcceptAll}
+                    className="text-xs px-3 py-1 h-7 bg-green-600 hover:bg-green-700"
+                    data-testid={`suggestion-overlay-accept-all-${section}`}
+                  >
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    Accept All
+                  </Button>
                 </div>
               </motion.div>
             )}
@@ -340,7 +227,7 @@ export function SuggestionOverlay({
                 data-testid={`suggestion-overlay-list-${section}`}
               >
                 <AnimatePresence mode="popLayout">
-                  {filteredAndSortedSuggestions.map((suggestion, index) => {
+                  {pendingSuggestions.map((suggestion, index) => {
                     // Ensure unique key, fallback to index if id is missing or duplicate
                     const uniqueKey = suggestion.id && suggestion.id.trim() !== '' 
                       ? `${suggestion.id}-${section}-${index}` 
@@ -350,27 +237,15 @@ export function SuggestionOverlay({
                       <SuggestionItem
                         key={uniqueKey}
                         suggestion={suggestion}
-                        isAccepted={acceptedSuggestions.has(suggestion.id)}
-                        isDeclined={declinedSuggestions.has(suggestion.id)}
-                        isPending={!acceptedSuggestions.has(suggestion.id) && !declinedSuggestions.has(suggestion.id)}
+                        isAccepted={false} // All pending suggestions are not accepted
+                        isDeclined={false} // All pending suggestions are not declined
+                        isPending={true} // All pending suggestions are pending
                         onAccept={onAcceptSuggestion}
                         onDecline={onDeclineSuggestion}
                       />
                     );
                   })}
                 </AnimatePresence>
-
-                {filteredAndSortedSuggestions.length === 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-center py-8 text-base-content/60"
-                    data-testid={`suggestion-overlay-empty-${section}`}
-                  >
-                    <Filter className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No suggestions match the current filter</p>
-                  </motion.div>
-                )}
               </div>
             </motion.div>
           )}

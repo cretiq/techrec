@@ -10,8 +10,7 @@ import { CvImprovementSuggestion } from '@/types/cv';
 // Remove old imports
 // import { SuggestionHighlight } from '@/components/suggestions/SuggestionHighlight';
 // import { SuggestionIndicator } from '@/components/suggestions/SuggestionIndicator';
-// Import new component
-import { InlineSuggestion } from '@/components/analysis/InlineSuggestion';
+// Removed InlineSuggestion - using SuggestionManager instead
 import { cn } from '@/lib/utils';
 
 // Import Skill type from central location
@@ -141,19 +140,7 @@ export function SkillsDisplay({
                 )}
                 </Badge>
 
-                {/* Render Inline Suggestions below the badge if not editing */} 
-                {!isEditing && currentSuggestions.length > 0 && (
-                  <div className="mt-1 ml-1 space-y-1"> {/* Add spacing for suggestions below badge */} 
-                    {currentSuggestions.map((suggestion, sIndex) => (
-                      <InlineSuggestion 
-                        key={`skill-${index}-suggestion-${sIndex}`}
-                        suggestion={suggestion}
-                        onAccept={onAcceptSuggestion}
-                        onReject={onRejectSuggestion}
-                      />
-                    ))}
-                  </div>
-                )}
+                {/* Inline suggestions removed - using SuggestionManager instead */}
               </div>
             );
           })}
