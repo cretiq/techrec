@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 5
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -49,7 +49,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 5
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
@@ -58,14 +58,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 90000
       },
       {
         "outputDir": "/Users/filipmellqvist/CursorProjects/techrec/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 5
+          "actualWorkers": 1
         },
         "id": "firefox",
         "name": "firefox",
@@ -74,14 +74,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 90000
       },
       {
         "outputDir": "/Users/filipmellqvist/CursorProjects/techrec/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 5
+          "actualWorkers": 1
         },
         "id": "webkit",
         "name": "webkit",
@@ -90,14 +90,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 90000
       },
       {
         "outputDir": "/Users/filipmellqvist/CursorProjects/techrec/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 5
+          "actualWorkers": 1
         },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
@@ -106,14 +106,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 90000
       },
       {
         "outputDir": "/Users/filipmellqvist/CursorProjects/techrec/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 5
+          "actualWorkers": 1
         },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
@@ -122,7 +122,7 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 90000
       }
     ],
     "shard": null,
@@ -139,25 +139,25 @@
   },
   "suites": [
     {
-      "title": "e2e/focused/session-debug.spec.ts",
-      "file": "e2e/focused/session-debug.spec.ts",
+      "title": "e2e/architecture/single-source-truth-verification.spec.ts",
+      "file": "e2e/architecture/single-source-truth-verification.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Session Debug Test",
-          "file": "e2e/focused/session-debug.spec.ts",
-          "line": 10,
+          "title": "Single Source of Truth Architecture - E2E Verification",
+          "file": "e2e/architecture/single-source-truth-verification.spec.ts",
+          "line": 5,
           "column": 6,
           "specs": [
             {
-              "title": "should debug session object in upload API",
+              "title": "should verify complete architectural migration: upload → proper tables → UI display → save",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 90000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -167,25 +167,166 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 10363,
+                      "duration": 33458,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "🔍 Testing session debug in upload API...\n"
+                          "text": "🏗️ Starting Single Source of Truth architecture verification...\n"
                         },
                         {
-                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
+                          "text": "📝 Step 1: Authenticating as experienced developer...\n"
                         },
                         {
-                          "text": "🔄 Clicking upload button to trigger session debug...\n"
+                          "text": "✅ Authentication completed\n"
                         },
                         {
-                          "text": "✅ Upload attempted - check server logs for session debug info\n"
+                          "text": "📝 Step 2: Ensuring clean test environment...\n"
+                        },
+                        {
+                          "text": "✅ CV management page loaded\n"
+                        },
+                        {
+                          "text": "📝 Step 3: Setting up comprehensive API monitoring...\n"
+                        },
+                        {
+                          "text": "✅ API monitoring setup completed\n"
+                        },
+                        {
+                          "text": "📝 Step 4: Testing CV upload with architectural migration...\n"
+                        },
+                        {
+                          "text": "📤 No existing CV found - proceeding with upload test...\n"
+                        },
+                        {
+                          "text": "📁 Uploading CV from: /Users/filipmellqvist/CursorProjects/techrec/tests/fixtures/Filip_Mellqvist_CV.pdf\n"
+                        },
+                        {
+                          "text": "🚀 Starting upload process...\n"
+                        },
+                        {
+                          "text": "📞 Intercepted CV upload API call\n"
+                        },
+                        {
+                          "text": "✅ Upload API response captured\n"
+                        },
+                        {
+                          "text": "⏳ Waiting for CV processing to complete...\n"
+                        },
+                        {
+                          "text": "⏳ Standard elements not found, checking if data was processed...\n"
+                        },
+                        {
+                          "text": "📊 Proceeding with API response analysis (UI may be different than expected)\n"
+                        },
+                        {
+                          "text": "📝 Step 5: Verifying architectural compliance...\n"
+                        },
+                        {
+                          "text": "\n🏗️ === UPLOAD ARCHITECTURE ANALYSIS ===\n"
+                        },
+                        {
+                          "text": "📊 Upload API Response Structure:\n"
+                        },
+                        {
+                          "text": "  Success: N/A\n"
+                        },
+                        {
+                          "text": "  Message: N/A\n"
+                        },
+                        {
+                          "text": "  Analysis ID: N/A\n"
+                        },
+                        {
+                          "text": "  Developer ID: N/A\n"
+                        },
+                        {
+                          "text": "  ✅ No CvAnalysis data in response: true\n"
+                        },
+                        {
+                          "text": "  ✅ Indicates proper profile sync: undefined\n"
+                        },
+                        {
+                          "text": "📝 Step 6: Verifying data flow from proper tables...\n"
+                        },
+                        {
+                          "text": "📞 Intercepted latest analysis API call\n"
+                        },
+                        {
+                          "text": "✅ Latest analysis API response captured\n"
+                        },
+                        {
+                          "text": "\n🗄️ === LATEST ANALYSIS ARCHITECTURE ANALYSIS ===\n"
+                        },
+                        {
+                          "text": "📊 Latest Analysis API Response Structure:\n"
+                        },
+                        {
+                          "text": "  ID: profile-6885f2dba62220e7f2389f1e\n"
+                        },
+                        {
+                          "text": "  Has analysisResult: true\n"
+                        },
+                        {
+                          "text": "  Has CV data: true\n"
+                        },
+                        {
+                          "text": "  📋 Analysis Result Contents:\n"
+                        },
+                        {
+                          "text": "    Contact Info: Present\n"
+                        },
+                        {
+                          "text": "    About: Missing\n"
+                        },
+                        {
+                          "text": "    Skills: 0 items\n"
+                        },
+                        {
+                          "text": "    Experience: 0 items\n"
+                        },
+                        {
+                          "text": "    Education: 0 items\n"
+                        },
+                        {
+                          "text": "  ✅ Uses proper table structure: [object Object]\n"
+                        },
+                        {
+                          "text": "📝 Step 7: Verifying UI displays data from proper tables...\n"
+                        },
+                        {
+                          "text": "📝 Step 8: Testing save functionality uses proper profile API...\n"
+                        },
+                        {
+                          "text": "\n📝 Step 9: Final architectural compliance validation...\n"
+                        },
+                        {
+                          "text": "\n🏁 === FINAL ARCHITECTURE COMPLIANCE REPORT ===\n"
+                        },
+                        {
+                          "text": "✅ Upload uses proper tables (not CvAnalysis): true\n"
+                        },
+                        {
+                          "text": "✅ Fetch uses proper tables: true\n"
+                        },
+                        {
+                          "text": "✅ Save uses proper profile API: true\n"
+                        },
+                        {
+                          "text": "✅ API responses received: true\n"
+                        },
+                        {
+                          "text": "\n🎯 Overall Architectural Compliance: PASSED\n"
+                        },
+                        {
+                          "text": "🎉 Single Source of Truth architecture migration VERIFIED successfully!\n"
+                        },
+                        {
+                          "text": "✅ All architectural assertions passed\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-31T12:02:32.797Z",
+                      "startTime": "2025-07-31T19:51:45.764Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -193,197 +334,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "993e97b232374560d6f0-a45c6ae40126764961cc",
-              "file": "e2e/focused/session-debug.spec.ts",
-              "line": 11,
-              "column": 3
-            },
-            {
-              "title": "should debug session object in upload API",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 10131,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "🔍 Testing session debug in upload API...\n"
-                        },
-                        {
-                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
-                        },
-                        {
-                          "text": "🔄 Clicking upload button to trigger session debug...\n"
-                        },
-                        {
-                          "text": "✅ Upload attempted - check server logs for session debug info\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-31T12:02:32.789Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "993e97b232374560d6f0-13bcb09e202695e1eede",
-              "file": "e2e/focused/session-debug.spec.ts",
-              "line": 11,
-              "column": 3
-            },
-            {
-              "title": "should debug session object in upload API",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 10463,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "🔍 Testing session debug in upload API...\n"
-                        },
-                        {
-                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
-                        },
-                        {
-                          "text": "🔄 Clicking upload button to trigger session debug...\n"
-                        },
-                        {
-                          "text": "✅ Upload attempted - check server logs for session debug info\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-31T12:02:32.786Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "993e97b232374560d6f0-721ea96d131df8585f0e",
-              "file": "e2e/focused/session-debug.spec.ts",
-              "line": 11,
-              "column": 3
-            },
-            {
-              "title": "should debug session object in upload API",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 10600,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "🔍 Testing session debug in upload API...\n"
-                        },
-                        {
-                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
-                        },
-                        {
-                          "text": "🔄 Clicking upload button to trigger session debug...\n"
-                        },
-                        {
-                          "text": "✅ Upload attempted - check server logs for session debug info\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-31T12:02:32.785Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "993e97b232374560d6f0-f9d4546b9f991c705964",
-              "file": "e2e/focused/session-debug.spec.ts",
-              "line": 11,
-              "column": 3
-            },
-            {
-              "title": "should debug session object in upload API",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 4,
-                      "status": "passed",
-                      "duration": 10322,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "🔍 Testing session debug in upload API...\n"
-                        },
-                        {
-                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
-                        },
-                        {
-                          "text": "🔄 Clicking upload button to trigger session debug...\n"
-                        },
-                        {
-                          "text": "✅ Upload attempted - check server logs for session debug info\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-31T12:02:32.785Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "993e97b232374560d6f0-30f3f1f7e2b9bf4de3d3",
-              "file": "e2e/focused/session-debug.spec.ts",
-              "line": 11,
+              "id": "0fe47eef4277e9bc1ee5-b50ac1cf2905ad0e5d97",
+              "file": "e2e/architecture/single-source-truth-verification.spec.ts",
+              "line": 12,
               "column": 3
             }
           ]
@@ -393,9 +346,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-07-31T12:02:31.440Z",
-    "duration": 12845.755000000001,
-    "expected": 5,
+    "startTime": "2025-07-31T19:51:44.817Z",
+    "duration": 34602.858,
+    "expected": 1,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

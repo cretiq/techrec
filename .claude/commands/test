@@ -1,0 +1,165 @@
+# Intelligent E2E Test Generation Command
+
+This command analyzes recent changes and automatically creates comprehensive Playwright E2E tests for newly implemented features and changes.
+
+## Purpose
+- Automatically detect recently implemented features from git history
+- Generate comprehensive E2E tests following established patterns
+- Create both happy path and edge case scenarios
+- Include proper API monitoring and response validation
+- Follow TechRec's testing conventions and patterns
+
+## Usage
+Simply reference this command: `@.claude/commands/test`
+
+## Behavior
+1. **Change Analysis**: Review recent git commits to identify new features/changes
+2. **Feature Detection**: Identify testable components and user workflows
+3. **Test Generation**: Create comprehensive E2E tests with proper structure
+4. **Pattern Adherence**: Follow established testing patterns from existing tests
+5. **Execution**: Run tests to verify implementation works correctly
+
+## Test Generation Framework
+
+### **Test Structure Pattern**
+```typescript
+import { test, expect } from '@playwright/test';
+import { AuthHelper } from '../utils/auth-helper';
+
+test.describe('Feature Name - E2E', () => {
+  let authHelper: AuthHelper;
+
+  test.beforeEach(async ({ page }) => {
+    authHelper = new AuthHelper(page);
+  });
+
+  test('should complete [feature workflow description]', async ({ page }) => {
+    // Test implementation following established patterns
+  });
+});
+```
+
+### **Essential Test Patterns**
+1. **Authentication Setup**: Use AuthHelper for consistent login
+2. **API Monitoring**: Route interception for response validation
+3. **Progressive Steps**: Numbered console logs for debugging
+4. **State Verification**: Check UI elements and data-testid attributes
+5. **Error Handling**: Comprehensive error detection and logging
+6. **Response Analysis**: Detailed API response structure validation
+
+### **Test Categories**
+- **User Workflows**: Complete end-to-end user journeys
+- **API Integration**: Backend service integration tests
+- **UI Components**: Interactive element and form testing
+- **Error Scenarios**: Edge cases and error handling validation
+- **Mobile Responsive**: Cross-device functionality testing
+
+### **Established Testing Utilities**
+- **AuthHelper**: `/tests/e2e/utils/auth-helper.ts`
+- **Test Fixtures**: `/tests/fixtures/` directory
+- **Global Setup**: `/tests/global-setup.ts`
+- **Base URL**: `http://localhost:3000` (dev server auto-start)
+
+### **Data-TestId Naming Convention**
+```
+Format: {page/section}-{component}-{element}-{identifier?}
+
+Examples:
+- cv-management-upload-dropzone
+- cv-management-button-get-suggestions  
+- profile-experience-add-button
+- gamification-level-progress-bar
+```
+
+### **API Monitoring Pattern**
+```typescript
+// Monitor specific API endpoints
+await page.route('/api/endpoint', async route => {
+  const response = await page.request.fetch(route.request());
+  const responseBody = await response.text();
+  
+  try {
+    actualAPIResponse = JSON.parse(responseBody);
+    console.log('✅ API Response captured');
+  } catch (e) {
+    actualAPIResponse = { raw: responseBody, parseError: e.message };
+  }
+  
+  route.fulfill({
+    status: response.status(),
+    headers: response.headers(),
+    body: responseBody
+  });
+});
+```
+
+### **Test File Organization**
+```
+tests/e2e/
+├── feature-name/              # Feature-specific tests
+│   ├── workflow-test.spec.ts  # Main user workflow
+│   ├── edge-cases.spec.ts     # Error scenarios
+│   └── api-integration.spec.ts # Backend integration
+├── utils/                     # Shared utilities
+└── fixtures/                  # Test data files
+```
+
+## Test Generation Strategy
+
+### **Feature Detection Logic**
+1. **Git Analysis**: Parse recent commits for feature keywords
+   - `feat:` - New features requiring workflow tests
+   - `fix:` - Bug fixes needing regression tests
+   - `refactor:` - Architectural changes needing integration tests
+   - `ui:` - UI changes requiring component tests
+
+2. **File Analysis**: Identify changed components and APIs
+   - New API routes → API integration tests
+   - Updated components → UI interaction tests
+   - Database changes → Data persistence tests
+   - Authentication changes → Auth flow tests
+
+3. **User Journey Mapping**: Create tests for complete workflows
+   - Upload → Process → Display flows
+   - Form submission → Validation → Success flows
+   - Premium features → Authentication → Usage flows
+
+### **Test Quality Standards**
+- **Comprehensive Logging**: Console output for debugging
+- **API Validation**: Response structure and content verification
+- **UI State Verification**: Element visibility and interaction states
+- **Error Scenarios**: Network failures, invalid inputs, auth issues
+- **Performance Monitoring**: Load times and response timing
+- **Cross-Browser Testing**: Chromium, Firefox, WebKit compatibility
+
+### **Integration with Development Workflow**
+- **Pre-commit Testing**: Run relevant tests before commits
+- **Feature Completion**: Verify features work end-to-end
+- **Regression Prevention**: Ensure changes don't break existing functionality
+- **Documentation**: Tests serve as living feature documentation
+
+## Execution Process
+When this command is referenced, Claude will:
+1. Analyze recent git commits (last 5-10 commits)
+2. Identify new features, fixes, and changes requiring tests
+3. Generate appropriate test files following established patterns
+4. Create test scenarios covering happy path and edge cases
+5. Include proper API monitoring and response validation
+6. Run tests to verify functionality works correctly
+7. Provide detailed test results and coverage analysis
+
+## Test Types Generated
+- **Workflow Tests**: Complete user journeys from start to finish
+- **Component Tests**: Individual UI element interactions
+- **API Integration Tests**: Backend service communication
+- **Mobile Responsive Tests**: Cross-device functionality
+- **Error Handling Tests**: Edge cases and failure scenarios
+- **Performance Tests**: Load times and interaction responsiveness
+
+## Quality Assurance
+- Follow data-testid naming conventions
+- Include comprehensive error detection
+- Provide detailed console logging for debugging
+- Validate API responses structure and content
+- Test both authenticated and unauthenticated scenarios
+- Cover mobile and desktop viewports

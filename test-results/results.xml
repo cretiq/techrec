@@ -1,55 +1,63 @@
-<testsuites id="" name="" tests="5" failures="0" skipped="0" errors="0" time="12.845755">
-<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="chromium" tests="1" failures="0" skipped="0" time="10.363" errors="0">
-<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.363">
+<testsuites id="" name="" tests="1" failures="0" skipped="0" errors="0" time="34.602858">
+<testsuite name="e2e/architecture/single-source-truth-verification.spec.ts" timestamp="2025-07-31T19:51:45.521Z" hostname="chromium" tests="1" failures="0" skipped="0" time="33.458" errors="0">
+<testcase name="Single Source of Truth Architecture - E2E Verification › should verify complete architectural migration: upload → proper tables → UI display → save" classname="e2e/architecture/single-source-truth-verification.spec.ts" time="33.458">
 <system-out>
-<![CDATA[🔍 Testing session debug in upload API...
-📄 Upload section found - attempting file upload to debug session...
-🔄 Clicking upload button to trigger session debug...
-✅ Upload attempted - check server logs for session debug info
-]]>
-</system-out>
-</testcase>
-</testsuite>
-<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="firefox" tests="1" failures="0" skipped="0" time="10.131" errors="0">
-<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.131">
-<system-out>
-<![CDATA[🔍 Testing session debug in upload API...
-📄 Upload section found - attempting file upload to debug session...
-🔄 Clicking upload button to trigger session debug...
-✅ Upload attempted - check server logs for session debug info
-]]>
-</system-out>
-</testcase>
-</testsuite>
-<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="webkit" tests="1" failures="0" skipped="0" time="10.463" errors="0">
-<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.463">
-<system-out>
-<![CDATA[🔍 Testing session debug in upload API...
-📄 Upload section found - attempting file upload to debug session...
-🔄 Clicking upload button to trigger session debug...
-✅ Upload attempted - check server logs for session debug info
-]]>
-</system-out>
-</testcase>
-</testsuite>
-<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="Mobile Chrome" tests="1" failures="0" skipped="0" time="10.6" errors="0">
-<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.6">
-<system-out>
-<![CDATA[🔍 Testing session debug in upload API...
-📄 Upload section found - attempting file upload to debug session...
-🔄 Clicking upload button to trigger session debug...
-✅ Upload attempted - check server logs for session debug info
-]]>
-</system-out>
-</testcase>
-</testsuite>
-<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="Mobile Safari" tests="1" failures="0" skipped="0" time="10.322" errors="0">
-<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.322">
-<system-out>
-<![CDATA[🔍 Testing session debug in upload API...
-📄 Upload section found - attempting file upload to debug session...
-🔄 Clicking upload button to trigger session debug...
-✅ Upload attempted - check server logs for session debug info
+<![CDATA[🏗️ Starting Single Source of Truth architecture verification...
+📝 Step 1: Authenticating as experienced developer...
+✅ Authentication completed
+📝 Step 2: Ensuring clean test environment...
+✅ CV management page loaded
+📝 Step 3: Setting up comprehensive API monitoring...
+✅ API monitoring setup completed
+📝 Step 4: Testing CV upload with architectural migration...
+📤 No existing CV found - proceeding with upload test...
+📁 Uploading CV from: /Users/filipmellqvist/CursorProjects/techrec/tests/fixtures/Filip_Mellqvist_CV.pdf
+🚀 Starting upload process...
+📞 Intercepted CV upload API call
+✅ Upload API response captured
+⏳ Waiting for CV processing to complete...
+⏳ Standard elements not found, checking if data was processed...
+📊 Proceeding with API response analysis (UI may be different than expected)
+📝 Step 5: Verifying architectural compliance...
+
+🏗️ === UPLOAD ARCHITECTURE ANALYSIS ===
+📊 Upload API Response Structure:
+  Success: N/A
+  Message: N/A
+  Analysis ID: N/A
+  Developer ID: N/A
+  ✅ No CvAnalysis data in response: true
+  ✅ Indicates proper profile sync: undefined
+📝 Step 6: Verifying data flow from proper tables...
+📞 Intercepted latest analysis API call
+✅ Latest analysis API response captured
+
+🗄️ === LATEST ANALYSIS ARCHITECTURE ANALYSIS ===
+📊 Latest Analysis API Response Structure:
+  ID: profile-6885f2dba62220e7f2389f1e
+  Has analysisResult: true
+  Has CV data: true
+  📋 Analysis Result Contents:
+    Contact Info: Present
+    About: Missing
+    Skills: 0 items
+    Experience: 0 items
+    Education: 0 items
+  ✅ Uses proper table structure: [object Object]
+📝 Step 7: Verifying UI displays data from proper tables...
+📝 Step 8: Testing save functionality uses proper profile API...
+
+📝 Step 9: Final architectural compliance validation...
+
+🏁 === FINAL ARCHITECTURE COMPLIANCE REPORT ===
+✅ Upload uses proper tables (not CvAnalysis): true
+✅ Fetch uses proper tables: true
+✅ Save uses proper profile API: true
+✅ API responses received: true
+
+🎯 Overall Architectural Compliance: PASSED
+🎉 Single Source of Truth architecture migration VERIFIED successfully!
+✅ All architectural assertions passed
 ]]>
 </system-out>
 </testcase>
