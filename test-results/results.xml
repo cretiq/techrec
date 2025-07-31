@@ -1,28 +1,57 @@
-<testsuites id="" name="" tests="3" failures="0" skipped="3" errors="0" time="5.5790679999999995">
-<testsuite name="e2e/user-flows/test-suggestion-acceptance.spec.ts" timestamp="2025-07-29T14:23:33.458Z" hostname="chromium" tests="3" failures="0" skipped="3" time="4.466" errors="0">
-<testcase name="CV Suggestions - Accept/Apply Functionality › should accept suggestion and update CV data permanently" classname="e2e/user-flows/test-suggestion-acceptance.spec.ts" time="2.362">
-<properties>
-<property name="skip" value="No existing CV analysis found - cannot test suggestion acceptance">
-</property>
-</properties>
-<skipped>
-</skipped>
+<testsuites id="" name="" tests="5" failures="0" skipped="0" errors="0" time="12.845755">
+<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="chromium" tests="1" failures="0" skipped="0" time="10.363" errors="0">
+<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.363">
+<system-out>
+<![CDATA[🔍 Testing session debug in upload API...
+📄 Upload section found - attempting file upload to debug session...
+🔄 Clicking upload button to trigger session debug...
+✅ Upload attempted - check server logs for session debug info
+]]>
+</system-out>
 </testcase>
-<testcase name="CV Suggestions - Accept/Apply Functionality › should handle suggestion acceptance errors gracefully" classname="e2e/user-flows/test-suggestion-acceptance.spec.ts" time="1.044">
-<properties>
-<property name="skip" value="No existing CV analysis found">
-</property>
-</properties>
-<skipped>
-</skipped>
+</testsuite>
+<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="firefox" tests="1" failures="0" skipped="0" time="10.131" errors="0">
+<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.131">
+<system-out>
+<![CDATA[🔍 Testing session debug in upload API...
+📄 Upload section found - attempting file upload to debug session...
+🔄 Clicking upload button to trigger session debug...
+✅ Upload attempted - check server logs for session debug info
+]]>
+</system-out>
 </testcase>
-<testcase name="CV Suggestions - Accept/Apply Functionality › should maintain suggestion state after page refresh" classname="e2e/user-flows/test-suggestion-acceptance.spec.ts" time="1.06">
-<properties>
-<property name="skip" value="No existing CV analysis found">
-</property>
-</properties>
-<skipped>
-</skipped>
+</testsuite>
+<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="webkit" tests="1" failures="0" skipped="0" time="10.463" errors="0">
+<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.463">
+<system-out>
+<![CDATA[🔍 Testing session debug in upload API...
+📄 Upload section found - attempting file upload to debug session...
+🔄 Clicking upload button to trigger session debug...
+✅ Upload attempted - check server logs for session debug info
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="Mobile Chrome" tests="1" failures="0" skipped="0" time="10.6" errors="0">
+<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.6">
+<system-out>
+<![CDATA[🔍 Testing session debug in upload API...
+📄 Upload section found - attempting file upload to debug session...
+🔄 Clicking upload button to trigger session debug...
+✅ Upload attempted - check server logs for session debug info
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="e2e/focused/session-debug.spec.ts" timestamp="2025-07-31T12:02:32.443Z" hostname="Mobile Safari" tests="1" failures="0" skipped="0" time="10.322" errors="0">
+<testcase name="Session Debug Test › should debug session object in upload API" classname="e2e/focused/session-debug.spec.ts" time="10.322">
+<system-out>
+<![CDATA[🔍 Testing session debug in upload API...
+📄 Upload section found - attempting file upload to debug session...
+🔄 Clicking upload button to trigger session debug...
+✅ Upload attempted - check server logs for session debug info
+]]>
+</system-out>
 </testcase>
 </testsuite>
 </testsuites>

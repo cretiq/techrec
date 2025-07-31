@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 5
     },
     "preserveOutput": "always",
     "reporter": [
@@ -49,7 +49,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 5
         },
         "id": "chromium",
         "name": "chromium",
@@ -65,7 +65,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 5
         },
         "id": "firefox",
         "name": "firefox",
@@ -81,7 +81,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 5
         },
         "id": "webkit",
         "name": "webkit",
@@ -97,7 +97,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 5
         },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
@@ -113,7 +113,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 5
         },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
@@ -129,7 +129,7 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.53.2",
-    "workers": 1,
+    "workers": 6,
     "webServer": {
       "command": "npm run dev",
       "url": "http://localhost:3000",
@@ -139,152 +139,251 @@
   },
   "suites": [
     {
-      "title": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
-      "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
+      "title": "e2e/focused/session-debug.spec.ts",
+      "file": "e2e/focused/session-debug.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "CV Suggestions - Accept/Apply Functionality",
-          "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
-          "line": 4,
+          "title": "Session Debug Test",
+          "file": "e2e/focused/session-debug.spec.ts",
+          "line": 10,
           "column": 6,
           "specs": [
             {
-              "title": "should accept suggestion and update CV data permanently",
+              "title": "should debug session object in upload API",
               "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found - cannot test suggestion acceptance"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
+                  "annotations": [],
+                  "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "skipped",
-                      "duration": 2362,
+                      "status": "passed",
+                      "duration": 10363,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Skipping test - no existing CV analysis found\n"
+                          "text": "🔍 Testing session debug in upload API...\n"
+                        },
+                        {
+                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
+                        },
+                        {
+                          "text": "🔄 Clicking upload button to trigger session debug...\n"
+                        },
+                        {
+                          "text": "✅ Upload attempted - check server logs for session debug info\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-07-29T14:23:33.700Z",
-                      "annotations": [
-                        {
-                          "type": "skip",
-                          "description": "No existing CV analysis found - cannot test suggestion acceptance"
-                        }
-                      ],
+                      "startTime": "2025-07-31T12:02:32.797Z",
+                      "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "73b6d1459176c57abfb2-67780d66473ff7ae65e8",
-              "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
-              "line": 12,
+              "id": "993e97b232374560d6f0-a45c6ae40126764961cc",
+              "file": "e2e/focused/session-debug.spec.ts",
+              "line": 11,
               "column": 3
             },
             {
-              "title": "should handle suggestion acceptance errors gracefully",
+              "title": "should debug session object in upload API",
               "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
                   "results": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "skipped",
-                      "duration": 1044,
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 10131,
                       "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-29T14:23:36.231Z",
-                      "annotations": [
+                      "stdout": [
                         {
-                          "type": "skip",
-                          "description": "No existing CV analysis found"
+                          "text": "🔍 Testing session debug in upload API...\n"
+                        },
+                        {
+                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
+                        },
+                        {
+                          "text": "🔄 Clicking upload button to trigger session debug...\n"
+                        },
+                        {
+                          "text": "✅ Upload attempted - check server logs for session debug info\n"
                         }
                       ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-31T12:02:32.789Z",
+                      "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "73b6d1459176c57abfb2-19cf0e3387530512141b",
-              "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
-              "line": 144,
+              "id": "993e97b232374560d6f0-13bcb09e202695e1eede",
+              "file": "e2e/focused/session-debug.spec.ts",
+              "line": 11,
               "column": 3
             },
             {
-              "title": "should maintain suggestion state after page refresh",
+              "title": "should debug session object in upload API",
               "ok": true,
               "tags": [],
               "tests": [
                 {
                   "timeout": 30000,
-                  "annotations": [
-                    {
-                      "type": "skip",
-                      "description": "No existing CV analysis found"
-                    }
-                  ],
-                  "expectedStatus": "skipped",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
                   "results": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "skipped",
-                      "duration": 1060,
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 10463,
                       "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-07-29T14:23:37.278Z",
-                      "annotations": [
+                      "stdout": [
                         {
-                          "type": "skip",
-                          "description": "No existing CV analysis found"
+                          "text": "🔍 Testing session debug in upload API...\n"
+                        },
+                        {
+                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
+                        },
+                        {
+                          "text": "🔄 Clicking upload button to trigger session debug...\n"
+                        },
+                        {
+                          "text": "✅ Upload attempted - check server logs for session debug info\n"
                         }
                       ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-31T12:02:32.786Z",
+                      "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "73b6d1459176c57abfb2-b65e339b64ed20f7658a",
-              "file": "e2e/user-flows/test-suggestion-acceptance.spec.ts",
-              "line": 215,
+              "id": "993e97b232374560d6f0-721ea96d131df8585f0e",
+              "file": "e2e/focused/session-debug.spec.ts",
+              "line": 11,
+              "column": 3
+            },
+            {
+              "title": "should debug session object in upload API",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 10600,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing session debug in upload API...\n"
+                        },
+                        {
+                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
+                        },
+                        {
+                          "text": "🔄 Clicking upload button to trigger session debug...\n"
+                        },
+                        {
+                          "text": "✅ Upload attempted - check server logs for session debug info\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-31T12:02:32.785Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "993e97b232374560d6f0-f9d4546b9f991c705964",
+              "file": "e2e/focused/session-debug.spec.ts",
+              "line": 11,
+              "column": 3
+            },
+            {
+              "title": "should debug session object in upload API",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 10322,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing session debug in upload API...\n"
+                        },
+                        {
+                          "text": "📄 Upload section found - attempting file upload to debug session...\n"
+                        },
+                        {
+                          "text": "🔄 Clicking upload button to trigger session debug...\n"
+                        },
+                        {
+                          "text": "✅ Upload attempted - check server logs for session debug info\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-07-31T12:02:32.785Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "993e97b232374560d6f0-30f3f1f7e2b9bf4de3d3",
+              "file": "e2e/focused/session-debug.spec.ts",
+              "line": 11,
               "column": 3
             }
           ]
@@ -294,10 +393,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-07-29T14:23:32.781Z",
-    "duration": 5579.067999999999,
-    "expected": 0,
-    "skipped": 3,
+    "startTime": "2025-07-31T12:02:31.440Z",
+    "duration": 12845.755000000001,
+    "expected": 5,
+    "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   }
