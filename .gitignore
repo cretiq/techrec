@@ -57,4 +57,8 @@ tasks/
 codefetch/
 
 # Exclude .env.example files
-!.env.example 
+!.env.example
+
+# Test artifacts
+test-results/
+playwright-report/ 
