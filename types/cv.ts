@@ -274,7 +274,7 @@ export const CvImprovementResponseSchema = z.object({
 
 // Schema for the request body of POST /api/cv-analysis/export
 export const CvExportRequestSchema = z.object({
-  analysisData: CvAnalysisDataSchema,
+  analysisData: ProfileAnalysisDataSchema,
   originalFormat: z.string().min(1, "Original format is required"),
 });
 
