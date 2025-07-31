@@ -6,7 +6,8 @@ A comprehensive guide to the TechRec platform architecture, implementation patte
 
 Strategic architectural decisions and core system design patterns:
 
-- **[Gamification Strategy](architecture/gamification-strategy.md)** - Complete system design with dual-progression architecture (XP levels + subscription tiers)
+- **[System Architecture](architecture/system-architecture.md)** - 🆕 Comprehensive platform overview with technology stack, database design, and data flow patterns
+- **[Gamification Strategy](architecture/gamification-strategy.md)** - Complete system design with dual-progression architecture (XP levels + subscription tiers)  
 - **[Redis vs Redux Framework](architecture/redis-vs-redux-framework.md)** - State management decision framework with implementation patterns
 - **[Data TestID Strategy](architecture/data-testid-strategy.md)** - Testing conventions and component identification standards
 
