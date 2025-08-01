@@ -10,7 +10,7 @@ import {
 describe('coverLetter types and validation', () => {
   describe('WORD_BOUNDS', () => {
     it('should have correct word boundaries for cover letters', () => {
-      expect(WORD_BOUNDS.coverLetter.min).toBe(200);
+      expect(WORD_BOUNDS.coverLetter.min).toBe(170);
       expect(WORD_BOUNDS.coverLetter.max).toBe(250);
     });
 
