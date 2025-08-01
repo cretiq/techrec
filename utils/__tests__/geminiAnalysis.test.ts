@@ -10,29 +10,34 @@
  * - responsibilities arrays
  */
 
-import { analyzeCvWithGemini } from '../geminiAnalysis';
 import { ProfileAnalysisDataSchema } from '@/types/cv';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Mock Google Generative AI
-jest.mock('@google/generative-ai');
+// Create mock model first
+const mockModel = {
+  generateContent: jest.fn()
+};
+
+// Mock Google Generative AI before importing the module
+jest.mock('@google/generative-ai', () => {
+  return {
+    GoogleGenerativeAI: jest.fn().mockImplementation(() => ({
+      getGenerativeModel: jest.fn(() => mockModel)
+    }))
+  };
+});
+
 jest.mock('../circuitBreaker');
 jest.mock('../apiLogger');
+
+// Import after mocking to ensure mocks are applied
+import { analyzeCvWithGemini } from '../geminiAnalysis';
 
 const mockGenAI = GoogleGenerativeAI as jest.MockedClass<typeof GoogleGenerativeAI>;
 
 describe('Enhanced Gemini CV Analysis', () => {
-  const mockModel = {
-    generateContent: jest.fn()
-  };
-
   beforeEach(() => {
     jest.clearAllMocks();
-    
-    // Mock the GoogleGenerativeAI constructor and getGenerativeModel method
-    mockGenAI.mockImplementation(() => ({
-      getGenerativeModel: () => mockModel
-    }) as any);
 
     // Mock circuit breaker to properly handle async functions and return expected structure
     const mockCircuitBreaker = require('../circuitBreaker');
