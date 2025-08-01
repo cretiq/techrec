@@ -93,6 +93,30 @@ export const saveAndMarkRoleAsApplied = createAsyncThunk(
   }
 );
 
+// Async thunk for un-applying a role
+export const unApplyRole = createAsyncThunk(
+  'savedRoles/unApplyRole',
+  async (params: {
+    roleId: string;
+    keepNotes?: boolean;
+  }) => {
+    const response = await fetch('/api/developer/saved-roles/un-apply', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to remove role application status');
+    }
+    
+    return response.json();
+  }
+);
+
 // Async thunk for fetching application activity (for heatmap)
 export const fetchApplicationActivity = createAsyncThunk(
   'savedRoles/fetchApplicationActivity',
@@ -135,6 +159,10 @@ interface SavedRolesState {
   // Mark as applied operation state
   markingAsApplied: { [roleId: string]: boolean };
   markAsAppliedErrors: { [roleId: string]: string };
+  
+  // Un-apply operation state
+  unApplying: { [roleId: string]: boolean };
+  unApplyErrors: { [roleId: string]: string };
 }
 
 // Initial state
@@ -154,6 +182,9 @@ const initialState: SavedRolesState = {
   
   markingAsApplied: {},
   markAsAppliedErrors: {},
+  
+  unApplying: {},
+  unApplyErrors: {},
 };
 
 export const savedRolesSlice = createSlice({
@@ -165,6 +196,7 @@ export const savedRolesSlice = createSlice({
       state.error = null;
       state.activityError = null;
       state.markAsAppliedErrors = {};
+      state.unApplyErrors = {};
     },
     
     // Update a specific saved role in the state (for real-time updates)
@@ -310,6 +342,66 @@ export const savedRolesSlice = createSlice({
         state.markAsAppliedErrors[roleId] = action.error.message || 'Failed to save and mark role as applied';
       });
 
+    // Un-apply role
+    builder
+      .addCase(unApplyRole.pending, (state, action) => {
+        const roleId = action.meta.arg.roleId;
+        state.unApplying[roleId] = true;
+        delete state.unApplyErrors[roleId];
+      })
+      .addCase(unApplyRole.fulfilled, (state, action) => {
+        const externalRoleId = action.meta.arg.roleId;
+        state.unApplying[externalRoleId] = false;
+        
+        // Find the saved role by matching external role ID in various fields
+        const index = state.savedRoles.findIndex(role => {
+          // Try multiple matching strategies:
+          // 1. Direct roleId match (if it's external ID)
+          if (role.roleId === externalRoleId) return true;
+          
+          // 2. Check if the role title and ID combination match
+          if (role.roleTitle && action.payload?.data?.role?.title === role.roleTitle) return true;
+          
+          // 3. Match by internal saved role ID if available in payload
+          if (action.payload?.savedRoleId === role.id) return true;
+          
+          return false;
+        });
+        
+        if (index !== -1) {
+          // Reset application status
+          state.savedRoles[index].appliedFor = false;
+          state.savedRoles[index].appliedAt = null;
+          state.savedRoles[index].applicationMethod = null;
+          
+          // Keep or clear notes based on what was requested
+          if (!action.meta.arg.keepNotes) {
+            state.savedRoles[index].applicationNotes = null;
+          }
+          
+          // Update applied count
+          state.appliedCount = state.savedRoles.filter(role => role.appliedFor).length;
+          
+          // Debug logging
+          if (process.env.NODE_ENV === 'development') {
+            console.log('[Redux] unApplyRole success:', {
+              externalRoleId,
+              savedRoleIndex: index,
+              newAppliedCount: state.appliedCount,
+              keepNotes: action.meta.arg.keepNotes
+            });
+          }
+        } else {
+          // Debug log if we can't find the role to update
+          console.warn('[Redux] Could not find saved role to un-apply for external ID:', externalRoleId);
+        }
+      })
+      .addCase(unApplyRole.rejected, (state, action) => {
+        const roleId = action.meta.arg.roleId;
+        state.unApplying[roleId] = false;
+        state.unApplyErrors[roleId] = action.error.message || 'Failed to remove role application status';
+      });
+
     // Fetch application activity
     builder
       .addCase(fetchApplicationActivity.pending, (state) => {
@@ -348,6 +440,12 @@ export const selectIsMarkingAsApplied = (roleId: string) => (state: RootState) =
 
 export const selectMarkAsAppliedError = (roleId: string) => (state: RootState) => 
   state.savedRoles.markAsAppliedErrors[roleId];
+
+export const selectIsUnApplying = (roleId: string) => (state: RootState) => 
+  state.savedRoles.unApplying[roleId] || false;
+
+export const selectUnApplyError = (roleId: string) => (state: RootState) => 
+  state.savedRoles.unApplyErrors[roleId];
 
 export const selectSavedRolesByStatus = (applied: boolean) => (state: RootState) =>
   state.savedRoles.savedRoles.filter(role => role.appliedFor === applied);

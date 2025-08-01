@@ -525,6 +525,7 @@ function SavedRoleCard({ savedRole, onWriteTo, onRoleMarkedAsApplied }: SavedRol
               onSuccess={handleMarkAsAppliedSuccess}
               className="w-full"
               data-testid={`saved-role-mark-applied-${savedRole.id}`}
+              allowUnApply={true}
             />
           </div>
         </div>

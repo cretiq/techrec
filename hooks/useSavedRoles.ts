@@ -6,6 +6,7 @@ import {
   selectSavedRolesError,
   selectSavedRoleByRoleId,
   selectIsMarkingAsApplied,
+  selectIsUnApplying,
   selectApplicationActivity
 } from '@/lib/features/savedRolesSlice'
 import type { RootState } from '@/lib/store'
@@ -26,12 +27,14 @@ export function useSavedRoles() {
 export function useSavedRoleStatus(roleId: string) {
   const savedRole = useSelector((state: RootState) => selectSavedRoleByRoleId(roleId)(state))
   const isMarkingAsApplied = useSelector((state: RootState) => selectIsMarkingAsApplied(roleId)(state))
+  const isUnApplying = useSelector((state: RootState) => selectIsUnApplying(roleId)(state))
   
   return {
     savedRole,
     isSaved: Boolean(savedRole),
     isApplied: Boolean(savedRole?.appliedFor),
     isMarkingAsApplied,
+    isUnApplying,
     appliedAt: savedRole?.appliedAt
   }
 }

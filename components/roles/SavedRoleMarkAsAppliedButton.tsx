@@ -3,7 +3,8 @@
 import React, { useState, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui-daisy/button'
-import { Check, ArrowRight } from 'lucide-react'
+import { Check, ArrowRight, X } from 'lucide-react'
+import { ConfirmationDialog } from '@/components/ui-daisy/confirmation-dialog'
 import type { Role } from '@/types/role'
 
 interface SavedRoleMarkAsAppliedButtonProps {
@@ -12,6 +13,7 @@ interface SavedRoleMarkAsAppliedButtonProps {
   onSuccess: () => void
   className?: string
   'data-testid'?: string
+  allowUnApply?: boolean // New prop to enable un-apply functionality
 }
 
 export default function SavedRoleMarkAsAppliedButton({ 
@@ -19,10 +21,13 @@ export default function SavedRoleMarkAsAppliedButton({
   isApplied,
   onSuccess,
   className = "w-full", 
-  'data-testid': testId
+  'data-testid': testId,
+  allowUnApply = false
 }: SavedRoleMarkAsAppliedButtonProps) {
   const { data: session } = useSession()
   const [isLoading, setIsLoading] = useState(false)
+  const [isUnApplying, setIsUnApplying] = useState(false)
+  const [showUnApplyDialog, setShowUnApplyDialog] = useState(false)
   
   const handleMarkAsApplied = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -55,19 +60,76 @@ export default function SavedRoleMarkAsAppliedButton({
     }
   }, [role.id, role.url, role.applicationInfo?.applicationUrl, session?.user, isLoading, isApplied, onSuccess])
 
+  const handleUnApply = useCallback(async () => {
+    if (!session?.user || isUnApplying) return
+    
+    setIsUnApplying(true)
+    
+    try {
+      const response = await fetch('/api/developer/saved-roles/un-apply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          roleId: role.id,
+          keepNotes: true // Keep application notes by default
+        }),
+      })
+
+      if (response.ok) {
+        onSuccess() // This will trigger parent to update local state and refresh data
+        setShowUnApplyDialog(false)
+      } else {
+        console.error('Failed to un-apply role:', await response.text())
+      }
+    } catch (error) {
+      console.error('Failed to un-apply role:', error)
+    } finally {
+      setIsUnApplying(false)
+    }
+  }, [role.id, session?.user, isUnApplying, onSuccess])
+
+  const handleAppliedButtonClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    
+    if (allowUnApply && !isUnApplying) {
+      setShowUnApplyDialog(true)
+    }
+  }, [allowUnApply, isUnApplying])
+
   // Applied state - show green success button
   if (isApplied) {
     return (
-      <Button
-        variant="default"
-        size="xl"
-        disabled={true}
-        className={`${className} h-12 text-base font-semibold bg-success hover:bg-success text-success-content border-success opacity-90`}
-        leftIcon={<Check className="h-5 w-5" />}
-        data-testid={testId ? `${testId}-applied-status` : `saved-role-mark-applied-button-applied-${role.id}`}
-      >
-        Applied
-      </Button>
+      <>
+        <Button
+          variant="default"
+          size="xl"
+          disabled={!allowUnApply || isUnApplying}
+          loading={isUnApplying}
+          onClick={allowUnApply ? handleAppliedButtonClick : undefined}
+          className={`${className} h-12 text-base font-semibold bg-success hover:bg-success text-success-content border-success ${
+            allowUnApply && !isUnApplying ? 'hover:bg-success/80 cursor-pointer' : 'opacity-90'
+          }`}
+          leftIcon={isUnApplying ? <X className="h-5 w-5" /> : <Check className="h-5 w-5" />}
+          data-testid={testId ? `${testId}-applied-status` : `saved-role-mark-applied-button-applied-${role.id}`}
+        >
+          {isUnApplying ? 'Removing...' : 'Applied'}
+        </Button>
+        
+        {/* Un-apply confirmation dialog */}
+        <ConfirmationDialog
+          isOpen={showUnApplyDialog}
+          title="Remove Application Status?"
+          message="This will mark the role as not applied. Your application notes will be kept, and you can re-apply later if needed."
+          confirmText="Remove Application"
+          cancelText="Keep Application"
+          onConfirm={handleUnApply}
+          onCancel={() => setShowUnApplyDialog(false)}
+          variant="warning"
+          isLoading={isUnApplying}
+        />
+      </>
     )
   }
 
