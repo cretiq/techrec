@@ -30,11 +30,25 @@ jest.mock('next/server', () => ({
 // Mock the LinkedIn client module
 jest.mock('@/lib/linkedin', () => ({
   linkedInClient: {
-    isTokenValid: jest.fn(),
-    setAccessToken: jest.fn(),
     getAuthorizationUrl: jest.fn(),
     searchJobs: jest.fn(),
-    getAccessToken: jest.fn(),
+    exchangeCodeForToken: jest.fn(),
+  },
+}));
+
+// Mock cookies from Next.js
+jest.mock('next/headers', () => ({
+  cookies: jest.fn().mockResolvedValue({
+    get: jest.fn(),
+  }),
+}));
+
+// Mock Prisma
+jest.mock('@/prisma/prisma', () => ({
+  prisma: {
+    role: {
+      create: jest.fn(),
+    },
   },
 }));
 
@@ -45,8 +59,12 @@ describe('LinkedIn Jobs API', () => {
 
   describe('GET handler', () => {
     it('should return 401 when not authenticated', async () => {
-      // Setup mocks
-      (linkedInClient.isTokenValid as jest.Mock).mockReturnValue(false);
+      // Setup mocks - no access token in cookies
+      const { cookies } = require('next/headers');
+      (cookies as jest.Mock).mockResolvedValue({
+        get: jest.fn().mockReturnValue(undefined), // No access token
+      });
+      
       (linkedInClient.getAuthorizationUrl as jest.Mock).mockReturnValue('https://example.com/auth');
 
       // Create a mock request
@@ -54,7 +72,7 @@ describe('LinkedIn Jobs API', () => {
 
       // Call the handler
       const response = await GET(request);
-      const responseData = await (response as any).json(); // Use mocked json method
+      const responseData = await (response as any).json();
 
       // Verify response
       expect((response as any).status).toBe(401);
@@ -62,37 +80,43 @@ describe('LinkedIn Jobs API', () => {
         error: 'LinkedIn API authentication required',
         authUrl: 'https://example.com/auth',
       });
-      expect(NextResponse.json).toHaveBeenCalledWith(
-        { error: 'LinkedIn API authentication required', authUrl: 'https://example.com/auth' },
-        { status: 401 }
-      );
     });
 
-    it('should extract token from authorization header', async () => {
-      // Setup mocks
-      (linkedInClient.isTokenValid as jest.Mock).mockReturnValue(true);
+    it('should use access token from cookies', async () => {
+      // Setup mocks - access token available in cookies
+      const { cookies } = require('next/headers');
+      (cookies as jest.Mock).mockResolvedValue({
+        get: jest.fn().mockReturnValue({ value: 'test-token' }),
+      });
+      
       (linkedInClient.searchJobs as jest.Mock).mockResolvedValue({
         jobs: [],
         paging: { count: 0, start: 0, total: 0 },
       });
 
-      // Create a mock request with authorization header
-      const headers = new Headers();
-      headers.append('authorization', 'Bearer test-token');
-      const request = mockRequest('http://localhost:3000/api/linkedin/jobs', {
-        headers,
-      });
+      // Create a mock request
+      const request = mockRequest('http://localhost:3000/api/linkedin/jobs');
 
       // Call the handler
-      await GET(request);
+      const response = await GET(request);
+      const responseData = await (response as any).json();
 
-      // Verify the token was extracted and set
-      expect(linkedInClient.setAccessToken).toHaveBeenCalledWith('test-token', 3600);
+      // Verify the token was used for searching
+      expect(linkedInClient.searchJobs).toHaveBeenCalledWith('test-token', '', '', 0, 10);
+      expect((response as any).status).toBe(200);
+      expect(responseData).toEqual({
+        jobs: [],
+        paging: { count: 0, start: 0, total: 0 },
+      });
     });
 
     it('should search for jobs with query parameters', async () => {
-      // Setup mocks
-      (linkedInClient.isTokenValid as jest.Mock).mockReturnValue(true);
+      // Setup mocks - access token available in cookies
+      const { cookies } = require('next/headers');
+      (cookies as jest.Mock).mockResolvedValue({
+        get: jest.fn().mockReturnValue({ value: 'test-token' }),
+      });
+      
       const mockSearchResults = {
         jobs: [
           {
@@ -126,12 +150,7 @@ describe('LinkedIn Jobs API', () => {
       const responseData = await (response as any).json();
 
       // Verify the search was performed with the correct parameters
-      expect(linkedInClient.searchJobs).toHaveBeenCalledWith({
-        keywords: 'engineer',
-        location: 'San Francisco',
-        start: 0,
-        count: 10,
-      });
+      expect(linkedInClient.searchJobs).toHaveBeenCalledWith('test-token', 'engineer', 'San Francisco', 0, 10);
 
       // Verify the response
       expect((response as any).status).toBe(200);
@@ -143,8 +162,12 @@ describe('LinkedIn Jobs API', () => {
     });
 
     it('should handle API errors', async () => {
-      // Setup mocks
-      (linkedInClient.isTokenValid as jest.Mock).mockReturnValue(true);
+      // Setup mocks - access token available in cookies
+      const { cookies } = require('next/headers');
+      (cookies as jest.Mock).mockResolvedValue({
+        get: jest.fn().mockReturnValue({ value: 'test-token' }),
+      });
+      
       const apiError = new Error('API error');
       (linkedInClient.searchJobs as jest.Mock).mockRejectedValue(apiError);
 
@@ -192,7 +215,9 @@ describe('LinkedIn Jobs API', () => {
 
     it('should exchange code for access token', async () => {
       // Setup mocks
-      (linkedInClient.getAccessToken as jest.Mock).mockResolvedValue('test-access-token');
+      (linkedInClient.exchangeCodeForToken as jest.Mock).mockResolvedValue({
+        access_token: 'test-access-token'
+      });
 
       // Create a mock request with a code
       const request = mockRequest('http://localhost:3000/api/linkedin/jobs', {
@@ -205,7 +230,7 @@ describe('LinkedIn Jobs API', () => {
       const responseData = await (response as any).json();
 
       // Verify the code was exchanged for a token
-      expect(linkedInClient.getAccessToken).toHaveBeenCalledWith('test-auth-code');
+      expect(linkedInClient.exchangeCodeForToken).toHaveBeenCalledWith('test-auth-code');
 
       // Verify the response
       expect((response as any).status).toBe(200);
@@ -217,7 +242,7 @@ describe('LinkedIn Jobs API', () => {
 
     it('should handle API errors', async () => {
       // Setup mocks
-      (linkedInClient.getAccessToken as jest.Mock).mockRejectedValue(new Error('API error'));
+      (linkedInClient.exchangeCodeForToken as jest.Mock).mockRejectedValue(new Error('API error'));
 
       // Create a mock request with a code
       const request = mockRequest('http://localhost:3000/api/linkedin/jobs', {

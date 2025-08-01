@@ -364,7 +364,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
       data-testid="cv-management-analysis-display-container"
     >
 
-       <div className="flex flex-col md:flex-row gap-8 mt-8" data-testid="cv-management-analysis-content">
+       <div className="flex flex-col md:flex-row gap-8" data-testid="cv-management-analysis-content">
           <main className="w-full space-y-4" data-testid="cv-management-analysis-main">
               {analysisData.contactInfo && (
                   <motion.section

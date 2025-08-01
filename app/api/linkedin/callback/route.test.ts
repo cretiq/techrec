@@ -30,8 +30,16 @@ jest.mock('next/server', () => ({
 // Mock the LinkedIn client module
 jest.mock('@/lib/linkedin', () => ({
   linkedInClient: {
-    getAccessToken: jest.fn(),
+    exchangeCodeForToken: jest.fn(),
+    getUserInfo: jest.fn(),
   },
+}));
+
+// Mock cookies
+jest.mock('next/headers', () => ({
+  cookies: jest.fn().mockResolvedValue({
+    set: jest.fn(),
+  }),
 }));
 
 describe('LinkedIn OAuth Callback API', () => {
@@ -79,7 +87,15 @@ describe('LinkedIn OAuth Callback API', () => {
 
   it('should exchange code for access token and redirect', async () => {
     // Setup mocks
-    (linkedInClient.getAccessToken as jest.Mock).mockResolvedValue('test-access-token');
+    (linkedInClient.exchangeCodeForToken as jest.Mock).mockResolvedValue({
+      access_token: 'test-access-token',
+      id_token: 'test-id-token'
+    });
+    (linkedInClient.getUserInfo as jest.Mock).mockResolvedValue({
+      id: 'test-user-id',
+      firstName: 'Test',
+      lastName: 'User'
+    });
 
     // Create a mock request with a code
     const request = mockRequest('http://localhost:3000/api/linkedin/callback?code=test-auth-code');
@@ -88,17 +104,18 @@ describe('LinkedIn OAuth Callback API', () => {
     const response = await GET(request);
 
     // Verify the code was exchanged for a token
-    expect(linkedInClient.getAccessToken).toHaveBeenCalledWith('test-auth-code');
+    expect(linkedInClient.exchangeCodeForToken).toHaveBeenCalledWith('test-auth-code');
+    expect(linkedInClient.getUserInfo).toHaveBeenCalledWith('test-access-token');
 
     // Verify the redirect
     expect((response as any).status).toBe(307); // Temporary redirect
-    expect((response as any).headers.get('location')).toBe('http://localhost:3000/linkedin/auth-success?token=test-access-token');
-    expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('http://localhost:3000/linkedin/auth-success?token=test-access-token'));
+    expect((response as any).headers.get('location')).toBe('http://localhost:3000/linkedin/auth-success');
+    expect(NextResponse.redirect).toHaveBeenCalledWith(new URL('/linkedin/auth-success', 'http://localhost:3000/api/linkedin/callback?code=test-auth-code'));
   });
 
   it('should handle API errors', async () => {
     // Setup mocks
-    (linkedInClient.getAccessToken as jest.Mock).mockRejectedValue(new Error('API error'));
+    (linkedInClient.exchangeCodeForToken as jest.Mock).mockRejectedValue(new Error('API error'));
 
     // Create a mock request with a code
     const request = mockRequest('http://localhost:3000/api/linkedin/callback?code=test-auth-code');

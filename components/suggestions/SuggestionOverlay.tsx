@@ -101,17 +101,17 @@ export function SuggestionOverlay({
       data-testid={`suggestion-overlay-${section}${targetId ? `-${targetId}` : ''}`}
     >
       {/* Magical shimmer effect */}
-      <motion.div
+      {/* <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
         animate={{ x: ['-100%', '100%'] }}
         transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-      />
+      /> */}
 
-      <div className="relative">
+      {/* <div className="relative"> */}
         {/* Header */}
-        <div className="p-4 border-b border-primary/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        {/* <div className="p-4 border-b border-primary/10"> */}
+          {/* <div className="flex items-center justify-between"> */}
+            {/* <div className="flex items-center gap-3">
               <motion.div
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -138,11 +138,11 @@ export function SuggestionOverlay({
                   </Badge>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2"> */}
               {/* Visibility toggle */}
-              {onToggleVisibility && (
+              {/* {onToggleVisibility && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -156,10 +156,10 @@ export function SuggestionOverlay({
                     <Eye className="h-4 w-4" />
                   )}
                 </Button>
-              )}
+              )} */}
               
               {/* Expand/collapse toggle */}
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -173,10 +173,10 @@ export function SuggestionOverlay({
                 )}
               </Button>
             </div>
-          </div>
+          </div> */}
 
           {/* Bulk actions - simplified */}
-          <AnimatePresence>
+          {/* <AnimatePresence>
             {isExpanded && stats.pending > 0 && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
@@ -210,7 +210,7 @@ export function SuggestionOverlay({
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </div> */}
 
         {/* Suggestions list */}
         <AnimatePresence>
@@ -223,7 +223,7 @@ export function SuggestionOverlay({
               className="overflow-hidden"
             >
               <div 
-                className="p-4 space-y-3 max-h-96 overflow-y-auto"
+                className="space-y-3 max-h-96 overflow-y-auto"
                 data-testid={`suggestion-overlay-list-${section}`}
               >
                 <AnimatePresence mode="popLayout">
@@ -250,7 +250,7 @@ export function SuggestionOverlay({
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      {/* </div> */}
     </motion.div>
   );
 }

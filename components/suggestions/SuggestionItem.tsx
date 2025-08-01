@@ -33,55 +33,55 @@ interface SuggestionItemProps {
 const typeConfig = {
   experience_bullet: {
     icon: Target,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
+    color: 'text-info',
+    bgColor: 'bg-info/10',
+    borderColor: 'border-info/30',
     label: 'Experience Enhancement'
   },
   education_gap: {
     icon: BookOpen,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    borderColor: 'border-purple-200',
+    color: 'text-secondary',
+    bgColor: 'bg-secondary/10',
+    borderColor: 'border-secondary/30',
     label: 'Education Info'
   },
   missing_skill: {
     icon: Plus,
-    color: 'text-green-600',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200',
+    color: 'text-success',
+    bgColor: 'bg-success/10',
+    borderColor: 'border-success/30',
     label: 'Missing Skill'
   },
   summary_improvement: {
     icon: User,
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-50',
-    borderColor: 'border-orange-200',
+    color: 'text-warning',
+    bgColor: 'bg-warning/10',
+    borderColor: 'border-warning/30',
     label: 'Summary Enhancement'
   },
   general_improvement: {
     icon: Lightbulb,
-    color: 'text-yellow-600',
-    bgColor: 'bg-yellow-50',
-    borderColor: 'border-yellow-200',
+    color: 'text-accent',
+    bgColor: 'bg-accent/10',
+    borderColor: 'border-accent/30',
     label: 'General Improvement'
   }
 };
 
 const priorityConfig = {
   high: {
-    color: 'text-red-600',
-    bgColor: 'bg-red-100',
+    color: 'text-error',
+    bgColor: 'bg-error/20',
     label: 'High Priority'
   },
   medium: {
-    color: 'text-orange-600',
-    bgColor: 'bg-orange-100',
+    color: 'text-warning',
+    bgColor: 'bg-warning/20',
     label: 'Medium Priority'
   },
   low: {
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-100',
+    color: 'text-info',
+    bgColor: 'bg-info/20',
     label: 'Low Priority'
   }
 };
@@ -126,7 +126,7 @@ export function SuggestionItem({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="flex items-center gap-2 text-green-700 bg-green-100 px-3 py-1 rounded-full"
+          className="flex items-center gap-2 text-success-content bg-success/20 px-3 py-1 rounded-full"
           data-testid={`suggestion-status-accepted-${suggestion.id}`}
         >
           <Check className="h-4 w-4" />
@@ -140,7 +140,7 @@ export function SuggestionItem({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="flex items-center gap-2 text-red-700 bg-red-100 px-3 py-1 rounded-full"
+          className="flex items-center gap-2 text-error-content bg-error/20 px-3 py-1 rounded-full"
           data-testid={`suggestion-status-declined-${suggestion.id}`}
         >
           <X className="h-4 w-4" />
@@ -157,14 +157,14 @@ export function SuggestionItem({
             variant="default"
             onClick={handleAccept}
             disabled={isProcessing}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-1 h-8"
+            className="btn-success px-4 py-1 h-8"
             data-testid={`suggestion-button-accept-${suggestion.id}`}
           >
             {isProcessing ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="h-3 w-3 border border-white border-t-transparent rounded-full"
+                className="h-3 w-3 border border-success-content border-t-transparent rounded-full"
               />
             ) : (
               <>
@@ -180,14 +180,14 @@ export function SuggestionItem({
             variant="outline"
             onClick={handleDecline}
             disabled={isProcessing}
-            className="border-red-300 text-red-600 hover:bg-red-50 px-4 py-1 h-8"
+            className="btn-error btn-outline px-4 py-1 h-8"
             data-testid={`suggestion-button-decline-${suggestion.id}`}
           >
             {isProcessing ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="h-3 w-3 border border-red-600 border-t-transparent rounded-full"
+                className="h-3 w-3 border border-error border-t-transparent rounded-full"
               />
             ) : (
               <>
@@ -209,11 +209,12 @@ export function SuggestionItem({
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className={cn(
         "relative overflow-hidden rounded-lg border transition-all duration-200",
+        "bg-base-100/60 backdrop-blur-sm border-base-300/50",
         config.bgColor,
         config.borderColor,
-        isAccepted && "ring-2 ring-green-300 bg-green-50",
-        isDeclined && "ring-2 ring-red-300 bg-red-50 opacity-60",
-        isPending && "hover:shadow-md cursor-pointer",
+        isAccepted && "ring-2 ring-success/50 bg-success/10",
+        isDeclined && "ring-2 ring-error/50 bg-error/10 opacity-60",
+        isPending && "hover:bg-base-100/80 hover:border-base-300/70 cursor-pointer",
         className
       )}
       data-testid={`suggestion-item-${suggestion.id}`}
@@ -282,14 +283,14 @@ export function SuggestionItem({
         {/* Suggested Content Preview */}
         <div className="space-y-2">
           <div 
-            className="bg-green-50 border border-green-200 rounded-lg p-3"
+            className="bg-success/20 border border-success/50 rounded-lg p-3"
             data-testid={`suggestion-content-preview-${suggestion.id}`}
           >
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-green-600" />
-              <span className="text-sm font-medium text-green-800">Suggested Addition</span>
+              <Sparkles className="h-4 w-4 text-success" />
+              <span className="text-sm font-medium text-success-content">Suggested Addition</span>
             </div>
-            <p className="text-sm text-green-700 font-medium leading-relaxed">
+            <p className="text-sm text-success-content/90 font-medium leading-relaxed">
               {suggestion.suggestedContent}
             </p>
           </div>
@@ -318,7 +319,7 @@ export function SuggestionItem({
                 className="overflow-hidden"
               >
                 <div 
-                  className="bg-base-100/50 rounded-lg p-3 border border-base-300/30"
+                  className="bg-base-200 rounded-lg p-3 border border-base-300/30"
                   data-testid={`suggestion-reasoning-${suggestion.id}`}
                 >
                   <p className="text-xs text-base-content/70 leading-relaxed">
