@@ -37,7 +37,7 @@ function errorLog(message: string, error?: any) {
 /**
  * Transform CV contact info to profile contact info format
  */
-function transformContactInfo(cvContactInfo: ContactInfoData | null | undefined): ProfileUpdatePayload['contactInfo'] {
+export function transformContactInfo(cvContactInfo: ContactInfoData | null | undefined): ProfileUpdatePayload['contactInfo'] {
   debugLog('Transforming contact info', cvContactInfo);
   
   if (!cvContactInfo) {
@@ -62,7 +62,7 @@ function transformContactInfo(cvContactInfo: ContactInfoData | null | undefined)
 /**
  * Transform CV skills to profile skills format
  */
-function transformSkills(cvSkills: Skill[] | null | undefined): ProfileUpdatePayload['skills'] {
+export function transformSkills(cvSkills: Skill[] | null | undefined): ProfileUpdatePayload['skills'] {
   debugLog('Transforming skills', cvSkills);
   
   if (!cvSkills || !Array.isArray(cvSkills)) {
@@ -85,7 +85,7 @@ function transformSkills(cvSkills: Skill[] | null | undefined): ProfileUpdatePay
 /**
  * Transform CV experience to profile experience format
  */
-function transformExperience(cvExperience: ExperienceItem[] | null | undefined): ProfileUpdatePayload['experience'] {
+export function transformExperience(cvExperience: ExperienceItem[] | null | undefined): ProfileUpdatePayload['experience'] {
   debugLog('Transforming experience', cvExperience);
   
   if (!cvExperience || !Array.isArray(cvExperience)) {
@@ -96,8 +96,10 @@ function transformExperience(cvExperience: ExperienceItem[] | null | undefined):
   const transformed = cvExperience
     .filter(exp => exp.title && exp.company)
     .map(exp => {
-      // Determine if position is current (no endDate or endDate is null/empty)
-      const current = !exp.endDate || exp.endDate.trim() === '';
+      // Determine if position is current:
+      // 1. If 'current' field is explicitly provided, use it
+      // 2. Otherwise, default to false (conservative approach)
+      const current = exp.current !== undefined ? exp.current : false;
       
       return {
         title: exp.title!,
@@ -121,7 +123,7 @@ function transformExperience(cvExperience: ExperienceItem[] | null | undefined):
 /**
  * Transform CV education to profile education format
  */
-function transformEducation(cvEducation: EducationItem[] | null | undefined): ProfileUpdatePayload['education'] {
+export function transformEducation(cvEducation: EducationItem[] | null | undefined): ProfileUpdatePayload['education'] {
   debugLog('Transforming education', cvEducation);
   
   if (!cvEducation || !Array.isArray(cvEducation)) {
@@ -150,7 +152,7 @@ function transformEducation(cvEducation: EducationItem[] | null | undefined): Pr
 /**
  * Transform CV achievements to profile achievements format
  */
-function transformAchievements(cvAchievements: AchievementItem[] | null | undefined): ProfileUpdatePayload['achievements'] {
+export function transformAchievements(cvAchievements: AchievementItem[] | null | undefined): ProfileUpdatePayload['achievements'] {
   debugLog('Transforming achievements', cvAchievements);
   
   if (!cvAchievements || !Array.isArray(cvAchievements)) {
