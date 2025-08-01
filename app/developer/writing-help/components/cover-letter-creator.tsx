@@ -219,6 +219,7 @@ export function CoverLetterCreator({
         tone,
         requestType,
         hiringManager: hiringManager || undefined,
+        regenerationCount: generationTrigger,
       }
 
       console.log("Sending request data:", JSON.stringify(requestData, null, 2))

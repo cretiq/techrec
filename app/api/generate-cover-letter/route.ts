@@ -31,7 +31,8 @@ function generateCacheKey(data: CoverLetterRequestData): string {
     data.requestType || 'coverLetter',
     data.tone || 'formal',
     data.hiringManager || 'none',
-    data.jobSourceInfo?.source || 'none'
+    data.jobSourceInfo?.source || 'none',
+    data.regenerationCount || 0
   ];
   
   return keyParts.join(':').replace(/[^a-zA-Z0-9:-]/g, '_');

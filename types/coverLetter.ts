@@ -40,6 +40,7 @@ export interface CoverLetterRequestData {
   achievements?: string[];
   requestType?: RequestType;
   tone?: CoverLetterTone;
+  regenerationCount?: number;
 }
 
 // Redux state interfaces
@@ -104,6 +105,7 @@ export const CoverLetterRequestSchema = z.object({
   achievements: z.array(z.string()).optional(),
   requestType: z.enum(["coverLetter", "outreach"]).optional(),
   tone: z.enum(["formal", "friendly", "enthusiastic"]).optional(),
+  regenerationCount: z.number().optional(),
 });
 
 // Type guards
