@@ -291,8 +291,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
 
         <Separator />
 
-        {/* Advanced Filters Toggle */}
-        <div className="flex items-center justify-between">
+        {/* TODO: Advanced Filters Toggle and Advanced Filters sections temporarily hidden for UI simplicity
+            These could potentially be brought back later when we want to offer
+            more granular search and filtering options to users */}
+        {/* <div className="flex items-center justify-between">
           <Label htmlFor="show-advanced" className="text-sm font-medium">
             Advanced Filters
           </Label>
@@ -302,13 +304,13 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             onCheckedChange={setShowAdvanced}
             data-testid="advanced-filters-toggle-advanced"
           />
-        </div>
+        </div> */}
 
         {/* Advanced Filters */}
-        {showAdvanced && (
+        {/* {showAdvanced && (
           <Accordion type="single" collapsible className="w-full">
             {/* Seniority Filter */}
-            <AccordionItem value="seniority">
+            {/* <AccordionItem value="seniority">
               <AccordionTrigger data-testid="advanced-filters-trigger-seniority">
                 <Users className="h-4 w-4 mr-2" />
                 Seniority Level
@@ -340,10 +342,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                   ))}
                 </div>
               </AccordionContent>
-            </AccordionItem>
+            </AccordionItem> */}
 
             {/* Remote Work */}
-            <AccordionItem value="remote">
+            {/* <AccordionItem value="remote">
               <AccordionTrigger data-testid="advanced-filters-trigger-remote">
                 <Clock className="h-4 w-4 mr-2" />
                 Remote Work
@@ -351,7 +353,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               <AccordionContent>
                 <div className="space-y-4 pt-2">
                   {/* Basic Remote Filter */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label>Remote Jobs Only</Label>
                     <div className="flex gap-2">
                       <Badge
@@ -371,10 +373,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                         On-site Only
                       </Badge>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* AI Work Arrangement (Beta) */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label className="flex items-center gap-2">
                       Work Arrangement (AI Beta)
                       <Badge variant="secondary" className="text-xs">Beta</Badge>
@@ -407,10 +409,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                   </div>
                 </div>
               </AccordionContent>
-            </AccordionItem>
+            </AccordionItem> */}
 
             {/* Company Filters */}
-            <AccordionItem value="company">
+            {/* <AccordionItem value="company">
               <AccordionTrigger data-testid="advanced-filters-trigger-company">
                 <Building2 className="h-4 w-4 mr-2" />
                 Company Filters
@@ -418,7 +420,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               <AccordionContent>
                 <div className="space-y-4 pt-2">
                   {/* Agency Filter */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label>Company Type</Label>
                     <div className="flex gap-2">
                       <Badge
@@ -438,10 +440,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                         Agencies Only
                       </Badge>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Company Size */}
-                  <div className="space-y-3">
+                  {/* <div className="space-y-3">
                     <Label>Company Size (Employees)</Label>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
@@ -469,10 +471,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                         />
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Easy Apply Filter */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label>Application Method</Label>
                     <div className="flex gap-2">
                       <Badge
@@ -492,10 +494,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                         External Only
                       </Badge>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Company Description Filter */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="company-description-filter">Company Description</Label>
                     <Input
                       id="company-description-filter"
@@ -508,10 +510,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                     <p className="text-xs text-muted-foreground">
                       Search company LinkedIn descriptions. Use quotes for exact phrases, OR for alternatives.
                     </p>
-                  </div>
+                  </div> */}
 
                   {/* Company Specialties Filter */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="company-specialties-filter">Company Specialties</Label>
                     <Input
                       id="company-specialties-filter"
@@ -524,10 +526,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                     <p className="text-xs text-muted-foreground">
                       Search company specialties and keywords. Separate multiple terms with commas.
                     </p>
-                  </div>
+                  </div> */}
 
                   {/* Company Name Filter */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="company-name-filter">Specific Companies</Label>
                     <Input
                       id="company-name-filter"
@@ -540,10 +542,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                     <p className="text-xs text-muted-foreground">
                       LinkedIn company names (lowercase, comma-separated). Examples: google, microsoft, tesla
                     </p>
-                  </div>
+                  </div> */}
 
                   {/* Industry Filter */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="industry-filter">Industry</Label>
                     <Input
                       id="industry-filter"
@@ -559,10 +561,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                   </div>
                 </div>
               </AccordionContent>
-            </AccordionItem>
+            </AccordionItem> */}
 
             {/* AI Features */}
-            <AccordionItem value="ai-features">
+            {/* <AccordionItem value="ai-features">
               <AccordionTrigger data-testid="advanced-filters-trigger-ai">
                 <Zap className="h-4 w-4 mr-2" />
                 AI Features (Beta)
@@ -570,7 +572,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               <AccordionContent>
                 <div className="space-y-4 pt-2">
                   {/* Include AI Data */}
-                  <div className="flex items-center justify-between">
+                  {/* <div className="flex items-center justify-between">
                     <Label htmlFor="include-ai" className="flex items-center gap-2">
                       Include AI Insights
                       <Badge variant="secondary" className="text-xs">Beta</Badge>
@@ -581,10 +583,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       onCheckedChange={(checked) => updateFilters({ include_ai: checked ? 'true' : 'false' })}
                       data-testid="advanced-filters-switch-include-ai"
                     />
-                  </div>
+                  </div> */}
 
                   {/* Salary Filter */}
-                  <div className="flex items-center justify-between">
+                  {/* <div className="flex items-center justify-between">
                     <Label htmlFor="has-salary" className="flex items-center gap-2">
                       <DollarSign className="h-4 w-4" />
                       Jobs with Salary Only
@@ -595,10 +597,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       onCheckedChange={(checked) => updateFilters({ ai_has_salary: checked ? 'true' : undefined })}
                       data-testid="advanced-filters-switch-has-salary"
                     />
-                  </div>
+                  </div> */}
 
                   {/* Visa Sponsorship */}
-                  <div className="flex items-center justify-between">
+                  {/* <div className="flex items-center justify-between">
                     <Label htmlFor="visa-sponsorship">Visa Sponsorship Available</Label>
                     <Switch
                       id="visa-sponsorship"
@@ -611,7 +613,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        )}
+        )} */}
 
         <Separator />
 
@@ -633,8 +635,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           </div>
         )}
 
-        {/* Search Button */}
-        <Button
+        {/* TODO: Search Jobs (Rate Limited) button temporarily hidden for UI simplicity
+            This could potentially be brought back later when we want to show
+            manual search functionality to users */}
+        {/* <Button
           onClick={onSearch}
           disabled={!canMakeRequest || loading || disabled || (validation && !validation.valid)}
           className="w-full"
@@ -652,15 +656,16 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               Search Jobs {!canMakeRequest && '(Rate Limited)'}
             </>
           )}
-        </Button>
+        </Button> */}
 
-        {/* Search Info */}
-        <div className="text-xs text-muted-foreground text-center space-y-1">
+        {/* TODO: Search info and rate limit text temporarily hidden for UI simplicity
+            This could be restored when we bring back the search button functionality */}
+        {/* <div className="text-xs text-muted-foreground text-center space-y-1">
           <p>Results are cached for 1 hour to optimize API usage</p>
           {!canMakeRequest && (
             <p className="text-warning">Rate limited - please wait before next search</p>
           )}
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   )

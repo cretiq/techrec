@@ -303,15 +303,14 @@ export default function RolesSearch2Page() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl" data-testid="role-search-container-main">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Left Sidebar - Selected Roles & Usage Dashboard */}
+        {/* Left Sidebar - Usage Dashboard (empty for now) */}
         <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-sidebar">
-          <SelectedRolesList />
           {/* TODO: ApiUsageDashboard temporarily hidden for UI simplicity
               Will be restored when we want to show API usage statistics to users */}
           {/* <ApiUsageDashboard /> */}
         </div>
 
-        {/* Center - Advanced Filters */}
+        {/* Center - Advanced Filters & Selected Roles */}
         <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-filters">
           <AdvancedFilters 
             onFiltersChange={handleFiltersChange}
@@ -319,6 +318,7 @@ export default function RolesSearch2Page() {
             loading={loading}
             disabled={!canMakeRequest}
           />
+          <SelectedRolesList />
         </div>
 
         {/* Right Side - Results Grid */}
