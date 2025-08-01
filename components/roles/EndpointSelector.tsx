@@ -97,10 +97,13 @@ const EndpointSelector: React.FC<EndpointSelectorProps> = ({
 
   return (
     <div className="space-y-3" data-testid="endpoint-selector">
-      <div className="flex items-center gap-2">
+      {/* TODO: Job Freshness header temporarily hidden for UI simplicity
+          Will be re-added in a future iteration when we want to emphasize 
+          this feature more prominently to users */}
+      {/* <div className="flex items-center gap-2">
         <Calendar className="h-4 w-4" />
         <span className="text-sm font-medium">Job Freshness</span>
-      </div>
+      </div> */}
 
       <RadioGroup
         value={value}

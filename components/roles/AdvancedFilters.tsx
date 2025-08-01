@@ -279,12 +279,14 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             </div>
           </div>
 
-          {/* Job Freshness Selection - Refactored to use proper DaisyUI components */}
-          <EndpointSelector
+          {/* TODO: Job Freshness Selection temporarily hidden for UI simplicity
+              Will be restored in a future iteration when we want to emphasize 
+              this premium feature more prominently to users */}
+          {/* <EndpointSelector
             value={filters.endpoint || '7d'}
             onValueChange={(endpoint) => updateFilters({ endpoint })}
             disabled={loading || disabled}
-          />
+          /> */}
         </div>
 
         <Separator />

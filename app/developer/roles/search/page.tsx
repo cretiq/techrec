@@ -306,7 +306,9 @@ export default function RolesSearch2Page() {
         {/* Left Sidebar - Selected Roles & Usage Dashboard */}
         <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-sidebar">
           <SelectedRolesList />
-          <ApiUsageDashboard />
+          {/* TODO: ApiUsageDashboard temporarily hidden for UI simplicity
+              Will be restored when we want to show API usage statistics to users */}
+          {/* <ApiUsageDashboard /> */}
         </div>
 
         {/* Center - Advanced Filters */}
