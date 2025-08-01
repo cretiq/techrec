@@ -11,6 +11,8 @@ This command analyzes the current working directory changes and creates logical,
 ## Usage
 Simply reference this command: `@.claude/commands/commit`
 
+*Last tested: January 31, 2025*
+
 ## Behavior
 1. **Analyze Changes**: Review all unstaged and staged changes
 2. **Logical Grouping**: Group related changes together (features, fixes, refactoring, etc.)
