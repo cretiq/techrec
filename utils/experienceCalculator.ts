@@ -6,6 +6,7 @@ import { ServerCache } from '@/lib/serverCache';
 
 // Cache configuration - use ServerCache constants
 const EXPERIENCE_CACHE_TTL = 86400; // 24 hours
+const EXPERIENCE_CACHE_PREFIX = 'experience:';
 
 // Debug logging based on environment
 const DEBUG_EXPERIENCE = process.env.NODE_ENV === 'development' || process.env.DEBUG_EXPERIENCE === 'true';

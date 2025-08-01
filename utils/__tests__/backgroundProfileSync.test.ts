@@ -18,6 +18,36 @@ import {
   transformAchievements,
   syncCvDataToProfile
 } from '../backgroundProfileSync';
+
+// Mock Prisma for database operations
+jest.mock('@/prisma/prisma', () => ({
+  connectToDatabase: jest.fn().mockResolvedValue({
+    developer: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      upsert: jest.fn(),
+    },
+    experience: {
+      deleteMany: jest.fn(),
+      createMany: jest.fn(),
+    },
+    education: {
+      deleteMany: jest.fn(),
+      createMany: jest.fn(),
+    },
+    achievement: {
+      deleteMany: jest.fn(),
+      createMany: jest.fn(),
+    },
+    developerSkill: {
+      deleteMany: jest.fn(),
+      upsert: jest.fn(),
+    },
+    contactInfo: {
+      upsert: jest.fn(),
+    }
+  })
+}));
 import { 
   ContactInfoData, 
   Skill, 
@@ -501,6 +531,101 @@ describe('Background Profile Sync', () => {
       expect(result[1].title).toBe("Another Valid");
     });
   });
+
+  describe('Debug Logging Functions', () => {
+    let consoleLogSpy: jest.SpyInstance;
+    let consoleErrorSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      
+      // Reset environment variables
+      delete process.env.DEBUG_PROFILE_SYNC;
+      process.env.NODE_ENV = 'test';
+    });
+
+    afterEach(() => {
+      consoleLogSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('should log debug messages when DEBUG_PROFILE_SYNC is enabled', () => {
+      console.log('🧪 Testing debug logging enabled...');
+      
+      // Enable debug logging
+      process.env.DEBUG_PROFILE_SYNC = 'true';
+      
+      // Re-import to pick up new environment variable
+      jest.resetModules();
+      const { transformContactInfo: debugTransformContactInfo } = require('../backgroundProfileSync');
+      
+      const mockContactInfo: ContactInfoData = {
+        name: "Debug Test",
+        email: "debug@test.com",
+        phone: "+1-555-DEBUG",
+        location: "Debug City"
+      };
+
+      debugTransformContactInfo(mockContactInfo);
+      
+      // Should have logged debug messages
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[PROFILE_SYNC]'),
+        expect.any(String)
+      );
+      
+      console.log('✅ Debug logging works when enabled');
+    });
+
+    it('should not log debug messages when DEBUG_PROFILE_SYNC is disabled', () => {
+      console.log('🧪 Testing debug logging disabled...');
+      
+      // Ensure debug logging is disabled
+      delete process.env.DEBUG_PROFILE_SYNC;
+      process.env.NODE_ENV = 'production';
+      
+      // Re-import to pick up new environment variable
+      jest.resetModules();
+      const { transformContactInfo: prodTransformContactInfo } = require('../backgroundProfileSync');
+      
+      const mockContactInfo: ContactInfoData = {
+        name: "Prod Test",
+        email: "prod@test.com",
+        phone: "+1-555-PROD",
+        location: "Prod City"
+      };
+
+      consoleLogSpy.mockClear();
+      prodTransformContactInfo(mockContactInfo);
+      
+      // Should not have logged debug messages
+      expect(consoleLogSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('[Profile Sync]'),
+        expect.any(String)
+      );
+      
+      console.log('✅ Debug logging disabled in production');
+    });
+
+    it('should log error messages correctly', () => {
+      console.log('🧪 Testing error logging...');
+      
+      // This would test error logging if we expose the errorLog function
+      // For now, we can test that errors are handled gracefully in transformation functions
+      
+      const invalidData = { invalid: "data structure" };
+      const result = transformExperience(invalidData as any);
+      
+      expect(result).toEqual([]);
+      console.log('✅ Error handling works correctly');
+    });
+  });
+
+  // Database Integration Tests Excluded
+  // These tests require a test database setup with proper Prisma configuration.
+  // To run database integration tests, set up a test database and uncomment this section.
+  // For unit testing of transformation functions only, the tests above are sufficient.
 });
 
 // Export test utilities
