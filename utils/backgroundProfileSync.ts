@@ -108,9 +108,9 @@ function transformExperience(cvExperience: ExperienceItem[] | null | undefined):
         endDate: current ? null : exp.endDate,
         current,
         responsibilities: exp.responsibilities || [],
-        achievements: [], // CV doesn't separate achievements from responsibilities
-        teamSize: null, // CV doesn't include team size
-        techStack: [], // CV doesn't include tech stack separately
+        achievements: exp.achievements || [],
+        teamSize: exp.teamSize || null,
+        techStack: exp.techStack || [],
       };
     });
 

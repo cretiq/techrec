@@ -49,7 +49,7 @@ export const SkillSchema = z.object({
   ]).optional(),
 });
 
-// Schema for a single experience item
+// Schema for a single experience item - aligned with database Experience model
 export const ExperienceItemSchema = z.object({
   id: z.string().optional(),
   title: z.string().optional(),
@@ -58,7 +58,11 @@ export const ExperienceItemSchema = z.object({
   location: z.string().nullable().optional(),
   startDate: z.string().nullable().optional(),
   endDate: z.string().nullable().optional(),
+  current: z.boolean().optional(),
   responsibilities: z.array(z.string()).nullable().optional(),
+  achievements: z.array(z.string()).nullable().optional(),
+  teamSize: z.number().nullable().optional(),
+  techStack: z.array(z.string()).nullable().optional(),
   isNew: z.boolean().optional(),
 });
 

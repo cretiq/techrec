@@ -13,15 +13,35 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
 import { setAnalysis, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
 import { cn } from '@/lib/utils';
-import { RefreshCw, Download, BarChart3, Rocket } from 'lucide-react';
+import { RefreshCw, Download, BarChart3, Rocket, Loader2 } from 'lucide-react';
 import { ProjectEnhancementModal } from '@/components/analysis/ProjectEnhancementModal';
 import { ReUploadButton } from '@/components/cv/ReUploadButton';
 import { useSession } from 'next-auth/react';
+import { AnalysisStatus } from '@prisma/client';
+
+interface CV {
+    id: string;
+    developerId: string;
+    filename: string;
+    originalName: string;
+    mimeType: string;
+    size: number;
+    s3Key: string;
+    status: AnalysisStatus;
+    uploadDate: string;
+    extractedText?: string | null;
+    improvementScore?: number | null;
+    createdAt: string;
+    updatedAt: string;
+}
 
 export default function CVManagementPage() {
     // ALL HOOKS MUST BE AT THE TOP - React Rules of Hooks
     const [originalMimeType, setOriginalMimeType] = useState<string>('application/pdf'); // Keep this for now
     const [showProjectEnhancementModal, setShowProjectEnhancementModal] = useState(false);
+    const [userCVs, setUserCVs] = useState<CV[]>([]);
+    const [cvFetchStatus, setCvFetchStatus] = useState<'idle' | 'loading' | 'succeeded' | 'failed'>('idle');
+    const [currentCV, setCurrentCV] = useState<CV | null>(null);
 
     // Authentication hooks
     const { data: session, status } = useSession();
@@ -36,49 +56,204 @@ export default function CVManagementPage() {
 
     // Ref hooks
     const hasInitialLoaded = useRef(false);
+    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Callback hooks
     const fetchLatestUserAnalysis = useCallback(async () => {
+        console.log('[CVManagementPage] 🚀 STARTING fetchLatestUserAnalysis');
+        console.log('[CVManagementPage] 📞 Making request to /api/cv-analysis/latest');
+        
         try {
+            const startTime = Date.now();
             const response = await fetch('/api/cv-analysis/latest');
+            const duration = Date.now() - startTime;
+            
+            console.log('[CVManagementPage] 📡 API RESPONSE RECEIVED:', {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok,
+                duration: `${duration}ms`,
+                headers: {
+                    contentType: response.headers.get('content-type'),
+                    contentLength: response.headers.get('content-length'),
+                },
+                timestamp: new Date().toISOString(),
+            });
             
             if (response.ok) {
                 const latestAnalysis = await response.json();
-                console.log('[CVManagementPage] Found latest analysis:', latestAnalysis.id);
                 
-                // ARCHITECTURAL CHANGE: Load the analysis data directly from the response
-                // No need to make another API call since /api/cv-analysis/latest returns complete data
-                dispatch(setAnalysis({ id: latestAnalysis.id, data: latestAnalysis }));
+                console.log('[CVManagementPage] ✅ SUCCESSFUL RESPONSE PARSED:', {
+                    analysisId: latestAnalysis.id,
+                    hasAnalysisResult: !!latestAnalysis.analysisResult,
+                    responseKeys: Object.keys(latestAnalysis),
+                    analysisResultKeys: latestAnalysis.analysisResult ? Object.keys(latestAnalysis.analysisResult) : [],
+                    dataStructure: {
+                        contactInfo: !!latestAnalysis.analysisResult?.contactInfo,
+                        about: !!latestAnalysis.analysisResult?.about,
+                        skills: latestAnalysis.analysisResult?.skills?.length || 0,
+                        experience: latestAnalysis.analysisResult?.experience?.length || 0,
+                        education: latestAnalysis.analysisResult?.education?.length || 0,
+                        cv: !!latestAnalysis.cv,
+                        extractedText: !!latestAnalysis.cv?.extractedText,
+                    },
+                    sampleData: {
+                        contactName: latestAnalysis.analysisResult?.contactInfo?.name,
+                        contactEmail: latestAnalysis.analysisResult?.contactInfo?.email,
+                        aboutPreview: latestAnalysis.analysisResult?.about?.substring(0, 50) + '...',
+                        firstSkill: latestAnalysis.analysisResult?.skills?.[0]?.name,
+                        firstExperience: latestAnalysis.analysisResult?.experience?.[0]?.title,
+                    }
+                });
                 
-                // NO URL PARAMETERS: Single CV approach doesn't need URL state
-                // The user always sees their latest/current CV
-                console.log('[CVManagementPage] Analysis loaded directly, no URL parameters needed');
+                console.log('[CVManagementPage] 🔄 DISPATCHING TO REDUX:', {
+                    action: 'setAnalysis',
+                    id: latestAnalysis.id,
+                    hasData: !!latestAnalysis,
+                    hasAnalysisResult: !!latestAnalysis.analysisResult,
+                    dispatchTime: new Date().toISOString(),
+                });
+                
+                console.log('[CVManagementPage] 🔧 CRITICAL FIX: Passing analysisResult directly to Redux instead of full response');
+                console.log('[CVManagementPage] 📊 Data structure being passed:', {
+                    originalDataKeys: Object.keys(latestAnalysis),
+                    analysisResultKeys: latestAnalysis.analysisResult ? Object.keys(latestAnalysis.analysisResult) : [],
+                    passingAnalysisResultInstead: true,
+                });
+                
+                // CRITICAL FIX: Pass analysisResult directly, not the full API response
+                // Component expects analysis data at root level, not nested under analysisResult
+                dispatch(setAnalysis({ id: latestAnalysis.id, data: latestAnalysis.analysisResult }));
+                
+                console.log('[CVManagementPage] ✅ REDUX DISPATCH COMPLETED');
+                console.log('[CVManagementPage] 📋 Analysis loaded directly, no URL parameters needed');
+                
             } else if (response.status === 404) {
-                console.log('[CVManagementPage] No latest analysis found - user needs to upload CV');
+                console.log('[CVManagementPage] 📭 404 NOT FOUND: No latest analysis found');
+                console.log('[CVManagementPage] 💡 User needs to upload CV first');
                 // Keep showing upload/start from scratch options
+                
             } else {
-                console.error('[CVManagementPage] Error fetching latest analysis:', response.status);
+                const errorText = await response.text().catch(() => 'Unable to read error text');
+                console.error('[CVManagementPage] ❌ API ERROR RESPONSE:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    errorText: errorText,
+                    duration: `${duration}ms`,
+                });
+            }
+            
+        } catch (error) {
+            console.error('[CVManagementPage] 💥 FETCH EXCEPTION:', {
+                error: error instanceof Error ? error.message : 'Unknown error',
+                stack: error instanceof Error ? error.stack : undefined,
+                timestamp: new Date().toISOString(),
+            });
+        }
+        
+        console.log('[CVManagementPage] 🏁 fetchLatestUserAnalysis COMPLETED');
+    }, [dispatch]);
+
+    // Function to poll for CV status updates
+    const startPollingForCVStatus = useCallback((cvId: string) => {
+        console.log('[CVManagementPage] Starting to poll for CV status:', cvId);
+        
+        // Clear any existing polling
+        if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+        }
+        
+        // Poll every 3 seconds
+        pollingIntervalRef.current = setInterval(async () => {
+            try {
+                const response = await fetch('/api/cv');
+                if (response.ok) {
+                    const cvs: CV[] = await response.json();
+                    const updatedCV = cvs.find(cv => cv.id === cvId);
+                    
+                    if (updatedCV) {
+                        console.log('[CVManagementPage] Polling - CV status:', updatedCV.status);
+                        setCurrentCV(updatedCV);
+                        
+                        // Stop polling if status is no longer ANALYZING
+                        if (updatedCV.status !== AnalysisStatus.ANALYZING) {
+                            console.log('[CVManagementPage] CV analysis completed, stopping polling');
+                            if (pollingIntervalRef.current) {
+                                clearInterval(pollingIntervalRef.current);
+                                pollingIntervalRef.current = null;
+                            }
+                            
+                            // If COMPLETED, fetch the analysis data
+                            if (updatedCV.status === AnalysisStatus.COMPLETED) {
+                                fetchLatestUserAnalysis();
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('[CVManagementPage] Error polling CV status:', error);
+            }
+        }, 3000);
+    }, [fetchLatestUserAnalysis]);
+
+    // Function to fetch user's CVs
+    const fetchUserCVs = useCallback(async () => {
+        setCvFetchStatus('loading');
+        try {
+            const response = await fetch('/api/cv');
+            if (response.ok) {
+                const cvs: CV[] = await response.json();
+                console.log('[CVManagementPage] Fetched CVs:', cvs.length);
+                setUserCVs(cvs);
+                
+                // Find the most recent CV with COMPLETED or ANALYZING status
+                const latestCV = cvs
+                    .sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime())
+                    .find(cv => cv.status === AnalysisStatus.COMPLETED || cv.status === AnalysisStatus.ANALYZING);
+                
+                if (latestCV) {
+                    console.log('[CVManagementPage] Found latest CV:', latestCV.id, 'Status:', latestCV.status);
+                    setCurrentCV(latestCV);
+                    
+                    // If CV is ANALYZING, start polling for updates
+                    if (latestCV.status === AnalysisStatus.ANALYZING) {
+                        startPollingForCVStatus(latestCV.id);
+                    }
+                    // If CV is COMPLETED, fetch the analysis data for display
+                    else if (latestCV.status === AnalysisStatus.COMPLETED) {
+                        console.log('[CVManagementPage] CV is COMPLETED, fetching analysis data...');
+                        fetchLatestUserAnalysis();
+                    }
+                } else {
+                    console.log('[CVManagementPage] No CV with COMPLETED or ANALYZING status found');
+                    setCurrentCV(null);
+                }
+                
+                setCvFetchStatus('succeeded');
+            } else {
+                console.error('[CVManagementPage] Error fetching CVs:', response.status);
+                setCvFetchStatus('failed');
             }
         } catch (error) {
-            console.error('[CVManagementPage] Failed to fetch latest analysis:', error);
+            console.error('[CVManagementPage] Failed to fetch CVs:', error);
+            setCvFetchStatus('failed');
         }
-    }, [dispatch]);
+    }, [startPollingForCVStatus]);
 
     // --- Handler for Upload Completion ---
     const handleUploadComplete = useCallback((signal?: string) => {
         console.log('[CVManagementPage] ✅ handleUploadComplete called with signal:', signal);
         console.log('[CVManagementPage] ✅ Callback triggered - starting immediate fetch');
         
-        // Always fetch the latest analysis when upload completes
-        // This ensures we get the user's single "current" CV analysis
-        console.log('[CVManagementPage] 🔄 Upload complete, fetching latest analysis NOW');
+        // Fetch CVs and check for ANALYZING status when upload completes
+        console.log('[CVManagementPage] 🔄 Upload complete, fetching user CVs NOW');
         
         // Add a small delay to ensure upload processing is complete on server
         setTimeout(() => {
             console.log('[CVManagementPage] 🔄 Delayed fetch starting...');
-            fetchLatestUserAnalysis();
+            fetchUserCVs();
         }, 1000); // 1 second delay
-    }, [fetchLatestUserAnalysis]);
+    }, [fetchUserCVs]);
 
     // Effect hooks - ALL MUST BE TOGETHER
     // Authentication effect
@@ -92,20 +267,30 @@ export default function CVManagementPage() {
         }
     }, [status, router]);
 
-    // SIMPLIFIED: Always use latest analysis approach (no URL parameters)
+    // CV Loading Effect: Fetch user's CVs on mount
     useEffect(() => {
-        // Skip if already loading
-        if (analysisStatus === 'loading') {
+        // Skip if already loading or attempted
+        if (cvFetchStatus === 'loading' || hasInitialLoaded.current) {
             return;
         }
 
-        // If no analysis loaded and not already attempted, fetch user's latest analysis
-        if (!hasInitialLoaded.current && !analysisIdFromStore && analysisStatus === 'idle') {
-            console.log('[CVManagementPage] Loading user\'s latest analysis (single CV approach)');
-            fetchLatestUserAnalysis();
+        // Only fetch if authenticated
+        if (status === 'authenticated') {
+            console.log('[CVManagementPage] Loading user\'s CVs (new CV status approach)');
+            fetchUserCVs();
             hasInitialLoaded.current = true;
         }
-    }, [analysisIdFromStore, analysisStatus, fetchLatestUserAnalysis]);
+    }, [status, cvFetchStatus, fetchUserCVs]);
+
+    // Cleanup polling on unmount
+    useEffect(() => {
+        return () => {
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const styles = `
@@ -194,8 +379,8 @@ export default function CVManagementPage() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2" data-testid="cv-management-title">My Profile & CV</h1>
                 <p className="text-base-content/70 mb-6" data-testid="cv-management-description">Build your professional profile - upload your CV or start from scratch</p>
             </div>
-            {/* Entry Section - Upload CV or Start from Scratch - Only show when no analysis data */}
-            {!analysisData && (
+            {/* Entry Section - Upload CV or Start from Scratch - Show when no completed CV */}
+            {(!currentCV || currentCV.status === AnalysisStatus.FAILED || currentCV.status === AnalysisStatus.PENDING) && (
                 <Card 
                     variant="transparent" 
                     className="animate-fade-in-up" 
@@ -215,24 +400,25 @@ export default function CVManagementPage() {
                 </Card>
             )}
 
-            {/* Profile/Analysis Section */}
+            {/* CV Status-based sections */}
             {(() => {
-                const isLoading = analysisStatus === 'loading';
+                const isCVLoading = cvFetchStatus === 'loading';
 
-                if (isLoading) {
+                // Show loading while fetching CV data
+                if (isCVLoading) {
                     return (
                         <Card 
                             variant="transparent" 
                             className="animate-fade-in-up" 
                             style={{ animationDelay: '500ms' }}
-                            data-testid="cv-management-profile-loading"
+                            data-testid="cv-management-cv-loading"
                         >
-                            <CardHeader data-testid="cv-management-profile-loading-header">
-                                <CardTitle data-testid="cv-management-profile-loading-title">Your Professional Profile</CardTitle>
-                                <CardDescription data-testid="cv-management-profile-loading-description">Loading your CV...</CardDescription>
+                            <CardHeader data-testid="cv-management-cv-loading-header">
+                                <CardTitle data-testid="cv-management-cv-loading-title">Loading CV Status</CardTitle>
+                                <CardDescription data-testid="cv-management-cv-loading-description">Checking your uploaded CVs...</CardDescription>
                             </CardHeader>
-                            <CardContent data-testid="cv-management-profile-loading-content">
-                                <div className="flex justify-center items-center h-40" data-testid="cv-management-profile-loading-spinner">
+                            <CardContent data-testid="cv-management-cv-loading-content">
+                                <div className="flex justify-center items-center h-40" data-testid="cv-management-cv-loading-spinner">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                                 </div>
                             </CardContent>
@@ -240,8 +426,51 @@ export default function CVManagementPage() {
                     );
                 }
 
-                // Show analysis if we have data (either from URL param or auto-loaded)
-                if (analysisData && analysisIdFromStore) {
+                // Show analyzing status
+                if (currentCV && currentCV.status === AnalysisStatus.ANALYZING) {
+                    return (
+                        <Card 
+                            variant="transparent" 
+                            className="animate-fade-in-up" 
+                            style={{ animationDelay: '500ms' }}
+                            data-testid="cv-management-analyzing"
+                        >
+                            <CardHeader data-testid="cv-management-analyzing-header">
+                                <CardTitle className="flex items-center gap-2" data-testid="cv-management-analyzing-title">
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    Analyzing Your CV
+                                </CardTitle>
+                                <CardDescription data-testid="cv-management-analyzing-description">
+                                    AI is analyzing "{currentCV.originalName}" to extract your profile information...
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent data-testid="cv-management-analyzing-content">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                        <div className="animate-pulse h-2 w-2 bg-primary rounded-full"></div>
+                                        <span>Extracting contact information and skills</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                        <div className="animate-pulse h-2 w-2 bg-primary rounded-full" style={{ animationDelay: '0.5s' }}></div>
+                                        <span>Processing work experience and achievements</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                        <div className="animate-pulse h-2 w-2 bg-primary rounded-full" style={{ animationDelay: '1s' }}></div>
+                                        <span>Analyzing education and certifications</span>
+                                    </div>
+                                    <div className="mt-6 p-4 bg-info/10 rounded-lg">
+                                        <p className="text-sm text-info-content">
+                                            This usually takes 30-60 seconds. We'll automatically update when complete.
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    );
+                }
+
+                // Show analysis results if CV is completed
+                if (currentCV && currentCV.status === AnalysisStatus.COMPLETED && analysisData && analysisIdFromStore) {
                     return (
                         <div 
                             className="animate-fade-in-up space-y-6" 
@@ -337,6 +566,45 @@ export default function CVManagementPage() {
                                 </div>
                             </div>
                         </div>
+                    );
+                }
+
+                // Show error state for failed analysis
+                if (currentCV && currentCV.status === AnalysisStatus.FAILED) {
+                    return (
+                        <Card 
+                            variant="transparent" 
+                            className="animate-fade-in-up" 
+                            style={{ animationDelay: '500ms' }}
+                            data-testid="cv-management-failed"
+                        >
+                            <CardHeader data-testid="cv-management-failed-header">
+                                <CardTitle className="text-error" data-testid="cv-management-failed-title">
+                                    Analysis Failed
+                                </CardTitle>
+                                <CardDescription data-testid="cv-management-failed-description">
+                                    We couldn't analyze "{currentCV.originalName}". Please try uploading again or contact support.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent data-testid="cv-management-failed-content">
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-error/10 rounded-lg">
+                                        <p className="text-sm text-error-content">
+                                            Common issues: corrupted file, unsupported format, or file too large.
+                                        </p>
+                                    </div>
+                                    <Button 
+                                        onClick={() => fetchUserCVs()} 
+                                        variant="outline"
+                                        size="sm"
+                                        className="flex items-center gap-2"
+                                    >
+                                        <RefreshCw className="h-4 w-4" />
+                                        Try Again
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
                     );
                 }
 

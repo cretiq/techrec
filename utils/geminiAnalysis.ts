@@ -66,11 +66,14 @@ export const analyzeCvWithGemini = async (cvText: string): Promise<z.infer<typeo
         title: "string",
         company: "string", 
         location: "string or null",
-        startDate: "string or null",
-        endDate: "string or null",
+        startDate: "string (YYYY-MM format)",
+        endDate: "string (YYYY-MM format) or null",
         current: "boolean",
-        description: "string or null",
-        achievements: ["string"]
+        description: "string or null (overview/summary paragraph)",
+        responsibilities: ["string"],
+        achievements: ["string"],
+        teamSize: "number or null",
+        techStack: ["string"]
       }
     ],
     education: [
@@ -113,26 +116,76 @@ You are an expert CV parser and analyzer. Parse the following CV text and extrac
 IMPORTANT: Return ONLY a valid JSON object that matches this exact schema:
 ${JSON.stringify(analysisSchema, null, 2)}
 
-Guidelines:
-1. Extract contact information from headers, footers, or contact sections
-2. Identify skills and categorize them (e.g., "Programming Languages", "Frameworks", "Tools")
-3. Parse work experience with dates, companies, and achievements
-4. Extract education details including degrees and institutions
-5. Find notable achievements, certifications, or awards
-6. Identify language skills if mentioned
-7. Use null for missing information
-8. For skill levels, infer from context (years of experience, project complexity, etc.)
-9. For dates, use formats like "2023-01" or "2023" or "Present"
-10. Be conservative with skill level assessment - default to "Intermediate" if unclear
+EXTRACTION GUIDELINES:
 
-CRITICAL: Experience Calculation Requirements:
-11. Calculate totalYearsExperience by analyzing all work experience dates
-12. For date ranges, calculate duration between start and end dates
-13. For "current" positions, calculate from start date to present (${new Date().toISOString().slice(0, 7)})
-14. Handle overlapping experiences by merging date ranges to avoid double-counting
-15. Convert total experience to years as a decimal (e.g., 2.5 years)
-16. Set isJuniorDeveloper to true if totalYearsExperience <= 2, false otherwise
-17. Fill experienceCalculation with current timestamp (${Date.now()}), count of experience items, and method "ai_analysis"
+CONTACT INFORMATION:
+- Extract from headers, footers, or contact sections
+- Use null for missing information
+
+SKILLS:
+- Categorize as "Programming Languages", "Frameworks", "Tools", "Databases", etc.
+- Infer skill levels from context (years mentioned, project complexity, seniority)
+- Default to "Intermediate" if unclear
+- Levels: Beginner, Intermediate, Advanced, Expert
+
+EXPERIENCE - CRITICAL FIELD MAPPING:
+- title: Job title/position name
+- company: Company/organization name  
+- location: City, State/Country if mentioned
+- startDate: Use YYYY-MM format (e.g., "2023-01", "2023-06")
+- endDate: Use YYYY-MM format or null if current
+- current: Set to true ONLY if position is ongoing/present, false otherwise
+- description: Extract overview/summary paragraph (usually first paragraph of job description)
+- responsibilities: Extract bullet points of daily tasks/duties as separate array items
+- achievements: Extract quantified accomplishments with numbers/percentages as separate array items
+- teamSize: Extract team size if mentioned (e.g., "led team of 5" → 5, "managed 3 developers" → 3)
+- techStack: Extract ALL technologies, languages, frameworks, databases, tools mentioned for this role
+
+EDUCATION:
+- Extract degrees, institutions, years, locations
+- Use YYYY-MM format for dates
+- Include GPA if mentioned
+
+ACHIEVEMENTS/CERTIFICATIONS:
+- Extract certifications, awards, publications
+- Include dates and issuing organizations
+
+EXPERIENCE CALCULATION:
+- Calculate totalYearsExperience by analyzing all work experience dates
+- For current positions, calculate from start date to ${new Date().toISOString().slice(0, 7)}
+- Handle overlapping experiences by merging date ranges
+- Convert to decimal years (e.g., 2.5 years)
+- Set isJuniorDeveloper to true if totalYearsExperience <= 2
+
+EXAMPLE EXPERIENCE EXTRACTION:
+Input: "Senior Software Engineer at TechCorp (Jan 2022 - Present)
+Led development of microservices architecture using Node.js and Docker.
+• Designed and implemented REST APIs serving 1M+ requests/day
+• Mentored team of 4 junior developers  
+• Reduced system latency by 40% through optimization
+Technologies: Node.js, Express, PostgreSQL, Docker, AWS, React"
+
+Output:
+{
+  "title": "Senior Software Engineer",
+  "company": "TechCorp",
+  "startDate": "2022-01",
+  "endDate": null,
+  "current": true,
+  "description": "Led development of microservices architecture using Node.js and Docker",
+  "responsibilities": [
+    "Designed and implemented REST APIs serving 1M+ requests/day",
+    "Mentored team of 4 junior developers",
+    "Reduced system latency by 40% through optimization"
+  ],
+  "achievements": [
+    "Served 1M+ API requests per day",
+    "Reduced system latency by 40%",
+    "Mentored team of 4 developers"
+  ],
+  "teamSize": 4,
+  "techStack": ["Node.js", "Express", "PostgreSQL", "Docker", "AWS", "React"]
+}
 
 CV Text:
 ${cvText}
