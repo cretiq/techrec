@@ -59,11 +59,6 @@ export default function RolesSearch2Page() {
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
 
-  // Minimal component lifecycle logging (reduced for performance)
-  if (process.env.NODE_ENV === 'development' && performance.now() % 5000 < 100) {
-    console.log('[RolesSearch] Render snapshot:', { status, rolesCount: roles.length, loading });
-  }
-
   // Redux state
   const roles = useSelector(selectRoles)
   const loading = useSelector(selectRolesLoading)
@@ -73,6 +68,11 @@ export default function RolesSearch2Page() {
   const lastSearchParams = useSelector(selectLastSearchParams)
   const selectedRoles = useSelector(selectSelectedRoles)
   const selectedCount = useSelector(selectSelectedRolesCount)
+
+  // Minimal component lifecycle logging (reduced for performance)
+  if (process.env.NODE_ENV === 'development' && performance.now() % 5000 < 100) {
+    console.log('[RolesSearch] Render snapshot:', { status, rolesCount: roles.length, loading });
+  }
 
   // Throttled Redux state logging (performance optimized)
   if (process.env.NODE_ENV === 'development' && Math.random() < 0.1) {

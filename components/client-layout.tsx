@@ -58,9 +58,6 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                   <span className="font-bold text-xl">TechRec</span>
                 </Link>
                 <nav className="hidden md:flex items-center gap-6" data-testid="nav-desktop-menu">
-                  <Link href="/developer/dashboard" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-home-trigger">
-                    Home
-                  </Link>
                   <Link href="/developer/dashboard" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-dashboard-trigger">
                     Dashboard
                   </Link>
