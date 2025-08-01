@@ -35,12 +35,10 @@ import {
   calculateBatchMatchScores,
   fetchUserSkillProfile
 } from '@/lib/features/matchingSlice'
-import { extractRoleSkills } from '@/utils/matching/skillMatchingService'
 import { RootState, AppDispatch } from '@/lib/store'
 import { cn } from "@/lib/utils"
 import SelectedRolesList from '@/components/roles/SelectedRolesList'
 import AdvancedFilters from '@/components/roles/AdvancedFilters'
-import ApiUsageDashboard from '@/components/roles/ApiUsageDashboard'
 import type { SearchParameters } from '@/lib/api/rapidapi-cache'
 
 interface SavedRole {
@@ -302,13 +300,14 @@ export default function RolesSearch2Page() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl" data-testid="role-search-container-main">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Sidebar - Usage Dashboard (empty for now) */}
-        <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-sidebar">
           {/* TODO: ApiUsageDashboard temporarily hidden for UI simplicity
+        <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-sidebar">
               Will be restored when we want to show API usage statistics to users */}
-          {/* <ApiUsageDashboard /> */}
+          {/* <ApiUsageDashboard />
         </div>
+ */}
 
         {/* Center - Advanced Filters & Selected Roles */}
         <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-filters">
@@ -318,15 +317,11 @@ export default function RolesSearch2Page() {
             loading={loading}
             disabled={!canMakeRequest}
           />
-          <SelectedRolesList />
-        </div>
-
-        {/* Right Side - Results Grid */}
-        <div className="lg:col-span-2 space-y-6" data-testid="role-search-container-results">
+          
           {/* Action Buttons Bar */}
-          <div className="flex flex-wrap justify-between items-center gap-2" data-testid="role-search-container-actions">
-            {/* Bulk Selection Buttons */}
-            {!loading && filteredRoles.length > 0 && (
+          {!loading && filteredRoles.length > 0 && (
+            <div className="flex flex-wrap justify-between items-center gap-2" data-testid="role-search-container-actions">
+              {/* Bulk Selection Buttons */}
               <div className="flex gap-2" data-testid="role-search-container-bulk-actions">
                 <Button
                   onClick={handleSelectAllVisible}
@@ -349,9 +344,7 @@ export default function RolesSearch2Page() {
                   Deselect All ({selectedCount})
                 </Button>
               </div>
-            )}
-            {/* Write Button */}
-            {!loading && filteredRoles.length > 0 && (
+              {/* Write Button */}
               <Button
                 onClick={handleWriteToSelected}
                 disabled={selectedCount === 0}
@@ -362,8 +355,14 @@ export default function RolesSearch2Page() {
               >
                 Write to {selectedCount} role{selectedCount !== 1 ? 's' : ''}
               </Button>
-            )}
-          </div>
+            </div>
+          )}
+          
+          <SelectedRolesList />
+        </div>
+
+        {/* Right Side - Results Grid */}
+        <div className="lg:col-span-2 space-y-6" data-testid="role-search-container-results">
 
           {/* Loading State */}
           {loading && (
