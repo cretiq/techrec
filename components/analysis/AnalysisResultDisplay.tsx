@@ -76,14 +76,59 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   const error = useSelector(selectAnalysisError);
   const originalData = useSelector(selectOriginalAnalysisData);
 
-  // Log the received state
-  console.log('[AnalysisResultDisplay] State from Redux:', {
+  // Enhanced logging of Redux state
+  console.log('[AnalysisResultDisplay] 🔍 COMPREHENSIVE REDUX STATE:', {
       status,
       analysisId,
       hasAnalysisData: !!analysisData,
       error,
       suggestionCount: suggestions?.length ?? 0,
-      hasOriginalData: !!originalData
+      hasOriginalData: !!originalData,
+      timestamp: new Date().toISOString(),
+  });
+
+  console.log('[AnalysisResultDisplay] 📊 DETAILED ANALYSIS DATA:', {
+      analysisDataType: typeof analysisData,
+      analysisDataIsNull: analysisData === null,
+      analysisDataIsUndefined: analysisData === undefined,
+      analysisDataKeys: analysisData ? Object.keys(analysisData) : [],
+      analysisDataStructure: analysisData ? {
+          hasId: !!analysisData.id,
+          hasAnalysisResult: !!analysisData.analysisResult,
+          analysisResultKeys: analysisData.analysisResult ? Object.keys(analysisData.analysisResult) : [],
+          analysisResultStructure: analysisData.analysisResult ? {
+              contactInfo: !!analysisData.analysisResult.contactInfo,
+              about: !!analysisData.analysisResult.about,
+              skills: analysisData.analysisResult.skills ? analysisData.analysisResult.skills.length : 0,
+              experience: analysisData.analysisResult.experience ? analysisData.analysisResult.experience.length : 0,
+              education: analysisData.analysisResult.education ? analysisData.analysisResult.education.length : 0,
+              cv: !!analysisData.analysisResult.cv,
+          } : null
+      } : null,
+      sampleAnalysisData: analysisData ? {
+          id: analysisData.id,
+          contactName: analysisData.analysisResult?.contactInfo?.name,
+          contactEmail: analysisData.analysisResult?.contactInfo?.email,
+          aboutLength: analysisData.analysisResult?.about?.length || 0,
+          skillsCount: analysisData.analysisResult?.skills?.length || 0,
+          experienceCount: analysisData.analysisResult?.experience?.length || 0,
+      } : null,
+  });
+
+  console.log('[AnalysisResultDisplay] 🎯 COMPONENT CONDITION CHECKS:', {
+      statusIsLoading: status === 'loading',
+      analysisDataExists: !!analysisData,
+      analysisIdExists: !!analysisId,
+      statusIsFailed: status === 'failed',
+      willRenderContent: !!analysisData && status !== 'loading',
+      renderDecision: (() => {
+          if (status === 'loading') return 'LOADING_STATE';
+          if (!analysisData) {
+              if (status === 'failed') return 'FAILED_STATE';
+              return 'NO_DATA_STATE';
+          }
+          return 'CONTENT_STATE';
+      })(),
   });
 
   // Local state for UI interactions (saving/exporting)

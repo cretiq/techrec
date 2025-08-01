@@ -68,16 +68,50 @@ export async function GET(request: Request) {
       }
     });
 
-    if (!developerProfile || developerProfile.cvs.length === 0) {
-      console.log(`[GET /cv-analysis/latest] No profile data or completed CV found for developer: ${developerId}`);
-      return NextResponse.json({ error: 'No analysis found' }, { status: 404 });
+    console.log(`[GET /cv-analysis/latest] 🔍 DATABASE QUERY RESULTS:`, {
+      developerFound: !!developerProfile,
+      developerId: developerId,
+      cvCount: developerProfile?.cvs?.length || 0,
+      completedCVs: developerProfile?.cvs?.length || 0,
+    });
+
+    if (!developerProfile) {
+      console.log(`[GET /cv-analysis/latest] ❌ No developer profile found for ID: ${developerId}`);
+      console.log(`[GET /cv-analysis/latest] 🔧 DEBUG: Check if developer exists in database`);
+      return NextResponse.json({ error: 'No developer profile found' }, { status: 404 });
     }
 
-    console.log(`[GET /cv-analysis/latest] Found profile data for developer: ${developerId}`, {
+    if (developerProfile.cvs.length === 0) {
+      console.log(`[GET /cv-analysis/latest] ❌ No completed CVs found for developer: ${developerId}`);
+      console.log(`[GET /cv-analysis/latest] 🔧 DEBUG: Check CV table for COMPLETED status CVs`);
+      return NextResponse.json({ error: 'No completed CV analysis found' }, { status: 404 });
+    }
+
+    console.log(`[GET /cv-analysis/latest] ✅ FOUND PROFILE DATA:`, {
+      developerId: developerId,
+      name: developerProfile.name,
+      email: developerProfile.email,
+      profileEmail: developerProfile.profileEmail,
+      about: developerProfile.about?.substring(0, 100) + '...',
       hasContactInfo: !!developerProfile.contactInfo,
+      contactInfo: developerProfile.contactInfo ? {
+        phone: !!developerProfile.contactInfo.phone,
+        address: !!developerProfile.contactInfo.address,
+        linkedin: !!developerProfile.contactInfo.linkedin,
+        github: !!developerProfile.contactInfo.github,
+        website: !!developerProfile.contactInfo.website,
+      } : null,
       skillsCount: developerProfile.developerSkills.length,
       experienceCount: developerProfile.experience.length,
       educationCount: developerProfile.education.length,
+      achievementsCount: developerProfile.achievements.length,
+      completedCVs: developerProfile.cvs.length,
+      latestCVData: {
+        hasExtractedText: !!developerProfile.cvs[0]?.extractedText,
+        extractedTextLength: developerProfile.cvs[0]?.extractedText?.length || 0,
+        improvementScore: developerProfile.cvs[0]?.improvementScore,
+        createdAt: developerProfile.cvs[0]?.createdAt,
+      }
     });
 
     // Transform profile data to match expected CvAnalysis format for UI compatibility
@@ -158,11 +192,52 @@ export async function GET(request: Request) {
       }
     };
 
-    console.log(`[GET /cv-analysis/latest] Transformed profile data to analysis format`, {
+    console.log(`[GET /cv-analysis/latest] 🔄 TRANSFORMATION COMPLETE:`, {
       syntheticId: transformedData.id,
       hasAnalysisResult: !!transformedData.analysisResult,
-      skillsCount: transformedData.analysisResult.skills.length,
-      experienceCount: transformedData.analysisResult.experience.length,
+      analysisResultStructure: transformedData.analysisResult ? Object.keys(transformedData.analysisResult) : [],
+      transformedContactInfo: {
+        hasContactInfo: !!transformedData.analysisResult.contactInfo,
+        name: transformedData.analysisResult.contactInfo?.name,
+        email: transformedData.analysisResult.contactInfo?.email,
+        phone: !!transformedData.analysisResult.contactInfo?.phone,
+        location: !!transformedData.analysisResult.contactInfo?.location,
+      },
+      transformedAbout: {
+        hasAbout: !!transformedData.analysisResult.about,
+        aboutLength: transformedData.analysisResult.about?.length || 0,
+        aboutPreview: transformedData.analysisResult.about?.substring(0, 50) + '...',
+      },
+      transformedSkills: {
+        count: transformedData.analysisResult.skills.length,
+        sample: transformedData.analysisResult.skills.slice(0, 3).map(s => s.name),
+      },
+      transformedExperience: {
+        count: transformedData.analysisResult.experience.length,
+        sample: transformedData.analysisResult.experience.slice(0, 2).map(e => ({
+          title: e.title,
+          company: e.company,
+        })),
+      },
+      transformedEducation: {
+        count: transformedData.analysisResult.education.length,
+        sample: transformedData.analysisResult.education.slice(0, 2).map(e => ({
+          degree: e.degree,
+          institution: e.institution,
+        })),
+      },
+      cvData: {
+        hasExtractedText: !!transformedData.cv?.extractedText,
+        extractedTextLength: transformedData.cv?.extractedText?.length || 0,
+      },
+      improvementScore: transformedData.analysisResult.improvementScore,
+    });
+
+    console.log(`[GET /cv-analysis/latest] 📤 RETURNING RESPONSE:`, {
+      status: 200,
+      responseDataKeys: Object.keys(transformedData),
+      analysisResultKeys: transformedData.analysisResult ? Object.keys(transformedData.analysisResult) : [],
+      timestamp: new Date().toISOString(),
     });
 
     return NextResponse.json(transformedData);
