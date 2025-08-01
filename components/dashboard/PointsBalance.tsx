@@ -25,7 +25,7 @@ interface PointsBalanceProps {
     monthly: number;
     used: number;
     earned: number;
-    resetDate: Date | null;
+    resetDate: string | null;
     subscriptionTier: string;
     efficiency: number;
     transactions: any[];
@@ -37,7 +37,7 @@ interface PointsData {
   monthly: number;
   used: number;
   earned: number;
-  resetDate: Date | null;
+  resetDate: string | null;
   subscriptionTier: SubscriptionTier;
   efficiency: number; // Points usage efficiency
   transactions: PointsTransaction[];
@@ -114,7 +114,7 @@ export function PointsBalance({ className = '', pointsData: propPointsData }: Po
     return 'text-red-600';
   };
 
-  const getDaysUntilReset = (resetDate: Date | null) => {
+  const getDaysUntilReset = (resetDate: string | null) => {
     if (!resetDate) return 0;
     const now = new Date();
     const diffTime = resetDate.getTime() - now.getTime();
@@ -241,7 +241,7 @@ export function PointsBalance({ className = '', pointsData: propPointsData }: Po
           
           <div className="space-y-1">
             <Tooltip 
-              content={`Monthly allocation: ${pointsData.monthly} points. Used: ${pointsData.used} points. Remaining: ${pointsData.monthly - pointsData.used} points. Your monthly points reset on ${pointsData.resetDate ? pointsData.resetDate.toLocaleDateString() : 'unknown date'}.`}
+              content={`Monthly allocation: ${pointsData.monthly} points. Used: ${pointsData.used} points. Remaining: ${pointsData.monthly - pointsData.used} points. Your monthly points reset on ${pointsData.resetDate ? new Date(pointsData.resetDate).toLocaleDateString() : 'unknown date'}.`}
               size="large"
               position="bottom"
             >
@@ -305,7 +305,7 @@ export function PointsBalance({ className = '', pointsData: propPointsData }: Po
               {daysUntilReset} days until monthly reset
             </p>
             <p className="text-xs text-base-content/70">
-              Reset date: {pointsData.resetDate.toLocaleDateString()}
+              Reset date: {pointsData.resetDate ? new Date(pointsData.resetDate).toLocaleDateString() : 'Unknown'}
             </p>
           </div>
         )}

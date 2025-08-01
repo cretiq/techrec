@@ -13,10 +13,10 @@ export interface UserGamificationProfile {
     used: number;
     earned: number;
     available: number;
-    resetDate: Date | null;
+    resetDate: string | null;
   };
   streak: number;
-  lastActivityDate: Date | null;
+  lastActivityDate: string | null;
   badges: UserBadgeWithDetails[];
   nextLevelXP: number;
   currentLevelXP: number;
@@ -46,7 +46,7 @@ export interface UserBadgeWithDetails {
   id: string;
   badgeId: string;
   badge: BadgeDefinition;
-  earnedAt: Date;
+  earnedAt: string;
   progress: number; // 0.0 to 1.0 for progressive badges
 }
 

@@ -12,7 +12,7 @@ interface DashboardData {
       id: string;
       title: string;
       isCompleted: boolean;
-      completedAt: Date | null;
+      completedAt: string | null;
     }>;
     completedCount: number;
     progress: number;
@@ -32,7 +32,7 @@ interface DashboardData {
   streakData: {
     currentStreak: number;
     bestStreak: number;
-    lastActivityDate: Date | null;
+    lastActivityDate: string | null;
     isStreakActive: boolean;
     nextMilestone: {
       target: number;
@@ -45,7 +45,7 @@ interface DashboardData {
     monthly: number;
     used: number;
     earned: number;
-    resetDate: Date | null;
+    resetDate: string | null;
     subscriptionTier: string;
     efficiency: number;
     transactions: any[];
@@ -87,20 +87,8 @@ export const fetchDashboardData = createAsyncThunk(
 
       const data = await response.json();
 
-      // Convert date strings back to Date objects
-      if (data.streakData.lastActivityDate) {
-        data.streakData.lastActivityDate = new Date(data.streakData.lastActivityDate);
-      }
-      if (data.pointsData.resetDate) {
-        data.pointsData.resetDate = new Date(data.pointsData.resetDate);
-      }
-      if (data.roadmapProgress.milestones) {
-        data.roadmapProgress.milestones = data.roadmapProgress.milestones.map((m: any) => ({
-          ...m,
-          completedAt: m.completedAt ? new Date(m.completedAt) : null
-        }));
-      }
-
+      // Data is already in the correct format (ISO strings for dates)
+      // No date conversion needed - keep dates as strings for Redux serialization
       return data;
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to load dashboard data');

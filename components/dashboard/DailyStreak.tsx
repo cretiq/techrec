@@ -11,7 +11,7 @@ interface DailyStreakProps {
   streakData?: {
     currentStreak: number;
     bestStreak: number;
-    lastActivityDate: Date | null;
+    lastActivityDate: string | null;
     isStreakActive: boolean;
     nextMilestone: {
       target: number;
@@ -24,7 +24,7 @@ interface DailyStreakProps {
 interface StreakData {
   currentStreak: number;
   bestStreak: number;
-  lastActivityDate: Date | null;
+  lastActivityDate: string | null;
   isStreakActive: boolean;
   nextMilestone: {
     target: number;
@@ -221,7 +221,7 @@ export function DailyStreak({ className = '', streakData: propStreakData }: Dail
             </div>
             <div className="font-semibold text-base-content text-xs" data-testid="streak-last-activity">
               {streakData.lastActivityDate 
-                ? streakData.lastActivityDate.toLocaleDateString()
+                ? new Date(streakData.lastActivityDate).toLocaleDateString()
                 : 'Never'
               }
             </div>

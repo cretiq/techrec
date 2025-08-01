@@ -31,7 +31,7 @@ export function RecentBadges({ className = '', badges = [] }: RecentBadgesProps)
         id: userBadge.id,
         badgeId: userBadge.badgeId,
         badge: userBadge.badge,
-        earnedAt: new Date(userBadge.earnedAt),
+        earnedAt: userBadge.earnedAt,
         progress: userBadge.progress || 1.0
       }));
 
@@ -212,12 +212,12 @@ export function RecentBadges({ className = '', badges = [] }: RecentBadgesProps)
                     </div>
                     
                     <Tooltip 
-                      content={`Badge earned on ${userBadge.earnedAt.toLocaleDateString()}`}
+                      content={`Badge earned on ${new Date(userBadge.earnedAt).toLocaleDateString()}`}
                       size="small"
                       position="bottom"
                     >
                       <span className="text-xs text-base-content/50 cursor-help">
-                        {userBadge.earnedAt.toLocaleDateString()}
+                        {new Date(userBadge.earnedAt).toLocaleDateString()}
                       </span>
                     </Tooltip>
                   </div>
