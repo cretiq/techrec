@@ -29,14 +29,33 @@ export async function GET(request: Request) {
           orderBy: { earnedAt: 'desc' },
           take: 5
         },
-        cvAnalyses: {
+        contactInfo: true,
+        experience: {
+          orderBy: { startDate: 'desc' }
+        },
+        education: {
+          orderBy: { startDate: 'desc' }
+        },
+        developerSkills: {
+          include: {
+            skill: {
+              include: {
+                category: true
+              }
+            }
+          }
+        },
+        achievements: {
+          orderBy: { date: 'desc' }
+        },
+        cvs: {
           orderBy: { createdAt: 'desc' },
           take: 1,
           select: {
             id: true,
-            analysisResult: true,
             status: true,
-            createdAt: true
+            createdAt: true,
+            improvementScore: true
           }
         },
         pointsTransactions: {
@@ -65,66 +84,62 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Failed to get gamification profile' }, { status: 500 });
     }
 
-    // Calculate profile completeness score (reusing ProfileScoringSidebar logic)
+    // Calculate profile completeness score using real profile data
     const calculateProfileCompleteness = () => {
-      const latestAnalysis = user.cvAnalyses[0];
-      if (!latestAnalysis || !latestAnalysis.analysisResult) {
-        return { score: 0, sections: [] };
-      }
-
-      // Extract analysis data from JSON field
-      const analysisData = latestAnalysis.analysisResult as any;
       const sections = [];
       let totalScore = 0;
       let sectionCount = 0;
 
       // Contact Info
-      if (analysisData.contactInfo) {
-        const contactFields = Object.values(analysisData.contactInfo).filter(Boolean).length;
+      if (user.contactInfo) {
+        const contactFields = [
+          user.contactInfo.phone,
+          user.contactInfo.address,
+          user.contactInfo.city,
+          user.contactInfo.country,
+          user.contactInfo.linkedin,
+          user.contactInfo.github,
+          user.contactInfo.website
+        ].filter(Boolean).length;
         const contactScore = Math.round((contactFields / 7) * 100);
         sections.push({ name: 'Contact Info', score: contactScore });
         totalScore += contactScore;
         sectionCount++;
+      } else {
+        sections.push({ name: 'Contact Info', score: 0 });
+        sectionCount++;
       }
 
       // About/Summary
-      if (analysisData.about !== undefined) {
-        const aboutLength = analysisData.about?.length || 0;
-        const aboutScore = aboutLength > 200 ? 100 : Math.round((aboutLength / 200) * 100);
-        sections.push({ name: 'Summary', score: aboutScore });
-        totalScore += aboutScore;
-        sectionCount++;
-      }
+      const aboutLength = user.about?.length || 0;
+      const aboutScore = aboutLength > 200 ? 100 : Math.round((aboutLength / 200) * 100);
+      sections.push({ name: 'Summary', score: aboutScore });
+      totalScore += aboutScore;
+      sectionCount++;
 
       // Skills
-      if (analysisData.skills && Array.isArray(analysisData.skills)) {
-        const skillCount = analysisData.skills.length;
-        const skillScore = skillCount >= 10 ? 100 : Math.round((skillCount / 10) * 100);
-        sections.push({ name: 'Skills', score: skillScore });
-        totalScore += skillScore;
-        sectionCount++;
-      }
+      const skillCount = user.developerSkills?.length || 0;
+      const skillScore = skillCount >= 10 ? 100 : Math.round((skillCount / 10) * 100);
+      sections.push({ name: 'Skills', score: skillScore });
+      totalScore += skillScore;
+      sectionCount++;
 
       // Experience
-      if (analysisData.experience && Array.isArray(analysisData.experience)) {
-        const expCount = analysisData.experience.length;
-        const hasDetails = analysisData.experience.some((exp: any) => 
-          exp.responsibilities?.length > 0
-        );
-        const expScore = expCount > 0 ? (hasDetails ? 100 : 70) : 0;
-        sections.push({ name: 'Experience', score: expScore });
-        totalScore += expScore;
-        sectionCount++;
-      }
+      const expCount = user.experience?.length || 0;
+      const hasDetails = user.experience?.some(exp => 
+        exp.responsibilities?.length > 0 || exp.achievements?.length > 0
+      ) || false;
+      const expScore = expCount > 0 ? (hasDetails ? 100 : 70) : 0;
+      sections.push({ name: 'Experience', score: expScore });
+      totalScore += expScore;
+      sectionCount++;
 
       // Education
-      if (analysisData.education && Array.isArray(analysisData.education)) {
-        const eduCount = analysisData.education.length;
-        const eduScore = eduCount > 0 ? 100 : 0;
-        sections.push({ name: 'Education', score: eduScore });
-        totalScore += eduScore;
-        sectionCount++;
-      }
+      const eduCount = user.education?.length || 0;
+      const eduScore = eduCount > 0 ? 100 : 0;
+      sections.push({ name: 'Education', score: eduScore });
+      totalScore += eduScore;
+      sectionCount++;
 
       const overallScore = sectionCount > 0 ? Math.round(totalScore / sectionCount) : 0;
       return { score: overallScore, sections };
@@ -132,20 +147,21 @@ export async function GET(request: Request) {
 
     // Calculate onboarding roadmap progress
     const calculateRoadmapProgress = () => {
-      const hasCompletedAnalysis = user.cvAnalyses.length > 0 && user.cvAnalyses[0]?.status === 'COMPLETED';
+      const hasUploadedCV = user.cvs && user.cvs.length > 0;
+      const hasCompletedAnalysis = hasUploadedCV && user.cvs[0]?.status === 'COMPLETED';
       
       const milestones = [
         {
           id: 'cv-upload',
           title: 'Upload Your CV',
-          isCompleted: user.cvAnalyses.length > 0,
-          completedAt: user.cvAnalyses[0]?.createdAt || null
+          isCompleted: hasUploadedCV,
+          completedAt: hasUploadedCV ? user.cvs[0]?.createdAt?.toISOString() || null : null
         },
         {
           id: 'first-analysis',
           title: 'Get AI Feedback',
           isCompleted: hasCompletedAnalysis,
-          completedAt: hasCompletedAnalysis ? user.cvAnalyses[0]?.createdAt || null : null
+          completedAt: hasCompletedAnalysis ? user.cvs[0]?.createdAt?.toISOString() || null : null
         },
         {
           id: 'profile-improvement',
@@ -177,7 +193,7 @@ export async function GET(request: Request) {
     const getActivityStats = () => {
       // TODO: Implement actual activity tracking
       return {
-        cvsAnalyzed: user.cvAnalyses.length,
+        cvsAnalyzed: user.cvs?.length || 0,
         rolesSearched: 0, // TODO: Track from search history
         applicationsSubmitted: 0, // TODO: Track from application history
         coverLettersGenerated: 0, // TODO: Track from cover letter generation
@@ -218,7 +234,7 @@ export async function GET(request: Request) {
       return {
         currentStreak,
         bestStreak: 12, // TODO: Track best streak
-        lastActivityDate: lastActivity,
+        lastActivityDate: lastActivity ? lastActivity.toISOString() : null,
         isStreakActive,
         nextMilestone: currentStreak < 7 ? {
           target: 7,
@@ -235,7 +251,7 @@ export async function GET(request: Request) {
         monthly: user.monthlyPoints,
         used: user.pointsUsed,
         earned: user.pointsEarned,
-        resetDate: user.pointsResetDate,
+        resetDate: user.pointsResetDate ? user.pointsResetDate.toISOString() : null,
         subscriptionTier: user.subscriptionTier,
         efficiency: user.pointsUsed > 0 ? Math.round((user.pointsEarned / user.pointsUsed) * 100) : 100,
         transactions: user.pointsTransactions
