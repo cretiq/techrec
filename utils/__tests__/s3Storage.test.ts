@@ -1,8 +1,6 @@
+import { uploadFileToS3, getPresignedS3Url, deleteFileFromS3 } from '@/utils/s3Storage';
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { uploadFileToS3, getPresignedS3Url, deleteFileFromS3 } from '@/utils/s3Storage'; // Adjust path as necessary
-import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest'; // Extends jest matchers
 
 // Mock environment variables
 process.env.AWS_REGION = 'us-east-1';
@@ -10,143 +8,239 @@ process.env.AWS_ACCESS_KEY_ID = 'test-access-key';
 process.env.AWS_SECRET_ACCESS_KEY = 'test-secret-key';
 process.env.AWS_S3_BUCKET_NAME = 'test-bucket';
 
-// Mock the S3Client completely using aws-sdk-client-mock
-const s3Mock = mockClient(S3Client);
+// Mock AWS SDK modules using factory pattern
+jest.mock('@aws-sdk/client-s3', () => {
+  const mockSend = jest.fn();
+  const mockS3Client = {
+    send: mockSend,
+  };
+  const mockPutObjectCommand = jest.fn();
+  const mockGetObjectCommand = jest.fn();
+  const mockDeleteObjectCommand = jest.fn();
 
-// Mock the getSignedUrl function (it's not part of S3Client)
-// We need jest.mock for this as it's imported separately
-jest.mock('@aws-sdk/s3-request-presigner', () => ({
-  getSignedUrl: jest.fn(),
-}));
+  return {
+    S3Client: jest.fn().mockImplementation(() => mockS3Client),
+    PutObjectCommand: mockPutObjectCommand,
+    GetObjectCommand: mockGetObjectCommand,
+    DeleteObjectCommand: mockDeleteObjectCommand,
+  };
+});
 
-// Type assertion for the mocked function
-const mockedGetSignedUrl = getSignedUrl as jest.MockedFunction<typeof getSignedUrl>;
+jest.mock('@aws-sdk/s3-request-presigner', () => {
+  const mockGetSignedUrl = jest.fn();
+  return {
+    getSignedUrl: mockGetSignedUrl,
+  };
+});
+
+// Get the mocked functions
+const mockS3Client = new S3Client({}) as jest.Mocked<S3Client>;
+const mockPutObjectCommand = PutObjectCommand as jest.MockedClass<typeof PutObjectCommand>;
+const mockGetObjectCommand = GetObjectCommand as jest.MockedClass<typeof GetObjectCommand>;
+const mockDeleteObjectCommand = DeleteObjectCommand as jest.MockedClass<typeof DeleteObjectCommand>;
+const mockGetSignedUrl = getSignedUrl as jest.MockedFunction<typeof getSignedUrl>;
 
 describe('S3 Storage Utilities', () => {
   beforeEach(() => {
     // Reset mocks before each test
-    s3Mock.reset();
-    mockedGetSignedUrl.mockClear();
-    // Set default mock implementations if needed
-    s3Mock.on(PutObjectCommand).resolves({ $metadata: { httpStatusCode: 200 } });
-    s3Mock.on(DeleteObjectCommand).resolves({ $metadata: { httpStatusCode: 204 } });
-    mockedGetSignedUrl.mockResolvedValue('https://mocked.presigned.url/test-key');
+    jest.clearAllMocks();
+    (mockS3Client.send as jest.Mock).mockResolvedValue({ $metadata: { httpStatusCode: 200 } });
+    mockGetSignedUrl.mockResolvedValue('https://mocked.presigned.url/test-key');
   });
 
-  // --- uploadFileToS3 --- 
-  it('should call S3Client.send with PutObjectCommand for uploadFileToS3', async () => {
-    const key = 'uploads/test.txt';
-    const body = Buffer.from('test content');
-    const contentType = 'text/plain';
+  describe('uploadFileToS3', () => {
+    it('should call S3Client.send with PutObjectCommand for file upload', async () => {
+      const key = 'uploads/test.txt';
+      const body = Buffer.from('test content');
+      const contentType = 'text/plain';
 
-    await uploadFileToS3(key, body, contentType);
+      const expectedResponse = { ETag: '"mock-etag"', $metadata: { httpStatusCode: 200 } };
+      (mockS3Client.send as jest.Mock).mockResolvedValue(expectedResponse);
 
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
-    expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
-      Bucket: 'test-bucket',
-      Key: key,
-      Body: body,
-      ContentType: contentType,
+      const result = await uploadFileToS3(key, body, contentType);
+
+      expect(mockPutObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket',
+        Key: key,
+        Body: body,
+        ContentType: contentType,
+      });
+      expect(mockS3Client.send).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(expectedResponse);
+    });
+
+    it('should handle string body content', async () => {
+      const key = 'uploads/test.txt';
+      const body = 'test string content';
+      const contentType = 'text/plain';
+
+      await uploadFileToS3(key, body, contentType);
+
+      expect(mockPutObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket',
+        Key: key,
+        Body: body,
+        ContentType: contentType,
+      });
+      expect(mockS3Client.send).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw error on S3 upload failure', async () => {
+      const key = 'uploads/fail.txt';
+      const body = 'test';
+      const contentType = 'text/plain';
+      const mockError = new Error('S3 Upload Failed');
+      
+      (mockS3Client.send as jest.Mock).mockRejectedValue(mockError);
+
+      await expect(uploadFileToS3(key, body, contentType)).rejects.toThrow('Failed to upload file to S3');
+      expect(mockPutObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket',
+        Key: key,
+        Body: body,
+        ContentType: contentType,
+      });
     });
   });
 
-  it('should return S3 response on successful upload', async () => {
-    const key = 'uploads/test.txt';
-    const body = 'test string';
-    const contentType = 'text/plain';
-    const mockResponse = { ETag: '"mock-etag"' , $metadata: { httpStatusCode: 200 } }; // Example simplified response
-    s3Mock.on(PutObjectCommand).resolves(mockResponse);
+  describe('getPresignedS3Url', () => {
+    it('should generate presigned URL for file access', async () => {
+      const key = 'uploads/test.txt';
+      const expectedUrl = 'https://test-bucket.s3.amazonaws.com/uploads/test.txt?presigned=true';
+      
+      mockGetSignedUrl.mockResolvedValue(expectedUrl);
 
-    const result = await uploadFileToS3(key, body, contentType);
+      const result = await getPresignedS3Url(key);
 
-    expect(result).toEqual(mockResponse);
-  });
-
-  it('should throw error on S3 upload failure', async () => {
-    const key = 'uploads/fail.txt';
-    const body = 'test';
-    const contentType = 'text/plain';
-    const mockError = new Error('S3 Upload Failed');
-    s3Mock.on(PutObjectCommand).rejects(mockError);
-
-    await expect(uploadFileToS3(key, body, contentType)).rejects.toThrow(
-      'Failed to upload file to S3'
-    );
-    expect(s3Mock).toHaveReceivedCommandTimes(PutObjectCommand, 1);
-  });
-
-  // --- getPresignedS3Url --- 
-  it('should call getSignedUrl with correct parameters', async () => {
-    const key = 'downloads/report.pdf';
-    const expiresIn = 900; // 15 minutes
-
-    await getPresignedS3Url(key, expiresIn);
-
-    // Check if getSignedUrl was called
-    expect(mockedGetSignedUrl).toHaveBeenCalledTimes(1);
-    // Check the first argument (S3Client instance - difficult to match exactly, check type maybe)
-    expect(mockedGetSignedUrl.mock.calls[0][0]).toBeInstanceOf(S3Client);
-    // Check the second argument (GetObjectCommand instance)
-    expect(mockedGetSignedUrl.mock.calls[0][1]).toBeInstanceOf(GetObjectCommand);
-    expect(mockedGetSignedUrl.mock.calls[0][1].input).toEqual({
-      Bucket: 'test-bucket',
-      Key: key,
+      expect(mockGetObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket',
+        Key: key,
+      });
+      expect(mockGetSignedUrl).toHaveBeenCalledTimes(1);
+      expect(result).toBe(expectedUrl);
     });
-    // Check the third argument (options)
-    expect(mockedGetSignedUrl.mock.calls[0][2]).toEqual({ expiresIn });
-  });
 
-  it('should return the presigned URL on success', async () => {
-    const key = 'downloads/image.jpg';
-    const expectedUrl = 'https://signed-url.example.com/image.jpg?sig=123';
-    mockedGetSignedUrl.mockResolvedValue(expectedUrl);
+    it('should handle presigned URL generation failure', async () => {
+      const key = 'uploads/fail.txt';
+      const mockError = new Error('Presigned URL generation failed');
+      
+      mockGetSignedUrl.mockRejectedValue(mockError);
 
-    const result = await getPresignedS3Url(key);
+      await expect(getPresignedS3Url(key)).rejects.toThrow('Failed to generate presigned URL');
+      expect(mockGetObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket',
+        Key: key,
+      });
+    });
 
-    expect(result).toBe(expectedUrl);
-  });
+    it('should use default expiration time', async () => {
+      const key = 'uploads/test.txt';
+      
+      await getPresignedS3Url(key);
 
-  it('should throw error if getSignedUrl fails', async () => {
-    const key = 'downloads/fail.zip';
-    const mockError = new Error('Presigner Failed');
-    mockedGetSignedUrl.mockRejectedValue(mockError);
-
-    await expect(getPresignedS3Url(key)).rejects.toThrow(
-      'Failed to generate presigned URL'
-    );
-  });
-
-  // --- deleteFileFromS3 ---
-  it('should call S3Client.send with DeleteObjectCommand for deleteFileFromS3', async () => {
-    const key = 'to-delete/old-file.log';
-
-    await deleteFileFromS3(key);
-
-    expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
-    expect(s3Mock).toHaveReceivedCommandWith(DeleteObjectCommand, {
-      Bucket: 'test-bucket',
-      Key: key,
+      expect(mockGetSignedUrl).toHaveBeenCalledWith(
+        expect.any(Object), // The S3Client instance
+        expect.any(Object), // The GetObjectCommand instance
+        { expiresIn: 3600 } // Default 1 hour expiration
+      );
     });
   });
 
-  it('should return S3 response on successful delete', async () => {
-    const key = 'to-delete/another.tmp';
-    const mockResponse = { DeleteMarker: true , $metadata: { httpStatusCode: 204 } }; // Example simplified response
-    s3Mock.on(DeleteObjectCommand).resolves(mockResponse);
+  describe('deleteFileFromS3', () => {
+    it('should call S3Client.send with DeleteObjectCommand', async () => {
+      const key = 'uploads/test.txt';
+      const expectedResponse = { $metadata: { httpStatusCode: 204 } };
+      
+      (mockS3Client.send as jest.Mock).mockResolvedValue(expectedResponse);
 
-    const result = await deleteFileFromS3(key);
+      const result = await deleteFileFromS3(key);
 
-    expect(result).toEqual(mockResponse);
+      expect(mockDeleteObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket',
+        Key: key,
+      });
+      expect(mockS3Client.send).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(expectedResponse);
+    });
+
+    it('should handle S3 deletion failure', async () => {
+      const key = 'uploads/fail.txt';
+      const mockError = new Error('S3 Delete Failed');
+      
+      (mockS3Client.send as jest.Mock).mockRejectedValue(mockError);
+
+      await expect(deleteFileFromS3(key)).rejects.toThrow('Failed to delete file from S3');
+      expect(mockDeleteObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket',
+        Key: key,
+      });
+    });
+
+    it('should return successful deletion response', async () => {
+      const key = 'uploads/delete-me.txt';
+      const mockResponse = { 
+        DeleteMarker: true,
+        $metadata: { httpStatusCode: 204 }
+      };
+      
+      (mockS3Client.send as jest.Mock).mockResolvedValue(mockResponse);
+
+      const result = await deleteFileFromS3(key);
+
+      expect(result).toEqual(mockResponse);
+      expect(mockDeleteObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket',
+        Key: key,
+      });
+    });
   });
 
-  it('should throw error on S3 delete failure', async () => {
-    const key = 'to-delete/fail.data';
-    const mockError = new Error('S3 Delete Failed');
-    s3Mock.on(DeleteObjectCommand).rejects(mockError);
+  describe('Error Handling', () => {
+    it('should handle network timeout errors', async () => {
+      const key = 'uploads/timeout.txt';
+      const body = 'test content';
+      const timeoutError = new Error('Request timeout');
+      timeoutError.name = 'TimeoutError';
+      
+      (mockS3Client.send as jest.Mock).mockRejectedValue(timeoutError);
 
-    await expect(deleteFileFromS3(key)).rejects.toThrow(
-      'Failed to delete file from S3'
-    );
-    expect(s3Mock).toHaveReceivedCommandTimes(DeleteObjectCommand, 1);
+      await expect(uploadFileToS3(key, body, 'text/plain')).rejects.toThrow('Failed to upload file to S3');
+    });
+
+    it('should handle AWS credential errors', async () => {
+      const key = 'uploads/auth-fail.txt';
+      const credentialError = new Error('InvalidAccessKeyId');
+      credentialError.name = 'InvalidAccessKeyId';
+      
+      (mockS3Client.send as jest.Mock).mockRejectedValue(credentialError);
+
+      await expect(deleteFileFromS3(key)).rejects.toThrow('Failed to delete file from S3');
+    });
+
+    it('should handle bucket not found errors', async () => {
+      const key = 'uploads/bucket-missing.txt';
+      const bucketError = new Error('NoSuchBucket');
+      bucketError.name = 'NoSuchBucket';
+      
+      mockGetSignedUrl.mockRejectedValue(bucketError);
+
+      await expect(getPresignedS3Url(key)).rejects.toThrow('Failed to generate presigned URL');
+    });
   });
-}); 
+
+  describe('Environment Configuration', () => {
+    it('should use environment variables for bucket configuration', async () => {
+      const key = 'uploads/env-test.txt';
+      const body = 'test content';
+
+      await uploadFileToS3(key, body, 'text/plain');
+
+      expect(mockPutObjectCommand).toHaveBeenCalledWith({
+        Bucket: 'test-bucket', // From process.env.AWS_S3_BUCKET_NAME
+        Key: key,
+        Body: body,
+        ContentType: 'text/plain',
+      });
+    });
+  });
+});

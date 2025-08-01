@@ -2,7 +2,7 @@ import { GET, POST } from '../route'
 import { prisma } from '@/prisma/prisma'
 
 // Mock the dependencies
-jest.mock('@/lib/prisma', () => ({
+jest.mock('@/prisma/prisma', () => ({
   prisma: {
     role: {
       findMany: jest.fn(),

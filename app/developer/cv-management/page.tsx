@@ -376,8 +376,6 @@ export default function CVManagementPage() {
     return (
         <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" style={{ animationDelay: '100ms' }} data-testid="cv-management-page-container">
             <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }} data-testid="cv-management-page-header">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2" data-testid="cv-management-title">My Profile & CV</h1>
-                <p className="text-base-content/70 mb-6" data-testid="cv-management-description">Build your professional profile - upload your CV or start from scratch</p>
             </div>
             {/* Entry Section - Upload CV or Start from Scratch - Show when no completed CV */}
             {(!currentCV || currentCV.status === AnalysisStatus.FAILED || currentCV.status === AnalysisStatus.PENDING) && (
@@ -480,7 +478,7 @@ export default function CVManagementPage() {
                             {/* Quick Actions Bar */}
                             <Card 
                                 variant="transparent"
-                                className="sticky top-4 z-10 shadow-lg"
+                                className="shadow-lg"
                                 data-testid="cv-management-quick-actions"
                             >
                                 <CardContent className="py-3">
@@ -543,7 +541,7 @@ export default function CVManagementPage() {
                                 </CardContent>
                             </Card>
 
-                            <div className="flex gap-6">
+                            <div className="flex">
                                 {/* Smart Scoring Sidebar */}
                                 <aside className="w-80 hidden lg:block" data-testid="cv-management-scoring-sidebar">
                                     <Card 

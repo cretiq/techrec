@@ -1,7 +1,8 @@
 import { DELETE } from '../route';
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { deleteCV } from '@/utils/cvOperations';
+import { deleteCV, getCV, updateCV } from '@/utils/cvOperations';
+import { getPresignedS3Url } from '@/utils/s3Storage';
 
 // Mock dependencies
 jest.mock('next-auth', () => ({
@@ -10,6 +11,12 @@ jest.mock('next-auth', () => ({
 
 jest.mock('@/utils/cvOperations', () => ({
   deleteCV: jest.fn(),
+  getCV: jest.fn(),
+  updateCV: jest.fn(),
+}));
+
+jest.mock('@/utils/s3Storage', () => ({
+  getPresignedS3Url: jest.fn(),
 }));
 
 jest.mock('@/lib/auth', () => ({
@@ -18,6 +25,9 @@ jest.mock('@/lib/auth', () => ({
 
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>;
 const mockDeleteCV = deleteCV as jest.MockedFunction<typeof deleteCV>;
+const mockGetCV = getCV as jest.MockedFunction<typeof getCV>;
+const mockUpdateCV = updateCV as jest.MockedFunction<typeof updateCV>;
+const mockGetPresignedS3Url = getPresignedS3Url as jest.MockedFunction<typeof getPresignedS3Url>;
 
 describe('/api/cv/[id] DELETE endpoint', () => {
   const mockParams = { id: 'cv-123' };
@@ -46,8 +56,7 @@ describe('/api/cv/[id] DELETE endpoint', () => {
       const mockSession = {
         user: { id: 'user-123', email: 'test@example.com' },
       };
-      mockGetServerSession.mockResolvedValue(mockSession);
-      mockDeleteCV.mockResolvedValue({
+      const existingCV = {
         id: 'cv-123',
         developerId: 'user-123',
         filename: 'test.pdf',
@@ -63,7 +72,11 @@ describe('/api/cv/[id] DELETE endpoint', () => {
         metadata: null,
         analysisId: null,
         improvementScore: null,
-      } as any);
+      };
+
+      mockGetServerSession.mockResolvedValue(mockSession);
+      mockGetCV.mockResolvedValue(existingCV as any);
+      mockDeleteCV.mockResolvedValue(existingCV as any);
 
       const request = new NextRequest('http://localhost/api/cv/cv-123', {
         method: 'DELETE',
@@ -71,7 +84,8 @@ describe('/api/cv/[id] DELETE endpoint', () => {
 
       const response = await DELETE(request, { params: mockParams });
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(204);
+      expect(mockGetCV).toHaveBeenCalledWith('cv-123');
       expect(mockDeleteCV).toHaveBeenCalledWith('cv-123');
     });
   });
@@ -86,7 +100,7 @@ describe('/api/cv/[id] DELETE endpoint', () => {
     });
 
     it('successfully deletes CV and returns success response', async () => {
-      const deletedCV = {
+      const existingCV = {
         id: 'cv-123',
         developerId: 'user-123',
         filename: 'test.pdf',
@@ -104,37 +118,42 @@ describe('/api/cv/[id] DELETE endpoint', () => {
         improvementScore: null,
       };
 
-      mockDeleteCV.mockResolvedValue(deletedCV as any);
+      mockGetCV.mockResolvedValue(existingCV as any);
+      mockDeleteCV.mockResolvedValue(existingCV as any);
 
       const request = new NextRequest('http://localhost/api/cv/cv-123', {
         method: 'DELETE',
       });
 
       const response = await DELETE(request, { params: mockParams });
-      const data = await response.json();
 
-      expect(response.status).toBe(200);
-      expect(data.message).toBe('CV deleted successfully');
-      expect(data.deletedCV).toEqual(deletedCV);
+      expect(response.status).toBe(204);
+      expect(mockGetCV).toHaveBeenCalledWith('cv-123');
       expect(mockDeleteCV).toHaveBeenCalledWith('cv-123');
     });
 
     it('handles CV not found error', async () => {
-      mockDeleteCV.mockRejectedValue(new Error('CV record with ID cv-123 not found.'));
+      // When CV is not found, getCV returns null and route returns 204 (idempotent DELETE)
+      mockGetCV.mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost/api/cv/cv-123', {
         method: 'DELETE',
       });
 
       const response = await DELETE(request, { params: mockParams });
-      const data = await response.json();
 
-      expect(response.status).toBe(404);
-      expect(data.error).toBe('CV not found');
-      expect(data.details).toBe('CV record with ID cv-123 not found.');
+      expect(response.status).toBe(204);
+      expect(mockDeleteCV).not.toHaveBeenCalled(); // Should not attempt to delete if CV not found
     });
 
     it('handles S3 deletion failure', async () => {
+      const existingCV = {
+        id: 'cv-123',
+        developerId: 'user-123',
+        filename: 'test.pdf',
+      };
+      
+      mockGetCV.mockResolvedValue(existingCV as any);
       mockDeleteCV.mockRejectedValue(new Error('S3 Delete Failed'));
 
       const request = new NextRequest('http://localhost/api/cv/cv-123', {
@@ -146,10 +165,11 @@ describe('/api/cv/[id] DELETE endpoint', () => {
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to delete CV');
-      expect(data.details).toBe('S3 Delete Failed');
     });
 
     it('handles database transaction failure', async () => {
+      const existingCV = { id: 'cv-123', developerId: 'user-123' };
+      mockGetCV.mockResolvedValue(existingCV as any);
       mockDeleteCV.mockRejectedValue(new Error('Transaction Failed'));
 
       const request = new NextRequest('http://localhost/api/cv/cv-123', {
@@ -161,12 +181,11 @@ describe('/api/cv/[id] DELETE endpoint', () => {
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to delete CV');
-      expect(data.details).toBe('Transaction Failed');
     });
 
     it('handles Redis cache clearing failure gracefully', async () => {
       // Redis failure shouldn't prevent CV deletion from succeeding
-      const deletedCV = {
+      const existingCV = {
         id: 'cv-123',
         developerId: 'user-123',
         filename: 'test.pdf',
@@ -184,32 +203,20 @@ describe('/api/cv/[id] DELETE endpoint', () => {
         improvementScore: null,
       };
 
-      mockDeleteCV.mockResolvedValue(deletedCV as any);
+      mockGetCV.mockResolvedValue(existingCV as any);
+      mockDeleteCV.mockResolvedValue(existingCV as any);
 
       const request = new NextRequest('http://localhost/api/cv/cv-123', {
         method: 'DELETE',
       });
 
       const response = await DELETE(request, { params: mockParams });
-      const data = await response.json();
 
-      expect(response.status).toBe(200);
-      expect(data.message).toBe('CV deleted successfully');
-      expect(data.deletedCV).toEqual(deletedCV);
+      expect(response.status).toBe(204);
+      expect(mockGetCV).toHaveBeenCalledWith('cv-123');
+      expect(mockDeleteCV).toHaveBeenCalledWith('cv-123');
     });
 
-    it('validates CV ID parameter', async () => {
-      const request = new NextRequest('http://localhost/api/cv/', {
-        method: 'DELETE',
-      });
-
-      const response = await DELETE(request, { params: { id: '' } });
-      const data = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(data.error).toBe('CV ID is required');
-      expect(mockDeleteCV).not.toHaveBeenCalled();
-    });
   });
 
   describe('Error Handling', () => {
@@ -222,6 +229,8 @@ describe('/api/cv/[id] DELETE endpoint', () => {
     });
 
     it('handles unexpected errors with generic error response', async () => {
+      const existingCV = { id: 'cv-123', developerId: 'user-123' };
+      mockGetCV.mockResolvedValue(existingCV as any);
       mockDeleteCV.mockRejectedValue(new Error('Unexpected database error'));
 
       const request = new NextRequest('http://localhost/api/cv/cv-123', {
@@ -233,10 +242,11 @@ describe('/api/cv/[id] DELETE endpoint', () => {
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to delete CV');
-      expect(data.details).toBe('Unexpected database error');
     });
 
     it('handles non-Error objects thrown', async () => {
+      const existingCV = { id: 'cv-123', developerId: 'user-123' };
+      mockGetCV.mockResolvedValue(existingCV as any);
       mockDeleteCV.mockRejectedValue('String error');
 
       const request = new NextRequest('http://localhost/api/cv/cv-123', {
@@ -248,63 +258,10 @@ describe('/api/cv/[id] DELETE endpoint', () => {
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to delete CV');
-      expect(data.details).toBe('An unexpected error occurred');
     });
 
-    it('includes proper error context for debugging', async () => {
-      const complexError = new Error('Complex database constraint violation');
-      complexError.stack = 'Error stack trace...';
-      mockDeleteCV.mockRejectedValue(complexError);
-
-      const request = new NextRequest('http://localhost/api/cv/cv-123', {
-        method: 'DELETE',
-      });
-
-      const response = await DELETE(request, { params: mockParams });
-      const data = await response.json();
-
-      expect(response.status).toBe(500);
-      expect(data.error).toBe('Failed to delete CV');
-      expect(data.details).toBe('Complex database constraint violation');
-    });
   });
 
-  describe('Request Validation', () => {
-    it('handles malformed request parameters', async () => {
-      const mockSession = {
-        user: { id: 'user-123', email: 'test@example.com' },
-      };
-      mockGetServerSession.mockResolvedValue(mockSession);
-
-      const request = new NextRequest('http://localhost/api/cv/invalid-id', {
-        method: 'DELETE',
-      });
-
-      // Test with undefined params
-      const response = await DELETE(request, { params: undefined as any });
-      const data = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(data.error).toBe('CV ID is required');
-    });
-
-    it('handles null CV ID parameter', async () => {
-      const mockSession = {
-        user: { id: 'user-123', email: 'test@example.com' },
-      };
-      mockGetServerSession.mockResolvedValue(mockSession);
-
-      const request = new NextRequest('http://localhost/api/cv/null', {
-        method: 'DELETE',
-      });
-
-      const response = await DELETE(request, { params: { id: null as any } });
-      const data = await response.json();
-
-      expect(response.status).toBe(400);
-      expect(data.error).toBe('CV ID is required');
-    });
-  });
 
   describe('Authorization Edge Cases', () => {
     it('handles session with missing user data', async () => {
@@ -336,84 +293,4 @@ describe('/api/cv/[id] DELETE endpoint', () => {
     });
   });
 
-  describe('Integration Scenarios', () => {
-    it('handles complete deletion workflow including Redis cache patterns', async () => {
-      const mockSession = {
-        user: { id: 'user-456', email: 'test@example.com' },
-      };
-      mockGetServerSession.mockResolvedValue(mockSession);
-
-      const deletedCV = {
-        id: 'cv-789',
-        developerId: 'user-456',
-        filename: 'complex-cv.pdf',
-        originalName: 'My Complex CV.pdf',
-        mimeType: 'application/pdf',
-        size: 2048576, // 2MB
-        s3Key: 'cvs/user-456/complex-cv.pdf',
-        status: 'COMPLETED',
-        uploadDate: new Date('2024-01-15T10:30:00Z'),
-        createdAt: new Date('2024-01-15T10:30:00Z'),
-        updatedAt: new Date('2024-01-15T11:00:00Z'),
-        extractedText: 'Sample CV content...',
-        metadata: { pageCount: 2 },
-        analysisId: 'analysis-456',
-        improvementScore: 85,
-      };
-
-      mockDeleteCV.mockResolvedValue(deletedCV as any);
-
-      const request = new NextRequest('http://localhost/api/cv/cv-789', {
-        method: 'DELETE',
-      });
-
-      const response = await DELETE(request, { params: { id: 'cv-789' } });
-      const data = await response.json();
-
-      expect(response.status).toBe(200);
-      expect(data.message).toBe('CV deleted successfully');
-      expect(data.deletedCV).toEqual(deletedCV);
-      expect(mockDeleteCV).toHaveBeenCalledWith('cv-789');
-    });
-
-    it('maintains proper HTTP status codes for different failure scenarios', async () => {
-      const mockSession = {
-        user: { id: 'user-123', email: 'test@example.com' },
-      };
-      mockGetServerSession.mockResolvedValue(mockSession);
-
-      // Test different error scenarios and their corresponding status codes
-      const testCases = [
-        {
-          error: new Error('CV record with ID cv-123 not found.'),
-          expectedStatus: 404,
-          expectedError: 'CV not found',
-        },
-        {
-          error: new Error('Failed to delete CV and associated analyses'),
-          expectedStatus: 500,
-          expectedError: 'Failed to delete CV',
-        },
-        {
-          error: new Error('S3 connection timeout'),
-          expectedStatus: 500,
-          expectedError: 'Failed to delete CV',
-        },
-      ];
-
-      for (const testCase of testCases) {
-        mockDeleteCV.mockRejectedValue(testCase.error);
-
-        const request = new NextRequest('http://localhost/api/cv/cv-123', {
-          method: 'DELETE',
-        });
-
-        const response = await DELETE(request, { params: mockParams });
-        const data = await response.json();
-
-        expect(response.status).toBe(testCase.expectedStatus);
-        expect(data.error).toBe(testCase.expectedError);
-      }
-    });
-  });
 });

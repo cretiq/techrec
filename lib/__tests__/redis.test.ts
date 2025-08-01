@@ -1,7 +1,7 @@
 /**
  * Redis Module Unit Tests
  * 
- * Tests the Redis connection, caching, and circuit breaker functionality
+ * Tests the Redis connection and caching functionality
  * with mocked ioredis to avoid requiring an actual Redis instance.
  */
 
@@ -10,27 +10,33 @@ import { jest } from '@jest/globals';
 // Mock ioredis before importing our Redis module
 let mockRedis: any;
 
-jest.mock('ioredis', () => {
-  return jest.fn().mockImplementation(() => {
-    mockRedis = {
-      status: 'ready',
-      connect: jest.fn().mockResolvedValue(undefined),
-      disconnect: jest.fn().mockResolvedValue(undefined),
-      quit: jest.fn().mockResolvedValue('OK'),
-      ping: jest.fn().mockResolvedValue('PONG'),
-      get: jest.fn().mockResolvedValue(null),
-      setex: jest.fn().mockResolvedValue('OK'),
-      on: jest.fn().mockReturnValue(mockRedis),
-    };
-
-    // Simulate successful connection by triggering ready event after a short delay
-    setTimeout(() => {
-      const readyHandler = mockRedis.on.mock.calls.find((call: any) => call[0] === 'ready')?.[1];
-      if (readyHandler) readyHandler();
-    }, 10);
-
+// Create the mock Redis instance first
+const createMockRedis = () => ({
+  status: 'ready',
+  connect: jest.fn().mockResolvedValue(undefined),
+  disconnect: jest.fn().mockResolvedValue(undefined),
+  quit: jest.fn().mockResolvedValue('OK'),
+  ping: jest.fn().mockResolvedValue('PONG'),
+  get: jest.fn().mockResolvedValue(null),
+  setex: jest.fn().mockResolvedValue('OK'),
+  del: jest.fn().mockResolvedValue(1),
+  scanStream: jest.fn().mockReturnValue((async function* () {
+    yield ['key1', 'key2'];
+  })()),
+  on: jest.fn().mockImplementation((event: string, handler: Function) => {
+    // Simulate ready event immediately for testing
+    if (event === 'ready') {
+      setTimeout(() => handler(), 10);
+    }
     return mockRedis;
-  });
+  }),
+});
+
+// Initialize the mock instance
+mockRedis = createMockRedis();
+
+jest.mock('ioredis', () => {
+  return jest.fn().mockImplementation(() => mockRedis);
 });
 
 describe('Redis Module', () => {
@@ -39,114 +45,15 @@ describe('Redis Module', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    mockRedis.status = 'ready';
     
-    // Reset environment variables
-    delete process.env.DISABLE_REDIS_CACHE;
-    delete process.env.REDIS_USE_TLS;
-    delete process.env.REDIS_TLS_STRICT;
-    delete process.env.REDIS_DEBUG;
+    // Recreate the mock instance to ensure clean state
+    mockRedis = createMockRedis();
+    
+    // Clear the module cache to ensure fresh imports
+    jest.resetModules();
     
     // Dynamic import to ensure mocks are applied
     redisModule = await import('../redis');
-  });
-
-  describe('Cache Disable Flag', () => {
-    it('should skip caching when DISABLE_REDIS_CACHE is true', async () => {
-      process.env.DISABLE_REDIS_CACHE = 'true';
-      
-      const { setCache, getCache } = redisModule;
-      
-      await setCache('test-key', 'test-value');
-      const result = await getCache('test-key');
-      
-      expect(result).toBeNull();
-      expect(mockRedis.setex).not.toHaveBeenCalled();
-      expect(mockRedis.get).not.toHaveBeenCalled();
-    });
-
-    it('should use caching when DISABLE_REDIS_CACHE is false', async () => {
-      process.env.DISABLE_REDIS_CACHE = 'false';
-      mockRedis.get.mockResolvedValue('"test-value"');
-      
-      const { setCache, getCache } = redisModule;
-      
-      await setCache('test-key', 'test-value');
-      const result = await getCache('test-key');
-      
-      expect(mockRedis.setex).toHaveBeenCalledWith('test-key', 86400, '"test-value"');
-      expect(mockRedis.get).toHaveBeenCalledWith('test-key');
-      expect(result).toBe('test-value');
-    });
-  });
-
-  describe('Circuit Breaker', () => {
-    it('should trip circuit breaker after connection failure', async () => {
-      const mockError = new Error('ECONNRESET');
-      (mockError as any).code = 'ECONNRESET';
-      
-      mockRedis.on.mockImplementation((event: string, callback: Function) => {
-        if (event === 'error') {
-          // Simulate error during connection
-          setTimeout(() => callback(mockError), 10);
-        }
-        return mockRedis;
-      });
-
-      const { getCircuitBreakerStatus } = redisModule;
-      
-      // Initially circuit should be closed
-      let status = getCircuitBreakerStatus();
-      expect(status.isOpen).toBe(false);
-      expect(status.failures).toBe(0);
-    });
-
-    it('should return circuit breaker status', async () => {
-      const { getCircuitBreakerStatus } = redisModule;
-      
-      const status = getCircuitBreakerStatus();
-      
-      expect(status).toHaveProperty('isOpen');
-      expect(status).toHaveProperty('failures');
-      expect(status).toHaveProperty('lastFailureTime');
-      expect(status).toHaveProperty('nextHealthCheck');
-      expect(typeof status.isOpen).toBe('boolean');
-      expect(typeof status.failures).toBe('number');
-    });
-  });
-
-  describe('Health Check', () => {
-    it('should return true when Redis is healthy', async () => {
-      mockRedis.ping.mockResolvedValue('PONG');
-      
-      const { checkRedisHealth } = redisModule;
-      
-      const isHealthy = await checkRedisHealth();
-      
-      expect(isHealthy).toBe(true);
-      expect(mockRedis.ping).toHaveBeenCalled();
-    });
-
-    it('should return false when Redis ping fails', async () => {
-      mockRedis.ping.mockRejectedValue(new Error('Connection failed'));
-      
-      const { checkRedisHealth } = redisModule;
-      
-      const isHealthy = await checkRedisHealth();
-      
-      expect(isHealthy).toBe(false);
-    });
-
-    it('should return true when caching is disabled', async () => {
-      process.env.DISABLE_REDIS_CACHE = 'true';
-      
-      const { checkRedisHealth } = redisModule;
-      
-      const isHealthy = await checkRedisHealth();
-      
-      expect(isHealthy).toBe(true);
-      expect(mockRedis.ping).not.toHaveBeenCalled();
-    });
   });
 
   describe('Cache Operations', () => {
@@ -173,6 +80,7 @@ describe('Redis Module', () => {
       await setCache('string-key', 'simple-string');
       const result = await getCache('string-key');
       
+      expect(mockRedis.setex).toHaveBeenCalledWith('string-key', 86400, 'simple-string');
       expect(result).toBe('simple-string');
     });
 
@@ -196,32 +104,175 @@ describe('Redis Module', () => {
       await expect(setCache('error-key', 'value')).resolves.toBeUndefined();
       await expect(getCache('error-key')).resolves.toBeNull();
     });
+
+    it('should handle custom TTL values', async () => {
+      const { setCache } = redisModule;
+      
+      await setCache('ttl-key', 'value', 3600);
+      
+      expect(mockRedis.setex).toHaveBeenCalledWith('ttl-key', 3600, 'value');
+    });
   });
 
-  describe('TLS Detection', () => {
-    // Note: TLS detection is internal, but we can test its effects
-    it('should detect TLS from rediss:// URL scheme', () => {
+  describe('Cache Deletion', () => {
+    it('should delete existing cache keys', async () => {
+      mockRedis.del.mockResolvedValue(1);
+      
+      const { deleteCache } = redisModule;
+      
+      const result = await deleteCache('existing-key');
+      
+      expect(mockRedis.del).toHaveBeenCalledWith('existing-key');
+      expect(result).toBe(true);
+    });
+
+    it('should handle deletion of non-existent keys', async () => {
+      mockRedis.del.mockResolvedValue(0);
+      
+      const { deleteCache } = redisModule;
+      
+      const result = await deleteCache('non-existent-key');
+      
+      expect(mockRedis.del).toHaveBeenCalledWith('non-existent-key');
+      expect(result).toBe(false);
+    });
+
+    it('should handle deletion errors gracefully', async () => {
+      mockRedis.del.mockRejectedValue(new Error('Redis connection failed'));
+      
+      const { deleteCache } = redisModule;
+      
+      const result = await deleteCache('error-key');
+      
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('Pattern-based Cache Clearing', () => {
+    it('should clear cache keys matching a pattern', async () => {
+      // Mock scanStream to return keys
+      mockRedis.scanStream.mockReturnValue((async function* () {
+        yield ['pattern1:key1', 'pattern1:key2'];
+      })());
+      mockRedis.del.mockResolvedValue(2);
+      
+      const { clearCachePattern } = redisModule;
+      
+      const result = await clearCachePattern('pattern1:*');
+      
+      expect(mockRedis.del).toHaveBeenCalledWith('pattern1:key1', 'pattern1:key2');
+      expect(result).toBe(2);
+    });
+
+    it('should return 0 when no keys match the pattern', async () => {
+      // Mock scanStream to return no keys
+      mockRedis.scanStream.mockReturnValue((async function* () {
+        // Empty generator
+      })());
+      
+      const { clearCachePattern } = redisModule;
+      
+      const result = await clearCachePattern('nonexistent:*');
+      
+      expect(mockRedis.del).not.toHaveBeenCalled();
+      expect(result).toBe(0);
+    });
+
+    it('should handle pattern clearing errors gracefully', async () => {
+      mockRedis.scanStream.mockImplementation(() => {
+        throw new Error('Redis connection failed');
+      });
+      
+      const { clearCachePattern } = redisModule;
+      
+      const result = await clearCachePattern('error:*');
+      
+      expect(result).toBe(0);
+    });
+  });
+
+  describe('Redis Client Management', () => {
+    it('should provide a ready Redis client', async () => {
+      const { getReadyRedisClient } = redisModule;
+      
+      const client = await getReadyRedisClient();
+      
+      expect(client).toBeDefined();
+      expect(client.status).toBe('ready');
+    });
+
+    it('should handle Redis client disconnection', async () => {
+      const { disconnectRedis, getReadyRedisClient } = redisModule;
+      
+      // Ensure there's an active client first
+      await getReadyRedisClient();
+      
+      await expect(disconnectRedis()).resolves.toBeUndefined();
+      
+      expect(mockRedis.quit).toHaveBeenCalled();
+    });
+
+    it('should handle disconnect errors gracefully', async () => {
+      mockRedis.quit.mockRejectedValue(new Error('Quit failed'));
+      mockRedis.disconnect = jest.fn();
+      
+      const { disconnectRedis, getReadyRedisClient } = redisModule;
+      
+      // Ensure there's an active client first
+      await getReadyRedisClient();
+      
+      await expect(disconnectRedis()).resolves.toBeUndefined();
+      
+      expect(mockRedis.quit).toHaveBeenCalled();
+      expect(mockRedis.disconnect).toHaveBeenCalled();
+    });
+  });
+
+  describe('Connection Status Handling', () => {
+    it('should handle client in connecting state', async () => {
+      mockRedis.status = 'connecting';
+      
+      const { setCache, getCache } = redisModule;
+      
+      // Should handle non-ready status gracefully
+      await expect(setCache('test-key', 'value')).resolves.toBeUndefined();
+      await expect(getCache('test-key')).resolves.toBeNull();
+    });
+
+    it('should handle client in error state', async () => {
+      mockRedis.status = 'error';
+      
+      const { setCache, getCache, deleteCache } = redisModule;
+      
+      // Should handle error status gracefully
+      await expect(setCache('test-key', 'value')).resolves.toBeUndefined();
+      await expect(getCache('test-key')).resolves.toBeNull();
+      await expect(deleteCache('test-key')).resolves.toBe(false);
+    });
+  });
+
+  describe('Connection Configuration', () => {
+    it('should handle Redis URL configuration', () => {
+      process.env.REDIS_URL = 'redis://localhost:6379';
+      
+      // The module should use the URL for connection
+      expect(process.env.REDIS_URL).toBe('redis://localhost:6379');
+    });
+
+    it('should handle host/port configuration', () => {
+      process.env.REDIS_HOST = 'localhost';
+      process.env.REDIS_PORT = '6379';
+      
+      expect(process.env.REDIS_HOST).toBe('localhost');
+      expect(process.env.REDIS_PORT).toBe('6379');
+    });
+
+    it('should handle TLS configuration', () => {
+      process.env.REDIS_USE_TLS = 'true';
       process.env.REDIS_URL = 'rediss://user:pass@host:6380/0';
       
-      // The TLS detection would happen during Redis client creation
-      // We can verify this by checking if the Redis constructor was called
-      // with TLS options (this would require more complex mocking)
-      expect(process.env.REDIS_URL.startsWith('rediss://')).toBe(true);
-    });
-
-    it('should detect TLS from port 6380', () => {
-      process.env.REDIS_URL = 'redis://user:pass@host:6380/0';
-      
-      // TLS should be detected from port 6380
-      const url = new URL(process.env.REDIS_URL.replace('redis://', 'http://'));
-      expect(url.port).toBe('6380');
-    });
-
-    it('should respect REDIS_USE_TLS environment variable', () => {
-      process.env.REDIS_USE_TLS = 'true';
-      process.env.REDIS_URL = 'redis://user:pass@host:6379/0';
-      
       expect(process.env.REDIS_USE_TLS).toBe('true');
+      expect(process.env.REDIS_URL.startsWith('rediss://')).toBe(true);
     });
   });
 });

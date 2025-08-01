@@ -7,7 +7,7 @@ jest.mock('next-auth', () => ({
   getServerSession: jest.fn(),
 }))
 
-jest.mock('@/lib/prisma', () => ({
+jest.mock('@/prisma/prisma', () => ({
   prisma: {
     role: {
       findUnique: jest.fn(),
