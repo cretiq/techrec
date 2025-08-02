@@ -530,7 +530,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
           variant="ghost"
           size="icon"
           onClick={handleSaveClick}
-          className="absolute top-2 right-10 text-muted-foreground hover:text-primary shrink-0 z-10"
+          className="absolute top-2 right-2 text-muted-foreground hover:text-primary shrink-0 z-10"
           aria-label={isRoleSaved ? "Unsave role" : "Save role"}
           title={isRoleSaved ? "Unsave Role" : "Save Role"}
           data-testid={`role-search-button-save-trigger-${role.id}`}
@@ -541,11 +541,6 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
             <Bookmark className="h-5 w-5" />
           )}
         </Button>
-      )}
-      {isSelected && (
-        <div className="absolute top-2 right-2 text-primary z-10 p-1 bg-base-100/80 backdrop-blur-sm rounded-full" data-testid={`role-search-indicator-selected-${role.id}`}>
-          <Check className="h-4 w-4" />
-        </div>
       )}
       {/* Match Score Circle - Top Left */}
       <div className="absolute top-2 left-2 z-10" data-testid={`role-search-match-score-${role.id}`}>
@@ -559,10 +554,10 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
         />
       </div>
       
-      <CardHeader className="pb-4 pr-16 pl-10" data-testid={`role-search-header-role-${role.id}`}>
+      <CardHeader className="pb-4 pr-10 pl-10" data-testid={`role-search-header-role-${role.id}`}>
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
-                        <CardTitle className="text-lg line-clamp-2">{role.title}</CardTitle>
+                        <CardTitle className="text-lg line-clamp-2 break-words">{role.title}</CardTitle>
                         <div className="space-y-1 text-base-content/70 text-sm">
                           <div className="flex items-center gap-1">
                             <Building className="h-4 w-4" />

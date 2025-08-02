@@ -35,6 +35,7 @@ import {
 import { useSavedRoles } from '@/hooks/useSavedRoles'
 import type { RootState, AppDispatch } from '@/lib/store'
 import { cn } from '@/lib/utils'
+import { useToast } from "@/components/ui/use-toast"
 
 type FilterType = 'all' | 'saved' | 'applied'
 
@@ -52,6 +53,7 @@ export default function SavedRolesPage() {
   // Redux state using our custom hook
   const { savedRoles, isLoading, error } = useSavedRoles()
   const counts = useSelector(selectSavedRolesCounts)
+  const { toast } = useToast()
   
   // Function to fetch detailed role data from the me endpoint
   const fetchDetailedSavedRoles = async () => {
@@ -141,6 +143,54 @@ export default function SavedRolesPage() {
     const encodedRoleData = encodeURIComponent(JSON.stringify(roleData))
     router.push(`/developer/writing-help?roleData=${encodedRoleData}`)
   }
+
+  const handleUnsaveRole = useCallback(async (savedRole: any) => {
+    if (!session?.user) {
+      router.push('/auth/signin?callbackUrl=/developer/saved-roles')
+      return
+    }
+
+    // Get the role ID from the saved role data
+    const roleId = savedRole.role?.id || savedRole.roleId
+    if (!roleId) {
+      toast({
+        title: 'Error',
+        description: 'Role ID not found',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/developer/me/saved-roles`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ roleId }),
+      })
+
+      if (response.ok) {
+        // Refresh both data sources to maintain consistency
+        dispatch(fetchSavedRoles({ includeRoleDetails: true }))
+        fetchDetailedSavedRoles()
+        
+        toast({
+          title: 'Success',
+          description: 'Role removed from saved roles',
+        })
+      } else {
+        throw new Error('Failed to unsave role')
+      }
+    } catch (error) {
+      console.error('Error unsaving role:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to remove role from saved roles',
+        variant: 'destructive',
+      })
+    }
+  }, [session?.user, router, toast, dispatch])
   
   if (status === 'loading') {
     return (
@@ -312,6 +362,7 @@ export default function SavedRolesPage() {
               savedRole={savedRole}
               onWriteTo={() => handleWriteTo(savedRole)}
               onRoleMarkedAsApplied={handleRoleMarkedAsApplied}
+              onUnsaveRole={() => handleUnsaveRole(savedRole)}
             />
           ))}
         </div>
@@ -324,9 +375,10 @@ interface SavedRoleCardProps {
   savedRole: any
   onWriteTo: () => void
   onRoleMarkedAsApplied: () => void
+  onUnsaveRole: () => void
 }
 
-function SavedRoleCard({ savedRole, onWriteTo, onRoleMarkedAsApplied }: SavedRoleCardProps) {
+function SavedRoleCard({ savedRole, onWriteTo, onRoleMarkedAsApplied, onUnsaveRole }: SavedRoleCardProps) {
   // Track local applied state for immediate UI feedback
   const [localAppliedState, setLocalAppliedState] = useState(false)
   
@@ -384,10 +436,18 @@ function SavedRoleCard({ savedRole, onWriteTo, onRoleMarkedAsApplied }: SavedRol
       data-testid={`saved-role-card-${savedRole.id}`}
     >
       <CardHeader className="pb-4 relative">
-        {/* Bookmark icon in top right corner */}
-        <div className="absolute top-2 right-2">
-          <BookmarkCheck className="h-5 w-5 text-primary" />
-        </div>
+        {/* Bookmark icon in top right corner - clickable to unsave */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onUnsaveRole}
+          className="absolute top-2 right-2 text-primary hover:text-primary/80 shrink-0 z-10"
+          aria-label="Unsave role"
+          title="Remove from Saved Roles"
+          data-testid={`saved-role-unsave-button-${savedRole.id}`}
+        >
+          <BookmarkCheck className="h-5 w-5" />
+        </Button>
         
         <div className="space-y-2 pr-16">
           <CardTitle className="text-lg line-clamp-2">{role.title}</CardTitle>
