@@ -78,6 +78,15 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
             const response = await dispatch(fetchSuggestions(analysisData)).unwrap();
             console.log('🎉 [AnalysisActionButtons] Suggestions received, syncing to suggestionsSlice...');
             console.log('📊 [AnalysisActionButtons] Response structure:', response);
+            console.log('📊 [AnalysisActionButtons] Total suggestions:', response.suggestions?.length || 0);
+            
+            // Log each suggestion's section for debugging
+            if (response.suggestions && response.suggestions.length > 0) {
+                console.log('🔍 [AnalysisActionButtons] Suggestion sections:');
+                response.suggestions.forEach((s: any, i: number) => {
+                    console.log(`  ${i + 1}. Section: "${s.section}" | Type: ${s.suggestionType || s.type}`);
+                });
+            }
             
             // Dispatch the full response to suggestionsSlice for UI components
             dispatch(setSuggestions(response));
@@ -85,7 +94,7 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
             
             toast({
                 title: "Suggestions Generated",
-                description: "AI improvement suggestions are ready.",
+                description: `${response.suggestions?.length || 0} AI improvement suggestions are ready.`,
             });
         } catch (error: any) {
             console.error("Error getting suggestions:", error);

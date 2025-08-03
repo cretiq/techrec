@@ -601,36 +601,38 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                       )}
                     </div>
                     <p className="text-muted-foreground text-sm line-clamp-3">{role.description || 'No description available.'}</p>
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
-                        {(role.requirements && role.requirements.length > 0) ? (
-                          role.requirements.map((req, idx) => (
-                            <Badge key={`${role.id}-req-${idx}`} variant="outline" className="text-xs">
-                              {req}
-                            </Badge>
-                          ))
-                        ) : (role.skills && role.skills.length > 0) ? (
-                          role.skills.map((skill) => (
-                            <Badge key={`${role.id}-${skill.id}`} variant="outline" className="text-xs">
-                              {skill.name}
-                            </Badge>
-                          ))
-                        ) : (role.company?.specialties && role.company.specialties.length > 0) ? (
-                          role.company.specialties.slice(0, 5).map((specialty, idx) => (
-                            <Badge key={`${role.id}-spec-${idx}`} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                              {specialty}
-                            </Badge>
-                          ))
-                        ) : (
-                          <span className="text-xs text-muted-foreground">Not specified</span>
+                    {((role.requirements && role.requirements.length > 0) || 
+                      (role.skills && role.skills.length > 0) || 
+                      (role.company?.specialties && role.company.specialties.length > 0)) && (
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
+                          {(role.requirements && role.requirements.length > 0) ? (
+                            role.requirements.map((req, idx) => (
+                              <Badge key={`${role.id}-req-${idx}`} variant="outline" className="text-xs">
+                                {req}
+                              </Badge>
+                            ))
+                          ) : (role.skills && role.skills.length > 0) ? (
+                            role.skills.map((skill) => (
+                              <Badge key={`${role.id}-${skill.id}`} variant="outline" className="text-xs">
+                                {skill.name}
+                              </Badge>
+                            ))
+                          ) : (role.company?.specialties && role.company.specialties.length > 0) ? (
+                            role.company.specialties.slice(0, 5).map((specialty, idx) => (
+                              <Badge key={`${role.id}-spec-${idx}`} variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                                {specialty}
+                              </Badge>
+                            ))
+                          ) : null}
+                        </div>
+                        {role.company?.specialties && role.company.specialties.length > 5 && (
+                          <p className="text-xs text-muted-foreground">
+                            +{role.company.specialties.length - 5} more company specialties
+                          </p>
                         )}
                       </div>
-                      {role.company?.specialties && role.company.specialties.length > 5 && (
-                        <p className="text-xs text-muted-foreground">
-                          +{role.company.specialties.length - 5} more company specialties
-                        </p>
-                      )}
-                    </div>
+                    )}
                     
                     {/* Recruiter/Hiring Manager Contact Information */}
                     {role.applicationInfo && (role.applicationInfo.recruiter || role.applicationInfo.hiringManager) && (
@@ -643,7 +645,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                   <CardFooter className="card-body pt-2 mt-auto space-y-3" data-testid={`role-search-footer-role-${role.id}`}>
                     {/* Salary Section */}
                     <div className="w-full text-center">
-                      <div className="text-md font-semibold">{role.salary || 'Salary not specified'}</div>
+                      <div className="text-md font-semibold">{role.salary || 'No Salary Specified'}</div>
                     </div>
                     
                     {/* Action Buttons Section */}

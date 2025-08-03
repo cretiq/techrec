@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // Import suggestion-related types and components
 import { ExperienceItem as CvExperienceItem, CvImprovementSuggestion } from '@/types/cv';
-// Removed InlineSuggestion - using SuggestionManager instead
+import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 
 interface ExperienceProps {
   data: CvExperienceItem[] | null | undefined;
@@ -272,11 +272,23 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                       <Briefcase className="h-4 w-4" />
                       {exp.title ?? 'Untitled Role'}
                     </h3>
-                    {/* Inline suggestions removed - using SuggestionManager instead */}
+                    {/* Field-specific suggestions for job title */}
+                    <SuggestionManager 
+                      section="experience" 
+                      targetId={exp.id} 
+                      targetField="title" 
+                      className="mt-1" 
+                    />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-0.5">{exp.company ?? 'Unknown Company'}</p>
-                    {/* Inline suggestions removed - using SuggestionManager instead */}
+                    {/* Field-specific suggestions for company */}
+                    <SuggestionManager 
+                      section="experience" 
+                      targetId={exp.id} 
+                      targetField="company" 
+                      className="mt-1" 
+                    />
                   </div>
                   <div className="flex items-start gap-4 text-xs text-muted-foreground mt-1 mb-0.5">
                     {(exp.startDate || exp.endDate) && 
@@ -285,8 +297,6 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                           <Calendar className="h-3 w-3" />
                           {formatDateSafe(exp.startDate ?? null)} - {formatDateSafe(exp.endDate ?? null)}
                         </span>
-                        {/* Inline suggestions removed - using SuggestionManager instead */}
-                        {/* Inline suggestions removed - using SuggestionManager instead */}
                       </div>
                     }
                     {exp.location && 
@@ -295,7 +305,13 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                           <MapPin className="h-3 w-3" />
                           {exp.location}
                         </span>
-                        {/* Inline suggestions removed - using SuggestionManager instead */}
+                        {/* Field-specific suggestions for location */}
+                        <SuggestionManager 
+                          section="experience" 
+                          targetId={exp.id} 
+                          targetField="location" 
+                          className="mt-1" 
+                        />
                       </div>
                     }
                   </div>
@@ -309,7 +325,13 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                             <div className="text-primary/70 text-sm">•</div>
                             <div className="text-sm text-base-content/90 list-col-grow pl-2">
                               {resp ?? ''}
-                              {/* Inline suggestions removed - using SuggestionManager instead */}
+                              {/* Field-specific suggestions for this responsibility */}
+                              <SuggestionManager 
+                                section="experience" 
+                                targetId={exp.id} 
+                                targetField={`responsibilities[${rIndex}]`} 
+                                className="mt-1" 
+                              />
                             </div>
                           </li>
                         ))
@@ -329,6 +351,14 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
                       ) : null}
                     </ul>
                   )}
+                  
+                  {/* General suggestions for overall experience quality */}
+                  <SuggestionManager 
+                    section="experience" 
+                    targetId={exp.id} 
+                    targetField="general" 
+                    className="mt-3" 
+                  />
                 </>
               )}
             </motion.div>

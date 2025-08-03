@@ -9,10 +9,7 @@ import { useHighlightClasses } from '@/utils/suggestionHighlight';
 
 // Import suggestion-related types and components
 import { CvImprovementSuggestion } from '@/types/cv';
-// Remove old imports
-// import { SuggestionHighlight } from '@/components/suggestions/SuggestionHighlight';
-// import { SuggestionIndicator } from '@/components/suggestions/SuggestionIndicator';
-// Removed InlineSuggestion - using SuggestionManager instead
+import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 
 interface ContactInfoData {
   name?: string | null;
@@ -282,11 +279,22 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
         {/* Render fields */} 
         {isEditing && renderFieldWithSuggestions('name', User, 'Full Name', 'Full Name')} {/* Changed icon from Mail to User */}
         {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email', 'email')}
+        <SuggestionManager section="contactInfo" targetField="email" className="mt-1" />
+        
         {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone', 'tel')}
+        <SuggestionManager section="contactInfo" targetField="phone" className="mt-1" />
+        
         {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)', 'Location')}
+        <SuggestionManager section="contactInfo" targetField="location" className="mt-1" />
+        
         {renderLinkWithSuggestions('linkedin', Linkedin, 'linkedin.com/in/...')}
+        <SuggestionManager section="contactInfo" targetField="linkedin" className="mt-1" />
+        
         {renderLinkWithSuggestions('github', Github, 'github.com/...')}
+        <SuggestionManager section="contactInfo" targetField="github" className="mt-1" />
+        
         {renderLinkWithSuggestions('website', LinkIcon, 'yourwebsite.com')}
+        <SuggestionManager section="contactInfo" targetField="website" className="mt-1" />
       </div>
     </div>
   );

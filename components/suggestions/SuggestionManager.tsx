@@ -28,12 +28,14 @@ import { useToast } from '@/components/ui/use-toast';
 interface SuggestionManagerProps {
   section: string; // Target section (experience, education, skills, about)
   targetId?: string; // Specific item ID within section
+  targetField?: string; // Specific field within item (e.g., "title", "responsibilities[0]")
   className?: string;
 }
 
 export function SuggestionManager({
   section,
   targetId,
+  targetField,
   className
 }: SuggestionManagerProps) {
   const dispatch = useDispatch<AppDispatch>();
@@ -50,12 +52,28 @@ export function SuggestionManager({
   const stats = useSelector(selectSuggestionsStats);
   const currentAnalysisData = useSelector(selectCurrentAnalysisData);
 
-  // Filter suggestions for this section/target
+  // Filter suggestions for this section/target/field
   const sectionSuggestions = suggestions.filter(suggestion => {
     const matchesSection = suggestion.section === section;
-    const matchesTarget = !targetId || suggestion.targetId === targetId;
-    return matchesSection && matchesTarget;
+    const matchesTarget = !targetId || (suggestion as any).targetId === targetId;
+    const matchesField = !targetField || (suggestion as any).targetField === targetField;
+    return matchesSection && matchesTarget && matchesField;
   });
+  
+  // Debug logging for suggestion filtering
+  console.log(`🔍 [SuggestionManager] Filtering for section: "${section}", targetId: "${targetId || 'none'}", targetField: "${targetField || 'none'}"`);
+  console.log(`📊 [SuggestionManager] Total suggestions: ${suggestions.length}`);
+  console.log(`📊 [SuggestionManager] Filtered suggestions: ${sectionSuggestions.length}`);
+  if (suggestions.length > 0 && sectionSuggestions.length === 0) {
+    console.log('⚠️ [SuggestionManager] No matches! Available sections:', 
+      [...new Set(suggestions.map(s => s.section))].join(', '));
+    if (targetId || targetField) {
+      console.log('⚠️ [SuggestionManager] Available targetIds:', 
+        [...new Set(suggestions.map(s => (s as any).targetId).filter(Boolean))].join(', '));
+      console.log('⚠️ [SuggestionManager] Available targetFields:', 
+        [...new Set(suggestions.map(s => (s as any).targetField).filter(Boolean))].join(', '));
+    }
+  }
 
   // Handle accepting a suggestion
   const handleAcceptSuggestion = useCallback(async (suggestionId: string) => {
