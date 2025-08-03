@@ -24,7 +24,6 @@ import { ExperienceDisplay } from './display/ExperienceDisplay';
 import { EducationDisplay } from './display/EducationDisplay';
 import { AIAssistanceButton } from './AIAssistanceButton';
 import { Accordion, AccordionItem as ShadcnAccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
-import { CvViewer } from './display/CvViewer';
 import { SuggestionList } from './display/SuggestionList';
 import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 import { ProjectRecommendationCard } from './ProjectRecommendationCard';
@@ -292,12 +291,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     };
   }, [accordionSectionKeys]);
 
-  // Handler for printing the current view
-  const handlePrintOrExport = () => {
-    // Basic print functionality for now
-    // TODO: Implement a more sophisticated export/print format if needed
-    window.print();
-  };
 
   // Animation Variants - Use shared transitions
   const pageVariants = {
@@ -377,9 +370,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   >
                       <h3 className="text-2xl font-semibold text-foreground mb-3 pb-1">Contact Info</h3>
                       
-                      {/* AI Suggestions for Contact Info */}
-                      <SuggestionManager section="contactInfo" className="mb-4" />
-                      
                       {/* Log before rendering ContactInfoDisplay */} 
                       <ContactInfoDisplay 
                           data={analysisData.contactInfo}
@@ -388,6 +378,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           onAcceptSuggestion={handleAcceptSuggestion}
                           onRejectSuggestion={handleRejectSuggestion}
                       />
+                      
+                      {/* Granular suggestions now handled within ContactInfoDisplay component */}
                   </motion.section>
               )}
               
@@ -425,9 +417,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
-                          {/* AI Suggestions for About/Summary */}
-                          <SuggestionManager section="about" className="mb-4" />
-                          
                           <AboutDisplay 
                             data={analysisData.about}
                             onChange={(newData) => dispatch(updateAnalysisData({ path: 'about', value: newData }))} 
@@ -435,6 +424,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                             onAcceptSuggestion={handleAcceptSuggestion}
                             onRejectSuggestion={handleRejectSuggestion}
                           />
+                          
+                          {/* AI Suggestions for About/Summary */}
+                          <SuggestionManager section="about" className="mt-4" />
                         </motion.div>
                       </AnimatePresence>
                     </AccordionContent>
@@ -457,9 +449,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
-                          {/* AI Suggestions for Skills */}
-                          <SuggestionManager section="skills" className="mb-4" />
-                          
                           <SkillsDisplay 
                             data={analysisData.skills}
                             onChange={(newData) => dispatch(updateAnalysisData({ path: 'skills', value: newData }))} 
@@ -467,6 +456,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                             onAcceptSuggestion={handleAcceptSuggestion}
                             onRejectSuggestion={handleRejectSuggestion}
                           />
+                          
+                          {/* AI Suggestions for Skills */}
+                          <SuggestionManager section="skills" className="mt-4" />
                         </motion.div>
                       </AnimatePresence>
                     </AccordionContent>
@@ -489,9 +481,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
-                          {/* AI Suggestions for Experience */}
-                          <SuggestionManager section="experience" className="mb-4" />
-                          
                           <ExperienceDisplay 
                             data={analysisData.experience}
                             onChange={(newData) => dispatch(updateAnalysisData({ path: 'experience', value: newData }))} 
@@ -499,6 +488,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                             onAcceptSuggestion={handleAcceptSuggestion}
                             onRejectSuggestion={handleRejectSuggestion}
                           />
+                          
+                          {/* Granular suggestions now handled within ExperienceDisplay component */}
                         </motion.div>
                       </AnimatePresence>
                     </AccordionContent>
@@ -521,9 +512,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
-                          {/* AI Suggestions for Education */}
-                          <SuggestionManager section="education" className="mb-4" />
-                          
                           <EducationDisplay 
                             data={analysisData.education}
                             onChange={(newData) => dispatch(updateAnalysisData({ path: 'education', value: newData }))} 
@@ -531,17 +519,15 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                             onAcceptSuggestion={handleAcceptSuggestion}
                             onRejectSuggestion={handleRejectSuggestion}
                           />
+                          
+                          {/* AI Suggestions for Education */}
+                          <SuggestionManager section="education" className="mt-4" />
                         </motion.div>
                       </AnimatePresence>
                     </AccordionContent>
                   </AccordionItem>
                 )}
               </Accordion>
-              
-              <CvViewer 
-                  pdfUrl={undefined /* TODO: Pass actual PDF URL if available */} 
-                  extractedText={analysisData?.cv?.extractedText} // Pass extracted text
-              />
           </main>
           
           {/* Project Recommendation Card - Shows for junior developers (≤2 years) only */}
@@ -557,20 +543,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
           )}
        </div>
 
-       {/* Action Buttons - corrected footer */}
-       {/* Use theme border color */}
-       <footer className="mt-10 pt-6 flex justify-end gap-4 print:hidden"> 
-         {/* Use theme primary button colors */}
-         <Button 
-           onClick={handlePrintOrExport} 
-           disabled={isProcessing} 
-           size="sm" 
-           variant="default" 
-           className="bg-primary hover:bg-primary/90 text-primary-foreground"
-         >
-           Export/Print Results
-         </Button>
-       </footer>
 
     </motion.div>
   );

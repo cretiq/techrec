@@ -1,16 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui-daisy/button';
 import { Badge } from '@/components/ui-daisy/badge';
+import { TooltipEnhanced } from '@/components/ui-daisy/tooltip';
 import { 
   Check, 
   X, 
   Plus, 
   Lightbulb, 
-  ChevronDown, 
-  ChevronUp,
   Sparkles,
   Target,
   BookOpen,
@@ -95,7 +94,6 @@ export function SuggestionItem({
   onDecline,
   className
 }: SuggestionItemProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const config = typeConfig[suggestion.type];
@@ -295,40 +293,26 @@ export function SuggestionItem({
             </p>
           </div>
 
-          {/* Expandable reasoning */}
-          <motion.button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 text-xs text-base-content/60 hover:text-base-content/80 transition-colors"
-            data-testid={`suggestion-expand-button-${suggestion.id}`}
+          {/* Tooltip for reasoning */}
+          <TooltipEnhanced
+            content={
+              <div className="max-w-xs">
+                <p className="text-sm leading-relaxed">
+                  {suggestion.reasoning}
+                </p>
+              </div>
+            }
+            position="top"
+            size="medium"
+            className="inline-block"
           >
-            <span>Why this helps</span>
-            {isExpanded ? (
-              <ChevronUp className="h-3 w-3" />
-            ) : (
-              <ChevronDown className="h-3 w-3" />
-            )}
-          </motion.button>
-          
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden"
-              >
-                <div 
-                  className="bg-base-200 rounded-lg p-3 border border-base-300/30"
-                  data-testid={`suggestion-reasoning-${suggestion.id}`}
-                >
-                  <p className="text-xs text-base-content/70 leading-relaxed">
-                    {suggestion.reasoning}
-                  </p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            <span 
+              className="text-xs text-base-content/60 hover:text-base-content/80 transition-colors cursor-help underline decoration-dotted"
+              data-testid={`suggestion-reasoning-tooltip-${suggestion.id}`}
+            >
+              Why this helps
+            </span>
+          </TooltipEnhanced>
         </div>
       </div>
     </motion.div>

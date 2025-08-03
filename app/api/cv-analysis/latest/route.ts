@@ -147,6 +147,7 @@ export async function GET(request: Request) {
         
         // Experience - transform from proper Experience table
         experience: developerProfile.experience.map(exp => ({
+          id: exp.id, // Include the actual database ID for proper targeting
           title: exp.title,
           company: exp.company,
           description: exp.description,
@@ -160,6 +161,7 @@ export async function GET(request: Request) {
         
         // Education - transform from proper Education table
         education: developerProfile.education.map(edu => ({
+          id: edu.id, // Include the actual database ID for proper targeting
           degree: edu.degree,
           institution: edu.institution,
           year: edu.year,
@@ -170,6 +172,7 @@ export async function GET(request: Request) {
         
         // Achievements - transform from proper Achievement table
         achievements: developerProfile.achievements.map(ach => ({
+          id: ach.id, // Include the actual database ID for proper targeting
           title: ach.title,
           description: ach.description,
           date: ach.date.toISOString(),
