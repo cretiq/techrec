@@ -478,7 +478,7 @@ export default function CVManagementPage() {
                             {/* Quick Actions Bar */}
                             <Card 
                                 variant="transparent"
-                                className="shadow-lg"
+                                className="rounded-xl"
                                 data-testid="cv-management-quick-actions"
                             >
                                 <CardContent className="py-3">
@@ -541,7 +541,7 @@ export default function CVManagementPage() {
                                 </CardContent>
                             </Card>
 
-                            <div className="flex">
+                            <div className="flex gap-6">
                                 {/* Smart Scoring Sidebar */}
                                 <aside className="w-80 hidden lg:block" data-testid="cv-management-scoring-sidebar">
                                     <Card 

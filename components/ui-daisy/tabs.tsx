@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from "framer-motion"
+import { cva, type VariantProps } from "class-variance-authority"
 
 interface TabsContextType {
   value: string
@@ -56,93 +58,182 @@ const Tabs = React.forwardRef<
 })
 Tabs.displayName = "Tabs"
 
-const TabsList = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    variant?: "default" | "boxed" | "bordered" | "lifted"
+const tabsListVariants = cva(
+  "tabs transition-all duration-200 ease-smooth",
+  {
+    variants: {
+      variant: {
+        default: "tabs bg-transparent",
+        boxed: "tabs-boxed bg-base-200 p-1 rounded-lg shadow-soft",
+        bordered: "tabs-bordered border-b-2 border-base-300/50",
+        lifted: "tabs-lifted shadow-medium bg-base-100",
+        glass: "bg-base-100/60 backdrop-blur-md border border-base-300/30 rounded-xl p-1 shadow-medium",
+        minimal: "tabs border-b border-base-300/30",
+        pills: "tabs bg-base-200/50 p-1 rounded-full shadow-soft",
+      },
+      size: {
+        sm: "text-sm",
+        default: "text-base",
+        lg: "text-lg",
+      },
+      fullWidth: {
+        true: "w-full",
+        false: "w-auto",
+      }
+    },
+    defaultVariants: {
+      variant: "boxed",
+      size: "default",
+      fullWidth: false,
+    },
   }
->(({ className, variant = "boxed", children, ...props }, ref) => {
-  const variantClasses = {
-    default: "tabs",
-    boxed: "tabs-boxed",
-    bordered: "tabs-bordered",
-    lifted: "tabs-lifted",
-  }
+)
 
-  return (
-    <div
-      ref={ref}
-      className={cn(variantClasses[variant], className)}
-      role="tablist"
-      {...props}
-    >
-      {children}
-    </div>
-  )
-})
+interface TabsListProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof tabsListVariants> {}
+
+const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
+  ({ className, variant, size, fullWidth, children, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(tabsListVariants({ variant, size, fullWidth }), className)}
+        role="tablist"
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
+)
 TabsList.displayName = "TabsList"
 
-const TabsTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    value: string
-    size?: "xs" | "sm" | "md" | "lg"
+const tabsTriggerVariants = cva(
+  "tab relative transition-all duration-200 ease-smooth font-medium hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20",
+  {
+    variants: {
+      variant: {
+        default: "hover:bg-base-200/60",
+        boxed: "rounded-md hover:bg-base-300/50 data-[state=active]:bg-primary data-[state=active]:text-primary-content data-[state=active]:shadow-sm",
+        bordered: "border-b-2 border-transparent hover:border-primary/50 data-[state=active]:border-primary data-[state=active]:text-primary",
+        lifted: "hover:bg-base-200/60 data-[state=active]:bg-base-100 data-[state=active]:text-primary",
+        glass: "rounded-lg hover:bg-base-100/60 data-[state=active]:bg-base-100/80 data-[state=active]:text-primary data-[state=active]:shadow-soft",
+        minimal: "border-b-2 border-transparent hover:border-primary/30 data-[state=active]:border-primary data-[state=active]:text-primary",
+        pills: "rounded-full hover:bg-base-100/60 data-[state=active]:bg-primary data-[state=active]:text-primary-content data-[state=active]:shadow-medium",
+      },
+      size: {
+        xs: "tab-xs text-xs px-3 py-1.5",
+        sm: "tab-sm text-sm px-4 py-2", 
+        default: "px-6 py-2.5",
+        lg: "tab-lg text-lg px-8 py-3",
+      }
+    },
+    defaultVariants: {
+      variant: "boxed",
+      size: "default",
+    },
   }
->(({ className, value, size, children, ...props }, ref) => {
-  const { value: selectedValue, onValueChange } = useTabsContext()
-  const isSelected = selectedValue === value
+)
 
-  const sizeClasses = {
-    xs: "tab-xs",
-    sm: "tab-sm",
-    md: "tab-md",
-    lg: "tab-lg",
+interface TabsTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof tabsTriggerVariants> {
+  value: string
+}
+
+const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
+  ({ className, value, variant, size, children, ...props }, ref) => {
+    const { value: selectedValue, onValueChange } = useTabsContext()
+    const isSelected = selectedValue === value
+
+    return (
+      <motion.button
+        ref={ref}
+        className={cn(
+          tabsTriggerVariants({ variant, size }),
+          isSelected && "tab-active",
+          className
+        )}
+        role="tab"
+        aria-selected={isSelected}
+        data-state={isSelected ? "active" : "inactive"}
+        onClick={() => onValueChange(value)}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.15 }}
+        {...props}
+      >
+        {children}
+        {isSelected && variant === "minimal" && (
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+            layoutId="activeTab"
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          />
+        )}
+      </motion.button>
+    )
   }
-
-  return (
-    <button
-      ref={ref}
-      className={cn(
-        "tab",
-        isSelected && "tab-active",
-        size && sizeClasses[size],
-        className
-      )}
-      role="tab"
-      aria-selected={isSelected}
-      onClick={() => onValueChange(value)}
-      {...props}
-    >
-      {children}
-    </button>
-  )
-})
+)
 TabsTrigger.displayName = "TabsTrigger"
 
-const TabsContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    value: string
-  }
->(({ className, value, children, ...props }, ref) => {
-  const { value: selectedValue } = useTabsContext()
-  const isSelected = selectedValue === value
+interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  value: string
+  animated?: boolean
+  forceMount?: boolean
+}
 
-  if (!isSelected) {
-    return null
-  }
+const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
+  ({ className, value, animated = true, forceMount = false, children, ...props }, ref) => {
+    const { value: selectedValue } = useTabsContext()
+    const isSelected = selectedValue === value
 
-  return (
-    <div
-      ref={ref}
-      className={cn("pt-4", className)}
-      role="tabpanel"
-      {...props}
-    >
-      {children}
-    </div>
-  )
-})
+    if (!isSelected && !forceMount) {
+      return null
+    }
+
+    const content = (
+      <div
+        ref={ref}
+        className={cn("pt-6", className)}
+        role="tabpanel"
+        aria-hidden={!isSelected}
+        data-state={isSelected ? "active" : "inactive"}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+
+    if (!animated) {
+      return content
+    }
+
+    return (
+      <AnimatePresence mode="wait">
+        {isSelected && (
+          <motion.div
+            key={value}
+            ref={ref}
+            className={cn("pt-6", className)}
+            role="tabpanel"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ 
+              duration: 0.2, 
+              ease: [0.4, 0, 0.2, 1]
+            }}
+            {...props}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    )
+  }
+)
 TabsContent.displayName = "TabsContent"
 
 export { Tabs, TabsList, TabsTrigger, TabsContent } 

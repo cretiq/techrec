@@ -350,7 +350,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
 
   return (
     <motion.div
-      className="analysis-display-container p-4 md:p-6 lg:p-8 bg-background min-h-screen font-sans rounded-2xl"
+      className="analysis-display-container bg-background min-h-screen font-sans rounded-2xl"
       variants={pageVariants}
       initial="hidden"
       animate="visible"
