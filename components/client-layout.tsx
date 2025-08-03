@@ -61,21 +61,15 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/developer/dashboard" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-dashboard-trigger">
                     Dashboard
                   </Link>
-                  <div className="relative group" data-testid="nav-desktop-dropdown-features">
-                    <div className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors cursor-pointer flex items-center gap-1 py-2" data-testid="nav-desktop-dropdown-features-trigger">
-                      Features
-                      <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                    <div className="absolute top-full left-0 z-50 w-52 mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out" data-testid="nav-desktop-dropdown-features-menu">
-                      <ul className="menu p-2 shadow-lg bg-base-100 rounded-lg border border-base-300">
-                        <li><Link href="/developer/cv-management" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-cv-management-trigger">CV Management</Link></li>
-                        <li><Link href="/developer/roles/search" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-role-search-trigger">Role Search</Link></li>
-                        <li><Link href="/developer/saved-roles" className="hover:bg-base-200 rounded-md" data-testid="nav-desktop-dropdown-saved-roles-trigger">Saved Roles</Link></li>
-                      </ul>
-                    </div>
-                  </div>
+                  <Link href="/developer/cv-management" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-cv-management-trigger">
+                    CV Management
+                  </Link>
+                  <Link href="/developer/roles/search" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-role-search-trigger">
+                    Role Search
+                  </Link>
+                  <Link href="/developer/saved-roles" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-saved-roles-trigger">
+                    Saved Roles
+                  </Link>
                 </nav>
               </div>
               <div className="flex items-center gap-3" data-testid="layout-header-right">
