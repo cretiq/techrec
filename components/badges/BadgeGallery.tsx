@@ -82,16 +82,16 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
               className="relative"
             >
               <Card
-                variant="transparent"
+                variant={badge.isEarned ? "solid" : "transparent"}
+                hoverable
                 className={`
                   cursor-pointer transition-all duration-200 hover:scale-105
                   ${badge.isEarned
-                    ? 'bg-green-50/50 border-green-200/50 shadow-lg'
+                    ? 'bg-green-50 border-green-200'
                     : badge.isInProgress
-                      ? 'bg-blue-50/50 border-blue-200/50'
-                      : 'bg-base-100/60 border-base-300/50'
+                      ? 'bg-blue-50 border-blue-200'
+                      : ''
                   }
-                  backdrop-blur-sm hover:shadow-xl
                 `}
                 onClick={() => setSelectedBadge(badge)}
                 data-testid={`badge-card-${badge.id}`}
@@ -103,12 +103,12 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
                     <div className="flex items-center gap-3">
                       <motion.div
                         className={`
-                          w-12 h-12 rounded-lg flex items-center justify-center text-2xl border-2
+                          w-12 h-12 rounded-lg flex items-center justify-center text-2xl border
                           ${badge.isEarned
-                            ? 'bg-green-500/20 border-green-500/30'
+                            ? 'bg-green-100 border-green-300'
                             : badge.isInProgress
-                              ? 'bg-blue-500/20 border-blue-500/30'
-                              : 'bg-base-200/50 border-base-300/50'
+                              ? 'bg-blue-100 border-blue-300'
+                              : 'bg-base-200 border-base-300'
                           }
                         `}
                         whileHover={{ scale: 1.1 }}
@@ -119,15 +119,15 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
                         ) : badge.isInProgress ? (
                           <span className="opacity-70">{badge.icon}</span>
                         ) : (
-                          <Lock className="w-6 h-6 text-base-content/30" />
+                          <Lock className="w-6 h-6 text-neutral-400" />
                         )}
                       </motion.div>
 
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm text-base-content truncate">
+                        <h3 className="font-semibold text-base text-base-content truncate">
                           {badge.name}
                         </h3>
-                        <p className="text-xs text-base-content/70 line-clamp-2">
+                        <p className="text-base text-neutral-600 line-clamp-2 leading-6">
                           {badge.description}
                         </p>
                       </div>
@@ -140,7 +140,7 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
                       ) : badge.isInProgress ? (
                         <Target className="w-5 h-5 text-blue-600" />
                       ) : (
-                        <Lock className="w-5 h-5 text-base-content/30" />
+                        <Lock className="w-5 h-5 text-neutral-400" />
                       )}
                     </div>
                   </div>
@@ -168,11 +168,11 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
 
                     {/* Progress Bar */}
                     <div className="space-y-1">
-                      <div className="flex justify-between text-xs">
-                        <span className="text-base-content/70">
+                      <div className="flex justify-between text-base leading-6">
+                        <span className="text-neutral-600">
                           {getProgressMessage(badge)}
                         </span>
-                        <span className="text-base-content/60">
+                        <span className="text-neutral-500">
                           +{badge.xpReward} XP
                         </span>
                       </div>
@@ -232,10 +232,10 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
                 {/* Badge Header */}
                 <div className="flex items-center gap-4">
                   <div className={`
-                    w-16 h-16 rounded-lg flex items-center justify-center text-4xl border-2
+                    w-16 h-16 rounded-lg flex items-center justify-center text-4xl border
                     ${selectedBadge.isEarned
-                      ? 'bg-green-500/20 border-green-500/30'
-                      : 'bg-base-200/50 border-base-300/50'
+                      ? 'bg-green-100 border-green-300'
+                      : 'bg-base-200 border-base-300'
                     }
                   `}>
                     {selectedBadge.isEarned ? '✅' : selectedBadge.icon}
@@ -245,7 +245,7 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
                     <h2 className="text-xl font-bold text-base-content">
                       {selectedBadge.name}
                     </h2>
-                    <p className="text-base-content/70">
+                    <p className="text-neutral-600 leading-6">
                       {selectedBadge.description}
                     </p>
                   </div>
@@ -284,8 +284,8 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
 
                 {/* Progress */}
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-base-content/70">Progress</span>
+                  <div className="flex justify-between text-base leading-6">
+                    <span className="text-neutral-600">Progress</span>
                     <span className="text-base-content">
                       {getProgressMessage(selectedBadge)}
                     </span>
@@ -302,7 +302,7 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
                     </span>
                   </div>
                   <div className="p-3 bg-base-200/50 rounded-lg">
-                    <p className="text-sm text-base-content/70">
+                    <p className="text-base text-neutral-600 leading-6">
                       {selectedBadge.requirements.type.replace('_', ' ')} -
                       Threshold: {selectedBadge.requirements.threshold}
                     </p>

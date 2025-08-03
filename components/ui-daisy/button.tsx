@@ -24,8 +24,8 @@ const buttonVariants = cva(
         gradient: "bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white border-0 shadow-md hover:shadow-lg disabled:from-violet-600/30 disabled:to-pink-600/30 disabled:text-white/50 disabled:shadow-none",
         "gradient-blue": "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0 shadow-md hover:shadow-lg disabled:from-blue-600/30 disabled:to-cyan-600/30 disabled:text-white/50 disabled:shadow-none",
         // Glass/blur variants with disabled states
-        glass: "bg-base-100/70 backdrop-blur-md border border-base-300/50 hover:bg-base-200/80 shadow-md hover:shadow-lg disabled:bg-base-100/30 disabled:text-base-content/50 disabled:border-base-300/20 disabled:shadow-none",
-        "glass-outline": "bg-base-100/60 backdrop-blur-sm border border-base-300/50 hover:bg-base-100/80 shadow-sm hover:shadow-md disabled:bg-base-100/20 disabled:text-base-content/50 disabled:border-base-300/20 disabled:shadow-none",
+        glass: "bg-base-100/70 backdrop-blur-md border border-base-300 hover:bg-base-200/80 shadow-md hover:shadow-lg disabled:bg-base-100/30 disabled:text-neutral-500 disabled:border-base-300 disabled:shadow-none disabled:opacity-50",
+        "glass-outline": "bg-base-100/60 backdrop-blur-sm border border-base-300 hover:bg-base-100/80 shadow-sm hover:shadow-md disabled:bg-base-100/20 disabled:text-neutral-500 disabled:border-base-300 disabled:shadow-none disabled:opacity-50",
       },
       size: {
         default: "",

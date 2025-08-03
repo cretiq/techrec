@@ -185,7 +185,7 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
             className="absolute right-0 top-full mt-2 w-96 z-50"
             data-testid="notification-center-dropdown"
           >
-            <Card variant="transparent" className="bg-base-100/95 backdrop-blur-sm border border-base-300/50 shadow-xl">
+            <Card variant="glass" hoverable>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center gap-2">

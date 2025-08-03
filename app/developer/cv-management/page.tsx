@@ -444,20 +444,20 @@ export default function CVManagementPage() {
                             </CardHeader>
                             <CardContent data-testid="cv-management-analyzing-content">
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                    <div className="flex items-center gap-3 text-base text-neutral-600 leading-6">
                                         <div className="animate-pulse h-2 w-2 bg-primary rounded-full"></div>
                                         <span>Extracting contact information and skills</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                    <div className="flex items-center gap-3 text-base text-neutral-600 leading-6">
                                         <div className="animate-pulse h-2 w-2 bg-primary rounded-full" style={{ animationDelay: '0.5s' }}></div>
                                         <span>Processing work experience and achievements</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-sm text-base-content/70">
+                                    <div className="flex items-center gap-3 text-base text-neutral-600 leading-6">
                                         <div className="animate-pulse h-2 w-2 bg-primary rounded-full" style={{ animationDelay: '1s' }}></div>
                                         <span>Analyzing education and certifications</span>
                                     </div>
                                     <div className="mt-6 p-4 bg-info/10 rounded-lg">
-                                        <p className="text-sm text-info-content">
+                                        <p className="text-base text-info-content leading-6">
                                             This usually takes 30-60 seconds. We'll automatically update when complete.
                                         </p>
                                     </div>
@@ -529,7 +529,7 @@ export default function CVManagementPage() {
                                             </Button>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <div className="text-sm text-muted-foreground">
+                                            <div className="text-base text-neutral-600 leading-6">
                                                 Last updated: {new Date().toLocaleDateString()}
                                             </div>
                                             {/* Additional action buttons moved from AnalysisResultDisplay */}
@@ -587,7 +587,7 @@ export default function CVManagementPage() {
                             <CardContent data-testid="cv-management-failed-content">
                                 <div className="space-y-4">
                                     <div className="p-4 bg-error/10 rounded-lg">
-                                        <p className="text-sm text-error-content">
+                                        <p className="text-base text-error-content leading-6">
                                             Common issues: corrupted file, unsupported format, or file too large.
                                         </p>
                                     </div>

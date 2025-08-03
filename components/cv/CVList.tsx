@@ -233,7 +233,7 @@ export function CVList({ refreshKey }: CVListProps) {
       {error && <div className="text-destructive" data-testid="cv-management-cv-list-error">Error loading CVs: {error}</div>}
       
       {/* Always show table structure - with skeleton rows when loading */}
-      <div className="border border-base-300/50 rounded-lg overflow-hidden bg-base-100/30 backdrop-blur-sm" data-testid="cv-management-table-container">
+      <div className="border border-base-300 rounded-lg overflow-hidden bg-base-100/30 backdrop-blur-sm" data-testid="cv-management-table-container">
         <Table className="table-fixed w-full" data-testid="cv-management-table-cv-list">
           <TableHeader data-testid="cv-management-table-header">
             <TableRow data-testid="cv-management-table-header-row">

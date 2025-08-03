@@ -45,8 +45,7 @@ function DashboardSkeleton() {
       {/* Left Column - Roadmap Skeleton */}
       <div className="lg:col-span-7 space-y-6">
         <Card 
-          variant="transparent" 
-          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+          variant="transparent"
         >
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -76,8 +75,7 @@ function DashboardSkeleton() {
         {[...Array(5)].map((_, i) => (
           <Card 
             key={i}
-            variant="transparent" 
-            className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+            variant="transparent"
           >
             <CardContent className="p-4">
               <div className="flex items-center gap-3">

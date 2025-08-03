@@ -60,7 +60,7 @@ export default async function BadgesPage() {
               <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Your Badge Collection
               </h1>
-              <p className="text-lg text-base-content/70 mt-2">
+              <p className="text-lg text-neutral-600 mt-2 leading-7">
                 Unlock achievements and showcase your TechRec journey
               </p>
             </div>
@@ -82,54 +82,50 @@ export default async function BadgesPage() {
       {/* Badge Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" data-testid="badges-stats">
         <Card 
-          variant="transparent" 
-          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+          variant="transparent"
         >
           <CardContent className="p-4 text-center">
             <div className="w-12 h-12 mx-auto mb-3 bg-green-500/20 rounded-full flex items-center justify-center">
               <CheckCircle2 className="w-6 h-6 text-green-600" />
             </div>
             <div className="text-2xl font-bold text-base-content">{earnedCount}</div>
-            <div className="text-sm text-base-content/70">Badges Earned</div>
+            <div className="text-base text-neutral-600 leading-6">Badges Earned</div>
           </CardContent>
         </Card>
         
         <Card 
-          variant="transparent" 
-          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+          variant="transparent"
         >
           <CardContent className="p-4 text-center">
             <div className="w-12 h-12 mx-auto mb-3 bg-blue-500/20 rounded-full flex items-center justify-center">
               <Target className="w-6 h-6 text-blue-600" />
             </div>
             <div className="text-2xl font-bold text-base-content">{inProgressCount}</div>
-            <div className="text-sm text-base-content/70">In Progress</div>
+            <div className="text-base text-neutral-600 leading-6">In Progress</div>
           </CardContent>
         </Card>
         
         <Card 
-          variant="transparent" 
-          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+          variant="transparent"
         >
           <CardContent className="p-4 text-center">
             <div className="w-12 h-12 mx-auto mb-3 bg-purple-500/20 rounded-full flex items-center justify-center">
               <Star className="w-6 h-6 text-purple-600" />
             </div>
             <div className="text-2xl font-bold text-base-content">{rareBadgesCount}</div>
-            <div className="text-sm text-base-content/70">Rare Badges</div>
+            <div className="text-base text-neutral-600 leading-6">Rare Badges</div>
           </CardContent>
         </Card>
         
         <Card 
-          variant="transparent" 
-          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+          variant="transparent"
         >
           <CardContent className="p-4 text-center">
             <div className="w-12 h-12 mx-auto mb-3 bg-orange-500/20 rounded-full flex items-center justify-center">
               <Trophy className="w-6 h-6 text-orange-600" />
             </div>
             <div className="text-2xl font-bold text-base-content">{completionPercentage}%</div>
-            <div className="text-sm text-base-content/70">Completion</div>
+            <div className="text-base text-neutral-600 leading-6">Completion</div>
           </CardContent>
         </Card>
       </div>
@@ -150,12 +146,13 @@ export default async function BadgesPage() {
             <Card
               key={category.name}
               variant="transparent"
-              className="bg-base-100/40 backdrop-blur-sm border border-base-300/50 hover:bg-base-100/60 hover:border-base-300/70 transition-all duration-200 cursor-pointer"
+              hoverable
+              className="cursor-pointer"
               data-testid={`badges-category-${category.name.toLowerCase().replace(' ', '-')}`}
             >
               <CardContent className="p-4 text-center">
                 <div className="text-2xl mb-2">{category.icon}</div>
-                <div className="font-semibold text-sm text-base-content">{category.name}</div>
+                <div className="font-semibold text-base text-base-content">{category.name}</div>
                 <Badge 
                   variant="outline" 
                   className={`text-xs mt-2 ${category.color}`}
@@ -173,7 +170,7 @@ export default async function BadgesPage() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold">All Badges</h2>
           <div className="flex items-center gap-3">
-            <select className="select select-bordered select-sm" data-testid="badges-sort-select">
+            <select className="select select-bordered" data-testid="badges-sort-select">
               <option value="category">Sort by Category</option>
               <option value="tier">Sort by Tier</option>
               <option value="earned">Sort by Earned</option>

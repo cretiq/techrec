@@ -26,7 +26,7 @@ const badgeVariants = cva(
         default: "",
         sm: "badge-sm",
         lg: "badge-lg",
-        xl: "px-4 py-2 text-sm",
+        xl: "px-4 py-2 text-base",
       },
       rounded: {
         default: "",

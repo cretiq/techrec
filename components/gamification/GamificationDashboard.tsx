@@ -120,7 +120,7 @@ function FullGamificationDashboard({
         </div>
         
         {/* Quick Stats */}
-        <Card variant="transparent" className="bg-base-100/60 backdrop-blur-sm border border-base-300/50">
+        <Card variant="transparent">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <TrendingUp className="w-5 h-5 text-primary" />
@@ -159,7 +159,7 @@ function FullGamificationDashboard({
       {/* Challenges and Achievements */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Daily Challenges */}
-        <Card variant="transparent" className="bg-base-100/60 backdrop-blur-sm border border-base-300/50">
+        <Card variant="transparent">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -194,7 +194,7 @@ function FullGamificationDashboard({
         </Card>
 
         {/* Recent Badges */}
-        <Card variant="transparent" className="bg-base-100/60 backdrop-blur-sm border border-base-300/50">
+        <Card variant="transparent">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
               <Award className="w-5 h-5 text-primary" />

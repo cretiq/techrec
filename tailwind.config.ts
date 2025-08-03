@@ -16,35 +16,9 @@ const config: Config = {
   ],
   daisyui: {
     themes: [
-      "light",
-      "dark", 
-      "cupcake",
-      "bumblebee",
-      "emerald",
-      "corporate",
-      "synthwave",
-      "retro",
-      "cyberpunk",
-      "valentine",
-      "halloween",
-      "garden",
-      "forest",
-      "aqua",
-      "lofi",
-      "pastel",
-      "fantasy",
-      "wireframe",
-      "black",
-      "luxury",
-      "dracula",
-      "cmyk",
-      "autumn",
-      "business",
-      "acid",
-      "lemonade",
-      "night",
-      "coffee",
-      "winter"
+      "light",     // Default light theme - clean and accessible
+      "dark",      // Default dark theme - matches glass morphism aesthetic  
+      "business"   // Professional theme - ideal for tech recruitment platform
     ],
     darkTheme: "dark", // name of one of the included themes for dark mode
     base: true, // applies background color and foreground color for root element by default

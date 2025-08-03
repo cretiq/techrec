@@ -209,3 +209,150 @@ Base unit: 4px (0.25rem)
 - Dark overlay with blur
 - Centered card with subtle border
 - Smooth entrance/exit animations
+
+---
+
+## 🎯 READABILITY & ACCESSIBILITY IMPROVEMENTS (January 2025)
+
+### Typography Enhancements
+- **Minimum font size**: All text upgraded to `text-base` (16px) minimum for WCAG AA compliance
+- **Line height standardization**: Applied `leading-6` (1.5x) to all body text for improved readability
+- **Color contrast improvements**: Replaced opacity-based colors (`text-base-content/70`) with semantic DaisyUI colors (`text-neutral-600`)
+
+### Updated Typography Scale
+```css
+/* Body Text (Primary) */
+.text-base          /* 16px - Minimum for all body text */
+.text-lg            /* 18px - Large body text, important descriptions */
+
+/* Headings */
+.text-xl            /* 20px - Section headings */
+.text-2xl           /* 24px - Page headings */
+.text-3xl           /* 30px - Hero headings */
+
+/* Line Heights */
+.leading-6          /* 1.5x - Standard for body text */
+.leading-7          /* 1.75x - For larger text sizes */
+```
+
+### Shadow System Implementation
+Implemented consistent 5-level shadow hierarchy:
+
+```css
+/* Level 0 */ shadow-none     /* Flush elements, outlined cards */
+/* Level 1 */ shadow-sm       /* Subtle separation, glass elements */
+/* Level 2 */ shadow-md       /* Standard cards (Default) */
+/* Level 3 */ shadow-lg       /* Elevated/important elements, hover states */
+/* Level 4 */ shadow-xl       /* Modals, dropdowns, maximum depth */
+```
+
+### Card Variant Updates
+- **Default**: Added `shadow-md` for consistent elevation
+- **Transparent**: Upgraded to `shadow-sm` for better separation from background
+- **Glass**: Enhanced with `backdrop-blur-md` and `shadow-md` for improved definition
+- **Hoverable**: Reduced from `shadow-2xl` to `shadow-lg` for proportional interaction feedback
+
+### Theme Optimization
+Consolidated from 25+ themes to 3 essential themes:
+- **light**: Clean, accessible default
+- **dark**: Glass morphism aesthetic
+- **business**: Professional tech recruitment focus
+
+### Color System Improvements
+- Eliminated opacity-based text colors for better contrast
+- Standardized on DaisyUI semantic color classes:
+  - `text-base-content` - Primary text
+  - `text-neutral-600` - Secondary text (replaces `text-base-content/70`)
+  - `text-neutral-500` - Muted text (replaces `text-base-content/60`)
+  - `text-neutral-400` - Disabled icons (replaces `text-base-content/30`)
+
+### Accessibility Compliance
+- **WCAG AA standards**: All text meets 4.5:1 contrast ratio minimum
+- **Font size compliance**: 16px minimum across all components
+- **Touch targets**: Maintained 44px minimum for interactive elements
+- **Zoom support**: Tested 200% zoom functionality
+
+### Element Separation Improvements
+- Removed manual background overrides on card components
+- Standardized card variants to provide consistent visual hierarchy
+- Enhanced border definitions for better element-background separation
+- Improved spacing consistency using 8-point grid system
+
+### Border System Guidelines
+
+#### **Standard Border Weights**
+```css
+/* Standard Borders */
+border              /* 1px - Default for all UI elements */
+border-2            /* 2px - Reserved for special emphasis ONLY */
+border-0            /* No border - For borderless designs */
+
+/* Avoid border-3, border-4+ - Creates visual noise */
+```
+
+#### **Semantic Border Colors**
+```css
+/* Primary Borders (Most Common) */
+border-base-300     /* Standard UI element borders */
+border-base-200     /* Subtle separation, glass morphism */
+
+/* State-Specific Borders */
+border-primary      /* Primary actions, focused states */
+border-success      /* Success states, completed items */
+border-warning      /* Warning states, caution items */
+border-error        /* Error states, failed items */
+
+/* Context-Specific Borders */
+border-green-300    /* Success contexts (badges, progress) */
+border-blue-300     /* Information contexts (progress items) */
+border-red-300      /* Error contexts */
+border-yellow-300   /* Warning contexts */
+```
+
+#### **❌ Deprecated Border Patterns**
+```css
+/* AVOID - Poor contrast, inconsistent opacity */
+border-base-300/50  /* Use border-base-300 instead */
+border-base-300/30  /* Use border-base-200 instead */
+border-primary/30   /* Use border-primary instead */
+
+/* AVOID - Too heavy for most UI elements */
+border-2            /* Reserve for special emphasis only */
+border-3+           /* Never use - creates visual noise */
+```
+
+#### **Border Usage Guidelines**
+
+**✅ DO:**
+- Use `border` (1px) for standard UI element separation
+- Apply `border-base-300` for most interface elements
+- Use `border-base-200` for subtle glass morphism effects
+- Apply semantic colors (`border-primary`, `border-success`) for state indication
+- Reserve `border-2` for special emphasis (achievement highlights, selection states)
+
+**❌ DON'T:**
+- Use opacity-based border colors (`border-base-300/50`)
+- Apply borders heavier than `border-2` for regular UI elements
+- Mix border weights inconsistently within the same component
+- Forget borders on form elements and content containers
+
+#### **Component-Specific Border Rules**
+
+**Cards & Containers:**
+- Default: `border border-base-300`
+- Glass morphism: `border border-base-200`
+- Active/Selected: `border border-primary`
+
+**Form Elements:**
+- Inputs: Use DaisyUI `input-bordered` class
+- Selects: Use DaisyUI `select-bordered` class
+- Textareas: Use DaisyUI `textarea-bordered` class
+
+**Interactive Elements:**
+- Buttons: Follow DaisyUI button variants
+- Badges: `border` with semantic colors for status
+- Progress indicators: `border` for container definition
+
+**Tables & Lists:**
+- Table containers: `border border-base-300`
+- List separators: Use `border-base-200` for subtle division

@@ -2,11 +2,11 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const cardVariants = {
-  default: "card",
-  transparent: "bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 rounded-lg shadow-none",
-  glass: "bg-base-100/40 backdrop-blur-md border border-base-300/30 transition-all duration-300 rounded-lg shadow-sm",
-  solid: "bg-base-100 border border-base-300 transition-all duration-300 rounded-lg shadow-md",
-  outlined: "bg-transparent border border-base-300 transition-all duration-300 rounded-lg shadow-none",
+  default: "card shadow-md border border-base-300",
+  transparent: "bg-base-100/60 backdrop-blur-sm border border-base-300 transition-all duration-200 rounded-lg shadow-sm",
+  glass: "bg-base-100/40 backdrop-blur-md border border-base-200 transition-all duration-200 rounded-lg shadow-md",
+  solid: "bg-base-100 border border-base-300 transition-all duration-200 rounded-lg shadow-md",
+  outlined: "bg-transparent border border-base-300 transition-all duration-200 rounded-lg shadow-none",
 }
 
 const Card = React.forwardRef<
@@ -26,7 +26,7 @@ const Card = React.forwardRef<
       variant === "default" && bordered && "",
       variant === "default" && compact && "card-compact",
       variant === "default" && imageFull && "image-full",
-      hoverable && "hover:shadow-2xl transition-shadow duration-200",
+      hoverable && "hover:shadow-lg transition-shadow duration-200",
       className
     )}
     {...props}
@@ -64,7 +64,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-base-content/70 text-sm", className)}
+    className={cn("text-neutral-600 text-base leading-6", className)}
     {...props}
   />
 ))

@@ -157,7 +157,6 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
       <div className="space-y-6">
         <Card 
           variant="transparent" 
-          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
           data-testid="dashboard-roadmap-card"
         >
           <CardHeader>
@@ -207,7 +206,6 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
         {/* Quick Actions */}
         <Card 
           variant="transparent" 
-          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
           data-testid="dashboard-quick-actions"
         >
           <CardHeader>
@@ -265,7 +263,6 @@ function DashboardSkeleton() {
       <div className="space-y-6">
         <Card 
           variant="transparent" 
-          className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
         >
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -296,8 +293,7 @@ function DashboardSkeleton() {
           <Card 
             key={i}
             variant="transparent" 
-            className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
-          >
+            >
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-base-300/50 rounded-full animate-pulse" />

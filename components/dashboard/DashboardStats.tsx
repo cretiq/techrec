@@ -91,8 +91,7 @@ export function DashboardStats({ className = '', activityStats: propActivityStat
   if (isLoading) {
     return (
       <Card 
-        variant="transparent" 
-        className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+        variant="transparent"
         data-testid="dashboard-stats-loading"
       >
         <CardHeader className="pb-3">
@@ -118,8 +117,7 @@ export function DashboardStats({ className = '', activityStats: propActivityStat
   if (!stats) {
     return (
       <Card 
-        variant="transparent" 
-        className="bg-base-100/60 backdrop-blur-sm border border-base-300/50"
+        variant="transparent"
         data-testid="dashboard-stats-error"
       >
         <CardContent className="p-4 text-center">
@@ -135,7 +133,7 @@ export function DashboardStats({ className = '', activityStats: propActivityStat
   return (
     <Card 
       variant="transparent" 
-      className={`bg-base-100/60 backdrop-blur-sm border border-base-300/50 ${className}`}
+      className={className}
       data-testid="dashboard-stats"
     >
       <CardHeader className="pb-3">
@@ -153,7 +151,7 @@ export function DashboardStats({ className = '', activityStats: propActivityStat
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="p-3 bg-base-100/40 border border-base-300/30 rounded-lg text-center"
+            className="p-3 bg-base-200 border border-base-300 rounded-lg text-center"
             data-testid="stats-cvs-analyzed"
           >
             <div className="flex items-center justify-center gap-1 mb-1">
@@ -169,7 +167,7 @@ export function DashboardStats({ className = '', activityStats: propActivityStat
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="p-3 bg-base-100/40 border border-base-300/30 rounded-lg text-center"
+            className="p-3 bg-base-200 border border-base-300 rounded-lg text-center"
             data-testid="stats-roles-searched"
           >
             <div className="flex items-center justify-center gap-1 mb-1">
@@ -185,7 +183,7 @@ export function DashboardStats({ className = '', activityStats: propActivityStat
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
-            className="p-3 bg-base-100/40 border border-base-300/30 rounded-lg text-center"
+            className="p-3 bg-base-200 border border-base-300 rounded-lg text-center"
             data-testid="stats-applications-submitted"
           >
             <div className="flex items-center justify-center gap-1 mb-1">
@@ -201,7 +199,7 @@ export function DashboardStats({ className = '', activityStats: propActivityStat
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
-            className="p-3 bg-base-100/40 border border-base-300/30 rounded-lg text-center"
+            className="p-3 bg-base-200 border border-base-300 rounded-lg text-center"
             data-testid="stats-cover-letters-generated"
           >
             <div className="flex items-center justify-center gap-1 mb-1">

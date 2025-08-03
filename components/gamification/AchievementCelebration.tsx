@@ -203,7 +203,7 @@ export function AchievementCelebration() {
         >
           <Card 
             variant="transparent" 
-            className="relative overflow-hidden bg-base-100/95 backdrop-blur-sm border-2 border-primary/30"
+            className="relative overflow-hidden bg-base-100/95 backdrop-blur-sm border border-primary"
             data-testid="achievement-celebration-card"
           >
             {/* Gradient background */}
