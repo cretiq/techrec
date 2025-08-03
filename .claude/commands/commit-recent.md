@@ -1,74 +1,162 @@
-# Recent Changes Git Commit Command
+# Git Commit Recent Changes - AI Instructions
 
-This command analyzes and commits only the changes that have been made in the current working session, rather than all changes in the working directory.
+You are tasked with analyzing and committing ONLY the changes made during the current working session. Follow these instructions precisely.
 
-## Purpose
-- Commit only the changes made during the current session/conversation
-- Avoid committing unrelated or pre-existing changes
-- Generate clear, descriptive commit messages for the specific work completed
-- Maintain focused, logical commits that represent discrete units of work
+## Your Mission
+When this command is invoked, you must:
+1. Identify files modified in the current conversation/session
+2. Stage only those specific changes
+3. Create a focused commit with an accurate message
+4. Verify the commit contains only intended changes
 
-## Usage
-Simply reference this command: `@.claude/commands/commit-recent`
+## Execution Steps
 
-*Last tested: January 31, 2025*
+### Step 1: Analyze Current Session Context
+- Review the conversation history to identify which files were modified
+- Make a mental list of all changes made during this session
+- Ignore any pre-existing uncommitted changes from before this session
 
-## Behavior
-1. **Identify Recent Changes**: Focus only on files that were modified during the current session
-2. **Selective Staging**: Stage only the specific changes that were made recently
-3. **Context-Aware Commits**: Create commits that reflect the work actually performed
-4. **Message Relevance**: Generate commit messages that accurately describe the recent work
-5. **Clean Commits**: Ensure commits are focused and don't include unrelated modifications
+### Step 2: Check Git Status
+Run these commands in parallel:
+```bash
+git status
+git diff --stat
+```
 
-## Commit Message Format
+### Step 3: Review Changes
+For each file that was modified in this session:
+```bash
+git diff <filename>
+```
+Confirm the changes match what was done in the current session.
+
+### Step 4: Selective Staging
+Stage ONLY the files that were modified during this session:
+```bash
+git add <file1> <file2> ...
+```
+DO NOT use `git add .` or `git add -A`
+
+### Step 5: Verify Staged Changes
+```bash
+git diff --cached
+```
+Ensure only the intended recent changes are staged.
+
+### Step 6: Create Commit
+Generate a commit message following this exact format:
 ```
 <type>(<scope>): <description>
 
-[optional body explaining the recent changes and their purpose]
+[optional body explaining the specific changes made in this session]
 
 🤖 Generated with Claude Code
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-## Types Used
-- `feat:` - New features or functionality added recently
-- `fix:` - Bug fixes or error corrections made in this session
-- `refactor:` - Code restructuring performed recently
-- `perf:` - Performance improvements made
-- `test:` - Tests added or modified in this session
-- `docs:` - Documentation changes made recently
-- `style:` - Code formatting or UI changes made
-- `chore:` - Maintenance tasks completed recently
+Execute the commit using heredoc:
+```bash
+git commit -m "$(cat <<'EOF'
+<your commit message here>
+EOF
+)"
+```
 
-## Scopes (Project-Specific)
-- `gamification` - Gamification system features
-- `subscription` - Stripe integration and subscription management
-- `cv-analysis` - CV parsing, analysis, and improvement features
-- `auth` - Authentication and authorization
-- `ui` - User interface components and styling
-- `api` - Backend API endpoints and logic
-- `db` - Database schema, migrations, or queries
-- `architecture` - System architecture changes
+### Step 7: Verify Commit
+```bash
+git log -1 --stat
+```
+Confirm the commit contains only the intended changes.
 
-## Execution
-When this command is referenced, Claude will:
-1. **Review Session Context**: Identify which files were modified during the current conversation
-2. **Selective Analysis**: Run `git status` and `git diff` focusing on recent changes
-3. **Targeted Staging**: Stage only the files that were actually worked on
-4. **Focused Commits**: Create commits that represent the specific work completed
-5. **Verification**: Ensure only intended changes are committed
+## Commit Message Guidelines
 
-## Key Differences from `commit.md`
-- **Selective Scope**: Only commits changes made in the current session
-- **Session Awareness**: Takes into account the work actually performed
-- **Avoids Conflicts**: Prevents committing unrelated or pre-existing changes
-- **Focused History**: Creates cleaner git history with intentional commits
-- **Reduced Risk**: Lower chance of accidentally committing unwanted changes
+### Type Selection (MANDATORY)
+Choose the type that best describes the PRIMARY change:
+- `feat`: New feature or functionality added in this session
+- `fix`: Bug fix or error correction made in this session
+- `refactor`: Code restructuring without changing functionality
+- `perf`: Performance improvements
+- `test`: Test additions or modifications
+- `docs`: Documentation updates
+- `style`: Formatting, missing semicolons, etc.
+- `chore`: Maintenance tasks, dependency updates
 
-## Best Practices
-- Use this command when you want to commit only your recent work
-- Ideal for incremental commits during development sessions
-- Helps maintain clean, focused commit history
-- Reduces the risk of committing unrelated changes
-- Perfect for collaborative environments where multiple changes may exist
+### Scope Selection (MANDATORY)
+Choose from these project-specific scopes:
+- `gamification`: XP, points, achievements, badges
+- `subscription`: Stripe, payment, tier management
+- `cv-analysis`: CV parsing, analysis, improvement scoring
+- `auth`: Authentication, authorization, sessions
+- `ui`: Components, styling, user interface
+- `api`: Backend endpoints, server logic
+- `db`: Database schema, migrations, queries
+- `architecture`: System design, major structural changes
+
+### Description Rules
+- Start with lowercase
+- No period at the end
+- Use imperative mood ("add" not "added")
+- Maximum 50 characters
+- Focus on WHAT changed in this session
+
+## Critical Rules
+
+1. **Session Scope Only**: NEVER commit changes that weren't made in the current conversation
+2. **No Blind Commits**: Always review diffs before staging
+3. **Selective Staging**: Never use `git add .` - always specify files
+4. **Verify Before Commit**: Always check staged changes match intended changes
+5. **Atomic Commits**: Each commit should represent one logical unit of work
+
+## Error Handling
+
+If you encounter:
+- **Unrelated changes**: DO NOT stage them. Only stage session-specific changes
+- **Merge conflicts**: Stop and inform the user before proceeding
+- **Large diffs**: Break into multiple logical commits if appropriate
+- **Unclear changes**: Ask for clarification before committing
+
+## Example Execution
+
+For a session where you:
+1. Fixed a bug in the CV analysis API
+2. Updated related tests
+
+You would:
+```bash
+# Check status
+git status
+git diff --stat
+
+# Review specific changes
+git diff app/api/cv/analyze/route.ts
+git diff tests/api/cv-analysis.test.ts
+
+# Stage only these files
+git add app/api/cv/analyze/route.ts tests/api/cv-analysis.test.ts
+
+# Verify staged changes
+git diff --cached
+
+# Commit with appropriate message
+git commit -m "$(cat <<'EOF'
+fix(cv-analysis): resolve parsing error for PDF files with special characters
+
+- Added proper encoding handling in PDF parser
+- Updated error messages for better debugging
+- Added test case for special character handling
+
+🤖 Generated with Claude Code
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+
+# Verify commit
+git log -1 --stat
+```
+
+## Remember
+You are creating a commit for ONLY the work done in THIS session. Be selective, be careful, and always verify.
+
+*Last tested: January 31, 2025*
