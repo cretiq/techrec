@@ -12,6 +12,8 @@ import {
   isValidCvSuggestionsResponse, 
   sanitizeSuggestionsData 
 } from '@/utils/cvSuggestionValidation';
+// Import debug logger
+import { CvImprovementDebugLogger } from '@/utils/debugLogger';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
@@ -30,12 +32,14 @@ const RETRY_DELAY_MS = 1000; // 1 second delay between retries
  * @param prompt - The prompt for Gemini
  * @returns Validated suggestions response
  */
-async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): Promise<any> {
+async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string, sessionId?: string): Promise<any> {
   let lastError: Error | null = null;
   
   for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
     console.log(`🔄 [cv-improvement] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} - Generating suggestions...`);
     console.log(`🤖 [cv-improvement] Using model: ${geminiModel}`);
+    
+    const apiCallStartTime = Date.now(); // Move to broader scope
     
     try {
       // Get the generative model with optimized settings for structured output
@@ -45,12 +49,10 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
           temperature: 0.2, // Lower temperature for more consistent, structured output
           topK: 10, // Reduce randomness in token selection
           topP: 0.4, // More focused probability distribution
-          maxOutputTokens: 1500, // Reduce to encourage concise responses
+          maxOutputTokens: 1200, // Further reduce to prevent truncation
           candidateCount: 1, // Only generate one candidate to avoid inconsistency
         },
       });
-
-      const apiCallStartTime = Date.now();
       console.log(`📞 [cv-improvement] Attempt ${attempt} - Making API call to Gemini...`);
       
       const result = await model.generateContent(prompt);
@@ -69,21 +71,27 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
       
       // Clean and parse the response with enhanced cleaning
       let rawSuggestions;
+      let cleanedContent; // Move declaration to broader scope
       try {
         console.log('🧹 [cv-improvement] Cleaning Gemini response...');
         console.log(`📏 [cv-improvement] Raw content preview: ${content.substring(0, 200)}...`);
         
         // Enhanced cleaning for common Gemini formatting issues
-        let cleanedContent = content
+        cleanedContent = content
           // Remove markdown code blocks
           .replace(/```json\s*\n?/gi, '')
           .replace(/```\s*\n?/gi, '')
           // Remove any leading/trailing explanatory text
           .replace(/^[^{]*({.*})[^}]*$/s, '$1')
-          // Remove any trailing commas before closing brackets
+          // Remove any trailing commas before closing brackets (multiple passes)
           .replace(/,(\s*[}\]])/g, '$1')
+          .replace(/,(\s*[}\]])/g, '$1') // Second pass for nested cases
           // Fix common JSON issues
           .replace(/(['"])\s*:\s*\n\s*/g, '$1: ')
+          // Remove trailing commas at end of arrays/objects more aggressively
+          .replace(/,(\s*$)/g, '')
+          // Ensure proper JSON structure end
+          .replace(/[^}\]]*$/, '') // Remove any trailing text after last brace/bracket
           .trim();
         
         console.log(`📏 [cv-improvement] Attempt ${attempt} - Cleaned content length: ${cleanedContent.length}`);
@@ -95,6 +103,17 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
           if (jsonMatch) {
             cleanedContent = jsonMatch[0];
             console.log(`🔍 [cv-improvement] Extracted JSON from content: ${cleanedContent.substring(0, 100)}...`);
+          }
+        }
+        
+        // Try to complete malformed JSON if it looks like it's truncated
+        if (cleanedContent.includes('"suggestions":') && !cleanedContent.trim().endsWith('}')) {
+          console.log(`🔧 [cv-improvement] Attempting to complete malformed JSON...`);
+          // Find the last complete suggestion object
+          const lastCompleteMatch = cleanedContent.match(/.*"reasoning":\s*"[^"]*"\s*}/);
+          if (lastCompleteMatch) {
+            cleanedContent = lastCompleteMatch[0] + '\n  ]\n}';
+            console.log(`🔧 [cv-improvement] Completed JSON structure`);
           }
         }
         
@@ -116,7 +135,10 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
       } catch (parseError) {
         console.error(`❌ [cv-improvement] Attempt ${attempt} - JSON parse failed:`, parseError);
         console.error(`❌ [cv-improvement] Attempt ${attempt} - Raw content (first 500 chars):`, content.substring(0, 500));
+        console.error(`❌ [cv-improvement] Attempt ${attempt} - Raw content (last 500 chars):`, content.substring(Math.max(0, content.length - 500)));
         console.error(`❌ [cv-improvement] Attempt ${attempt} - Cleaned content (first 500 chars):`, cleanedContent?.substring(0, 500));
+        console.error(`❌ [cv-improvement] Attempt ${attempt} - Cleaned content (last 500 chars):`, cleanedContent?.substring(Math.max(0, (cleanedContent?.length || 0) - 500)));
+        console.error(`❌ [cv-improvement] Attempt ${attempt} - Cleaned content length:`, cleanedContent?.length);
         throw new Error(`Invalid JSON received from Gemini: ${parseError}`);
       }
 
@@ -131,8 +153,8 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
           console.log(`⚠️ [cv-improvement] Attempt ${attempt} - Warnings:`, validation.warnings);
         }
         
-        // Return the validated and cleaned suggestions (using enhanced format)
-        return {
+        // Build the final response
+        const finalResponse = {
           suggestions: validation.qualitySuggestions,
           summary: {
             totalSuggestions: validation.qualitySuggestions.length,
@@ -150,6 +172,20 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
           attempt: attempt,
           validationWarnings: validation.warnings
         };
+        
+        // Log the successful response
+        if (sessionId) {
+          CvImprovementDebugLogger.logResponse({
+            attempt,
+            rawResponse: content,
+            parsedResponse: rawSuggestions,
+            validationResult: validation,
+            finalResponse,
+            duration: Date.now() - apiCallStartTime,
+          });
+        }
+        
+        return finalResponse;
       } else {
         const errorMessage = `Validation failed: ${validation.errors.join(', ')}`;
         console.log(`❌ [cv-improvement] Attempt ${attempt} - ${errorMessage}`);
@@ -194,6 +230,23 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string): 
       lastError = error;
       console.error(`❌ [cv-improvement] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} failed:`, error.message);
       
+      // Log the error response
+      if (sessionId) {
+        CvImprovementDebugLogger.logResponse({
+          attempt,
+          rawResponse: '',
+          parsedResponse: null,
+          validationResult: null,
+          finalResponse: null,
+          duration: Date.now() - apiCallStartTime,
+          error: {
+            message: error.message,
+            stack: error.stack,
+            type: error.constructor.name,
+          },
+        });
+      }
+      
       if (attempt < MAX_RETRY_ATTEMPTS) {
         console.log(`⏳ [cv-improvement] Waiting ${RETRY_DELAY_MS}ms before retry ${attempt + 1}...`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
@@ -230,6 +283,10 @@ const improvementSuggestionPlainSchema = {
 export async function POST(request: Request) {
   const requestStartTime = Date.now();
   console.log('🚀 [cv-improvement] ===== REQUEST START =====');
+  
+  // Initialize debug logger for this session
+  const sessionId = CvImprovementDebugLogger.initialize();
+  console.log(`🔍 [cv-improvement] Debug session ID: ${sessionId}`);
   
   try {
     // --- Authentication ---
@@ -296,15 +353,18 @@ CRITICAL FORMATTING REQUIREMENTS:
 3. Do NOT include any trailing commas, strings, or malformed elements
 4. The "suggestions" array must contain ONLY properly formatted objects
 
-**VALID SECTIONS** (use exactly as written):
-- contactInfo, contactInfo.email, contactInfo.phone, contactInfo.name
-- about, summary
-- skills, experience, education, achievements, certificates
-- experience[0], experience[1], experience[2] (for specific experience items)
-- experience[0].description, experience[1].description (for experience descriptions)
-- experience[0].responsibilities, experience[1].responsibilities (for experience bullets)
-- education[0], education[1], education[2] (for specific education items)
-- general (for overall CV improvements)
+**IMPORTANT SECTION RULES**:
+- For general sections, use ONLY these exact names: contactInfo, about, skills, experience, education, achievements
+- For specific items within arrays, still use the general section name (e.g., use "experience" not "experience[0]")
+- The UI will handle targeting specific items based on context
+
+**VALID SECTIONS** (use ONLY these):
+- contactInfo (for any contact-related suggestions including adding LinkedIn/GitHub)
+- about (for summary/about section improvements)
+- skills (for skill-related suggestions)
+- experience (for ANY experience-related suggestions, regardless of which job)
+- education (for ANY education-related suggestions)
+- achievements (for achievement/certification suggestions)
 
 **VALID SUGGESTION TYPES** (use exactly one of these):
 - wording (improve existing text)
@@ -314,12 +374,28 @@ CRITICAL FORMATTING REQUIREMENTS:
 - format (improve formatting/structure)
 
 **FOCUS AREAS:**
-- Clarity and readability
-- Impact and action verbs  
-- Quantifiable results and achievements
-- Professional terminology
-- ATS optimization
-- Tailoring to software engineering/tech roles
+1. **Missing Information** - Identify and suggest adding:
+   - Contact completeness (suggest adding LinkedIn, GitHub, phone if missing - NO placeholder URLs)
+   - Key skills that are mentioned in experience but not in skills section
+   - Quantifiable achievements and metrics in experience
+   - Relevant coursework for education
+
+2. **Content Quality** - Improve existing content:
+   - Replace weak verbs with strong action verbs
+   - Add quantifiable results and metrics
+   - Make descriptions more concise and impactful
+   - Ensure consistency in tone and style
+   - Optimize for ATS keywords
+
+3. **Structure & Format**:
+   - Suggest better organization of information
+   - Recommend formatting improvements
+   - Identify redundant or unnecessary content
+
+4. **General Experience Quality**:
+   - Identify experiences with insufficient detail (< 2 responsibilities)
+   - Suggest overall improvements for brief or weak experience descriptions
+   - Recommend adding more impact-focused content
 
 **CV DATA:**
 ${JSON.stringify(cvData, null, 2)}
@@ -328,27 +404,55 @@ ${JSON.stringify(cvData, null, 2)}
 {
   "suggestions": [
     {
-      "section": "exact section name from valid list above",
-      "originalText": "current text being improved or null",
+      "section": "exact section name from list above",
+      "targetId": "optional: specific item ID for experience/education items",
+      "targetField": "optional: specific field like title, company, responsibilities[0]",
+      "originalText": "current text being improved or null for new content",
       "suggestionType": "exact type from valid list above", 
-      "suggestedText": "improved text or null if removing",
+      "suggestedText": "improved/new text or null if removing",
       "reasoning": "detailed explanation (20-300 characters)"
     }
   ]
 }
 
-VALIDATION RULES:
-- Each suggestion must have exactly these 5 fields: section, originalText, suggestionType, suggestedText, reasoning
-- All values must be strings or null (no nested objects or arrays)
-- The suggestions array must contain only suggestion objects, no strings or other data types
-- Reasoning must be between 20-300 characters
-- Return 3-8 high-quality suggestions maximum
+REQUIREMENTS:
+- Provide 6-8 diverse suggestions covering multiple sections
+- Include at least 1-2 suggestions for missing information (completion suggestions only - NO URLs)
+- Include at least 2-3 wording improvements for experience bullets  
+- Include at least 1 suggestion for skills or education
+- Include 1 general experience quality suggestion (using targetField: "general")
+- Ensure reasoning is concise (20-150 characters)
+- For contact info: Only suggest ADDING missing fields, never provide example URLs
+
+**TARGETING SPECIFIC ITEMS**:
+- For experience suggestions: ALWAYS include targetId matching the experience item's id field
+- For specific fields within experience items, use these targetField values:
+  * "title" - for job title improvements
+  * "company" - for company name improvements  
+  * "location" - for location improvements
+  * "responsibilities[0]", "responsibilities[1]", etc. - for specific responsibility bullets
+  * "general" - for overall experience quality (too short, needs more impact, etc.)
+- For contact info: Use targetField values like "email", "phone", "linkedin", "github"
+- For general section improvements: Leave targetField empty
+- Examples:
+  * Improve job title: targetId: "exp_123", targetField: "title"
+  * Improve 2nd responsibility: targetId: "exp_123", targetField: "responsibilities[1]"  
+  * General experience improvement: targetId: "exp_123", targetField: "general"
+  * Add LinkedIn: section: "contactInfo", targetField: "linkedin"
 
 Return ONLY the JSON object above. Do not include any explanatory text, markdown formatting, or additional content.`;
 
+    // --- Log the request data ---
+    CvImprovementDebugLogger.logRequest({
+      userId: session.user.id,
+      cvData: cvData,
+      prompt: prompt,
+      timestamp: new Date().toISOString(),
+    });
+
     // --- Generate suggestions with retry mechanism ---
     console.log("Gemini Prompt:", prompt)
-    const finalResponse = await generateSuggestionsWithRetryGemini(cvData, prompt);
+    const finalResponse = await generateSuggestionsWithRetryGemini(cvData, prompt, sessionId);
 
     const totalProcessingTime = Date.now() - requestStartTime;
     console.log('⏱️ [cv-improvement] Total processing time:', totalProcessingTime, 'ms');
