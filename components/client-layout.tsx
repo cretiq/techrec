@@ -67,6 +67,9 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/developer/saved-roles" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-saved-roles-trigger">
                     Saved Roles
                   </Link>
+                  <Link href="/developer/roles/search" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-job-search-trigger">
+                    Job Search
+                  </Link>
                   <div className="relative group" data-testid="nav-desktop-dropdown-how-to">
                     <div className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors cursor-pointer flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-base-200" data-testid="nav-desktop-dropdown-how-to-trigger">
                       <span>How to</span>
