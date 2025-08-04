@@ -19,12 +19,10 @@ export function ModeToggle() {
 
   // Popular DaisyUI themes for quick access
   const popularThemes = [
-    { name: "light", icon: Sun, label: "Light" },
+    { name: "corporate", icon: Sun, label: "Corporate" },
     { name: "dark", icon: Moon, label: "Dark" },
     { name: "cupcake", icon: Palette, label: "Cupcake" },
-    { name: "cyberpunk", icon: Palette, label: "Cyberpunk" },
     { name: "forest", icon: Palette, label: "Forest" },
-    { name: "corporate", icon: Palette, label: "Corporate" },
   ];
 
   // Prevent hydration mismatch by only rendering after mount
@@ -35,7 +33,7 @@ export function ModeToggle() {
   const getCurrentIcon = () => {
     if (!mounted) return Sun; // Default icon during SSR
     if (theme === "dark") return Moon;
-    if (theme === "light") return Sun;
+    if (theme === "corporate") return Sun;
     return Palette;
   };
 
