@@ -12,7 +12,7 @@ import { FontSwitcher } from "@/components/font-switcher"
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { store, persistor } from '@/lib/store'
-import { Menu } from 'lucide-react'
+import { Menu, HelpCircle, BookOpen } from 'lucide-react'
 
 interface ClientLayoutProps {
   children: React.ReactNode
@@ -64,12 +64,33 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/developer/cv-management" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-cv-management-trigger">
                     CV Management
                   </Link>
-                  <Link href="/developer/roles/search" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-role-search-trigger">
-                    Role Search
-                  </Link>
                   <Link href="/developer/saved-roles" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-saved-roles-trigger">
                     Saved Roles
                   </Link>
+                  <div className="relative group" data-testid="nav-desktop-dropdown-how-to">
+                    <div className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors cursor-pointer flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-base-200" data-testid="nav-desktop-dropdown-how-to-trigger">
+                      <span>How to</span>
+                      <svg className="w-3 h-3 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                    <div className="absolute top-full left-0 z-50 w-56 mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out" data-testid="nav-dropdown-how-to-menu">
+                      <ul className="menu p-2 shadow-lg bg-base-100 rounded-lg border border-base-300">
+                        <li>
+                          <Link href="/developer/how-to/app" className="hover:bg-base-200 rounded-md flex items-center gap-3" data-testid="nav-dropdown-link-how-to-app">
+                            <HelpCircle className="h-4 w-4" />
+                            <span>How to use the app</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="/developer/how-to/job-search" className="hover:bg-base-200 rounded-md flex items-center gap-3" data-testid="nav-dropdown-link-how-to-job-search">
+                            <BookOpen className="h-4 w-4" />
+                            <span>How to Get a Developer Job</span>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </nav>
               </div>
               <div className="flex items-center gap-3" data-testid="layout-header-right">
