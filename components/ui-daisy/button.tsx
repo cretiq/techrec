@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
 
 const buttonVariants = cva(
-  "btn transition-all duration-200 ease-smooth relative overflow-hidden font-medium rounded-lg", // Enhanced base with smooth transitions and consistent rounded corners
+  "btn transition-all duration-200 ease-smooth relative overflow-hidden linear-button rounded-lg", // Enhanced base with Linear typography and smooth transitions
   {
     variants: {
       variant: {

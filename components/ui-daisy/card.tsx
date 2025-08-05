@@ -3,14 +3,14 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 
 const cardVariants = {
-  default: "bg-base-100 border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
-  transparent: "bg-base-100/60 backdrop-blur-sm border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
-  glass: "bg-base-100/40 backdrop-blur-lg border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
-  solid: "bg-base-100 border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
-  outlined: "bg-gray-900/15 border border-gray-800/25 rounded-lg transition-all duration-200 ease-smooth hover:border-gray-700/30 hover:bg-gray-900/20",
-  elevated: "bg-base-100 border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50 hover:shadow-sm",
-  floating: "bg-base-100/95 backdrop-blur-md border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50 hover:shadow-sm hover:-translate-y-0.5",
-  gradient: "bg-gradient-to-br from-base-100 to-base-200/50 border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
+  default: "bg-base-200 border border-base-300 rounded-lg transition-all duration-200 ease-smooth shadow-sm",
+  transparent: "bg-base-100/80 backdrop-blur-sm border border-base-300/50 rounded-lg transition-all duration-200 ease-smooth",
+  glass: "bg-base-100/90 backdrop-blur-lg border border-base-300/60 rounded-lg transition-all duration-200 ease-smooth shadow-soft",
+  solid: "bg-base-100 border border-base-300 rounded-lg transition-all duration-200 ease-smooth shadow-sm",
+  outlined: "bg-transparent border-2 border-base-300 rounded-lg transition-all duration-200 ease-smooth hover:border-primary/50 hover:bg-base-100/50",
+  elevated: "bg-base-100 border border-base-300/50 rounded-lg transition-all duration-200 ease-smooth shadow-md hover:shadow-lg",
+  floating: "bg-base-100/95 backdrop-blur-md border border-base-300/40 rounded-lg transition-all duration-200 ease-smooth shadow-lg",
+  gradient: "bg-gradient-to-br from-base-100 to-base-200 border border-base-300/50 rounded-lg transition-all duration-200 ease-smooth shadow-sm",
 }
 
 const Card = React.forwardRef<
