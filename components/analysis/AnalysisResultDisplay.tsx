@@ -356,13 +356,12 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
       animate="visible"
       data-testid="cv-management-analysis-display-container"
     >
-
        <div className="flex flex-col md:flex-row gap-8" data-testid="cv-management-analysis-content">
           <main className="w-full space-y-4" data-testid="cv-management-analysis-main">
               {analysisData.contactInfo && (
                   <motion.section
                     id="contact-info" 
-                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20"
+                    className="p-6 bg-base-100/80 border border-base-300/20 text-base-content rounded-xl scroll-mt-20"
                     variants={sectionVariants}
                     initial="hidden"
                     whileInView="visible"
@@ -393,7 +392,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="about" 
                     id="about" 
-                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
+                    variant="default"
+                    className="scroll-mt-20"
                   >
                     <div className="flex items-center justify-between group">
                       <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3 flex-1">
@@ -436,7 +436,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="skills" 
                     id="skills" 
-                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
+                    variant="outlined"
+                    className="scroll-mt-20"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Skills</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -468,7 +469,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="experience" 
                     id="experience" 
-                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
+                    variant="outlined"
+                    className="scroll-mt-20"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Work Experience</AccordionTrigger>
                     <AccordionContent className="pt-3">
@@ -499,7 +501,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="education" 
                     id="education" 
-                    className="p-6 bg-base-100/60 text-base-content rounded-xl scroll-mt-20 overflow-hidden"
+                    variant="outlined"
+                    className="scroll-mt-20"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Education</AccordionTrigger>
                     <AccordionContent className="pt-3">

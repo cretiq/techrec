@@ -152,6 +152,44 @@ const generateCacheKey = (data: RequestData): string => {
 - **Legacy**: Custom shadcn/ui components in `/components/ui/`
 - **Current**: DaisyUI components in `/components/ui-daisy/`
 
+### Component Reusability & Styling Approach
+**🚨 CRITICAL PRINCIPLE**: **NEVER override component styles in consuming components**
+
+**✅ CORRECT Approach**: Modify source components with variants
+```tsx
+// ✅ Update the source component (e.g., /components/ui/accordion.tsx)
+const accordionItemVariants = cva("border-b", {
+  variants: {
+    variant: {
+      default: "border-border",
+      outlined: "bg-base-100/80 border border-base-300/20 rounded-xl",
+      glass: "bg-base-100/60 backdrop-blur-lg border border-base-300/30",
+    }
+  }
+})
+
+// ✅ Then use the variant in consuming components
+<AccordionItem variant="outlined" />
+```
+
+**❌ INCORRECT Approach**: Style overrides in consuming components
+```tsx
+// ❌ NEVER do this - breaks reusability
+<AccordionItem className="bg-base-100/80 border border-base-300/20" />
+```
+
+**Why This Matters**:
+- **Consistency**: Changes propagate throughout the entire application
+- **Maintainability**: Single source of truth for component styling
+- **Reusability**: Components remain clean and composable
+- **Scalability**: New variants benefit all existing usage
+
+**Implementation Process**:
+1. **Identify** the source component (e.g., `/components/ui/button.tsx`)
+2. **Add variants** using `class-variance-authority` (CVA)
+3. **Update** consuming components to use variants
+4. **Remove** any style overrides from consuming components
+
 ### Design System
 **Glass Morphism Theme**:
 ```tsx

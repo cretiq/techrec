@@ -3,14 +3,14 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 
 const cardVariants = {
-  default: "card shadow-medium border border-base-300/50 bg-base-100 transition-all duration-200 ease-smooth",
-  transparent: "bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-200 ease-smooth rounded-lg shadow-soft hover:shadow-medium",
-  glass: "bg-base-100/40 backdrop-blur-lg border border-base-200/60 transition-all duration-200 ease-smooth rounded-lg shadow-medium hover:shadow-large hover:border-base-200",
-  solid: "bg-base-100 border border-base-300/50 transition-all duration-200 ease-smooth rounded-lg shadow-medium hover:shadow-large",
-  outlined: "bg-transparent border border-base-300 transition-all duration-200 ease-smooth rounded-lg shadow-none hover:shadow-soft hover:bg-base-100/30",
-  elevated: "bg-base-100 shadow-large border border-base-300/30 transition-all duration-200 ease-smooth rounded-lg hover:shadow-xl",
-  floating: "bg-base-100/95 backdrop-blur-md shadow-xl border border-base-300/40 transition-all duration-200 ease-smooth rounded-xl hover:shadow-2xl hover:-translate-y-1",
-  gradient: "bg-gradient-to-br from-base-100 to-base-200/50 border border-base-300/50 shadow-medium transition-all duration-200 ease-smooth rounded-lg hover:shadow-large",
+  default: "bg-base-100 border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
+  transparent: "bg-base-100/60 backdrop-blur-sm border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
+  glass: "bg-base-100/40 backdrop-blur-lg border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
+  solid: "bg-base-100 border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
+  outlined: "bg-gray-900/15 border border-gray-800/25 rounded-lg transition-all duration-200 ease-smooth hover:border-gray-700/30 hover:bg-gray-900/20",
+  elevated: "bg-base-100 border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50 hover:shadow-sm",
+  floating: "bg-base-100/95 backdrop-blur-md border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50 hover:shadow-sm hover:-translate-y-0.5",
+  gradient: "bg-gradient-to-br from-base-100 to-base-200/50 border border-base-300/30 rounded-lg transition-all duration-200 ease-smooth hover:border-base-300/50",
 }
 
 const Card = React.forwardRef<
@@ -43,7 +43,7 @@ const Card = React.forwardRef<
     variant === "default" && bordered && "",
     variant === "default" && compact && "card-compact",
     variant === "default" && imageFull && "image-full",
-    hoverable && "hover:shadow-lg hover:-translate-y-0.5 transform-gpu",
+    hoverable && "hover:shadow-sm hover:-translate-y-0.5 transform-gpu",
     clickable && "cursor-pointer active:scale-[0.98]",
     interactive && "hover:scale-[1.01] transform-gpu",
     className

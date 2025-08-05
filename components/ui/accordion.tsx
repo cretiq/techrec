@@ -3,16 +3,53 @@
 import * as React from "react"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
+import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
 const Accordion = AccordionPrimitive.Root
 
+const accordionItemVariants = cva(
+  "", // Base styles
+  {
+    variants: {
+      variant: {
+        default: "border-4 border-white",
+        outlined: "border-4 border-blue-500 text-white rounded-xl mb-4 overflow-hidden p-6",
+        glass: "bg-base-100/60 backdrop-blur-lg border border-base-300/30 rounded-xl mb-4 overflow-hidden",
+        solid: "bg-base-200 border-2 border-base-300 rounded-xl mb-4 overflow-hidden",
+      },
+      size: {
+        default: "p-6",
+        sm: "p-4",
+        lg: "p-8",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+export interface AccordionItemProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>,
+    VariantProps<typeof accordionItemVariants> {}
+
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
->(({ className, ...props }, ref) => (
-  <AccordionPrimitive.Item ref={ref} className={cn("", className)} {...props} />
+  AccordionItemProps
+>(({ className, variant, size, children, ...props }, ref) => (
+  <AccordionPrimitive.Item ref={ref} {...props}>
+    <div 
+      className={cn(
+        accordionItemVariants({ variant, size }),
+        className
+      )}
+    >
+      {children}
+    </div>
+  </AccordionPrimitive.Item>
 ))
 AccordionItem.displayName = "AccordionItem"
 
@@ -53,5 +90,6 @@ const AccordionContent = React.forwardRef<
 ))
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent, accordionItemVariants }
+export type { AccordionItemProps }
 

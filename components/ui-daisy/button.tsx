@@ -7,31 +7,31 @@ import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
 
 const buttonVariants = cva(
-  "btn transition-all duration-200 ease-smooth relative overflow-hidden font-medium", // Enhanced base with smooth transitions
+  "btn transition-all duration-200 ease-smooth relative overflow-hidden font-medium rounded-lg", // Enhanced base with smooth transitions and consistent rounded corners
   {
     variants: {
       variant: {
-        default: "btn-primary shadow-brand hover:shadow-lg hover:shadow-brand/25 disabled:bg-primary/30 disabled:text-primary-content/50 disabled:border-primary/20 disabled:shadow-none",
-        destructive: "btn-error shadow-error hover:shadow-lg hover:shadow-error/25 disabled:bg-error/30 disabled:text-error-content/50 disabled:border-error/20 disabled:shadow-none",
-        outline: "btn-outline hover:shadow-medium disabled:bg-base-100/30 disabled:text-base-content/50 disabled:border-base-300/30 disabled:shadow-none",
-        secondary: "btn-secondary shadow-colored hover:shadow-lg hover:shadow-colored/25 disabled:bg-secondary/30 disabled:text-secondary-content/50 disabled:border-secondary/20 disabled:shadow-none", 
+        default: "btn-primary border border-primary/30 hover:border-primary/50 disabled:bg-primary/30 disabled:text-primary-content/50 disabled:border-primary/20",
+        destructive: "btn-error border border-error/30 hover:border-error/50 disabled:bg-error/30 disabled:text-error-content/50 disabled:border-error/20",
+        outline: "btn-outline border border-base-300/30 hover:border-base-300/50 disabled:bg-base-100/30 disabled:text-base-content/50 disabled:border-base-300/30",
+        secondary: "btn-secondary border border-secondary/30 hover:border-secondary/50 disabled:bg-secondary/30 disabled:text-secondary-content/50 disabled:border-secondary/20", 
         ghost: "btn-ghost hover:bg-base-200/60 disabled:bg-transparent disabled:text-base-content/30",
         link: "btn-link hover:scale-105 disabled:text-base-content/30 disabled:no-underline disabled:transform-none",
-        dashdot: "btn-outline border-dashed hover:shadow-medium disabled:bg-base-100/30 disabled:text-base-content/50 disabled:border-base-300/30 disabled:shadow-none",
+        dashdot: "btn-outline border-dashed border-base-300/30 hover:border-base-300/50 disabled:bg-base-100/30 disabled:text-base-content/50 disabled:border-base-300/30",
         // Enhanced professional variants
-        success: "btn-success shadow-success hover:shadow-lg hover:shadow-success/25 disabled:bg-success/30 disabled:text-success-content/50 disabled:border-success/20 disabled:shadow-none",
-        warning: "btn-warning shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 disabled:bg-warning/30 disabled:text-warning-content/50 disabled:border-warning/20 disabled:shadow-none",
-        info: "btn-info shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 disabled:bg-info/30 disabled:text-info-content/50 disabled:border-info/20 disabled:shadow-none",
+        success: "btn-success border border-success/30 hover:border-success/50 disabled:bg-success/30 disabled:text-success-content/50 disabled:border-success/20",
+        warning: "btn-warning border border-warning/30 hover:border-warning/50 disabled:bg-warning/30 disabled:text-warning-content/50 disabled:border-warning/20",
+        info: "btn-info border border-info/30 hover:border-info/50 disabled:bg-info/30 disabled:text-info-content/50 disabled:border-info/20",
         // Premium gradient variants
-        "gradient-brand": "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white border-0 shadow-brand hover:shadow-lg hover:shadow-brand/30 disabled:from-brand-500/30 disabled:to-brand-600/30 disabled:text-white/50 disabled:shadow-none",
-        linkedin: "bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border-0 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 font-medium disabled:from-[#0077b5]/30 disabled:to-[#005885]/30 disabled:text-white/50 disabled:shadow-none",
-        gradient: "bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white border-0 shadow-colored hover:shadow-lg hover:shadow-colored/30 disabled:from-violet-600/30 disabled:to-pink-600/30 disabled:text-white/50 disabled:shadow-none",
-        "gradient-blue": "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border-0 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 disabled:from-blue-600/30 disabled:to-cyan-600/30 disabled:text-white/50 disabled:shadow-none",
-        "gradient-emerald": "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border-0 shadow-success hover:shadow-lg hover:shadow-success/30 disabled:from-emerald-500/30 disabled:to-teal-600/30 disabled:text-white/50 disabled:shadow-none",
+        "gradient-brand": "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white border border-brand-500/30 hover:border-brand-600/50 disabled:from-brand-500/30 disabled:to-brand-600/30 disabled:text-white/50",
+        linkedin: "bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border border-[#0077b5]/30 hover:border-[#005885]/50 font-medium disabled:from-[#0077b5]/30 disabled:to-[#005885]/30 disabled:text-white/50",
+        gradient: "bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white border border-violet-600/30 hover:border-violet-700/50 disabled:from-violet-600/30 disabled:to-pink-600/30 disabled:text-white/50",
+        "gradient-blue": "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border border-blue-600/30 hover:border-blue-700/50 disabled:from-blue-600/30 disabled:to-cyan-600/30 disabled:text-white/50",
+        "gradient-emerald": "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border border-emerald-500/30 hover:border-emerald-600/50 disabled:from-emerald-500/30 disabled:to-teal-600/30 disabled:text-white/50",
         // Enhanced glass variants
-        glass: "bg-base-100/70 backdrop-blur-lg border border-base-300/50 hover:bg-base-200/80 hover:border-base-300 shadow-soft hover:shadow-medium disabled:bg-base-100/30 disabled:text-neutral-500 disabled:border-base-300/30 disabled:shadow-none disabled:opacity-50",
-        "glass-outline": "bg-base-100/40 backdrop-blur-md border border-base-300/60 hover:bg-base-100/60 hover:border-base-300 shadow-soft hover:shadow-medium disabled:bg-base-100/20 disabled:text-neutral-500 disabled:border-base-300/30 disabled:shadow-none disabled:opacity-50",
-        "glass-primary": "bg-primary/10 backdrop-blur-lg border border-primary/20 hover:bg-primary/20 hover:border-primary/30 text-primary shadow-soft hover:shadow-medium disabled:bg-primary/5 disabled:text-primary/30 disabled:border-primary/10 disabled:shadow-none",
+        glass: "bg-gray-700/20 backdrop-blur-lg border border-gray-600/30 hover:bg-gray-700/30 hover:border-gray-600/50 text-gray-300 hover:text-gray-200 disabled:bg-gray-700/10 disabled:text-gray-500 disabled:border-gray-600/20 disabled:opacity-50",
+        "glass-outline": "bg-base-100/40 backdrop-blur-md border border-base-300/30 hover:bg-base-100/60 hover:border-base-300/50 disabled:bg-base-100/20 disabled:text-neutral-500 disabled:border-base-300/30 disabled:opacity-50",
+        "glass-primary": "bg-primary/10 backdrop-blur-lg border border-primary/20 hover:bg-primary/20 hover:border-primary/30 text-primary disabled:bg-primary/5 disabled:text-primary/30 disabled:border-primary/10",
       },
       size: {
         default: "",
