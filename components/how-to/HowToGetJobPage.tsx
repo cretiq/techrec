@@ -107,8 +107,8 @@ export function HowToGetJobPage() {
             Others land interviews while you're still writing cover letters.
           </p>
 
-          {/* Success Metrics */}
-          <div className="flex justify-center gap-8 mb-12">
+          {/* Success Metrics - Hidden for now */}
+          {/* <div className="flex justify-center gap-8 mb-12">
             {successMetrics.map((metric, index) => (
               <div key={index} className="text-center">
                 <div className="text-4xl font-bold text-emerald-600 mb-1">
@@ -117,7 +117,7 @@ export function HowToGetJobPage() {
                 <div className="text-sm text-base-content/60">{metric.label}</div>
               </div>
             ))}
-          </div>
+          </div> */
         </motion.div>
 
         {/* Main Guide Cards */}
@@ -166,8 +166,8 @@ export function HowToGetJobPage() {
           })}
         </div>
 
-        {/* Pro Tips Section */}
-        <motion.div
+        {/* Pro Tips Section - Hidden for now */}
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
@@ -196,7 +196,7 @@ export function HowToGetJobPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </motion.div> */
 
         {/* Quick Wins */}
         <motion.div

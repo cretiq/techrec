@@ -585,18 +585,18 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4" data-testid={`role-search-content-role-${role.id}`}>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary">
-                        <MapPin className="mr-1 h-3 w-3" />
+                      <Badge variant="secondary" className="flex items-center whitespace-nowrap">
+                        <MapPin className="mr-1 h-3 w-3 flex-shrink-0" />
                         <span className="line-clamp-1">{role.location || 'N/A'}</span>
                       </Badge>
-                      <Badge variant="secondary">
-                        <Briefcase className="mr-1 h-3 w-3" />
-                        {formatJobType(role.type)}
+                      <Badge variant="secondary" className="flex items-center whitespace-nowrap">
+                        <Briefcase className="mr-1 h-3 w-3 flex-shrink-0" />
+                        <span>{formatJobType(role.type)}</span>
                       </Badge>
                       {role.remote && (
-                        <Badge variant="secondary">
-                          <Clock className="mr-1 h-3 w-3" />
-                          Remote
+                        <Badge variant="secondary" className="flex items-center whitespace-nowrap">
+                          <Clock className="mr-1 h-3 w-3 flex-shrink-0" />
+                          <span>Remote</span>
                         </Badge>
                       )}
                       {role.applicationInfo && (

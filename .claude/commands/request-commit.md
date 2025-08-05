@@ -91,15 +91,77 @@ Feature implementation details (≤72 chars per line):
 Relates to Feature Request #X in requests.md
 ```
 
-### 5. EXECUTION INSTRUCTIONS
+### 5. COMPREHENSIVE FILE SCANNING (MANDATORY)
+**🚨 CRITICAL STEP**: Before any commit, perform thorough file scanning to capture ALL session work.
+
+#### Mandatory Pre-Commit File Audit:
+```bash
+# 1. Check ALL modified and untracked files
+git status --porcelain
+git ls-files --others --exclude-standard
+
+# 2. Review each file for session relevance
+# 3. Include ALL session-related files
+```
+
+#### Session File Categories to Include:
+**Analysis & Investigation Files**:
+- API response files read/analyzed during debugging
+- Data files examined to understand system behavior
+- Configuration files modified during testing
+- Log files or debug output generated during work
+
+**Implementation Artifacts**:
+- All source code files created or modified
+- Test files and test coverage reports generated
+- Type definitions and interface updates
+- Documentation or comments added
+
+**Development Tools & Scripts**:
+- Build or deployment scripts created
+- Debug utilities or helper scripts
+- Package.json changes from dependency installations
+- Any temporary files that provide session context
+
+**Debugging & Research Work**:
+- Files opened to understand existing functionality
+- Reference materials or examples studied
+- External API responses or data samples analyzed
+- Screenshots or diagnostic files created
+
+#### Verification Checklist (Complete BEFORE committing):
+- [ ] Reviewed ALL files from `git status --porcelain`
+- [ ] Checked ALL untracked files for session relevance
+- [ ] Included files read/analyzed during debugging sessions
+- [ ] Included generated artifacts (tests, coverage, logs, screenshots)
+- [ ] Included configuration or data files modified during work
+- [ ] Included any scripts or tools created during session
+- [ ] Verified complete audit trail of session work is captured
+- [ ] No session-related files left unstaged
+
+#### Common Files Often Missed:
+- **Data/API files**: JSON responses, CSV data, configuration files examined
+- **Generated files**: Test coverage, build artifacts, compiled assets
+- **Investigation artifacts**: Log files, debug output, temporary analysis files
+- **Package files**: package.json, package-lock.json from dependency work
+- **Documentation**: README updates, inline comments, debug notes
+
+**⚠️ RULE**: If you touched, read, analyzed, created, or modified a file during the session, it MUST be included in the commit unless it's explicitly excluded (like node_modules, .env files, etc.).
+
+### 6. EXECUTION INSTRUCTIONS
 **For single commit (preferred approach)**:
 
-1. **Stage all feature-related files**:
+1. **Complete mandatory file scanning** (Section 5 above):
+   - Run git status audit commands
+   - Complete verification checklist
+   - Identify ALL session-related files
+
+2. **Stage all session files**:
    ```bash
-   git add [all files related to the feature request]
+   git add [all files from comprehensive scanning - NO EXCEPTIONS]
    ```
 
-2. **Create comprehensive feature commit**:
+3. **Create comprehensive feature commit**:
    ```bash
    git commit -m "feat(scope): implement complete feature [FR #X]
    
@@ -115,12 +177,17 @@ Relates to Feature Request #X in requests.md
 
 **For multiple commits (only when necessary)**:
 
-1. **Stage specific files for each logical component**:
+1. **Complete mandatory file scanning** (Section 5 above):
+   - Run git status audit commands  
+   - Complete verification checklist
+   - Identify ALL session-related files
+
+2. **Stage specific files for each logical component**:
    ```bash
-   git add [specific files for this feature component]
+   git add [specific files for this feature component - from complete scan]
    ```
 
-2. **Create feature-traceable commit**:
+3. **Create feature-traceable commit**:
    ```bash
    git commit -m "feat(scope): implement feature component [FR #X]
    
@@ -133,13 +200,13 @@ Relates to Feature Request #X in requests.md
    Relates to Feature Request #X in requests.md"
    ```
 
-3. **Verify feature alignment**:
+4. **Verify feature alignment**:
    - Ensure commit aligns with feature request acceptance criteria
    - Check that commit message references the correct Feature Request #X
    - Confirm changes match the technical approach from the feature request
    - Verify no unrelated changes are included
 
-### 6. QUALITY STANDARDS FOR FEATURE IMPLEMENTATION
+### 7. QUALITY STANDARDS FOR FEATURE IMPLEMENTATION
 Each commit must meet these criteria:
 - **Feature-aligned**: Directly implements part of a planned feature request
 - **Traceable**: References Feature Request #X for clear planning connection
@@ -148,7 +215,7 @@ Each commit must meet these criteria:
 - **Descriptive**: Commit message clearly maps to acceptance criteria
 - **Reviewable**: Changes can be understood in context of the feature request
 
-### 7. EXAMPLES OF EXCELLENT FEATURE IMPLEMENTATION COMMITS
+### 8. EXAMPLES OF EXCELLENT FEATURE IMPLEMENTATION COMMITS
 
 **Single Comprehensive Commit (Preferred)**:
 ```
@@ -189,15 +256,17 @@ Implements complete application routing user interface:
 Relates to Feature Request #2 in requests.md
 ```
 
-### 8. COMMIT VERIFICATION & FEATURE ALIGNMENT
+### 9. COMMIT VERIFICATION & FEATURE ALIGNMENT
 Before finalizing each commit:
-- **Review staged changes**: Ensure only changes related to the specific feature request are included
+- **Complete file scanning verification**: Confirm ALL session files are included (Section 5 checklist)
+- **Review staged changes**: Ensure all session-related changes are captured, no files missed
 - **Verify feature reference**: Confirm commit message includes correct [FR #X] reference
 - **Test functionality**: Verify the commit doesn't break existing functionality or feature integration
 - **Check acceptance criteria**: Ensure commit aligns with specific acceptance criteria from the feature request
 - **Validate completeness**: Confirm commit represents complete feature implementation or logical component
+- **Audit session artifacts**: Verify analysis files, debugging work, and investigation materials are included
 
-### 9. WORKFLOW INTEGRATION
+### 10. WORKFLOW INTEGRATION
 This commit process integrates with your feature development workflow:
 
 #### Before Committing:

@@ -70,6 +70,85 @@
         ""
       ],
       "linkedin_org_locations": [],
+      "linkedin_org_description": "This is a job description. We want someone with 5 years of experience in Javascript, Angular, Node, and Nest.js.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/6wrAUOtyvp632QVOBhKhH1lNJR2W2aycKjSluMtC4J8="
+    },
+    {
+      "id": "1789609028",
+      "date_posted": "2025-07-02T06:08:10",
+      "date_created": "2025-07-02T06:34:02.546184",
+      "title": "Front-End Developer (Angular, Node, Nest)",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:08:10",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Westlake",
+            "addressRegion": "TX",
+            "streetAddress": null
+          },
+          "latitude": 32.99391,
+          "longitude": -97.19771
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/front-end-developer-angular-node-nest-at-jobs-via-dice-4259110039",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Westlake"
+      ],
+      "regions_derived": [
+        "Texas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Westlake, Texas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        32.9809
+      ],
+      "lngs_derived": [
+        -97.2041
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
       "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
       "linkedin_org_recruitment_agency_derived": true,
       "seniority": "Mid-Senior level",

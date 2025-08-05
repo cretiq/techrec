@@ -82,8 +82,8 @@ export function HowToUseAppPage() {
             that actually get read.
           </p>
 
-          {/* Stats */}
-          <div className="flex justify-center gap-8 mb-12">
+          {/* Stats - Hidden for now */}
+          {/* <div className="flex justify-center gap-8 mb-12">
             <div className="text-center">
               <div className="text-4xl font-bold text-violet-600 mb-1">30 min</div>
               <div className="text-sm text-base-content/60">for 20+ applications</div>
@@ -96,7 +96,7 @@ export function HowToUseAppPage() {
               <div className="text-4xl font-bold text-emerald-600 mb-1">79%</div>
               <div className="text-sm text-base-content/60">land offers in 6 weeks</div>
             </div>
-          </div>
+          </div> */
         </motion.div>
 
         {/* Timeline */}
