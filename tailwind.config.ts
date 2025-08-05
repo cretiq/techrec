@@ -5,7 +5,23 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './lib/**/*.{js,ts,jsx,tsx}',
+    './utils/**/*.{js,ts,jsx,tsx}',
+    './types/**/*.{js,ts,jsx,tsx}',
     // Add other paths here if necessary
+  ],
+  safelist: [
+    // Force include problem utilities
+    'bg-green-200',
+    'border-4',
+    'border-8',
+    'border-opacity-50',
+    // Include all green backgrounds
+    { pattern: /bg-green-\d+/ },
+    // Include all border widths
+    { pattern: /border-\d+/ },
+    // Include opacity modifiers
+    { pattern: /\/\d+/ },
   ],
   theme: {
     extend: {
@@ -145,49 +161,7 @@ const config: Config = {
     require('daisyui'),
   ],
   daisyui: {
-    themes: [
-      {
-        light: {
-          ...require("daisyui/src/theming/themes")["light"],
-          primary: "#0ea5e9",
-          "primary-content": "#ffffff",
-          secondary: "#8b5cf6", 
-          "secondary-content": "#ffffff",
-          accent: "#22c55e",
-          "accent-content": "#ffffff",
-          neutral: "#334155",
-          "neutral-content": "#f8fafc",
-          "base-100": "#ffffff",
-          "base-200": "#f8fafc",
-          "base-300": "#f1f5f9",
-          "base-content": "#0f172a",
-          info: "#06b6d4",
-          success: "#22c55e", 
-          warning: "#f59e0b",
-          error: "#ef4444",
-        },
-        dark: {
-          ...require("daisyui/src/theming/themes")["dark"],
-          primary: "#0ea5e9",
-          "primary-content": "#ffffff",
-          secondary: "#8b5cf6",
-          "secondary-content": "#ffffff", 
-          accent: "#22c55e",
-          "accent-content": "#ffffff",
-          neutral: "#1e293b",
-          "neutral-content": "#f8fafc",
-          "base-100": "#0f172a",
-          "base-200": "#1e293b", 
-          "base-300": "#334155",
-          "base-content": "#f8fafc",
-          info: "#06b6d4",
-          success: "#22c55e",
-          warning: "#f59e0b", 
-          error: "#ef4444",
-        }
-      },
-      "business"   // Keep business theme as fallback
-    ],
+    themes: ["light", "dark", "business"],
     darkTheme: "dark",
     base: true,
     styled: true,

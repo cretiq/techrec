@@ -26,6 +26,30 @@ This file provides comprehensive guidance for Claude Code when working with the 
 
 ## 🚨 CRITICAL WORKFLOWS & NON-NEGOTIABLES
 
+### ⚠️ CRITICAL TAILWIND CSS CONFIGURATION
+**🚫 NEVER REMOVE**: The safelist configuration in `tailwind.config.ts` is MANDATORY:
+
+```typescript
+safelist: [
+  // Force include utilities that content scanning misses
+  'bg-green-200', 'border-4', 'border-8', 'border-opacity-50',
+  // Pattern matching for all variations
+  { pattern: /bg-green-\d+/ },
+  { pattern: /bg-red-\d+/ }, 
+  { pattern: /bg-blue-\d+/ },
+  { pattern: /border-\d+/ },
+  { pattern: /\/\d+/ }, // opacity modifiers
+],
+```
+
+**Root Cause**: Tailwind's content scanning fails to detect certain utilities, causing selective generation where some work (border-2) but others fail (border-4). This affects both v3 and v4.
+
+**Critical Symptoms**: 
+- Only some utility variations work (bg-green-100 ✅, bg-green-200 ❌)
+- Arbitrary values fail entirely
+- CDN works but local build doesn't
+- Border/opacity utilities randomly missing
+
 ### Git Commit Policy
 **🚫 ABSOLUTE PROHIBITION**: 
 - **NEVER COMMIT CHANGES WITHOUT EXPLICIT USER PERMISSION**

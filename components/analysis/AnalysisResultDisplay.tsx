@@ -136,6 +136,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   // State for controlled Accordion
   const accordionSectionKeys = useMemo(() => {
     const keys = [];
+    if (analysisData?.contactInfo) keys.push('contactInfo');
     if (analysisData?.about !== undefined) keys.push('about');
     if (analysisData?.skills && analysisData.skills.length > 0) keys.push('skills');
     if (analysisData?.experience && analysisData.experience.length > 0) keys.push('experience');
@@ -358,36 +359,56 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     >
        <div className="flex flex-col md:flex-row gap-8" data-testid="cv-management-analysis-content">
           <main className="w-full space-y-4" data-testid="cv-management-analysis-main">
-              {analysisData.contactInfo && (
-                  <motion.section
-                    id="contact-info" 
-                    className="p-6 bg-base-100/80 border border-base-300/20 text-base-content rounded-xl scroll-mt-20"
-                    variants={sectionVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.2 }}
-                  >
-                      <h3 className="text-2xl font-semibold text-foreground mb-3 pb-1">Contact Info</h3>
-                      
-                      {/* Log before rendering ContactInfoDisplay */} 
-                      <ContactInfoDisplay 
-                          data={analysisData.contactInfo}
-                          onChange={(newData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: newData }))} 
-                          suggestions={suggestions} 
-                          onAcceptSuggestion={handleAcceptSuggestion}
-                          onRejectSuggestion={handleRejectSuggestion}
-                      />
-                      
-                      {/* Granular suggestions now handled within ContactInfoDisplay component */}
-                  </motion.section>
-              )}
-              
               <Accordion 
                 type="multiple" 
                 value={openSections} 
                 onValueChange={setOpenSections}
                 className="w-full space-y-4"
               >
+                {analysisData.contactInfo && (
+                  <AccordionItem 
+                    value="contactInfo" 
+                    id="contact-info" 
+                    variant="default"
+                    className="scroll-mt-20"
+                  >
+                    <div className="flex items-center justify-between group">
+                      <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3 flex-1">
+                        Contact Info
+                      </AccordionTrigger>
+                      <AIAssistanceButton
+                        section="contactInfo"
+                        currentData={analysisData.contactInfo}
+                        isEmpty={!analysisData.contactInfo?.name && !analysisData.contactInfo?.email}
+                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: improvedData }))}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity ml-4"
+                      />
+                    </div>
+                    <AccordionContent className="pt-3">
+                      <AnimatePresence initial={false}>
+                        <motion.div
+                          key="contactInfo-content"
+                          variants={contentVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          className="overflow-hidden"
+                        >
+                          <ContactInfoDisplay 
+                            data={analysisData.contactInfo}
+                            onChange={(newData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: newData }))} 
+                            suggestions={suggestions} 
+                            onAcceptSuggestion={handleAcceptSuggestion}
+                            onRejectSuggestion={handleRejectSuggestion}
+                          />
+                          
+                          {/* AI Suggestions for Contact Info */}
+                          <SuggestionManager section="contactInfo" className="mt-4" />
+                        </motion.div>
+                      </AnimatePresence>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
                 {analysisData.about !== undefined && (
                   <AccordionItem 
                     value="about" 
@@ -436,7 +457,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="skills" 
                     id="skills" 
-                    variant="outlined"
+                    variant="default"
                     className="scroll-mt-20"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Skills</AccordionTrigger>
@@ -469,7 +490,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="experience" 
                     id="experience" 
-                    variant="outlined"
+                    variant="default"
                     className="scroll-mt-20"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Work Experience</AccordionTrigger>
@@ -501,7 +522,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="education" 
                     id="education" 
-                    variant="outlined"
+                    variant="default"
                     className="scroll-mt-20"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Education</AccordionTrigger>

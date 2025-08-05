@@ -1,45 +1,42 @@
 @import "tailwindcss";
 
-@plugin "daisyui" {
-    themes: all;
-}
+@plugin "daisyui";
 
 @theme {
   /* Custom animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+}
 
-  /* Keyframes for animations */
-  @keyframes accordion-down {
-    from {
-      height: 0;
-    }
-    to {
-      height: var(--radix-accordion-content-height);
-    }
+/* Global base styles without @layer for v4 */
+:root {
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  /* Add smooth transitions for theme changes */
+  --transition-duration: 0.15s;
+  transition: background-color var(--transition-duration) ease,
+              color var(--transition-duration) ease,
+              border-color var(--transition-duration) ease;
+}
+
+/* Keyframes for animations */
+@keyframes accordion-down {
+  from {
+    height: 0;
   }
-
-  @keyframes accordion-up {
-    from {
-      height: var(--radix-accordion-content-height);
-    }
-    to {
-      height: 0;
-    }
+  to {
+    height: var(--radix-accordion-content-height);
   }
 }
 
-@layer base {
-  :root {
-    --font-sans: system-ui, -apple-system, BlinkMacSystemFont,
-      'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
-      'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-
-    /* Add smooth transitions for theme changes */
-    --transition-duration: 0.15s;
-    transition: background-color var(--transition-duration) ease,
-                color var(--transition-duration) ease,
-                border-color var(--transition-duration) ease;
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
   }
 }
 
@@ -424,338 +421,6 @@ select {
   }
 }
 
-/* Sparkle Loading Animation */
-.sparkle-loader {
-  position: relative;
-  display: inline-block;
-}
-
-.sparkle-loader::before,
-.sparkle-loader::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  animation: sparkle 1.5s infinite ease-in-out;
-}
-
-.sparkle-loader::before {
-  width: 4px;
-  height: 4px;
-  background: linear-gradient(45deg, #8b5cf6, #ec4899);
-  top: -8px;
-  left: -8px;
-  animation-delay: 0s;
-}
-
-.sparkle-loader::after {
-  width: 3px;
-  height: 3px;
-  background: linear-gradient(45deg, #06b6d4, #3b82f6);
-  top: 20px;
-  right: -6px;
-  animation-delay: 0.5s;
-}
-
-@keyframes sparkle {
-  0%, 100% {
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1) rotate(180deg);
-  }
-}
-
-/* Cool Pulse Loading */
-.pulse-ring {
-  position: relative;
-  display: inline-block;
-}
-
-.pulse-ring::before,
-.pulse-ring::after {
-  content: '';
-  position: absolute;
-  border: 2px solid;
-  border-color: currentColor;
-  border-radius: 50%;
-  opacity: 1;
-  animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
-}
-
-.pulse-ring::before {
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  animation-delay: 0s;
-}
-
-.pulse-ring::after {
-  width: 120%;
-  height: 120%;
-  top: -10%;
-  left: -10%;
-  animation-delay: 0.5s;
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2.5);
-    opacity: 0;
-  }
-}
-
-/* Magical Glow Effect */
-.magical-glow {
-  position: relative;
-  overflow: hidden;
-}
-
-.magical-glow::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(139, 92, 246, 0.3),
-    rgba(236, 72, 153, 0.3),
-    transparent
-  );
-  animation: magical-sweep 2s infinite;
-}
-
-@keyframes magical-sweep {
-  0% {
-    left: -100%;
-  }
-   100% {
-    left: 100%;
-  }
-}
-
-/* Enhanced Slider Styles */
-.slider-enhanced [data-orientation="horizontal"] {
-  height: 8px;
-  background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 100%);
-  border-radius: 9999px;
-  position: relative;
-  overflow: hidden;
-}
-
-.slider-enhanced [data-orientation="horizontal"]::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #ec4899);
-  border-radius: inherit;
-  animation: slider-shimmer 3s infinite;
-  opacity: 0.1;
-}
-
-.slider-enhanced [role="slider"] {
-  width: 20px;
-  height: 20px;
-  background: linear-gradient(135deg, #8b5cf6, #ec4899);
-  border: 3px solid white;
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-  transition: all 0.2s ease;
-}
-
-.slider-enhanced [role="slider"]:hover {
-  transform: scale(1.2);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-}
-
-.slider-enhanced [role="slider"]:focus {
-  outline: none;
-  transform: scale(1.1);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-}
-
-@keyframes slider-shimmer {
-  0% {
-    width: 0%;
-  }
-  50% {
-    width: 100%;
-  }
-  100% {
-    width: 0%;
-  }
-}
-
-/* Professional Form Enhancements */
-.input-focus-ring {
-  position: relative;
-}
-
-.input-focus-ring::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  padding: 2px;
-  background: linear-gradient(135deg, transparent, hsl(var(--p) / 0.2), transparent);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: xor;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-
-.input-focus-ring:focus-within::after {
-  opacity: 1;
-}
-
-/* Enhanced Notification Styles */
-.notification-slide {
-  animation: slideInNotification 0.3s ease-out;
-}
-
-@keyframes slideInNotification {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Professional Table Enhancements */
-.table-enhanced {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.table-enhanced th {
-  background: linear-gradient(135deg, hsl(var(--b2)), hsl(var(--b3)));
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.table-enhanced tr {
-  transition: all 0.15s ease-in-out;
-}
-
-.table-enhanced tbody tr:hover {
-  background-color: hsl(var(--b2) / 0.5);
-  transform: scale(1.001);
-}
-
-/* Professional Badge Styles */
-.badge-enhanced {
-  position: relative;
-  overflow: hidden;
-}
-
-.badge-enhanced::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease-in-out;
-}
-
-.badge-enhanced:hover::before {
-  left: 100%;
-}
-
-/* Enhanced Progress Indicators */
-.progress-enhanced {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(90deg, hsl(var(--b3)), hsl(var(--b2)));
-}
-
-.progress-enhanced::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 30px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: progressShimmer 2s infinite;
-}
-
-@keyframes progressShimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
-  }
-}
-
-/* Professional Tooltip Enhancements */
-.tooltip-enhanced {
-  position: relative;
-}
-
-.tooltip-enhanced::after {
-  content: attr(data-tip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background: hsl(var(--n) / 0.9);
-  color: hsl(var(--nc));
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.2s ease-in-out;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.tooltip-enhanced:hover::after {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-4px);
-}
-
-/* Responsive Animation Utilities */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* High Performance Scrolling */
-* {
-  scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    scroll-behavior: auto;
-  }
-}
-
 /* Enhanced Focus Indicators */
 :focus-visible {
   outline: 2px solid hsl(var(--p));
@@ -763,3 +428,10 @@ select {
   border-radius: 4px;
 }
 
+.sleek-style {
+    background-color: hsl(var(--b1));
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
