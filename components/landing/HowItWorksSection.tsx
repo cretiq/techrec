@@ -48,7 +48,7 @@ export function HowItWorksSection() {
             From manual grind to automated success in three simple steps
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm">
+          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm-min">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-blue-500" />
               <span className="text-base-content/70">
@@ -68,7 +68,7 @@ export function HowItWorksSection() {
           <div className="grid lg:grid-cols-3 gap-8">
             {steps.map((step, index) => (
               <div key={step.number} className="relative">
-                <Card variant="glass" hoverable animated className="h-full">
+                <Card variant="gradient" className="h-full">
                   <CardContent className="p-8 h-full">
                     {/* Step Number */}
                     <div className="flex items-center justify-between mb-6">
@@ -114,20 +114,20 @@ export function HowItWorksSection() {
 
         {/* Bottom stats */}
         <div className="max-w-4xl mx-auto mt-16">
-          <Card variant="gradient" hoverable animated>
+          <Card variant="gradient">
             <CardContent className="p-8">
-              <div className="grid md:grid-cols-3 gap-8 text-center text-white">
+              <div className="grid md:grid-cols-3 gap-8 text-center text-base-content">
                 <div>
                   <div className="text-3xl font-bold mb-2">3,247</div>
-                  <div className="text-white/80">Developers transformed</div>
+                  <div className="text-base-content/80">Developers transformed</div>
                 </div>
                 <div>  
                   <div className="text-3xl font-bold mb-2">76%</div>
-                  <div className="text-white/80">Land offers within 45 days</div>
+                  <div className="text-base-content/80">Land offers within 45 days</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold mb-2">4.9★</div>
-                  <div className="text-white/80">Average user rating</div>
+                  <div className="text-base-content/80">Average user rating</div>
                 </div>
               </div>
             </CardContent>

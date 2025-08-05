@@ -71,12 +71,12 @@ export function FinalCTASection() {
           {/* Pricing Cards */}
           <div className="grid lg:grid-cols-4 gap-6 mb-16 max-w-7xl mx-auto">
             {/* Free Plan */}
-            <Card variant="glass" hoverable animated className="h-full">
+            <Card variant="glass"  className="h-full">
               <CardContent className="p-6 h-full flex flex-col">
                 <div className="text-center mb-4">
                   <div className="text-4xl mb-2">🆓</div>
                   <div className="text-2xl font-black text-base-content mb-1">$0</div>
-                  <div className="text-xs text-base-content/60">per month</div>
+                  <div className="text-xs-min text-base-content/60">per month</div>
                 </div>
                 
                 <h3 className="text-lg font-bold text-base-content mb-2 text-center">
@@ -127,12 +127,12 @@ export function FinalCTASection() {
             </Card>
 
             {/* Starter Plan */}
-            <Card variant="glass" hoverable animated className="h-full">
+            <Card variant="glass"  className="h-full">
               <CardContent className="p-6 h-full flex flex-col">
                 <div className="text-center mb-4">
                   <div className="text-4xl mb-2">🌱</div>
                   <div className="text-2xl font-black text-base-content mb-1">$5</div>
-                  <div className="text-xs text-base-content/60">per month</div>
+                  <div className="text-xs-min text-base-content/60">per month</div>
                 </div>
                 
                 <h3 className="text-lg font-bold text-base-content mb-2 text-center">
@@ -186,56 +186,56 @@ export function FinalCTASection() {
             {/* Pro Plan */}
             <div className="relative">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <Badge variant="gradient-brand" className="px-4 py-1 text-white font-semibold shadow-lg text-xs">
+                <Badge variant="gradient-brand" className="px-4 py-1 text-base-content font-semibold shadow-lg text-xs-min">
                   Most Popular
                 </Badge>
               </div>
               
-              <Card variant="gradient" hoverable animated className="h-full">
+              <Card variant="gradient" className="h-full">
                 <CardContent className="p-6 h-full flex flex-col">
                   <div className="text-center mb-4">
                     <div className="text-4xl mb-2">💼</div>
-                    <div className="text-2xl font-black text-white mb-1">$15</div>
-                    <div className="text-xs text-white/70">per month</div>
+                    <div className="text-2xl font-black text-base-content mb-1">$15</div>
+                    <div className="text-xs text-base-content/70">per month</div>
                   </div>
                   
-                  <h3 className="text-lg font-bold text-white mb-2 text-center">
+                  <h3 className="text-lg font-bold text-base-content mb-2 text-center">
                     Pro Plan
                   </h3>
                   
-                  <p className="text-sm text-white/80 mb-4 text-center">
+                  <p className="text-sm text-base-content/80 mb-4 text-center">
                     Ideal for active job seekers
                   </p>
                   
                   <div className="space-y-3 mb-6 flex-1">
-                    <div className="text-xs text-white/60 font-medium">Everything in Starter, plus:</div>
+                    <div className="text-xs-min text-base-content/60 font-medium">Everything in Starter, plus:</div>
                     <div className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-white"><strong>100 searches</strong> per month</span>
+                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-base-content"><strong>100 searches</strong> per month</span>
                     </div>
                     <div className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-white"><strong>15 results</strong> per search</span>
+                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-base-content"><strong>15 results</strong> per search</span>
                     </div>
                     <div className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-white">Premium filters</span>
+                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-base-content">Premium filters</span>
                     </div>
                     <div className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-white"><strong>Unlimited</strong> saved jobs</span>
+                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-base-content"><strong>Unlimited</strong> saved jobs</span>
                     </div>
                     <div className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-white">Daily alerts & push notifications</span>
+                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-base-content">Daily alerts & push notifications</span>
                     </div>
                     <div className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-white">Export to CSV/PDF</span>
+                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-base-content">Export to CSV/PDF</span>
                     </div>
                     <div className="flex items-start gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-white">Analytics dashboard</span>
+                      <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-base-content">Analytics dashboard</span>
                     </div>
                   </div>
                   
@@ -243,28 +243,24 @@ export function FinalCTASection() {
                     <Button 
                       variant="glass" 
                       size="sm" 
-                      className="w-full text-sm font-semibold py-3 rounded-2xl text-white border-white/30 hover:bg-white/20 transition-all duration-300"
+                      className="w-full text-sm font-semibold py-3 rounded-2xl text-base-content border-base-300/30 hover:bg-base-content/20 transition-all duration-300"
                     >
                       Choose Pro
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>
                   
-                  <div className="flex items-center justify-center gap-2 text-white/80 text-xs bg-white/10 rounded-xl py-2 px-3">
-                    <Shield className="h-3 w-3" />
-                    <span>60-day guarantee</span>
-                  </div>
                 </CardContent>
               </Card>
             </div>
 
             {/* Ultra Plan */}
-            <Card variant="gradient" hoverable animated className="h-full" style={{background: 'linear-gradient(135deg, #ea580c 0%, #dc2626 50%, #db2777 100%)'}}>
+            <Card variant="gradient"  className="h-full" style={{background: 'linear-gradient(135deg, #ea580c 0%, #dc2626 50%, #db2777 100%)'}}>
               <CardContent className="p-6 h-full flex flex-col">
                 <div className="text-center mb-4">
                   <div className="text-4xl mb-2">🚀</div>
                   <div className="text-2xl font-black text-white mb-1">$39</div>
-                  <div className="text-xs text-white/70">per month</div>
+                  <div className="text-xs-min text-white/70">per month</div>
                 </div>
                 
                 <h3 className="text-lg font-bold text-white mb-2 text-center">
@@ -276,7 +272,7 @@ export function FinalCTASection() {
                 </p>
                 
                 <div className="space-y-3 mb-6 flex-1">
-                  <div className="text-xs text-white/60 font-medium">Everything in Pro, plus:</div>
+                  <div className="text-xs-min text-white/60 font-medium">Everything in Pro, plus:</div>
                   <div className="flex items-start gap-2 text-sm">
                     <CheckCircle className="h-4 w-4 text-emerald-300 mt-0.5 flex-shrink-0" />
                     <span className="text-white"><strong>400 searches</strong> per month</span>
@@ -307,7 +303,7 @@ export function FinalCTASection() {
                   </div>
                 </div>
                 
-                <Link href="/developer/roles/search" className="block mb-4">
+                <Link href="/developer/roles/search" className="block">
                   <Button 
                     variant="glass" 
                     size="sm" 
@@ -317,11 +313,6 @@ export function FinalCTASection() {
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </Link>
-                
-                <div className="flex items-center justify-center gap-2 text-white/80 text-xs bg-white/10 rounded-xl py-2 px-3">
-                  <Shield className="h-3 w-3" />
-                  <span>Enterprise support</span>
-                </div>
               </CardContent>
             </Card>
           </div>

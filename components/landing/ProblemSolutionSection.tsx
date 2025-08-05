@@ -20,7 +20,7 @@ export function ProblemSolutionSection() {
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8 mt-12">
-            <Card variant="glass" hoverable animated>
+            <Card variant="gradient">
               <CardContent className="p-8 text-center">
                 <Clock className="h-12 w-12 text-red-500 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-3 text-base-content">The External Problem</h3>
@@ -30,7 +30,7 @@ export function ProblemSolutionSection() {
               </CardContent>
             </Card>
             
-            <Card variant="glass" hoverable animated>
+            <Card variant="gradient">
               <CardContent className="p-8 text-center">
                 <Heart className="h-12 w-12 text-orange-500 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-3 text-base-content">The Internal Problem</h3>
@@ -40,7 +40,7 @@ export function ProblemSolutionSection() {
               </CardContent>
             </Card>
             
-            <Card variant="glass" hoverable animated>
+            <Card variant="gradient">
               <CardContent className="p-8 text-center">
                 <Zap className="h-12 w-12 text-purple-500 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-3 text-base-content">What's at Stake</h3>
@@ -102,14 +102,14 @@ export function ProblemSolutionSection() {
               </div>
             </div>
             
-            <Card variant="gradient" hoverable animated>
+            <Card variant="gradient">
               <CardContent className="p-8 text-center">
-                <div className="text-3xl font-bold text-white mb-2">380%</div>
-                <div className="text-white/90 mb-4">Average increase in interview requests</div>
-                <div className="text-lg text-white/80">
+                <div className="text-3xl font-bold text-base-content mb-2">380%</div>
+                <div className="text-base-content/90 mb-4">Average increase in interview requests</div>
+                <div className="text-lg text-base-content/80">
                   "Finally, a job search that doesn't consume my weekends"
                 </div>
-                <div className="text-sm text-white/70 mt-2">
+                <div className="text-sm text-base-content/70 mt-2">
                   — Marcus Rodriguez, Full-Stack Engineer
                 </div>
               </CardContent>

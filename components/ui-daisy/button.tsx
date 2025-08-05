@@ -25,7 +25,7 @@ const buttonVariants = cva(
         // Premium gradient variants
         "gradient-brand": "bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white border border-brand-500/30 hover:border-brand-600/50 disabled:from-brand-500/30 disabled:to-brand-600/30 disabled:text-white/50",
         linkedin: "bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white border border-[#0077b5]/30 hover:border-[#005885]/50 font-medium disabled:from-[#0077b5]/30 disabled:to-[#005885]/30 disabled:text-white/50",
-        gradient: "bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white border border-violet-600/30 hover:border-violet-700/50 disabled:from-violet-600/30 disabled:to-pink-600/30 disabled:text-white/50",
+        gradient: "bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 hover:from-yellow-600 hover:via-orange-600 hover:to-red-600 text-white border border-orange-500/30 hover:border-orange-600/50 disabled:from-yellow-500/30 disabled:via-orange-500/30 disabled:to-red-500/30 disabled:text-white/50",
         "gradient-blue": "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white border border-blue-600/30 hover:border-blue-700/50 disabled:from-blue-600/30 disabled:to-cyan-600/30 disabled:text-white/50",
         "gradient-emerald": "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white border border-emerald-500/30 hover:border-emerald-600/50 disabled:from-emerald-500/30 disabled:to-teal-600/30 disabled:text-white/50",
         // Enhanced glass variants

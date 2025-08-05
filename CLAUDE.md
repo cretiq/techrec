@@ -177,42 +177,85 @@ const generateCacheKey = (data: RequestData): string => {
 - **Current**: DaisyUI components in `/components/ui-daisy/`
 
 ### Component Reusability & Styling Approach
-**🚨 CRITICAL PRINCIPLE**: **NEVER override component styles in consuming components**
+**🚨 CRITICAL PRINCIPLE**: **Build Reusable, Scalable, Standardized Components Always**
 
-**✅ CORRECT Approach**: Modify source components with variants
+**Core Philosophy**: Every UI element should be a composable, predictable component with consistent APIs and behavior patterns. This is non-negotiable for maintainable, scalable applications.
+
+**✅ MANDATORY Approach**: Component-First Architecture
 ```tsx
-// ✅ Update the source component (e.g., /components/ui/accordion.tsx)
-const accordionItemVariants = cva("border-b", {
+// ✅ Standardized component with variants (CVA pattern)
+const buttonVariants = cva("base-classes", {
   variants: {
-    variant: {
-      default: "border-border",
-      outlined: "bg-base-100/80 border border-base-300/20 rounded-xl",
-      glass: "bg-base-100/60 backdrop-blur-lg border border-base-300/30",
-    }
+    variant: { gradient: "...", glass: "...", outline: "..." },
+    size: { sm: "...", md: "...", lg: "..." },
+    animation: { none: "!transition-none", default: "transition-all" }
   }
 })
 
-// ✅ Then use the variant in consuming components
-<AccordionItem variant="outlined" />
+// ✅ Clean, reusable usage
+<Button variant="gradient" size="xl" animation="none" />
+<Card variant="glass" />
+<SectionBadge variant="outline" icon={<HelpCircle />} />
 ```
 
-**❌ INCORRECT Approach**: Style overrides in consuming components
+**❌ FORBIDDEN Approaches**: 
 ```tsx
-// ❌ NEVER do this - breaks reusability
-<AccordionItem className="bg-base-100/80 border border-base-300/20" />
+// ❌ NEVER override styles in consuming components
+<Button className="bg-gradient-to-r from-yellow-500..." />
+
+// ❌ NEVER create one-off inline styles
+<div className="bg-base-100/80 border border-base-300/20 rounded-xl" />
+
+// ❌ NEVER duplicate styling logic
+// Creating multiple similar components instead of variants
 ```
 
-**Why This Matters**:
-- **Consistency**: Changes propagate throughout the entire application
-- **Maintainability**: Single source of truth for component styling
-- **Reusability**: Components remain clean and composable
-- **Scalability**: New variants benefit all existing usage
+**Why This Approach is Mandatory**:
+- **Single Source of Truth**: Change once, updates everywhere
+- **Predictable APIs**: Developers know what to expect (`variant`, `size`, `className`)
+- **Design Consistency**: No more one-off styling or visual inconsistencies
+- **Developer Velocity**: Build faster with existing, tested components
+- **Maintainability**: Fix bugs once, fixes everywhere
+- **Scalability**: New features use existing components, extending with variants
 
-**Implementation Process**:
-1. **Identify** the source component (e.g., `/components/ui/button.tsx`)
-2. **Add variants** using `class-variance-authority` (CVA)
-3. **Update** consuming components to use variants
-4. **Remove** any style overrides from consuming components
+**Standardized Component Patterns**:
+1. **Variant-Based Architecture**: Use `class-variance-authority` (CVA) for all variants
+2. **Consistent Prop APIs**: `variant`, `size`, `className`, `children` patterns
+3. **Animation Controls**: `animated`, `hoverable`, `interactive` boolean props
+4. **Icon Integration**: Standardized `icon`, `leftIcon`, `rightIcon` props
+5. **Accessibility First**: Built-in ARIA labels, focus management, keyboard navigation
+
+**Implementation Workflow**:
+1. **Before Creating**: Check if existing component can be extended with variants
+2. **Component Design**: Define all variants upfront using CVA
+3. **API Design**: Follow established prop patterns (`variant`, `size`, etc.)
+4. **Documentation**: Add to design system with usage examples
+5. **Refactoring**: Replace any one-off implementations with new component
+
+**Component Library Organization**:
+```
+components/ui-daisy/
+├── button.tsx          // All button variants
+├── card.tsx            // All card variants  
+├── badge.tsx           // All badge variants
+├── section-badge.tsx   // Specialized reusable pill component
+├── input.tsx           // All input variants
+└── index.ts            // Export all components
+```
+
+**Real-World Examples from Our Codebase**:
+```tsx
+// ✅ SectionBadge - Reusable pill component
+<SectionBadge variant="gradient" icon={<AlertTriangle />}>
+  The Cost of Waiting
+</SectionBadge>
+
+// ✅ Card - Standardized variants
+<Card variant="gradient" className="h-full">
+
+// ✅ Button - Consistent animation controls
+<Button variant="gradient" className="!transition-none" />
+```
 
 ### Design System
 **Glass Morphism Theme**:
@@ -226,6 +269,19 @@ const accordionItemVariants = cva("border-b", {
 - **Hover Effects**: Include movement, shadow, and background changes
 - **Transitions**: Use `transition-all duration-200` for smooth multi-property changes
 
+**Standardized Text Sizing System**:
+```tsx
+// ✅ NEVER use text-xs - use standardized minimum sizes
+.text-xs-min     // 14px - absolute minimum for accessibility
+.text-sm-min     // 15px - comfortable minimum for body text  
+.text-base-comfortable // 16px - ideal for body text
+
+// ✅ Usage examples
+<div className="text-xs-min">Minimum accessible text</div>
+<p className="text-sm-min">Small but comfortable text</p>
+<p className="text-base-comfortable">Ideal reading text</p>
+```
+
 **Essential Patterns**:
 ```tsx
 // ✅ Fixed table layouts prevent width flickering
@@ -234,6 +290,8 @@ const accordionItemVariants = cva("border-b", {
 window.dispatchEvent(new CustomEvent('expandAllSections'));
 // ✅ Comprehensive test coverage
 <Button data-testid={`action-button-${action}-${id}`}>
+// ✅ Standardized minimum text sizes
+<span className="text-sm-min">Never too small to read</span>
 ```
 
 ---
@@ -699,11 +757,25 @@ AWS_S3_BUCKET_NAME=     # File storage
 
 ### Core Implementation Mandate
 When implementing new features:
-1. **Analyze First**: Thoroughly analyze existing codebase patterns
-2. **Strictly Adhere to Design System**: Use DaisyUI components exclusively
-3. **Integrate with Centralized State**: Connect to existing Redux state management
-4. **Encapsulate Logic**: Build self-contained, single-responsibility components
-5. **Preserve Layout Integrity**: Additive changes without breaking existing layouts
+1. **Component-First Thinking**: Check existing components before creating anything new
+2. **Variant-Based Extensions**: Add variants to existing components rather than creating new ones
+3. **Standardized APIs**: Follow established patterns (`variant`, `size`, `className`, `icon`)
+4. **No Style Overrides**: Never use className for styling - only extend component variants
+5. **Reusability Focus**: Every component should be usable across multiple contexts
+6. **Accessibility Built-In**: Components must include proper ARIA labels and keyboard navigation
+7. **Documentation Updated**: Add new components/variants to design system documentation
+
+### Component Development Checklist
+Before shipping any UI component:
+- [ ] Uses CVA for variant management
+- [ ] Follows standardized prop API patterns
+- [ ] Includes all necessary variants (don't create one-off implementations)
+- [ ] Has proper TypeScript interfaces
+- [ ] Includes accessibility features
+- [ ] Added to component library exports
+- [ ] Documented with usage examples
+- [ ] Tested across different screen sizes
+- [ ] No inline styles or className overrides in consuming components
 
 ---
 

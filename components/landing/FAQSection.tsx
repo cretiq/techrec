@@ -1,6 +1,7 @@
 "use client"
 
 import { Badge, Accordion, AccordionItem, AccordionTitle, AccordionContent } from "@/components/ui-daisy"
+import { SectionBadge } from "@/components/ui-daisy/section-badge"
 import { HelpCircle } from "lucide-react"
 
 interface FAQItem {
@@ -59,10 +60,9 @@ export function FAQSection() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <Badge variant="outline" size="lg" className="mb-6">
-              <HelpCircle className="h-4 w-4 mr-2" />
+            <SectionBadge variant="outline" icon={<HelpCircle />} className="mb-6">
               Frequently Asked Questions
-            </Badge>
+            </SectionBadge>
             
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-base-content">
               Got Questions?
@@ -76,7 +76,7 @@ export function FAQSection() {
           </div>
 
           {/* FAQ Accordion */}
-          <div className="rounded-2xl shadow-lg">
+          <div className="rounded-3xl shadow-lg">
             <Accordion variant="plus" grouped={true} className="w-full">
               {faqData.map((faq, index) => (
                 <AccordionItem 
@@ -85,7 +85,7 @@ export function FAQSection() {
                   defaultOpen={index === 0}
                   className="bg-base-100/90 backdrop-blur-sm border-base-300/20"
                 >
-                  <AccordionTitle className="hover:text-primary transition-colors duration-200">
+                  <AccordionTitle className="hover:text-primary transition-colors duration-200 px-8 py-6">
                     <div className="flex flex-col items-start gap-2">
                       <span>{faq.question}</span>
                       {faq.category && (
@@ -95,8 +95,8 @@ export function FAQSection() {
                       )}
                     </div>
                   </AccordionTitle>
-                  <AccordionContent>
-                    <div className="pb-4">
+                  <AccordionContent className="px-8">
+                    <div className="pb-6">
                       <p className="text-base-content/80 leading-relaxed">
                         {faq.answer}
                       </p>

@@ -20,13 +20,13 @@ const badgeVariants = cva(
         error: "badge-error shadow-error/20 hover:shadow-error/30",
         info: "badge-info shadow-cyan-500/20 hover:shadow-cyan-500/30",
         // Premium gradient variants
-        gradient: "bg-gradient-to-r from-violet-500 to-pink-500 text-white border-0 shadow-colored hover:shadow-colored/40",
+        gradient: "bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white border-0 shadow-colored hover:shadow-colored/40",
         "gradient-brand": "bg-gradient-to-r from-brand-500 to-brand-600 text-white border-0 shadow-brand hover:shadow-brand/40",
         "gradient-blue": "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30",
         "gradient-success": "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-success hover:shadow-success/40",
         "gradient-warning": "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30",
         // Glass morphism variants
-        glass: "bg-base-100/60 backdrop-blur-md border border-base-300/40 shadow-soft hover:shadow-medium hover:bg-base-100/80",
+        glass: "bg-base-100 backdrop-blur-md border border-base-100/20 shadow-soft hover:shadow-medium hover:bg-base-100/80",
         "glass-primary": "bg-primary/10 backdrop-blur-md border border-primary/20 text-primary shadow-soft hover:bg-primary/20",
         "glass-success": "bg-success/10 backdrop-blur-md border border-success/20 text-success shadow-soft hover:bg-success/20",
         "glass-error": "bg-error/10 backdrop-blur-md border border-error/20 text-error shadow-soft hover:bg-error/20",
