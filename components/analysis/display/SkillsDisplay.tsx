@@ -125,14 +125,14 @@ export function SkillsDisplay({
             return (
               <div key={skill.id || `skill-${index}`} className="mb-2"> {/* Wrapper for badge + suggestions */} 
                 <Badge 
-                  variant="secondary" 
-                  className={cn("relative group", isEditing ? "pr-6" : "")}
+                  variant="glass" 
+                  className={cn("relative group dark:text-opacity-80", isEditing ? "pr-6" : "")}
                 >
                 {skillName} 
                 {isEditing && (
                   <button 
                       onClick={() => handleRemoveSkill(index)}
-                      className="absolute -top-1 -right-1 p-0.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/80" 
+                      className="absolute top-1 -right-1 p-0.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/80" 
                       aria-label={`Remove ${skillName}`}
                   >
                     <X className="h-2.5 w-2.5" />

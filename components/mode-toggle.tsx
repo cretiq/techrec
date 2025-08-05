@@ -17,12 +17,10 @@ export function ModeToggle() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 
-  // Popular DaisyUI themes for quick access
+  // Available DaisyUI themes - must match tailwind.config.ts
   const popularThemes = [
-    { name: "corporate", icon: Sun, label: "Corporate" },
+    { name: "light", icon: Sun, label: "Light" },
     { name: "dark", icon: Moon, label: "Dark" },
-    { name: "cupcake", icon: Palette, label: "Cupcake" },
-    { name: "forest", icon: Palette, label: "Forest" },
   ];
 
   // Prevent hydration mismatch by only rendering after mount
@@ -33,8 +31,8 @@ export function ModeToggle() {
   const getCurrentIcon = () => {
     if (!mounted) return Sun; // Default icon during SSR
     if (theme === "dark") return Moon;
-    if (theme === "corporate") return Sun;
-    return Palette;
+    if (theme === "light") return Sun;
+    return Palette; // fallback for system/other themes
   };
 
   const CurrentIcon = getCurrentIcon();

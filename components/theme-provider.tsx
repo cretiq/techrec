@@ -1,17 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
 
-// Available DaisyUI themes
-const themes = ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"]
+// Available DaisyUI themes - match tailwind.config.ts
+const themes = ["light", "dark"]
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="data-theme"
-      defaultTheme="corporate"
+      defaultTheme="light"
       themes={themes}
       disableTransitionOnChange
       {...props}
@@ -20,4 +20,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     </NextThemesProvider>
   )
 }
+
+// Re-export useTheme hook for consistency
+export { useTheme }
 

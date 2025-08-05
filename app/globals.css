@@ -1,8 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://rsms.me/inter/inter.css'); /* Inter Variable from official source */
 @import "tailwindcss";
 
 @plugin "daisyui";
 
+/* Custom light theme with pure white background */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-base-100: oklch(100% 0 0); /* Pure white */
+  --color-base-200: oklch(98% 0.01 240); /* Very light gray */
+  --color-base-300: oklch(95% 0.02 240); /* Light gray */
+}
+
 @theme {
+  /* Linear's Font System */
+  --font-sans: "Inter Variable", "Inter", "SF Pro Display", -apple-system, "system-ui", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Linear's Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 510;
+  --font-weight-semibold: 538;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* Linear's Font Sizes with Line Heights and Letter Spacing */
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 1;
+  --text-micro--letter-spacing: normal;
+
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: calc(1.1875 / 0.8125);
+  --text-xs--letter-spacing: normal;
+
+  --text-sm: 0.875rem;
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-sm--letter-spacing: normal;
+
+  --text-base: 1rem;
+  --text-base--line-height: calc(1.5 / 1);
+  --text-base--letter-spacing: normal;
+
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: calc(1.625 / 1.0625);
+  --text-lg--letter-spacing: normal;
+
+  --text-xl: 1.3125rem;
+  --text-xl--line-height: calc(1.75 / 1.3125);
+  --text-xl--letter-spacing: -0.0157rem;
+
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: calc(2 / 1.5);
+  --text-2xl--letter-spacing: -0.025rem;
+
+  --text-3xl: 2.5rem;
+  --text-3xl--line-height: calc(2.75 / 2.5);
+  --text-3xl--letter-spacing: -0.05rem;
+
+  --text-4xl: 3.5rem;
+  --text-4xl--line-height: calc(3.85 / 3.5);
+  --text-4xl--letter-spacing: -0.0728rem;
+
+  /* Linear's Typography Scale - Exact measurements from Linear.app */
+  --text-linear-button: 0.8125rem; /* 13px */
+  --text-linear-button--line-height: calc(19.5 / 13);
+  --text-linear-button--letter-spacing: normal;
+
+  --text-linear-body-sm: 0.875rem; /* 14px */
+  --text-linear-body-sm--line-height: calc(24 / 14);
+  --text-linear-body-sm--letter-spacing: -0.0182rem;
+
+  --text-linear-body-md: 0.9375rem; /* 15px */
+  --text-linear-body-md--line-height: calc(21 / 15);
+  --text-linear-body-md--letter-spacing: normal;
+
+  --text-linear-body: 1rem; /* 16px */
+  --text-linear-body--line-height: calc(24 / 16);
+  --text-linear-body--letter-spacing: normal;
+
+  --text-linear-body-lg: 1.0625rem; /* 17px */
+  --text-linear-body-lg--line-height: calc(25 / 17);
+  --text-linear-body-lg--letter-spacing: normal;
+
+  --text-linear-h4: 0.875rem; /* 14px */
+  --text-linear-h4--line-height: calc(24 / 14);
+  --text-linear-h4--letter-spacing: -0.0182rem;
+
+  --text-linear-h3: 1.3125rem; /* 21px */
+  --text-linear-h3--line-height: calc(28 / 21);
+  --text-linear-h3--letter-spacing: -0.037rem;
+
+  --text-linear-h2: 1.3125rem; /* 21px */
+  --text-linear-h2--line-height: calc(27.93 / 21);
+  --text-linear-h2--letter-spacing: -0.0252rem;
+
+  --text-linear-h1: 3.5rem; /* 56px */
+  --text-linear-h1--line-height: calc(61.6 / 56);
+  --text-linear-h1--letter-spacing: -0.182rem;
+
   /* Custom animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -10,10 +111,6 @@
 
 /* Global base styles without @layer for v4 */
 :root {
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-
   /* Add smooth transitions for theme changes */
   --transition-duration: 0.15s;
   transition: background-color var(--transition-duration) ease,
@@ -339,7 +436,7 @@ select {
   animation: shimmer 1.5s infinite;
 }
 
-/* Futuristic AI Background with animated dots - DaisyUI compatible */
+/* Clean Background - Pure white for light theme, gradient for dark theme */
 .ai-backdrop {
   position: fixed;
   top: 0;
@@ -348,6 +445,11 @@ select {
   height: 100vh;
   pointer-events: none;
   z-index: -1;
+  background: white; /* Pure white background for light theme */
+}
+
+/* Dark theme backdrop with gradient */
+[data-theme="dark"] .ai-backdrop {
   background: linear-gradient(135deg, 
     hsl(var(--b1)) 0%, 
     hsl(var(--b2)) 25%, 
@@ -356,8 +458,8 @@ select {
     hsl(var(--b1)) 100%);
 }
 
-/* Static dot grid - uses DaisyUI color variables */
-.ai-backdrop::before {
+/* Static dot grid - only show in dark theme for clean white background in light theme */
+[data-theme="dark"] .ai-backdrop::before {
   content: '';
   position: absolute;
   top: 0;
@@ -419,6 +521,63 @@ select {
     opacity: 1;
     transform: scaleX(1);
   }
+}
+
+/* Linear-style Typography Utilities */
+.linear-h1 {
+  font-size: var(--text-linear-h1);
+  line-height: var(--text-linear-h1--line-height);
+  letter-spacing: var(--text-linear-h1--letter-spacing);
+  font-weight: var(--font-weight-semibold);
+}
+
+.linear-h2 {
+  font-size: var(--text-linear-h2);
+  line-height: var(--text-linear-h2--line-height);
+  letter-spacing: var(--text-linear-h2--letter-spacing);
+  font-weight: var(--font-weight-medium);
+}
+
+.linear-h3 {
+  font-size: var(--text-linear-h3);
+  line-height: var(--text-linear-h3--line-height);
+  letter-spacing: var(--text-linear-h3--letter-spacing);
+  font-weight: var(--font-weight-medium);
+}
+
+.linear-h4 {
+  font-size: var(--text-linear-h4);
+  line-height: var(--text-linear-h4--line-height);
+  letter-spacing: var(--text-linear-h4--letter-spacing);
+  font-weight: var(--font-weight-medium);
+}
+
+.linear-body {
+  font-size: var(--text-linear-body);
+  line-height: var(--text-linear-body--line-height);
+  letter-spacing: var(--text-linear-body--letter-spacing);
+  font-weight: var(--font-weight-medium);
+}
+
+.linear-body-sm {
+  font-size: var(--text-linear-body-sm);
+  line-height: var(--text-linear-body-sm--line-height);
+  letter-spacing: var(--text-linear-body-sm--letter-spacing);
+  font-weight: var(--font-weight-medium);
+}
+
+.linear-body-lg {
+  font-size: var(--text-linear-body-lg);
+  line-height: var(--text-linear-body-lg--line-height);
+  letter-spacing: var(--text-linear-body-lg--letter-spacing);
+  font-weight: var(--font-weight-medium);
+}
+
+.linear-button {
+  font-size: var(--text-linear-button);
+  line-height: var(--text-linear-button--line-height);
+  letter-spacing: var(--text-linear-button--letter-spacing);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Enhanced Focus Indicators */
