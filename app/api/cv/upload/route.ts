@@ -11,8 +11,36 @@ import { analyzeCvWithGemini } from '@/utils/geminiAnalysis'; // Import analyser
 import crypto from 'crypto'; // Import crypto for hashing
 import { syncCvDataToProfile } from '@/utils/backgroundProfileSync'; // Import background sync
 import { clearCachePattern } from '@/lib/redis'; // Import cache invalidation
+import { CvUploadDebugLogger } from '@/utils/cvUploadDebugLogger'; // Import CV upload debug logger
+import { directGeminiUpload } from '@/utils/directGeminiUpload'; // Import direct Gemini upload service
 
 const prisma = new PrismaClient(); // Instantiate Prisma client
+
+// CV Upload Flow Configuration
+const USE_DIRECT_GEMINI_UPLOAD = process.env.ENABLE_DIRECT_GEMINI_UPLOAD === 'true';
+
+// Helper function to calculate improvement score
+function calculateImprovementScore(analysisResult: any): number {
+  let score = 0;
+  if (analysisResult.contactInfo?.name) score += 10;
+  if (analysisResult.contactInfo?.email) score += 5;
+  if (analysisResult.about && analysisResult.about.length > 50) score += 15;
+  score += (analysisResult.skills?.length || 0) * 2;
+  score += (analysisResult.experience?.length || 0) * 5;
+  score += (analysisResult.education?.length || 0) * 3;
+  score += (analysisResult.achievements?.length || 0) * 2;
+  return Math.min(100, Math.max(0, score)); // Clamp between 0-100
+}
+
+// Logging helper for cleaner flow separation
+function logUploadFlow(flow: 'DIRECT' | 'TRADITIONAL', message: string, data?: any) {
+  const prefix = flow === 'DIRECT' ? '🚀 [DIRECT-GEMINI]' : '📄 [TRADITIONAL]';
+  if (data) {
+    console.log(`${prefix} ${message}`, data);
+  } else {
+    console.log(`${prefix} ${message}`);
+  }
+}
 
 // Define allowed MIME types and max size
 const ALLOWED_MIME_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
@@ -139,51 +167,159 @@ export async function POST(request: Request) {
     // For production, this should be moved to a background job
     try {
       console.log(`Starting analysis process for CV ID: ${newCV.id}...`);
-      // 1. Update status to ANALYZING
-      await updateCV(newCV.id, { status: AnalysisStatus.ANALYZING });
-      console.log(`[Analysis ${newCV.id}] Status updated to ANALYZING.`);
+      
+      // Initialize debug logging session (development only)
+      const debugSessionId = CvUploadDebugLogger.initialize();
+      if (debugSessionId) {
+        console.log(`🔍 [CV-DEBUG] Debug session initialized: ${debugSessionId}`);
+      }
 
-      // 2. Download file from S3
-      const fileBuffer = await downloadS3FileAsBuffer(newCV.s3Key);
-      console.log(`[Analysis ${newCV.id}] Downloaded ${newCV.mimeType} file from S3.`);
+      // Determine which upload method to use
+      const shouldUseDirectUpload = USE_DIRECT_GEMINI_UPLOAD && directGeminiUpload.isAvailable();
+      let directUploadSuccessful = false;
+      
+      console.log(`\n🎯 [CV-UPLOAD] === UPLOAD METHOD SELECTION ===`);
+      console.log(`Configuration: ENABLE_DIRECT_GEMINI_UPLOAD=${process.env.ENABLE_DIRECT_GEMINI_UPLOAD}`);
+      console.log(`Service Available: ${directGeminiUpload.isAvailable()}`);
+      console.log(`Selected Method: ${shouldUseDirectUpload ? 'DIRECT GEMINI' : 'TRADITIONAL'}`);
+      console.log(`========================================\n`);
 
-      // 3. Parse file content
-      console.log('🔍 [CV-ANALYSIS] === CV UPLOAD FLOW START ===');
-      console.log('📥 [CV-INPUT] File Processing:', {
+      if (shouldUseDirectUpload) {
+        // === DIRECT GEMINI UPLOAD FLOW ===
+        logUploadFlow('DIRECT', 'Starting workflow...', {
+          cvId: newCV.id,
+          filename: newCV.originalName,
+          model: 'gemini-2.0-flash'
+        });
+        
+        // Create temporary file for direct upload
+        const tempDir = '/tmp';
+        const tempFilePath = `${tempDir}/${uniqueFilename}`;
+        const fs = require('fs');
+        fs.writeFileSync(tempFilePath, fileBuffer);
+        
+        try {
+          logUploadFlow('DIRECT', 'Uploading PDF directly to Gemini API...');
+          const directResult = await directGeminiUpload.uploadAndAnalyze(tempFilePath, newCV.originalName);
+          
+          // Clean up temp file
+          fs.unlinkSync(tempFilePath);
+          
+          if (!directResult.upload.success) {
+            throw new Error(`Upload failed: ${directResult.upload.error}`);
+          }
+          
+          if (!directResult.analysis?.success) {
+            throw new Error(`Analysis failed: ${directResult.analysis?.error}`);
+          }
+          
+          logUploadFlow('DIRECT', 'Analysis completed successfully', {
+            uploadDuration: directResult.upload.uploadDuration,
+            analysisDuration: directResult.analysis.analysisDuration,
+            extractedDataKeys: Object.keys(directResult.analysis.extractedData || {})
+          });
+          
+          // Process results
+          const analysisResult = directResult.analysis.extractedData;
+          const improvementScore = calculateImprovementScore(analysisResult);
+          
+          logUploadFlow('DIRECT', 'Syncing to profile tables...');
+          const syncStartTime = Date.now();
+          await syncCvDataToProfile(developerId, analysisResult);
+          const syncDuration = Date.now() - syncStartTime;
+          
+          // Update CV record
+          await updateCV(newCV.id, {
+            status: AnalysisStatus.COMPLETED,
+            improvementScore: improvementScore,
+            extractedText: 'Direct upload - content preserved in original format',
+          });
+          
+          logUploadFlow('DIRECT', 'Workflow completed successfully', {
+            improvementScore,
+            syncDuration,
+            finalStatus: AnalysisStatus.COMPLETED
+          });
+          
+          // Mark as successful to skip traditional method
+          directUploadSuccessful = true;
+          
+        } catch (directError) {
+          logUploadFlow('DIRECT', 'Failed - will fallback to traditional method', {
+            error: directError.message
+          });
+          // Clean up temp file if it still exists
+          try { fs.unlinkSync(tempFilePath); } catch {}
+          directUploadSuccessful = false;
+        }
+      }
+      
+      // === TRADITIONAL UPLOAD FLOW ===
+      // Only run if direct upload was not attempted OR if it failed
+      if (!shouldUseDirectUpload) {
+        logUploadFlow('TRADITIONAL', 'Starting workflow (direct upload disabled)...');
+      } else if (!directUploadSuccessful) {
+        logUploadFlow('TRADITIONAL', 'Starting fallback workflow (direct upload failed)...');
+      } else {
+        logUploadFlow('DIRECT', 'Direct upload successful - skipping traditional method');
+      }
+      
+      // Only execute traditional flow if needed
+      if ((!shouldUseDirectUpload) || (shouldUseDirectUpload && !directUploadSuccessful)) {
+      
+        // 1. Update status to ANALYZING
+        await updateCV(newCV.id, { status: AnalysisStatus.ANALYZING });
+        logUploadFlow('TRADITIONAL', 'Status updated to ANALYZING');
+
+        // 2. Download file from S3
+        const fileBuffer = await downloadS3FileAsBuffer(newCV.s3Key);
+        logUploadFlow('TRADITIONAL', 'Downloaded file from S3', {
+          mimeType: newCV.mimeType,
+          s3Key: newCV.s3Key
+        });
+
+        // 3. Parse file content using pdf2json
+        const parsingStartTime = Date.now();
+        const parsedContent = await parseFileContent(fileBuffer, newCV.mimeType);
+        const parsingDuration = Date.now() - parsingStartTime;
+        
+        logUploadFlow('TRADITIONAL', 'PDF parsing completed', {
+          textLength: parsedContent.text.length,
+          textPreview: parsedContent.text.substring(0, 100) + '...',
+          estimatedWords: parsedContent.text.split(/\s+/).length,
+          parsingDuration,
+          hasCharacterSpacing: parsedContent.text.includes('   ') // Detect spacing issues
+        });
+
+      // Debug: Log PDF parsing results (development only)
+      CvUploadDebugLogger.logPdfParsing({
         cvId: newCV.id,
         developerId: newCV.developerId,
         filename: newCV.originalName,
         mimeType: newCV.mimeType,
         fileSize: newCV.size,
-        s3Key: newCV.s3Key
+        parsedContent: {
+          text: parsedContent.text,
+          textLength: parsedContent.text.length,
+          estimatedWords: parsedContent.text.split(/\s+/).length,
+          estimatedLines: parsedContent.text.split('\n').length,
+        },
+        parsingDuration,
+        timestamp: new Date().toISOString(),
       });
 
-      const parsedContent = await parseFileContent(fileBuffer, newCV.mimeType);
+        // 4. Analyze with Gemini (using parsed text)
+        logUploadFlow('TRADITIONAL', 'Starting Gemini analysis with parsed text', {
+          inputTextLength: parsedContent.text.length,
+          estimatedTokens: Math.ceil(parsedContent.text.length / 4),
+          model: 'gemini-1.5-pro'
+        });
+
+        const geminiStartTime = Date.now();
+        const analysisResult = await analyzeCvWithGemini(parsedContent.text);
+        const geminiDuration = Date.now() - geminiStartTime;
       
-      console.log('📄 [CV-PARSING] Parsed Content Analysis:', {
-        textLength: parsedContent.text.length,
-        hasText: parsedContent.text.length > 0,
-        textPreview: parsedContent.text.substring(0, 300) + '...',
-        parsingSuccess: true,
-        estimatedWords: parsedContent.text.split(/\s+/).length,
-        estimatedLines: parsedContent.text.split('\n').length
-      });
-
-      // 4. Analyze with Gemini
-      console.log('🧠 [AI-REQUEST] Preparing Gemini Analysis:', {
-        inputTextLength: parsedContent.text.length,
-        estimatedTokens: Math.ceil(parsedContent.text.length / 4),
-        model: 'gemini-1.5-pro',
-        requestType: 'cv_analysis',
-        timestamp: new Date().toISOString()
-      });
-
-      const analysisResult = await analyzeCvWithGemini(parsedContent.text);
-      
-      console.log('🧠 [AI-RESPONSE] Gemini Analysis Complete:', {
-        success: !!analysisResult,
-        responseStructure: analysisResult ? Object.keys(analysisResult) : [],
-        dataQualityMetrics: {
+        const dataQualityMetrics = {
           hasContactInfo: !!(analysisResult?.contactInfo?.name || analysisResult?.contactInfo?.email),
           hasAbout: !!(analysisResult?.about && analysisResult.about.length > 0),
           skillsCount: analysisResult?.skills?.length || 0,
@@ -192,68 +328,113 @@ export async function POST(request: Request) {
           achievementsCount: analysisResult?.achievements?.length || 0,
           languagesCount: analysisResult?.languages?.length || 0,
           totalYearsExperience: analysisResult?.totalYearsExperience || 0
-        },
-        responseSize: JSON.stringify(analysisResult).length
-      });
+        };
 
-      // 5. Calculate Improvement Score (Example: based on completeness)
-      let score = 0;
-      if (analysisResult.contactInfo?.name) score += 10;
-      if (analysisResult.contactInfo?.email) score += 5;
-      if (analysisResult.about && analysisResult.about.length > 50) score += 15;
-      score += (analysisResult.skills?.length || 0) * 2;
-      score += (analysisResult.experience?.length || 0) * 5;
-      score += (analysisResult.education?.length || 0) * 3;
-      score += (analysisResult.achievements?.length || 0) * 2;
-      const improvementScore = Math.min(100, Math.max(0, score)); // Clamp between 0-100
+        logUploadFlow('TRADITIONAL', 'Gemini analysis completed', {
+          success: !!analysisResult,
+          geminiDuration,
+          dataQualityMetrics,
+          responseSize: JSON.stringify(analysisResult).length
+        });
 
-      console.log(`[Analysis ${newCV.id}] Calculated improvement score: ${improvementScore}`);
-
-      // 6. Save analysis result to proper profile tables via background sync
-      console.log('[Upload Route] ⚠️ ARCHITECTURAL CHANGE: Skipping CvAnalysis table creation');
-      console.log('[Upload Route] Using background sync to save to proper single source of truth tables');
-      
-      // Background sync CV data to developer profile (primary data storage)
-      try {
-        console.log(`[Upload Route] Starting profile sync for developer: ${developerId}`);
-        await syncCvDataToProfile(developerId, analysisResult);
-        console.log(`[Upload Route] Profile sync completed successfully`);
-      } catch (syncError) {
-        console.error(`[Upload Route] Profile sync failed:`, syncError);
-        throw new Error('Failed to save CV data to profile. Please try again.');
-      }
-
-      // 7. Update original CV record with final status and score
-      const cvUpdateData = {
-        status: AnalysisStatus.COMPLETED,
-        improvementScore: improvementScore,
-        extractedText: parsedContent.text,
-      };
-      
-      console.log('💾 [CV-STORAGE] Database Storage:', {
+      // Debug: Log Gemini response and validation (development only)
+      CvUploadDebugLogger.logGeminiResponse({
         cvId: newCV.id,
-        analysisId: null, // Data saved to proper profile tables instead
-        improvementScore: improvementScore,
-        storageSuccess: true,
-        extractedTextLength: parsedContent.text.length,
-        profileDataSaved: true,
-        cvRecordUpdated: false // Will be true after next line
+        rawResponse: JSON.stringify(analysisResult),
+        parsedResponse: analysisResult,
+        validationResult: {
+          isValid: !!analysisResult,
+          errors: analysisResult ? [] : ['Failed to parse CV with Gemini'],
+          warnings: [],
+        },
+        extractedData: dataQualityMetrics,
+        duration: geminiDuration,
+        timestamp: new Date().toISOString(),
       });
-      
-      await updateCV(newCV.id, cvUpdateData);
-      
-      console.log('💾 [CV-STORAGE] Final Storage Update:', {
-        cvRecordUpdated: true,
-        finalStatus: AnalysisStatus.COMPLETED,
-        linkedAnalysisId: null, // Using proper profile tables instead
-        totalStorageOperations: 1, // update CV record only
-        storageComplete: true,
-        profileSyncComplete: true
-      });
-      
-      console.log('🔍 [CV-ANALYSIS] === CV UPLOAD FLOW END ===');
 
-      // Background sync already completed above as primary data storage method
+        // 5. Calculate Improvement Score and sync to profile
+        const improvementScore = calculateImprovementScore(analysisResult);
+        logUploadFlow('TRADITIONAL', 'Calculated improvement score', { improvementScore });
+
+        // 6. Background sync to profile tables
+        logUploadFlow('TRADITIONAL', 'Syncing to profile tables...');
+        const syncStartTime = Date.now();
+        try {
+          await syncCvDataToProfile(developerId, analysisResult);
+          const syncDuration = Date.now() - syncStartTime;
+          logUploadFlow('TRADITIONAL', 'Profile sync completed', { syncDuration });
+
+        // Debug: Log profile sync results (development only)
+        CvUploadDebugLogger.logProfileSync({
+          cvId: newCV.id,
+          syncResult: {
+            success: true,
+            contactInfoSynced: !!(analysisResult?.contactInfo?.name || analysisResult?.contactInfo?.email),
+            experienceItemsSynced: analysisResult?.experience?.length || 0,
+            educationItemsSynced: analysisResult?.education?.length || 0,
+            skillsSynced: analysisResult?.skills?.length || 0,
+            achievementsSynced: analysisResult?.achievements?.length || 0,
+          },
+          transformedData: {
+            contactInfoFields: Object.keys(analysisResult?.contactInfo || {}),
+            experienceFields: ['title', 'company', 'startDate', 'endDate', 'responsibilities'],
+            skillsStructure: analysisResult?.skills?.slice(0, 3) || [],
+          },
+          syncDuration,
+          timestamp: new Date().toISOString(),
+        });
+        } catch (syncError) {
+          const syncDuration = Date.now() - syncStartTime;
+          logUploadFlow('TRADITIONAL', 'Profile sync failed', { 
+            syncDuration, 
+            error: syncError.message 
+          });
+        
+        // Debug: Log profile sync failure (development only)
+        CvUploadDebugLogger.logProfileSync({
+          cvId: newCV.id,
+          syncResult: {
+            success: false,
+            contactInfoSynced: false,
+            experienceItemsSynced: 0,
+            educationItemsSynced: 0,
+            skillsSynced: 0,
+            achievementsSynced: 0,
+          },
+          transformedData: {
+            contactInfoFields: [],
+            experienceFields: [],
+            skillsStructure: [],
+          },
+          syncDuration,
+          timestamp: new Date().toISOString(),
+          error: {
+            message: syncError.message,
+            stack: syncError.stack,
+          },
+        });
+        
+          throw new Error('Failed to save CV data to profile. Please try again.');
+        }
+
+        // 7. Update original CV record with final status and score
+        const cvUpdateData = {
+          status: AnalysisStatus.COMPLETED,
+          improvementScore: improvementScore,
+          extractedText: parsedContent.text,
+        };
+        
+        await updateCV(newCV.id, cvUpdateData);
+        
+        logUploadFlow('TRADITIONAL', 'Workflow completed successfully', {
+          finalStatus: AnalysisStatus.COMPLETED,
+          improvementScore,
+          extractedTextLength: parsedContent.text.length
+        });
+        
+      } else {
+        logUploadFlow('DIRECT', 'Traditional method skipped - direct upload completed successfully');
+      } // End traditional method conditional
 
     } catch (analysisError) {
       console.error(`[Analysis ${newCV.id}] Error during analysis process:`, analysisError);
