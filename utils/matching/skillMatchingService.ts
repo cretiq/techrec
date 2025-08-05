@@ -21,6 +21,13 @@ import {
   isValidSkillName,
   cleanSkillName
 } from './skillTaxonomy';
+import {
+  extractSkillsFromDescription
+} from './descriptionSkillExtractor';
+import {
+  calculateSimpleMatch,
+  extractAllSkillsFromRole
+} from './simpleSkillMatcher';
 
 // Default matching configuration
 export const defaultMatchingConfig: MatchingConfig = {
@@ -75,7 +82,22 @@ export function extractRoleSkills(roleData: RapidApiJob | Role): {
     }
   }
   
-  // Priority 3: LinkedIn organization specialties
+  // Priority 3: Role requirements array
+  if (roleData.requirements && roleData.requirements.length > 0) {
+    const validSkills = roleData.requirements
+      .filter(req => isValidSkillName(req))
+      .map(req => cleanSkillName(req));
+    
+    if (validSkills.length > 0) {
+      return {
+        skills: validSkills,
+        source: SkillSource.REQUIREMENTS,
+        hasSkillsListed: true
+      };
+    }
+  }
+  
+  // Priority 4: LinkedIn organization specialties
   if (rapidApiJob.linkedin_org_specialties && rapidApiJob.linkedin_org_specialties.length > 0) {
     const validSkills = rapidApiJob.linkedin_org_specialties
       .filter(skill => isValidSkillName(skill))
@@ -85,6 +107,19 @@ export function extractRoleSkills(roleData: RapidApiJob | Role): {
       return {
         skills: validSkills,
         source: SkillSource.LINKEDIN_SPECIALTIES,
+        hasSkillsListed: true
+      };
+    }
+  }
+  
+  // Priority 5: Extract skills from job description
+  if (roleData.description && roleData.description.trim().length > 0) {
+    const extractedSkills = extractSkillsFromDescription(roleData.description);
+    
+    if (extractedSkills.length > 0) {
+      return {
+        skills: extractedSkills,
+        source: SkillSource.DESCRIPTION_DERIVED,
         hasSkillsListed: true
       };
     }
@@ -178,7 +213,7 @@ export function matchSkills(
 }
 
 /**
- * Calculate overall role match score
+ * Calculate overall role match score using simple matching adapter
  * @param userSkills - User's skills
  * @param roleData - Role data
  * @param config - Matching configuration
@@ -189,80 +224,90 @@ export function calculateRoleMatchScore(
   roleData: RapidApiJob | Role,
   config: MatchingConfig = defaultMatchingConfig
 ): RoleMatchScore {
-  // Extract skills from role data
-  const { skills: roleSkills, source, hasSkillsListed } = extractRoleSkills(roleData);
-  
-  // If no skills listed, return zero score
-  if (!hasSkillsListed || roleSkills.length === 0) {
-    return {
-      roleId: roleData.id,
-      overallScore: 0,
-      skillsMatched: 0,
-      totalSkills: 0,
-      matchedSkills: [],
-      hasSkillsListed: false,
-      breakdown: {
-        skillsScore: 0
-      }
-    };
-  }
-  
-  // If user has no skills, return zero score
-  if (userSkills.length === 0) {
-    return {
-      roleId: roleData.id,
-      overallScore: 0,
-      skillsMatched: 0,
-      totalSkills: roleSkills.length,
-      matchedSkills: [],
-      hasSkillsListed: true,
-      breakdown: {
-        skillsScore: 0
-      }
-    };
-  }
-  
-  // Match skills
-  const skillMatches = matchSkills(userSkills, roleSkills, config);
-  
-  // Update source for all matches
-  skillMatches.forEach(match => {
-    match.source = source;
+  console.log(`[SKILL_ADAPTER_DEBUG] ===== Starting calculation for role ${roleData.id} =====`);
+  console.log(`[SKILL_ADAPTER_DEBUG] Input data:`, {
+    roleId: roleData.id,
+    roleTitle: roleData.title,
+    userSkillsCount: userSkills.length,
+    userSkillsData: userSkills.map(s => ({ name: s.name, level: s.level })),
+    roleDataKeys: Object.keys(roleData),
+    roleDataPreview: {
+      hasAiKeySkills: !!(roleData as RapidApiJob).ai_key_skills,
+      aiKeySkillsLength: (roleData as RapidApiJob).ai_key_skills?.length,
+      aiKeySkillsData: (roleData as RapidApiJob).ai_key_skills,
+      hasRequirements: !!roleData.requirements,
+      requirementsLength: roleData.requirements?.length,
+      requirementsData: roleData.requirements,
+      hasSkills: !!roleData.skills,
+      skillsLength: roleData.skills?.length,
+      skillsData: roleData.skills,
+      hasCompany: !!roleData.company,
+      companyData: roleData.company,
+      hasLinkedinSpecialties: !!(roleData as RapidApiJob).linkedin_org_specialties,
+      linkedinSpecialtiesLength: (roleData as RapidApiJob).linkedin_org_specialties?.length,
+      linkedinSpecialtiesData: (roleData as RapidApiJob).linkedin_org_specialties,
+      hasDescription: !!roleData.description,
+      descriptionLength: roleData.description?.length,
+      descriptionPreview: roleData.description?.substring(0, 200)
+    }
   });
   
-  // Calculate skill score with level multipliers
-  let totalSkillScore = 0;
-  let maxPossibleScore = 0;
+  // Convert UserSkill[] to string[] for simple matcher
+  const userSkillNames = userSkills.map(skill => skill.name);
   
-  // Calculate actual matches with level bonuses
-  for (const match of skillMatches) {
-    const levelMultiplier = getSkillLevelMultiplier(match.userLevel, config);
-    const skillScore = match.confidence * levelMultiplier;
-    totalSkillScore += skillScore;
-  }
+  console.log(`[SKILL_ADAPTER_DEBUG] Converted to string array:`, {
+    userSkillNames
+  });
   
-  // Calculate maximum possible score (if all skills matched perfectly)
-  maxPossibleScore = Math.min(userSkills.length, roleSkills.length);
+  // Use simple matcher to get match result
+  const simpleResult = calculateSimpleMatch(userSkillNames, roleData);
   
-  // Calculate percentage score
-  const skillsScore = maxPossibleScore > 0 
-    ? Math.min(100, (totalSkillScore / maxPossibleScore) * 100)
-    : 0;
+  // Determine if role has skills listed for UI feedback
+  const hasSkillsListed = simpleResult.totalRoleSkills > 0;
   
-  // Overall score is just skills score in initial implementation
-  const overallScore = skillsScore * config.skillsWeight;
+  console.log(`[SKILL_ADAPTER_DEBUG] Simple matcher result:`, {
+    score: simpleResult.score,
+    matchedSkillsCount: simpleResult.matchedSkills.length,
+    matchedSkills: simpleResult.matchedSkills,
+    totalUserSkills: simpleResult.totalUserSkills,
+    totalRoleSkills: simpleResult.totalRoleSkills,
+    hasSkillsListed
+  });
   
-  return {
+  // Convert simple match result to legacy SkillMatch format for backward compatibility
+  const skillMatches: SkillMatch[] = simpleResult.matchedSkills.map(skillName => {
+    const userSkill = userSkills.find(us => us.name.toLowerCase() === skillName.toLowerCase());
+    return {
+      skillName,
+      userLevel: userSkill?.level || SkillLevel.INTERMEDIATE,
+      matched: true,
+      source: SkillSource.AI_KEY_SKILLS, // Generic source since we extract from all sources
+      confidence: 1.0 // Perfect confidence for exact matches
+    };
+  });
+  
+  const result: RoleMatchScore = {
     roleId: roleData.id,
-    overallScore: Math.round(overallScore),
-    skillsMatched: skillMatches.length,
-    totalSkills: roleSkills.length,
+    overallScore: simpleResult.score,
+    skillsMatched: simpleResult.matchedSkills.length,
+    totalSkills: simpleResult.totalRoleSkills,
     matchedSkills: skillMatches,
-    hasSkillsListed: true,
+    hasSkillsListed,
     breakdown: {
-      skillsScore: Math.round(skillsScore)
+      skillsScore: simpleResult.score
     }
   };
+  
+  console.log(`[SKILL_ADAPTER_DEBUG] Final adapter result for ${roleData.id}:`, {
+    overallScore: result.overallScore,
+    skillsMatched: result.skillsMatched,
+    totalSkills: result.totalSkills,
+    hasSkillsListed: result.hasSkillsListed,
+    matchedSkillsDetails: result.matchedSkills
+  });
+  console.log(`[SKILL_ADAPTER_DEBUG] ===== Completed calculation for role ${roleData.id} =====\n`);
+  
+  return result;
 }
 
 /**

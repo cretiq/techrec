@@ -54,6 +54,7 @@ export interface UserSkill {
 export enum SkillSource {
   AI_KEY_SKILLS = 'ai_key_skills',
   ROLE_SKILLS = 'role_skills',
+  REQUIREMENTS = 'requirements',
   LINKEDIN_SPECIALTIES = 'linkedin_org_specialties',
   DESCRIPTION_DERIVED = 'description_derived'
 }

@@ -57,6 +57,40 @@ export const calculateBatchMatchScores = createAsyncThunk(
     
     const { roleIds, rolesData, userSkills } = payload;
     
+    console.log('[FRONTEND_BATCH_DEBUG] ===== Starting batch match calculation =====');
+    console.log('[FRONTEND_BATCH_DEBUG] Payload details:', {
+      roleIdsCount: roleIds.length,
+      roleIds: roleIds,
+      rolesDataCount: rolesData.length,
+      userSkillsProvided: !!userSkills,
+      userSkillsCount: userSkills?.length,
+      userSkillsData: userSkills?.map(s => ({ name: s.name, level: s.level })),
+      rolesDataSample: rolesData.slice(0, 2).map(role => ({
+        id: role.id,
+        title: role.title,
+        hasAiKeySkills: !!(role as RapidApiJob).ai_key_skills,
+        aiKeySkillsLength: (role as RapidApiJob).ai_key_skills?.length,
+        aiKeySkillsData: (role as RapidApiJob).ai_key_skills,
+        hasRequirements: !!role.requirements,
+        requirementsLength: role.requirements?.length,
+        requirementsData: role.requirements,
+        hasSkills: !!role.skills,
+        skillsLength: role.skills?.length,
+        skillsData: role.skills,
+        hasCompany: !!role.company,
+        companyName: role.company?.name,
+        hasSpecialties: !!(role as any).company?.specialties,
+        specialtiesLength: (role as any).company?.specialties?.length,
+        specialtiesData: (role as any).company?.specialties,
+        hasLinkedinSpecialties: !!(role as RapidApiJob).linkedin_org_specialties,
+        linkedinSpecialtiesLength: (role as RapidApiJob).linkedin_org_specialties?.length,
+        linkedinSpecialtiesData: (role as RapidApiJob).linkedin_org_specialties,
+        hasDescription: !!role.description,
+        descriptionLength: role.description?.length,
+        descriptionPreview: role.description?.substring(0, 150)
+      }))
+    });
+    
     const response = await fetch('/api/roles/batch-match', {
       method: 'POST',
       headers: {
@@ -69,12 +103,32 @@ export const calculateBatchMatchScores = createAsyncThunk(
       }),
     });
     
+    console.log('[FRONTEND_BATCH_DEBUG] API Response status:', response.status);
+    
     if (!response.ok) {
       const error = await response.json();
+      console.log('[FRONTEND_BATCH_DEBUG] API Error:', error);
       throw new Error(error.error || 'Failed to calculate batch match scores');
     }
     
     const result: BatchMatchResponse = await response.json();
+    
+    console.log('[FRONTEND_BATCH_DEBUG] API Success result:', {
+      userId: result.userId,
+      totalProcessed: result.totalProcessed,
+      processingTime: result.processingTime,
+      roleScoresCount: result.roleScores.length,
+      errorsCount: result.errors.length,
+      scoresSample: result.roleScores.slice(0, 3).map(score => ({
+        roleId: score.roleId,
+        overallScore: score.overallScore,
+        skillsMatched: score.skillsMatched,
+        totalSkills: score.totalSkills,
+        hasSkillsListed: score.hasSkillsListed
+      })),
+      errors: result.errors
+    });
+    console.log('[FRONTEND_BATCH_DEBUG] ===== Completed batch match calculation =====\n');
     
     return result;
   }

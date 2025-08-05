@@ -101,10 +101,22 @@ export const skillAliases: SkillAlias[] = [
     aliases: ['kotlin', 'kotlin/jvm', 'kotlin jvm']
   },
   
-  // Database variants
+  // SQL variants
   {
     canonical: 'SQL',
-    aliases: ['sql', 'structured query language', 'mysql', 'postgresql', 'postgres', 'sqlite', 'sql server', 'oracle sql']
+    aliases: ['sql', 'structured query language', 'sqlite', 'sql server', 'oracle sql']
+  },
+  
+  // MySQL variants
+  {
+    canonical: 'MySQL',
+    aliases: ['mysql', 'my sql']
+  },
+  
+  // PostgreSQL variants
+  {
+    canonical: 'PostgreSQL',
+    aliases: ['postgresql', 'postgres', 'postgre sql']
   },
   
   {
@@ -144,7 +156,13 @@ export const skillAliases: SkillAlias[] = [
   // CI/CD variants
   {
     canonical: 'CI/CD',
-    aliases: ['ci/cd', 'cicd', 'continuous integration', 'continuous deployment', 'continuous delivery', 'jenkins', 'travis ci', 'github actions']
+    aliases: ['ci/cd', 'cicd', 'continuous integration', 'continuous deployment', 'continuous delivery', 'travis ci', 'github actions']
+  },
+  
+  // Jenkins variants
+  {
+    canonical: 'Jenkins',
+    aliases: ['jenkins']
   },
   
   // Testing variants
@@ -162,7 +180,7 @@ export const skillAliases: SkillAlias[] = [
   // Next.js variants
   {
     canonical: 'Next.js',
-    aliases: ['nextjs', 'next.js', 'next js', 'next-js']
+    aliases: ['nextjs', 'next.js', 'next js', 'next-js', 'nextjs']
   },
   
   // Express.js variants

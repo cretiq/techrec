@@ -8,7 +8,7 @@ import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, PenTool, Check,
 import ApplicationBadge from '@/components/roles/ApplicationBadge'
 import ApplicationActionButton from '@/components/roles/ApplicationActionButton'
 import RecruiterCard from '@/components/roles/RecruiterCard'
-import MatchScoreCircle from '@/components/roles/MatchScoreCircle'
+// import MatchScoreCircle from '@/components/roles/MatchScoreCircle' // DISABLED: Skill matching temporarily disabled
 import { useToast } from "@/components/ui/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
@@ -28,6 +28,8 @@ import {
   selectLastSearchParams,
   clearError
 } from '@/lib/features/rolesSlice'
+// DISABLED: Skill matching temporarily disabled due to insufficient API data
+/*
 import {
   selectRoleScore,
   selectUserHasSkills,
@@ -35,6 +37,7 @@ import {
   calculateBatchMatchScores,
   fetchUserSkillProfile
 } from '@/lib/features/matchingSlice'
+*/
 import { RootState, AppDispatch } from '@/lib/store'
 import { cn } from "@/lib/utils"
 import SelectedRolesList from '@/components/roles/SelectedRolesList'
@@ -77,9 +80,9 @@ export default function RolesSearch2Page() {
     console.log('[RolesSearch] State:', { rolesCount: roles.length, loading, selectedCount });
   }
   
-  // Matching state
-  const userHasSkills = useSelector(selectUserHasSkills)
-  const matchingLoading = useSelector(selectMatchingLoading)
+  // DISABLED: Skill matching temporarily disabled
+  // const userHasSkills = useSelector(selectUserHasSkills)
+  // const matchingLoading = useSelector(selectMatchingLoading)
   
   // Ref to prevent infinite loop in match calculation
   const isCalculatingRef = useRef(false)
@@ -93,8 +96,8 @@ export default function RolesSearch2Page() {
 
     if (status === 'authenticated') {
       dispatch(fetchSavedRolesRedux({ includeRoleDetails: true }))
-      // Fetch user skills profile for match scoring
-      dispatch(fetchUserSkillProfile())
+      // DISABLED: Skill matching temporarily disabled
+      // dispatch(fetchUserSkillProfile())
     }
   }, [status, dispatch])
 
@@ -134,6 +137,8 @@ export default function RolesSearch2Page() {
     }
   }, [error, dispatch, toast])
 
+  // DISABLED: Enhanced roles data only needed for skill matching
+  /*
   // Memoize enhanced roles data to prevent recreation on every render
   const enhancedRolesData = useMemo(() => {
     return roles.filter(role => role != null).map(role => ({
@@ -142,8 +147,15 @@ export default function RolesSearch2Page() {
       linkedin_org_specialties: role.linkedin_org_specialties || ['Software Development', 'Web Development']
     }))
   }, [roles])
+  */
 
+  // TODO: SKILL MATCHING TEMPORARILY DISABLED
   // Calculate match scores when roles are available and user has skills
+  // DISABLED: Current API response structure lacks sufficient technical skill data.
+  // The API fields (requirements, skills, company.specialties, description) either don't exist
+  // or contain generic business information instead of technical skills.
+  // Will re-enable when we have an API with proper technical skill data structure.
+  /*
   useEffect(() => {
     // Prevent infinite loop with ref guard
     if (isCalculatingRef.current) return
@@ -171,6 +183,7 @@ export default function RolesSearch2Page() {
       }
     }
   }, [roles.length, userHasSkills, matchingLoading, enhancedRolesData, dispatch])
+  */
 
   const handleSearch = () => {
     if (!canMakeRequest && nextRequestTime) {
@@ -457,6 +470,8 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
     console.log(`[RoleCard] ${role.id} selected: ${isSelected}`);
   }
   
+  // DISABLED: Skill matching temporarily disabled
+  /*
   // Get match score and matching state for this role in a single selector
   const { matchScore, userHasSkills, matchingLoading } = useSelector((state: RootState) => ({
     matchScore: selectRoleScore(state, role.id),
@@ -484,6 +499,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
   
   // Get actual score or default
   const displayScore = matchScore?.overallScore || 0
+  */
 
   const handleCardClick = useCallback(() => {
     if (role) {
@@ -542,19 +558,9 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
           )}
         </Button>
       )}
-      {/* Match Score Circle - Top Left */}
-      <div className="absolute top-2 left-2 z-10" data-testid={`role-search-match-score-${role.id}`}>
-        <MatchScoreCircle
-          score={displayScore || 75}
-          hasSkillsListed={hasSkillsListed}
-          loading={matchingLoading && !matchScore}
-          size="md"
-          animate={true}
-          showTooltip={true}
-        />
-      </div>
+      {/* Match Score Circle - REMOVED: Skill matching temporarily disabled due to insufficient API data */}
       
-      <CardHeader className="pb-4 pr-10 pl-10" data-testid={`role-search-header-role-${role.id}`}>
+      <CardHeader className="pb-4" data-testid={`role-search-header-role-${role.id}`}>
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <CardTitle className="text-lg line-clamp-2 break-words">{role.title}</CardTitle>
@@ -608,7 +614,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                         <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
                           {(role.requirements && role.requirements.length > 0) ? (
                             role.requirements.map((req, idx) => (
-                              <Badge key={`${role.id}-req-${idx}`} variant="outline" className="text-xs">
+                              <Badge key={`${role.id}-req-${idx}`} variant="outline" className="text-md">
                                 {req}
                               </Badge>
                             ))

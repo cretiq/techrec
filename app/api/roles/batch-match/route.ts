@@ -172,7 +172,37 @@ export async function POST(request: NextRequest) {
       userSkills
     };
 
+    console.log('[API_DEBUG] Starting batch calculation:', {
+      userSkillsCount: userSkills.length,
+      roleIdsCount: roleIds.length,
+      userSkillSample: userSkills.slice(0, 3).map(s => ({ name: s.name, level: s.level })),
+      rolesSample: rolesData.slice(0, 2).map(r => ({
+        id: r.id,
+        title: r.title,
+        hasAiSkills: Boolean(r.ai_key_skills?.length),
+        hasRequirements: Boolean(r.requirements?.length),
+        hasSkills: Boolean(r.skills?.length),
+        hasSpecialties: Boolean(r.linkedin_org_specialties?.length),
+        hasDescription: Boolean(r.description?.length)
+      }))
+    });
+
     const result = await calculateBatchMatchScores(batchRequest, roleDataProvider);
+
+    console.log('[API_DEBUG] Batch calculation completed:', {
+      totalProcessed: result.totalProcessed,
+      processingTime: result.processingTime,
+      scoresGenerated: result.roleScores.length,
+      errorsCount: result.errors.length,
+      scoresSample: result.roleScores.slice(0, 3).map(s => ({
+        roleId: s.roleId,
+        overallScore: s.overallScore,
+        skillsMatched: s.skillsMatched,
+        totalSkills: s.totalSkills,
+        hasSkillsListed: s.hasSkillsListed
+      })),
+      avgScore: Math.round(result.roleScores.reduce((sum, s) => sum + s.overallScore, 0) / Math.max(1, result.roleScores.length))
+    });
 
     // Return successful response
     return NextResponse.json<BatchMatchResponse>(result);
