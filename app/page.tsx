@@ -6,6 +6,7 @@ import { HowItWorksSection } from "@/components/landing/HowItWorksSection"
 import { FeaturesBenefitsSection } from "@/components/landing/FeaturesBenefitsSection"
 import { EnhancedSocialProof } from "@/components/landing/EnhancedSocialProof"
 import { UrgencyScarcitySection } from "@/components/landing/UrgencyScarcitySection"
+import { FAQSection } from "@/components/landing/FAQSection"
 import { FinalCTASection } from "@/components/landing/FinalCTASection"
 
 export default function Home() {
@@ -14,9 +15,10 @@ export default function Home() {
       <LandingHero />
       <ProblemSolutionSection />
       <HowItWorksSection />
-      <FeaturesBenefitsSection />
-      <EnhancedSocialProof />
+      {/* <FeaturesBenefitsSection /> */}
+      {/* <EnhancedSocialProof /> */}
       <UrgencyScarcitySection />
+      <FAQSection />
       <FinalCTASection />
     </div>
   )

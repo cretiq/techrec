@@ -9,6 +9,7 @@ export * from './radio-group'
 export * from './tabs'
 export * from './dropdown'
 export * from './tooltip'
+export * from './accordion'
 
 // Custom components
 export * from './feature-card'
