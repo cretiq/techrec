@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Button } from '@/components/ui-daisy/button'
 import { 
@@ -73,12 +73,6 @@ export function HowToGetJobPage() {
     }
   ]
 
-  const successMetrics = [
-    { number: "247", unit: "", label: "applications in first 48 hours" },
-    { number: "78%", unit: "", label: "drop in odds after that" },
-    { number: "410%", unit: "", label: "increase with smart approach" }
-  ]
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-base-300 dark:to-base-200">
       <div className="container mx-auto px-4 py-16 max-w-6xl">
@@ -106,18 +100,6 @@ export function HowToGetJobPage() {
             The <strong>brutal truth:</strong> You spend 3+ hours per application. 
             Others land interviews while you're still writing cover letters.
           </p>
-
-          {/* Success Metrics - Hidden for now */}
-          {/* <div className="flex justify-center gap-8 mb-12">
-            {successMetrics.map((metric, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl font-bold text-emerald-600 mb-1">
-                  {metric.number}<span className="text-2xl">{metric.unit}</span>
-                </div>
-                <div className="text-sm text-base-content/60">{metric.label}</div>
-              </div>
-            ))}
-          </div> */
         </motion.div>
 
         {/* Main Guide Cards */}
@@ -165,38 +147,6 @@ export function HowToGetJobPage() {
             )
           })}
         </div>
-
-        {/* Pro Tips Section - Hidden for now */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="bg-gradient-to-r from-amber-400 via-orange-400 to-red-400 rounded-3xl p-12 mb-20 shadow-2xl"
-        >
-          <div className="text-center">
-            <Crown className="h-16 w-16 text-white mx-auto mb-6" />
-            <h2 className="text-4xl font-bold text-white mb-4">
-              💡 The Hidden Cost of Waiting
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8 mt-8">
-              <div className="text-center">
-                <div className="text-6xl mb-2">🎯</div>
-                <h3 className="text-xl font-bold text-white mb-2">Right Now</h3>
-                <p className="text-white/90">73 new tech jobs posted in your metro area</p>
-              </div>
-              <div className="text-center">
-                <div className="text-6xl mb-2">🔥</div>
-                <h3 className="text-xl font-bold text-white mb-2">This Minute</h3>
-                <p className="text-white/90">31 developers got interviews using AI optimization</p>
-              </div>
-              <div className="text-center">
-                <div className="text-6xl mb-2">📈</div>
-                <h3 className="text-xl font-bold text-white mb-2">Today</h3>
-                <p className="text-white/90">12 accepted offers for roles you could have landed</p>
-              </div>
-            </div>
-          </div>
-        </motion.div> */
 
         {/* Quick Wins */}
         <motion.div
