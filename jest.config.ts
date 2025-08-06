@@ -9,6 +9,7 @@ const config: Config = {
     '<rootDir>/tests/e2e/',
     '<rootDir>/tests/user-flows/',
     '<rootDir>/tests/smoke/',
+    '<rootDir>/.history/',
   ],
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js)',
@@ -31,7 +32,7 @@ const config: Config = {
     }],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(aws-sdk-client-mock|sinon)/)'
+    'node_modules/(?!(aws-sdk-client-mock|aws-sdk-client-mock-jest|sinon)/)'
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   preset: 'ts-jest',

@@ -1,7 +1,8 @@
 # E2E Testing Guidelines
 
-**Updated**: January 31, 2025  
-**Purpose**: Simplified, focused End-to-End testing best practices for TechRec platform
+**Updated**: August 6, 2025  
+**Purpose**: Simplified, focused End-to-End testing best practices for TechRec platform  
+**Current Status**: ~40% passing - [📊 See Test Health Report](./test-health-report.md) for detailed status
 
 ---
 
@@ -335,4 +336,93 @@ npx playwright test --screenshot=only-on-failure
 
 ---
 
-*These E2E guidelines ensure TechRec maintains reliable, focused end-to-end testing that validates real user value while remaining maintainable and fast to execute.*
+## 🚨 **KNOWN ISSUES & FIXES (August 2025)**
+
+> **Status**: ~40% of E2E tests currently failing - see [📊 Test Health Report](./test-health-report.md) for complete status
+
+### **🔴 CRITICAL FIXES NEEDED**
+
+#### **1. Module Import Errors (2 files)**
+**Files**: `cv-reupload-workflow.spec.ts`, `project-enhancement.spec.ts`
+
+**Issue**: ES Module import errors
+```javascript
+// ❌ Current (causes error)
+const testFilesPath = path.join(__dirname, '../../fixtures');
+
+// ✅ Fix needed
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+```
+
+**Priority**: HIGH - Prevents tests from running at all
+
+#### **2. Authentication Setup**
+**Issue**: Many tests fail due to incomplete authentication setup
+
+**Fix needed**:
+```typescript
+test.beforeEach(async ({ page }) => {
+  const auth = new AuthHelper(page);
+  await auth.ensureLoggedIn('junior_developer');
+  // Add proper wait for auth state
+  await page.waitForURL('/developer/**');
+});
+```
+
+**Priority**: HIGH - Required for most E2E functionality
+
+### **🟡 MEDIUM PRIORITY FIXES**
+
+#### **3. Timeout Issues (3 files)**
+**Files**: `cv-suggestions.spec.ts`, `experience-management.spec.ts`, `dashboard-display.spec.ts`
+
+**Current**: 15s timeout exceeded
+**Fix**:
+```typescript
+test.setTimeout(30000); // Increase timeout
+await page.waitForSelector('[data-testid="element"]', { timeout: 30000 });
+```
+
+#### **4. Element Selectors**
+**Issue**: Elements not found or not visible
+
+**Solutions**:
+- Update selectors to match current UI
+- Add proper wait conditions
+- Improve element stability
+
+### **🟠 LOW PRIORITY (Consider Removal)**
+
+#### **5. Debug-Specific Tests**
+**File**: `role-search-debug.spec.ts`
+**Issue**: Navigation conflicts
+**Recommendation**: Remove debug tests from main suite
+
+### **Quick Fix Commands**
+```bash
+# Test current E2E status
+npm run dev &  # Ensure server is running
+npx playwright test --reporter=list
+
+# Run only working tests
+npx playwright test tests/e2e/core-workflows/user-authentication.spec.ts
+
+# Debug specific failing test
+npx playwright test --debug tests/e2e/core-workflows/cv-suggestions.spec.ts
+```
+
+### **Fix Progress Tracking**
+- [ ] Fix ES module imports (2 files)
+- [ ] Set up E2E authentication properly  
+- [ ] Increase timeouts for slow operations
+- [ ] Update element selectors
+- [ ] Remove debug-specific tests
+
+> **Target**: Achieve 80%+ E2E test pass rate by end of sprint
+
+---
+
+*These E2E guidelines ensure TechRec maintains reliable, focused end-to-end testing that validates real user value while remaining maintainable and fast to execute. See the [Test Health Report](./test-health-report.md) for current status and detailed fix instructions.*
