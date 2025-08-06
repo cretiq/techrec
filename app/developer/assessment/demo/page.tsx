@@ -6,7 +6,7 @@ import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import { FileText, ArrowLeft } from "lucide-react"
 import { CodeEditor } from "@/components/code-editor"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 
 export default function CodeEditorDemoPage() {
   const { toast } = useToast()

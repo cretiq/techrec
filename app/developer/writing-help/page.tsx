@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Tabs, TabsContent  } from '@/components/ui-daisy/tabs'
 import { FileText, Mail, PenTool, ArrowRight, Loader2, Rocket } from "lucide-react"
-import { AnimatedTabs } from '@/components/ui/animated-tabs'
+import { AnimatedTabs } from '@/components/ui-daisy/animated-tabs'
 import { useToast } from "@/components/ui-daisy/use-toast"
 import { useSession } from "next-auth/react"
 import { useSelector, useDispatch } from 'react-redux';

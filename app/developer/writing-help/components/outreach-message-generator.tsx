@@ -6,7 +6,7 @@ import { Button } from '@/components/ui-daisy/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui-daisy/card'
 import { Badge } from '@/components/ui-daisy/badge'
 import { Textarea } from "@/components/ui-daisy/textarea"
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui-daisy/label"
 import { Input } from '@/components/ui-daisy/input'
 import { useToast } from "@/components/ui-daisy/use-toast"
 import { useSession } from "next-auth/react"
@@ -37,7 +37,7 @@ import {
   X,
   ArrowRight,
 } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/ui-daisy/scroll-area"
 import { InternalProfile } from "@/types/types"
 import { Role } from "@/types/role"
 import { cn } from "@/lib/utils"

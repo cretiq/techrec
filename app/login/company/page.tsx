@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Input  } from '@/components/ui-daisy/input'
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui-daisy/label"
 import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/components/ui-daisy/checkbox"
 import { useToast } from "@/components/ui-daisy/use-toast"
 import { Code, Briefcase, ArrowRight, Loader2 } from "lucide-react"
 

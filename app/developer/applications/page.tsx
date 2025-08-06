@@ -10,13 +10,13 @@ import { Label } from "@/components/ui-daisy/label"
 import { Textarea } from "@/components/ui-daisy/textarea"
 import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui-daisy/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui-daisy/popover"
 import { format } from "date-fns"
 import { CalendarIcon, ExternalLink, Filter, Grid, List, Plus, Star, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/components/ui-daisy/use-toast"
-import { Slider } from "@/components/ui/slider"
+import { Slider } from "@/components/ui-daisy/slider"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +24,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui-daisy/dropdown-menu"
 
 // Application status options with their respective colors
 const statusOptions = [

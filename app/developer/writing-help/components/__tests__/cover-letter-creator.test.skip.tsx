@@ -24,7 +24,7 @@ jest.mock('next-auth/react', () => ({
 }))
 
 // Mock toast
-jest.mock('@/components/ui/use-toast', () => ({
+jest.mock('@/components/ui-daisy/use-toast', () => ({
   useToast: () => ({
     toast: jest.fn()
   })

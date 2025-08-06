@@ -21,7 +21,7 @@ import {
 import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown, Briefcase, X } from "lucide-react"
 import { ApplicationActionButton } from "@/components/roles/ApplicationActionButton"
 import { ApplicationBadge } from "@/components/roles/ApplicationBadge"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/ui-daisy/scroll-area"
 import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
 import { CoverLetterTone } from "@/types/coverLetter"

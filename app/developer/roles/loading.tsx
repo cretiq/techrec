@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui-daisy/skeleton"
 import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 
 export default function RolesLoading() {

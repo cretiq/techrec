@@ -8,7 +8,7 @@ import {  Badge  } from '@/components/ui-daisy/badge'
 import { Label } from "@/components/ui-daisy/label"
 import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, Code, Bookmark, BookmarkCheck, Plus, PenTool } from "lucide-react"
 import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui-daisy/accordion"
 import { useToast } from "@/components/ui-daisy/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'

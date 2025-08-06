@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { Button } from '@/components/ui-daisy/button'
 import { Badge } from '@/components/ui-daisy/badge'
 import { Input } from '@/components/ui-daisy/input'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui-daisy/tooltip"
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/lib/store'
 import { 

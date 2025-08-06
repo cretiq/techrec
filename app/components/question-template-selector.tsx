@@ -1,6 +1,6 @@
 import {  Button  } from '@/components/ui-daisy/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui-daisy/dialog"
+import { ScrollArea } from "@/components/ui-daisy/scroll-area"
 
 export interface QuestionTemplate {
   id: string
