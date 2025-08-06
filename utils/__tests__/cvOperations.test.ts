@@ -1,46 +1,49 @@
+// Define mock objects before imports to ensure proper availability
+const mockAnalysisStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+};
+
+const mockTransaction = jest.fn();
+const mockPrismaInstance = {
+  cV: {
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    findMany: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+  cvAnalysis: {
+    deleteMany: jest.fn(),
+  },
+  $transaction: mockTransaction,
+};
+
+// Use jest.doMock to avoid conflicts with global mocks
+jest.doMock('@prisma/client', () => ({
+  PrismaClient: jest.fn().mockImplementation(() => mockPrismaInstance),
+  AnalysisStatus: mockAnalysisStatus
+}));
+
+// Mock S3 delete function
+jest.doMock('../s3Storage', () => ({
+  deleteFileFromS3: jest.fn(),
+}));
+
+// Mock Redis cache clearing
+jest.doMock('@/lib/redis', () => ({
+  clearCachePattern: jest.fn(),
+}));
+
+// Import after mocking
 import { PrismaClient, CV, AnalysisStatus } from '@prisma/client';
 import { createCV, getCV, updateCV, deleteCV, listCVs, CvCreateData, CvUpdateData } from '@/utils/cvOperations';
 import { deleteFileFromS3 } from '@/utils/s3Storage';
 import { clearCachePattern } from '@/lib/redis';
 
-// Mock Prisma Client with transaction support  
-jest.mock('@prisma/client', () => {
-  const mockTransaction = jest.fn();
-  const mockPrismaInstance = {
-    cV: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      findMany: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-    cvAnalysis: {
-      deleteMany: jest.fn(),
-    },
-    $transaction: mockTransaction,
-  };
-  
-  return {
-    PrismaClient: jest.fn().mockImplementation(() => mockPrismaInstance),
-    AnalysisStatus: {
-      PENDING: 'PENDING',
-      PROCESSING: 'PROCESSING',
-      COMPLETED: 'COMPLETED',
-      FAILED: 'FAILED',
-    }
-  };
-});
-
-// Mock S3 delete function
-jest.mock('../s3Storage', () => ({
-  deleteFileFromS3: jest.fn(),
-}));
 const mockedDeleteFileFromS3 = deleteFileFromS3 as jest.MockedFunction<typeof deleteFileFromS3>;
-
-// Mock Redis cache clearing
-jest.mock('@/lib/redis', () => ({
-  clearCachePattern: jest.fn(),
-}));
 const mockedClearCachePattern = clearCachePattern as jest.MockedFunction<typeof clearCachePattern>;
 
 describe('CV Database Operations', () => {
@@ -50,9 +53,8 @@ describe('CV Database Operations', () => {
     // Reset mocks before each test
     jest.clearAllMocks();
     
-    // Get fresh mock instance from the mocked PrismaClient
-    const { PrismaClient } = require('@prisma/client');
-    mockPrisma = new PrismaClient(); // This will return our mock instance
+    // Use the predefined mock instance
+    mockPrisma = mockPrismaInstance;
     
     // Reset S3 mock
     mockedDeleteFileFromS3.mockClear();

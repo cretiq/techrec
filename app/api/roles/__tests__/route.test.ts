@@ -1,17 +1,17 @@
-import { GET, POST } from '../route'
-import { prisma } from '@/prisma/prisma'
-
-// Mock the dependencies
-jest.mock('@/prisma/prisma', () => ({
-  prisma: {
-    role: {
-      findMany: jest.fn(),
-      create: jest.fn(),
-    },
+// Mock prisma before any imports
+const mockPrisma = {
+  role: {
+    findMany: jest.fn(),
+    create: jest.fn(),
   },
-}))
+};
 
-// Mock @prisma/client
+// Mock the prisma import - needs to be at the top level
+jest.mock('@/prisma/prisma', () => ({
+  prisma: mockPrisma,
+}));
+
+// Mock @prisma/client enum - needs to be at the top level  
 jest.mock('@prisma/client', () => ({
   RoleType: {
     FULL_TIME: 'FULL_TIME',
@@ -20,7 +20,9 @@ jest.mock('@prisma/client', () => ({
     INTERNSHIP: 'INTERNSHIP',
     FREELANCE: 'FREELANCE',
   },
-}))
+}));
+
+import { GET, POST } from '../route'
 
 describe('GET /api/roles', () => {
   beforeEach(() => {
@@ -54,7 +56,7 @@ describe('GET /api/roles', () => {
       },
     ]
 
-    ;(prisma.role.findMany as jest.Mock).mockResolvedValue(mockRoles)
+    mockPrisma.role.findMany.mockResolvedValue(mockRoles)
 
     const response = await GET()
     expect(response.status).toBe(200)
@@ -87,7 +89,7 @@ describe('GET /api/roles', () => {
   })
 
   it('should handle database errors gracefully', async () => {
-    ;(prisma.role.findMany as jest.Mock).mockRejectedValue(new Error('Database error'))
+    mockPrisma.role.findMany.mockRejectedValue(new Error('Database error'))
 
     const response = await GET()
     expect(response.status).toBe(500)
@@ -127,7 +129,7 @@ describe('POST /api/roles', () => {
       ],
     }
 
-    ;(prisma.role.create as jest.Mock).mockResolvedValue(mockCreatedRole)
+    mockPrisma.role.create.mockResolvedValue(mockCreatedRole)
 
     const requestBody = {
       title: 'Software Engineer',
@@ -178,7 +180,7 @@ describe('POST /api/roles', () => {
     })
 
     // Verify Prisma was called with correct data
-    expect(prisma.role.create).toHaveBeenCalledWith({
+    expect(mockPrisma.role.create).toHaveBeenCalledWith({
       data: {
         title: 'Software Engineer',
         description: 'A great role',
@@ -253,7 +255,7 @@ describe('POST /api/roles', () => {
       companyId: 'company1',
     }
 
-    ;(prisma.role.create as jest.Mock).mockRejectedValue(new Error('Database error'))
+    mockPrisma.role.create.mockRejectedValue(new Error('Database error'))
 
     const response = await POST(
       new Request('http://localhost:3000/api/roles', {
@@ -280,7 +282,7 @@ describe('POST /api/roles', () => {
       skills: [],
     }
 
-    ;(prisma.role.create as jest.Mock).mockResolvedValue(mockCreatedRole)
+    mockPrisma.role.create.mockResolvedValue(mockCreatedRole)
 
     // Test with different type formats
     const typeFormats = ['Part-time', 'PART_TIME']

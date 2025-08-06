@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -125,8 +125,34 @@ export default function ShowcasePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
   const ActiveComponent = sections[activeSection]?.component || sections.components.component;
+
+  // Handle system theme detection and changes
+  useEffect(() => {
+    const updateResolvedTheme = () => {
+      if (theme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        setResolvedTheme(systemTheme);
+      } else {
+        setResolvedTheme(theme);
+      }
+    };
+
+    updateResolvedTheme();
+
+    if (theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      mediaQuery.addEventListener('change', updateResolvedTheme);
+      return () => mediaQuery.removeEventListener('change', updateResolvedTheme);
+    }
+  }, [theme]);
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', resolvedTheme);
+  }, [resolvedTheme]);
 
   const handleCopyCode = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
@@ -139,13 +165,13 @@ export default function ShowcasePage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#050505] text-gray-100">
+    <div className="min-h-screen bg-base-100 text-base-content transition-colors duration-200">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-[#050505]/80 backdrop-blur-lg border-b border-gray-800/30">
+      <header className="sticky top-0 z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-300/30 transition-colors duration-200">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-gray-100">
+              <h1 className="text-2xl font-bold text-base-content">
                 TechRec Design System
               </h1>
               <Badge variant="gradient-brand" size="sm">v2.0</Badge>
@@ -154,13 +180,13 @@ export default function ShowcasePage() {
             <div className="flex items-center gap-4">
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/60" />
                 <input
                   type="text"
                   placeholder="Search components..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-64 pl-10 pr-4 py-2 bg-gray-900/30 border border-gray-800/50 rounded-lg text-gray-100 placeholder-gray-500 focus:border-gray-700/50 focus:outline-none transition-colors"
+                  className="w-64 pl-10 pr-4 py-2 bg-base-200/50 border border-base-300/50 rounded-lg text-base-content placeholder-base-content/60 focus:border-base-content/30 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -192,7 +218,7 @@ export default function ShowcasePage() {
 
       <div className="container mx-auto flex">
         {/* Sidebar Navigation */}
-        <aside className="w-64 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto border-r border-gray-800/30 bg-[#050505]/50 p-4">
+        <aside className="w-64 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto border-r border-base-300/30 bg-base-100/50 p-4 transition-colors duration-200">
           <nav className="space-y-1">
             {filteredSections.map((section) => {
               const Icon = section.icon;
@@ -204,8 +230,8 @@ export default function ShowcasePage() {
                   onClick={() => setActiveSection(section.id)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 border border-transparent",
-                    "hover:bg-gray-800/20 hover:border-gray-700/30 text-gray-400 hover:text-gray-200",
-                    isActive && "bg-gray-800/30 border-gray-700/30 text-gray-100 font-medium"
+                    "hover:bg-base-200/50 hover:border-base-300/50 text-base-content/60 hover:text-base-content",
+                    isActive && "bg-base-200/80 border-base-300/50 text-base-content font-medium"
                   )}
                 >
                   <Icon className="h-4 w-4" />
@@ -229,7 +255,7 @@ export default function ShowcasePage() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <ActiveComponent onCopyCode={handleCopyCode} copiedCode={copiedCode} />
+              <ActiveComponent onCopyCode={handleCopyCode} copiedCode={copiedCode} theme={resolvedTheme} />
             </motion.div>
           </AnimatePresence>
         </main>
