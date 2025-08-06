@@ -49,7 +49,7 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
         <div className="relative flex items-center">
           {/* Left Icon */}
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-base-content/60">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-base-content/60">
               {leftIcon}
             </div>
           )}
@@ -61,8 +61,8 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
             variant={inputVariant}
             inputSize={inputSize}
             className={cn(
-              "peer placeholder-transparent pt-7 pb-3 text-base rounded-xl",
-              leftIcon && "pl-10",
+              "peer placeholder-transparent pt-8 pb-4 px-4 text-base rounded-xl",
+              leftIcon && "pl-11",
               (rightIcon || showStatus) && "pr-12",
               className
             )}
@@ -81,10 +81,10 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
           {/* Floating Label */}
           <label 
             className={cn(
-              "absolute left-3 transition-all duration-200 ease-out pointer-events-none",
-              leftIcon && "left-10",
+              "absolute left-4 transition-all duration-200 ease-out pointer-events-none",
+              leftIcon && "left-11",
               isFloated 
-                ? "top-1.5 text-xs text-base-content/60" 
+                ? "top-2 text-xs text-base-content/60" 
                 : "top-1/2 -translate-y-1/2 text-base text-base-content/40",
               error && "text-error",
               isFocused && !error && "text-primary"
