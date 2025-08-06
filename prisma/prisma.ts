@@ -6,4 +6,9 @@ const globalForPrisma = globalThis as unknown as {
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma 
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+
+// Export connectToDatabase function for compatibility with existing imports
+export async function connectToDatabase() {
+  return prisma
+} 

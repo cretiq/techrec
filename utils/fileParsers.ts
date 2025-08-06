@@ -1,4 +1,4 @@
-import PDFParser from 'pdf2json';
+// Removed pdf2json dependency - using LangChain PDFLoader instead
 import mammoth from 'mammoth';
 import { Buffer } from 'buffer';
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
