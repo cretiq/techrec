@@ -2,22 +2,43 @@
 
 import React from "react"
 import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
+
+// Base accordion styles that all variants inherit
+const accordionBase = "rounded-2xl transition-all duration-100 ease-smooth p-2"
+
+const accordionVariants = {
+  default: `${accordionBase} bg-base-100 dark:bg-base-300 border border-base-300 shadow-sm hover:shadow-md`,
+  transparent: `${accordionBase} bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
+  glass: `${accordionBase} bg-base-300/60 backdrop-blur-lg border border-base-100/50 shadow-soft`,
+  hybrid: `${accordionBase} bg-red-200 dark:bg-base-300 border border-base-100`,
+  solid: `${accordionBase} bg-base-200 border border-base-300 shadow-sm`,
+  outlined: `${accordionBase} bg-transparent border-2 border-base-300 hover:border-primary/50 hover:bg-base-100/50`,
+  elevated: `${accordionBase} bg-base-100 border border-base-300/50 shadow-md hover:shadow-lg`,
+  floating: `${accordionBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
+  gradient: `${accordionBase} bg-gradient-to-br from-base-100 to-base-200 border border-base-300/50 hover:from-base-50 hover:to-base-100`,
+}
 
 interface AccordionProps {
   children: React.ReactNode
   className?: string
-  variant?: "default" | "arrow" | "plus"
-  grouped?: boolean
+  type?: "single" | "multiple"
+  value?: string | string[]
+  onValueChange?: (value: string | string[]) => void
 }
 
 interface AccordionItemProps {
   children: React.ReactNode
   className?: string
-  defaultOpen?: boolean
-  name?: string
+  value: string
+  id?: string
+  variant?: keyof typeof accordionVariants
+  hoverable?: boolean
+  animated?: boolean
+  interactive?: boolean
 }
 
-interface AccordionTitleProps {
+interface AccordionTriggerProps {
   children: React.ReactNode
   className?: string
 }
@@ -28,24 +49,37 @@ interface AccordionContentProps {
 }
 
 const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
-  ({ children, className, variant = "plus", grouped = true, ...props }, ref) => {
-    const baseClasses = grouped ? "join join-vertical w-full" : "space-y-2"
-    
+  ({ children, className, type = "single", value, onValueChange, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={cn(baseClasses, className)}
+        className={cn("space-y-4", className)}
         {...props}
       >
-        {React.Children.map(children, (child, index) => {
+        {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
             return React.cloneElement(child as React.ReactElement<AccordionItemProps>, {
-              variant,
-              grouped,
-              name: child.props.name || `accordion-group`
-            })
+              type,
+              value: child.props.value,
+              isOpen: type === "multiple" 
+                ? Array.isArray(value) && value.includes(child.props.value)
+                : value === child.props.value,
+              onToggle: (itemValue: string) => {
+                if (!onValueChange) return;
+                
+                if (type === "multiple") {
+                  const currentValues = Array.isArray(value) ? value : [];
+                  const newValues = currentValues.includes(itemValue)
+                    ? currentValues.filter(v => v !== itemValue)
+                    : [...currentValues, itemValue];
+                  onValueChange(newValues);
+                } else {
+                  onValueChange(value === itemValue ? "" : itemValue);
+                }
+              }
+            });
           }
-          return child
+          return child;
         })}
       </div>
     )
@@ -53,58 +87,152 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
 )
 Accordion.displayName = "Accordion"
 
-const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps & { variant?: string; grouped?: boolean }>(
-  ({ children, className, defaultOpen = false, name, variant = "plus", grouped = true, ...props }, ref) => {
-    const baseClasses = cn(
-      "collapse",
-      {
-        "collapse-arrow": variant === "arrow",
-        "collapse-plus": variant === "plus",
-        "join-item": grouped,
-        "border border-base-300": !grouped,
-        "bg-base-100": true
-      }
+const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps & { 
+  type?: "single" | "multiple";
+  isOpen?: boolean;
+  onToggle?: (value: string) => void;
+}>(
+  ({ 
+    children, 
+    className, 
+    value, 
+    id,
+    variant = "default", 
+    hoverable = false,
+    animated = false,
+    interactive = false,
+    type,
+    isOpen = false,
+    onToggle,
+    ...props 
+  }, ref) => {
+    const accordionClasses = cn(
+      accordionVariants[variant],
+      hoverable && "hover:shadow-sm hover:-translate-y-0.5 transform-gpu",
+      interactive && "hover:scale-[1.01] transform-gpu",
+      "overflow-hidden",
+      className
     )
+
+    const handleToggle = () => {
+      onToggle?.(value);
+    };
+
+    if (animated) {
+      return (
+        <motion.div
+          ref={ref}
+          id={id}
+          className={accordionClasses}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          whileHover={hoverable ? { y: -2, transition: { duration: 0.2 } } : undefined}
+          {...props}
+        >
+          {React.Children.map(children, (child) => {
+            if (React.isValidElement(child)) {
+              if (child.type === AccordionTrigger) {
+                return React.cloneElement(child, {
+                  onClick: handleToggle,
+                  'aria-expanded': isOpen,
+                  'aria-controls': `${value}-content`
+                });
+              }
+              if (child.type === AccordionContent) {
+                return React.cloneElement(child, {
+                  id: `${value}-content`,
+                  'aria-labelledby': `${value}-trigger`,
+                  style: { display: isOpen ? 'block' : 'none' }
+                });
+              }
+            }
+            return child;
+          })}
+        </motion.div>
+      )
+    }
 
     return (
       <div
         ref={ref}
-        className={cn(baseClasses, className)}
+        id={id}
+        className={accordionClasses}
         {...props}
       >
-        <input 
-          type="radio" 
-          name={name}
-          defaultChecked={defaultOpen}
-        />
-        {children}
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child)) {
+            if (child.type === AccordionTrigger) {
+              return React.cloneElement(child, {
+                onClick: handleToggle,
+                'aria-expanded': isOpen,
+                'aria-controls': `${value}-content`
+              });
+            }
+            if (child.type === AccordionContent) {
+              return React.cloneElement(child, {
+                id: `${value}-content`,
+                'aria-labelledby': `${value}-trigger`,
+                style: { display: isOpen ? 'block' : 'none' }
+              });
+            }
+          }
+          return child;
+        })}
       </div>
     )
   }
 )
 AccordionItem.displayName = "AccordionItem"
 
-const AccordionTitle = React.forwardRef<HTMLDivElement, AccordionTitleProps>(
-  ({ children, className, ...props }, ref) => {
+const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTriggerProps & {
+  onClick?: () => void;
+  'aria-expanded'?: boolean;
+  'aria-controls'?: string;
+}>(
+  ({ children, className, onClick, ...props }, ref) => {
     return (
-      <div
+      <button
         ref={ref}
-        className={cn("collapse-title text-lg font-semibold", className)}
+        type="button"
+        className={cn(
+          "w-full px-8 py-6 text-left text-lg font-semibold",
+          "hover:bg-base-200/50 transition-colors duration-100",
+          "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-inset",
+          "flex items-center justify-between group",
+          className
+        )}
+        onClick={onClick}
         {...props}
       >
-        {children}
-      </div>
+        <span className="flex-1">{children}</span>
+        <svg
+          className={cn(
+            "h-5 w-5 transition-transform duration-100",
+            props['aria-expanded'] ? "rotate-180" : "rotate-0"
+          )}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
     )
   }
 )
-AccordionTitle.displayName = "AccordionTitle"
+AccordionTrigger.displayName = "AccordionTrigger"
 
-const AccordionContent = React.forwardRef<HTMLDivElement, AccordionContentProps>(
+const AccordionContent = React.forwardRef<HTMLDivElement, AccordionContentProps & {
+  id?: string;
+  'aria-labelledby'?: string;
+  style?: React.CSSProperties;
+}>(
   ({ children, className, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={cn("collapse-content", className)}
+        className={cn("px-8 pb-6", className)}
         {...props}
       >
         {children}
@@ -114,7 +242,7 @@ const AccordionContent = React.forwardRef<HTMLDivElement, AccordionContentProps>
 )
 AccordionContent.displayName = "AccordionContent"
 
-// Create AccordionTrigger alias for AccordionTitle to maintain compatibility
-const AccordionTrigger = AccordionTitle
+// Create AccordionTitle alias for AccordionTrigger to maintain compatibility
+const AccordionTitle = AccordionTrigger
 
 export { Accordion, AccordionItem, AccordionTitle, AccordionContent, AccordionTrigger }

@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 TechRec - AI-Powered Tech Recruitment Platform
+
+This is a comprehensive tech recruitment platform built with **Next.js 15+**, **TypeScript**, **TailwindCSS 4**, and **DaisyUI**, featuring sophisticated AI-powered CV analysis, gamification, and a professional component architecture.
 
 ## Getting Started
 
@@ -19,6 +21,33 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## 🏗️ Architecture & Documentation
+
+### Component System
+- **[Component Architecture Guide](./COMPONENT_ARCHITECTURE.md)** - Complete 4-layer component system documentation
+- **[CLAUDE.md](./CLAUDE.md)** - Comprehensive project guidelines and development patterns
+- **4-Layer Architecture**: UI Primitives → Business Components → Page-Specific → Pages
+
+### Quick Component Reference
+```tsx
+// Layer 1: UI Primitives (98% of imports)
+import { Button, Card, Accordion } from '@/components/ui-daisy'
+
+// Layer 2: Business Components  
+import { StartAssessmentButton } from '@/components/buttons'
+import { AnalysisResultDisplay } from '@/components/analysis'
+
+// Layer 3: Page-Specific (rare)
+import { QuestionTemplateSelector } from '@/app/components'
+```
+
+### Key Features
+- **🎨 Professional Design System** - Glass morphism, gradients, 40+ components
+- **⚡ CVA-based Variants** - Consistent, type-safe component APIs
+- **🎭 Framer Motion** - Smooth animations and transitions
+- **♿ Accessibility First** - WCAG AA compliance built-in
+- **🧩 Modular Architecture** - Clean separation of concerns
 
 ## Learn More
 

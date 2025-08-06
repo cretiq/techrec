@@ -1,15 +1,32 @@
-// Core components  
+/**
+ * TechRec UI Component Library
+ * 
+ * Layer 1: UI Primitives - Reusable, styled components with variant systems
+ * Usage: import { Button, Card, Accordion } from '@/components/ui-daisy'
+ * 
+ * All components support:
+ * - Professional variants (gradient, glass, etc.)
+ * - CVA-based variant system  
+ * - Framer Motion animations
+ * - Accessibility features
+ * - TypeScript interfaces
+ */
+
+// Core Interactive Components
 export * from './button'
 export * from './badge'
 export * from './card'
+export * from './accordion'
+export * from './tabs'
+export * from './dropdown'
+export * from './tooltip'
+
+// Form Components
 export * from './input'
 export * from './textarea'
 export * from './select'
 export * from './radio-group'
-export * from './tabs'
-export * from './dropdown'
-export * from './tooltip'
-export * from './accordion'
+export * from './checkbox'
 
 // Migrated components from @components/ui
 export * from './label'
@@ -39,4 +56,5 @@ export * from './animated-tabs'
 export * from './feature-card'
 export * from './hero-section'
 export * from './trust-indicator'
-export * from './section-badge' 
+export * from './section-badge'
+export * from './suggestion-card' 

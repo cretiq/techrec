@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { CvImprovementSuggestion } from '@/types/cv';
-import { SuggestionCard } from '@/components/ui/SuggestionCard';
+import { SuggestionCard } from '@/components/ui-daisy/suggestion-card';
 import { RootState, AppDispatch } from '@/lib/store';
 import {
   selectSuggestions,
