@@ -14,7 +14,7 @@ export const fetchSavedRoles = createAsyncThunk(
       searchParams.set('includeRoleDetails', params.includeRoleDetails.toString());
     }
 
-    const response = await fetch(`/api/developer/saved-roles?${searchParams.toString()}`);
+    const response = await fetch(`/api/developer/me/saved-roles?${searchParams.toString()}`);
     if (!response.ok) {
       throw new Error('Failed to fetch saved roles');
     }

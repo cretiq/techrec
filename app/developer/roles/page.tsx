@@ -100,8 +100,8 @@ export default function RolesPage() {
       setSavedRolesLoading(true)
       try {
         setSavedRolesError(null)
-        console.log("[RolesPage] Fetching from /api/developers/me/saved-roles")
-        const response = await fetch('/api/developers/me/saved-roles')
+        console.log("[RolesPage] Fetching from /api/developer/me/saved-roles")
+        const response = await fetch('/api/developer/me/saved-roles')
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -207,7 +207,7 @@ export default function RolesPage() {
     setSavedRoles(optimisticSavedRoles)
 
     try {
-      const response = await fetch(`/api/developers/me/saved-roles`, {
+      const response = await fetch(`/api/developer/me/saved-roles`, {
         method: isSaved ? 'DELETE' : 'POST',
       })
 
