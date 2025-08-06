@@ -6,9 +6,9 @@ import Link from "next/link"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui-daisy/progress"
 import { FileText, ArrowLeft, Download, CheckCircle, XCircle, Award, User } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 
 export default function AssessmentResultsPage({ params }) {
   const router = useRouter()

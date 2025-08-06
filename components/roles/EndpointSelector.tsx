@@ -5,7 +5,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { RadioGroup, Radio, Badge } from '@/components/ui-daisy'
 import { Calendar, Crown, Info } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert, AlertDescription } from '@/components/ui-daisy/alert'
 import type { RootState } from '@/lib/store'
 import type { SearchParameters } from '@/lib/api/rapidapi-cache'
 

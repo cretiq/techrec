@@ -4,11 +4,11 @@ import { useState, useEffect } from "react"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui-daisy/progress"
 import { FileText, CheckCircle2, ArrowRight, ArrowLeft, Save, User } from "lucide-react"
 import { TimerButton, WarningButton, SubmitSolutionButton } from "@/components/buttons"
 import { CodeEditor, type TestResult } from "@/components/code-editor"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import Link from "next/link"
 
 export default function AssessmentPage({ params }: { params: { id: string } }) {

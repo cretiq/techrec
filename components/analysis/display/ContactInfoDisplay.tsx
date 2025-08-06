@@ -3,8 +3,8 @@ import {  Input  } from '@/components/ui-daisy/input';
 import {  Button  } from '@/components/ui-daisy/button';
 import { Label } from '@/components/ui/label';
 import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X, AlertTriangle, Camera, User } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useToast } from '@/components/ui/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui-daisy/avatar';
+import { useToast } from '@/components/ui-daisy/use-toast';
 import { useHighlightClasses } from '@/utils/suggestionHighlight';
 
 // Import suggestion-related types and components

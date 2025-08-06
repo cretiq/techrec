@@ -19,7 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card';
 import { Badge } from '@/components/ui-daisy/badge';
 import { Button } from '@/components/ui-daisy/button';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/components/ui-daisy/progress';
 
 import { LevelProgressBar, CompactLevelProgress } from './LevelProgressBar';
 import { AppDispatch } from '@/lib/store';

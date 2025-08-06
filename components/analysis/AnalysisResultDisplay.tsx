@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {  Button  } from '@/components/ui-daisy/button';
 import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui-daisy/use-toast';
 import _ from 'lodash';
 // Import motion and AnimatePresence
 import { motion, AnimatePresence } from 'framer-motion';
@@ -351,7 +351,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
 
   return (
     <motion.div
-      className="analysis-display-container bg-background min-h-screen font-sans rounded-2xl"
+      className="bg-background min-h-screen font-sans rounded-2xl"
       variants={pageVariants}
       initial="hidden"
       animate="visible"

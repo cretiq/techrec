@@ -5,8 +5,8 @@ import { useDropzone } from 'react-dropzone';
 import {  Button  } from '@/components/ui-daisy/button';
 import {  Input  } from '@/components/ui-daisy/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress'; // Assuming Progress component exists
-import { useToast } from '@/components/ui/use-toast'; // Assuming useToast hook exists
+import { Progress } from '@/components/ui-daisy/progress'; // Assuming Progress component exists
+import { useToast } from '@/components/ui-daisy/use-toast'; // Assuming useToast hook exists
 import { CheckCircle, Loader2, UploadCloud } from 'lucide-react'; // Import icons
 
 // Define allowed MIME types and max size (should match backend)

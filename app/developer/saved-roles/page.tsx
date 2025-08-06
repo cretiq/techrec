@@ -35,7 +35,7 @@ import {
 import { useSavedRoles } from '@/hooks/useSavedRoles'
 import type { RootState, AppDispatch } from '@/lib/store'
 import { cn } from '@/lib/utils'
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 
 type FilterType = 'all' | 'saved' | 'applied'
 

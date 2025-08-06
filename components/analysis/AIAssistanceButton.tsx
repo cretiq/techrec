@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui-daisy/button';
 import { Sparkles, Loader2, Wand2 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui-daisy/use-toast';
 import { cn } from '@/lib/utils';
 import { useSelector } from 'react-redux';
 import { selectCurrentAnalysisData } from '@/lib/features/analysisSlice';

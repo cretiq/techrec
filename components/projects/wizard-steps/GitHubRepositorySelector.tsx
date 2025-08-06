@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { CodeBracketIcon, StarIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { Badge } from '@/components/ui-daisy/badge';
 import { Button } from '@/components/ui-daisy/button';
-import { Alert } from '@/components/ui/alert';
+import { Alert } from '@/components/ui-daisy/alert';
 import { 
   fetchGitHubRepositories,
   setSelectedRepository,

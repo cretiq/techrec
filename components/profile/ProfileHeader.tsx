@@ -1,9 +1,9 @@
 "use client"
 
 import {  Card, CardContent, CardFooter  } from '@/components/ui-daisy/card'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui-daisy/avatar"
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui-daisy/progress"
 import { Upload, User } from "lucide-react"
 import {  Input  } from '@/components/ui-daisy/input'
 import { InternalProfile } from "@/types/types"

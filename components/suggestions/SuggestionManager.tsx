@@ -23,7 +23,7 @@ import {
   clearRecentlyUpdatedPaths
 } from '@/lib/features/analysisSlice';
 import { SuggestionOverlay } from './SuggestionOverlay';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui-daisy/use-toast';
 
 interface SuggestionManagerProps {
   section: string; // Target section (experience, education, skills, about)

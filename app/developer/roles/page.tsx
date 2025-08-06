@@ -5,11 +5,11 @@ import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
 import {  Input  } from '@/components/ui-daisy/input'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui-daisy/label"
 import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, Code, Bookmark, BookmarkCheck, Plus, PenTool } from "lucide-react"
 import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
 import { Role } from "@/types/role"

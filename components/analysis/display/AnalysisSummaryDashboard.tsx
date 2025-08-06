@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {  Card, CardContent, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/components/ui-daisy/progress';
 import {  Button  } from '@/components/ui-daisy/button';
 import { Wand2, AlertCircle } from 'lucide-react';
 import { ProfileAnalysisData, CvImprovementSuggestion } from '@/types/cv';

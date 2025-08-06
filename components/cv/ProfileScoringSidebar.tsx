@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/components/ui-daisy/progress';
 import { Button } from '@/components/ui-daisy/button';
 import { 
   CheckCircle2, 
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui-daisy/use-toast';
 import { useSelector } from 'react-redux';
 import { selectSuggestionsLoading, selectSuggestionsStats, selectSuggestionsError } from '@/lib/features/suggestionsSlice';
 import { useSuggestionsFetcher } from '@/components/suggestions/SuggestionManager';

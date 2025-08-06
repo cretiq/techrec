@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui-daisy/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui-daisy/card';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-daisy/use-toast";
 import { CheckCircle, XCircle, Database, Save, Eye, Info } from 'lucide-react';
 
 interface TestResult {

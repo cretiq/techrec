@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import {  Input  } from '@/components/ui-daisy/input'
 import { Textarea } from "@/components/ui-daisy/textarea"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import { Plus, X } from "lucide-react"
 import { PageHeader } from "@/components/page/page-header"
 import { FormCard } from "@/components/page/form-card"

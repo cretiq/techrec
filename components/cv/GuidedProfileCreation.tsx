@@ -7,8 +7,8 @@ import { Button } from '@/components/ui-daisy/button';
 import { Input } from '@/components/ui-daisy/input';
 import { Textarea } from '@/components/ui-daisy/textarea';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { useToast } from '@/components/ui/use-toast';
+import { Progress } from '@/components/ui-daisy/progress';
+import { useToast } from '@/components/ui-daisy/use-toast';
 import { 
   User, 
   Mail, 

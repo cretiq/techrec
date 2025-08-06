@@ -20,7 +20,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui-daisy/button';
 import { Card } from '@/components/ui-daisy/card';
-import { Alert } from '@/components/ui/alert';
+import { Alert } from '@/components/ui-daisy/alert';
 import { Badge } from '@/components/ui-daisy/badge';
 
 // Types

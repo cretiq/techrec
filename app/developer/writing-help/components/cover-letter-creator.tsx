@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui-daisy/badge'
 import { Textarea } from "@/components/ui-daisy/textarea"
 // Removed legacy Label import to use daisyUI native labels
 import { Input } from '@/components/ui-daisy/input'
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import { useSession } from "next-auth/react"
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '@/lib/store'
@@ -26,7 +26,7 @@ import { InternalProfile, InternalAchievement } from "@/types/types"
 import { Role } from "@/types/role"
 import { CoverLetterTone } from "@/types/coverLetter"
 import { CoverLetterPersonalization } from "./cover-letter-personalization"
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui-daisy/progress"
 import { cn } from "@/lib/utils"
 
 // Animation variants following AnalysisSummaryDashboard pattern
@@ -429,7 +429,7 @@ export function CoverLetterCreator({
                 >
                   <span className="font-medium text-lg">
                     {isGenerating 
-                      ? 'Generating Cover Letter...'
+                      ? role.applicationInfo?.applicationUrl ? 'Analyzing & Generating...' : 'Generating Cover Letter...'
                       : generatedLetter ? 'Regenerate Cover Letter' : 'Generate Cover Letter'
                     }
                   </span>
@@ -532,7 +532,10 @@ export function CoverLetterCreator({
                 <div className="flex-1">
                   <p className="text-base font-semibold text-base-content">AI is crafting your perfect cover letter...</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Analyzing your profile and matching it to {role.company.name}'s requirements
+                    {role.applicationInfo?.applicationUrl 
+                      ? `Analyzing job description and matching it to your profile...`
+                      : `Matching your profile to ${role.company.name}'s requirements...`
+                    }
                   </p>
                 </div>
               </div>

@@ -9,7 +9,7 @@ import ApplicationBadge from '@/components/roles/ApplicationBadge'
 import ApplicationActionButton from '@/components/roles/ApplicationActionButton'
 import RecruiterCard from '@/components/roles/RecruiterCard'
 // import MatchScoreCircle from '@/components/roles/MatchScoreCircle' // DISABLED: Skill matching temporarily disabled
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import { useRouter } from "next/navigation"
 import { useSession } from 'next-auth/react'
 import { Role } from "@/types/role"

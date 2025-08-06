@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui-daisy/progress"
 import {
   FileText,
   Building,
@@ -24,8 +24,8 @@ import {
   FileCheck,
   ArrowRight,
 } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useToast } from "@/hooks/use-toast"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui-daisy/avatar"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import { formatJobType } from "@/utils/format"
 
 // Mock role data

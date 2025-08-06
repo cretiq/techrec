@@ -17,7 +17,7 @@ import {
 import { Card, CardContent } from '@/components/ui-daisy/card';
 import { Button } from '@/components/ui-daisy/button';
 import { Badge } from '@/components/ui-daisy/badge';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/components/ui-daisy/progress';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 

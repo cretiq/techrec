@@ -6,7 +6,7 @@ import { useState } from "react"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import {  Input  } from '@/components/ui-daisy/input'
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui-daisy/label"
 import { Textarea } from "@/components/ui-daisy/textarea"
 import {  Select, SelectContent, SelectItem, SelectTrigger, SelectValue  } from '@/components/ui-daisy/select'
 import {  Badge  } from '@/components/ui-daisy/badge'
@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns"
 import { CalendarIcon, ExternalLink, Filter, Grid, List, Plus, Star, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import { Slider } from "@/components/ui/slider"
 import {
   DropdownMenu,

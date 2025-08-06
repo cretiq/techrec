@@ -11,6 +11,21 @@ export * from './dropdown'
 export * from './tooltip'
 export * from './accordion'
 
+// Migrated components from @components/ui
+export * from './label'
+export * from './progress'
+export * from './avatar'
+export * from './alert'
+export * from './toast'
+export * from './toaster'
+export * from './use-toast'
+export * from './dialog'
+export * from './table'
+export * from './skeleton'
+export * from './popover'
+export * from './scroll-area'
+export * from './checkbox'
+
 // Custom components
 export * from './feature-card'
 export * from './hero-section'

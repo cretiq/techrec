@@ -2,10 +2,10 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ReUploadButton } from '../ReUploadButton';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui-daisy/use-toast';
 
 // Mock the toast function
-jest.mock('@/components/ui/use-toast', () => ({
+jest.mock('@/components/ui-daisy/use-toast', () => ({
   toast: jest.fn(),
 }));
 

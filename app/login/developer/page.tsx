@@ -8,7 +8,7 @@ import {  Input  } from '@/components/ui-daisy/input'
 import { Label } from "@/components/ui/label"
 import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import { Checkbox } from "@/components/ui/checkbox"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import { Code, GraduationCap, ArrowRight, Loader2 } from "lucide-react"
 
 export default function DeveloperLoginPage() {

@@ -4,9 +4,9 @@ import type React from "react"
 import {  Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui-daisy/progress"
 import {  Button  } from '@/components/ui-daisy/button'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui-daisy/avatar"
 import {
   Code,
   FileText,

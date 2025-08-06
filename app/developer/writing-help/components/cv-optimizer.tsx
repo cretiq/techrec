@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui-daisy/badge'
 import { Textarea } from "@/components/ui-daisy/textarea"
 import { Label } from "@/components/ui/label"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui-daisy/use-toast"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from '@/lib/utils'
 import { 
@@ -16,7 +16,7 @@ import {
   Loader2, Copy, Check, Brain, Zap, TrendingUp,
   AlertCircle, FileUp, Edit3, RefreshCw
 } from "lucide-react"
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui-daisy/progress"
 import { Role } from "@/types/role"
 
 // Animation variants

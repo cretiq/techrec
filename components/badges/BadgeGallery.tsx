@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui-daisy/card';
 import { Badge } from '@/components/ui-daisy/badge';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/components/ui-daisy/progress';
 import {
   Lock,
   CheckCircle2,

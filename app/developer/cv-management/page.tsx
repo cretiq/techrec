@@ -6,7 +6,7 @@ import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDispl
 import { AnalysisActionButtons } from '@/components/analysis/AnalysisActionButtons';
 import { ProfileScoringSidebar } from '@/components/cv/ProfileScoringSidebar';
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-daisy/use-toast";
 import {  Button  } from '@/components/ui-daisy/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';

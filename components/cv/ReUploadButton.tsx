@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui-daisy/button';
 import { RefreshCw, Upload, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui-daisy/use-toast";
 
 interface ReUploadButtonProps {
   analysisData?: any;

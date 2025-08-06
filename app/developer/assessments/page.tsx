@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Progress } from "@/components/ui/progress"
+import { Progress } from "@/components/ui-daisy/progress"
 import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-daisy/tabs'
 import {  Input  } from '@/components/ui-daisy/input'
 import {
