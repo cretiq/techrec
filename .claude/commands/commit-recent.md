@@ -69,6 +69,29 @@ git log -1 --stat
 ```
 Confirm the commit contains only the intended changes.
 
+### Step 8: Final Verification (MANDATORY)
+After committing, perform a comprehensive verification to ensure EVERYTHING from your session is committed and NOTHING extra was included:
+
+```bash
+# Check current uncommitted status
+git status --porcelain
+```
+
+**CRITICAL VERIFICATION CHECKLIST:**
+1. **Session Work Committed**: Verify that ALL files you modified/created/deleted in this session are NOT listed in git status
+2. **No Extra Changes**: Confirm that any remaining uncommitted files (marked with M, A, D, ??) are NOT from your session work
+3. **Complete Coverage**: Cross-reference your session changes against the commit content:
+   ```bash
+   git show --name-only HEAD  # Show files in your commit
+   ```
+4. **Explicit Confirmation**: State clearly: "All changes from this session are committed. Remaining uncommitted files are user's independent changes."
+
+**If any session changes are still uncommitted:**
+- Identify what was missed
+- Stage those specific files
+- Amend the commit or create a follow-up commit
+- Never leave session work uncommitted
+
 ## Commit Message Guidelines
 
 ### Type Selection (MANDATORY)
@@ -107,6 +130,8 @@ Choose from these project-specific scopes:
 3. **Selective Staging**: Never use `git add .` - always specify files
 4. **Verify Before Commit**: Always check staged changes match intended changes
 5. **Atomic Commits**: Each commit should represent one logical unit of work
+6. **Complete Verification**: MANDATORY final check that ALL session work is committed and NOTHING is left behind
+7. **Explicit Confirmation**: Always state clearly what is committed vs. what remains uncommitted and why
 
 ## Error Handling
 
