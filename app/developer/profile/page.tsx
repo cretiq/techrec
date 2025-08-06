@@ -53,7 +53,7 @@ export default function ProfilePage() {
 
     try {
       setLoading(true);
-      const response = await fetch('/api/developer/profile');
+      const response = await fetch('/api/developer/me/profile');
       
       if (response.ok) {
         const data = await response.json();
