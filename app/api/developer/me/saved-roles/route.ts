@@ -240,4 +240,79 @@ export async function DELETE(request: Request) {
       { status: 500 }
     );
   }
+}
+
+// PATCH /api/developer/me/saved-roles
+// Updates saved role application status (mark as applied / un-apply)
+export async function PATCH(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { roleId, action, applicationMethod, jobPostingUrl, applicationNotes } = await request.json();
+    
+    if (!roleId || !action) {
+      return NextResponse.json(
+        { error: 'Role ID and action are required' },
+        { status: 400 }
+      );
+    }
+
+    if (!['mark-applied', 'un-apply'].includes(action)) {
+      return NextResponse.json(
+        { error: 'Action must be either "mark-applied" or "un-apply"' },
+        { status: 400 }
+      );
+    }
+
+    // Find saved role that matches the external roleId
+    const savedRole = await prisma.savedRole.findFirst({
+      where: {
+        developerId: session.user.id,
+        notes: {
+          contains: `External ID: ${roleId}`
+        }
+      }
+    });
+
+    if (!savedRole) {
+      return NextResponse.json(
+        { error: 'Saved role not found' },
+        { status: 404 }
+      );
+    }
+
+    // Update the saved role based on action
+    if (action === 'mark-applied') {
+      await prisma.savedRole.update({
+        where: { id: savedRole.id },
+        data: {
+          appliedAt: new Date(),
+          applicationMethod: applicationMethod || 'external',
+          jobPostingUrl: jobPostingUrl,
+          applicationNotes: applicationNotes
+        }
+      });
+    } else if (action === 'un-apply') {
+      await prisma.savedRole.update({
+        where: { id: savedRole.id },
+        data: {
+          appliedAt: null,
+          applicationMethod: null,
+          jobPostingUrl: null,
+          applicationNotes: null
+        }
+      });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating saved role application status:', error);
+    return NextResponse.json(
+      { error: 'Failed to update saved role application status' },
+      { status: 500 }
+    );
+  }
 } 

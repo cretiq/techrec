@@ -36,13 +36,14 @@ export default function SavedRoleMarkAsAppliedButton({
     setIsLoading(true)
     
     try {
-      const response = await fetch('/api/developer/saved-roles/mark-applied', {
-        method: 'POST',
+      const response = await fetch('/api/developer/me/saved-roles', {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           roleId: role.id,
+          action: 'mark-applied',
           applicationMethod: 'external',
           jobPostingUrl: role.url || role.applicationInfo?.applicationUrl
         }),
@@ -66,14 +67,14 @@ export default function SavedRoleMarkAsAppliedButton({
     setIsUnApplying(true)
     
     try {
-      const response = await fetch('/api/developer/saved-roles/un-apply', {
-        method: 'POST',
+      const response = await fetch('/api/developer/me/saved-roles', {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           roleId: role.id,
-          keepNotes: true // Keep application notes by default
+          action: 'un-apply'
         }),
       })
 

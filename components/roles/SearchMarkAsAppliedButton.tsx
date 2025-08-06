@@ -39,13 +39,14 @@ export default function SearchMarkAsAppliedButton({
     try {
       if (isSaved) {
         // Role is already saved, just mark as applied
-        const response = await fetch('/api/developer/saved-roles/mark-applied', {
-          method: 'POST',
+        const response = await fetch('/api/developer/me/saved-roles', {
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             roleId: role.id,
+            action: 'mark-applied',
             applicationMethod: 'external',
             jobPostingUrl: role.url || role.applicationInfo?.applicationUrl
           }),
@@ -74,13 +75,14 @@ export default function SearchMarkAsAppliedButton({
         }
         
         // Then mark it as applied
-        const markResponse = await fetch('/api/developer/saved-roles/mark-applied', {
-          method: 'POST',
+        const markResponse = await fetch('/api/developer/me/saved-roles', {
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             roleId: role.id,
+            action: 'mark-applied',
             applicationMethod: 'external',
             jobPostingUrl: role.url || role.applicationInfo?.applicationUrl
           }),
