@@ -49,7 +49,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ /* analy
   return (
     <div className="space-y-6 p-4 md:p-6">
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">Analysis Analytics</h2>
+        <h2 className="text-2xl font-semibold text-base-content">Analysis Analytics</h2>
         <div className="flex items-center gap-3">
           <Select value={dateRange} onValueChange={setDateRange}>
             <SelectTrigger className="w-[180px]">

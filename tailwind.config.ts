@@ -146,7 +146,7 @@ const config: Config = {
     styled: true,
     utils: true,
     prefix: "",
-    logs: false,
+    logs: true,
   },
 };
 

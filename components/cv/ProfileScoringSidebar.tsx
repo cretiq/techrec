@@ -334,7 +334,7 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
                 onClick={() => handleSectionClick(section.id)}
                 className={cn(
                   "w-full text-left p-4 rounded-lg transition-all duration-100 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1 cursor-pointer",
-                  "bg-base-100/60 backdrop-blur-sm border border-base-300/50 space-y-3",
+                  "bg-brand-muted backdrop-blur-sm border border-brand-sharp space-y-3",
                   isActive 
                     ? "bg-primary/10 border-primary/30 shadow-md" 
                     : "hover:bg-base-200/60 hover:border-base-300/70 hover:shadow-sm hover:translate-y-[-1px]"

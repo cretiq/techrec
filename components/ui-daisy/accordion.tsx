@@ -8,10 +8,10 @@ import { motion } from "framer-motion"
 const accordionBase = "rounded-2xl transition-all duration-100 ease-smooth p-2"
 
 const accordionVariants = {
-  default: `${accordionBase} bg-base-100 dark:bg-base-300 border border-base-300 shadow-sm hover:shadow-md`,
+  default: `${accordionBase} bg-base-100 border border-base-300 shadow-sm hover:shadow-md`,
   transparent: `${accordionBase} bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
   glass: `${accordionBase} bg-base-300/60 backdrop-blur-lg border border-base-100/50 shadow-soft`,
-  hybrid: `${accordionBase} bg-red-200 dark:bg-base-300 border border-base-100`,
+  hybrid: `${accordionBase} bg-brand-muted border border-brand-sharp`,
   solid: `${accordionBase} bg-base-200 border border-base-300 shadow-sm`,
   outlined: `${accordionBase} bg-transparent border-2 border-base-300 hover:border-primary/50 hover:bg-base-100/50`,
   elevated: `${accordionBase} bg-base-100 border border-base-300/50 shadow-md hover:shadow-lg`,
