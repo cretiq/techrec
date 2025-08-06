@@ -396,7 +396,7 @@ export function CoverLetterCreator({
                         setIsRemoveHovered(false)
                         onRemoveHover?.(false)
                       }}
-                      className="h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10 transition-all duration-200"
+                      className="h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10 transition-all duration-100"
                       aria-label="Remove role"
                       title="Remove role"
                       data-testid={`write-multirole-remove-button-${role.id}`}
@@ -479,7 +479,7 @@ export function CoverLetterCreator({
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
-                  className="w-full justify-between p-3 h-auto hover:bg-base-200/50 transition-all duration-200 rounded-lg m-0"
+                  className="w-full justify-between p-3 h-auto hover:bg-base-200/50 transition-all duration-100 rounded-lg m-0"
                   data-testid="write-coverletter-header-personalization-trigger"
                 >
                   <span className="text-sm font-medium text-base-content">

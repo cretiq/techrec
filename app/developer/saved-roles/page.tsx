@@ -432,7 +432,7 @@ function SavedRoleCard({ savedRole, onWriteTo, onRoleMarkedAsApplied, onUnsaveRo
 
   return (
     <Card 
-      className="bg-base-100/60 backdrop-blur-sm border border-base-200 hover:shadow-lg transition-all duration-200 hover:transform hover:scale-[1.02]"
+      className="bg-base-100/60 backdrop-blur-sm border border-base-200 hover:shadow-lg transition-all duration-100 hover:transform hover:scale-[1.02]"
       data-testid={`saved-role-card-${savedRole.id}`}
     >
       <CardHeader className="pb-4 relative">

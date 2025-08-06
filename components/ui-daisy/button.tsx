@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { Loader2 } from "lucide-react"
 
 const buttonVariants = cva(
-  "btn transition-all duration-200 ease-smooth relative overflow-hidden linear-button rounded-lg", // Enhanced base with Linear typography and smooth transitions
+  "btn transition-all duration-100 ease-smooth relative overflow-hidden linear-button rounded-lg", // Enhanced base with Linear typography and smooth transitions
   {
     variants: {
       variant: {
@@ -55,7 +55,7 @@ const buttonVariants = cva(
         md: "shadow-md hover:shadow-lg", // Default consistent shadow
         lg: "shadow-lg hover:shadow-xl",
         xl: "shadow-xl hover:shadow-2xl",
-        float: "shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-transform duration-200",
+        float: "shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-transform duration-100",
         // Theme-aware shadow variants for future dark/light mode support
         "theme-aware-sm": "shadow-sm hover:shadow-md dark:shadow-slate-900/20 dark:hover:shadow-slate-900/40",
         "theme-aware-md": "shadow-md hover:shadow-lg dark:shadow-slate-900/30 dark:hover:shadow-slate-900/50",

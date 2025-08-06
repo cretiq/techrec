@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 // Base avatar styles that all variants inherit
-const avatarBase = "avatar transition-all duration-200 ease-smooth"
+const avatarBase = "avatar transition-all duration-100 ease-smooth"
 
 const avatarVariants = cva(avatarBase, {
   variants: {

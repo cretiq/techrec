@@ -149,7 +149,7 @@ export function AIAssistanceButton({
       onClick={handleAIAssistance}
       disabled={isProcessing}
       className={cn(
-        "transition-all duration-200",
+        "transition-all duration-100",
         isProcessing && "opacity-75",
         className
       )}

@@ -151,7 +151,7 @@ export function RecentBadges({ className = '', badges = [] }: RecentBadgesProps)
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex items-center gap-3 p-3 rounded-lg bg-base-100/40 border border-base-300/30 hover:bg-base-100/60 hover:border-base-300/50 transition-all duration-200"
+                className="flex items-center gap-3 p-3 rounded-lg bg-base-100/40 border border-base-300/30 hover:bg-base-100/60 hover:border-base-300/50 transition-all duration-100"
                 data-testid={`recent-badge-${userBadge.badgeId}`}
               >
                 {/* Badge Icon */}

@@ -307,7 +307,7 @@ function NotificationItem({
       transition={{ delay: index * 0.05 }}
       onClick={onClick}
       className={`
-        p-3 mx-3 rounded-lg border-l-4 cursor-pointer transition-all duration-200
+        p-3 mx-3 rounded-lg border-l-4 cursor-pointer transition-all duration-100
         ${getColor(notification.type)}
         ${notification.isRead ? 'opacity-60' : 'hover:bg-base-200/30'}
         ${!notification.isRead ? 'shadow-sm' : ''}

@@ -3,13 +3,14 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 
 // Base card styles that all variants inherit
-const cardBase = "rounded-3xl transition-all duration-200 ease-smooth"
+const cardBase = "rounded-3xl transition-all duration-100 ease-smooth"
 
 const cardVariants = {
   default: `${cardBase} bg-base-200 border border-base-300 shadow-sm`,
   transparent: `${cardBase} bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
   glass: `${cardBase} bg-base-300 backdrop-blur-lg border border-base-100 shadow-soft`,
   solid: `${cardBase} bg-base-100 border border-base-300 shadow-sm`,
+  hybrid: `${cardBase} bg-base-200 border border-base-100`,
   outlined: `${cardBase} bg-transparent border-2 border-base-300 hover:border-primary/50 hover:bg-base-100/50`,
   elevated: `${cardBase} bg-base-100 border border-base-300/50 shadow-md hover:shadow-lg`,
   floating: `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
 
 const selectVariants = cva(
-  "select w-full transition-all duration-200 ease-smooth focus:shadow-medium focus:outline-none focus:ring-2 focus:ring-primary/20",
+  "select w-full transition-all duration-100 ease-smooth focus:shadow-medium focus:outline-none focus:ring-2 focus:ring-primary/20",
   {
     variants: {
       variant: {

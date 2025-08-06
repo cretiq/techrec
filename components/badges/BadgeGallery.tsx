@@ -85,7 +85,7 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
                 variant={badge.isEarned ? "solid" : "transparent"}
                 hoverable
                 className={`
-                  cursor-pointer transition-all duration-200 hover:scale-105
+                  cursor-pointer transition-all duration-100 hover:scale-105
                   ${badge.isEarned
                     ? 'bg-green-50 border-green-200'
                     : badge.isInProgress

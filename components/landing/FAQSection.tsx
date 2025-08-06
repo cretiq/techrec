@@ -85,7 +85,7 @@ export function FAQSection() {
                   defaultOpen={index === 0}
                   className="bg-gradient-to-br from-base-200 to-base-300 border border-base-100 rounded-3xl mb-2"
                 >
-                  <AccordionTitle className="hover:text-primary transition-colors duration-200 px-8 py-6">
+                  <AccordionTitle className="hover:text-primary transition-colors duration-100 px-8 py-6">
                     <div className="flex flex-col items-start gap-2">
                       <span>{faq.question}</span>
                       {faq.category && (
@@ -115,7 +115,7 @@ export function FAQSection() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a 
                 href="mailto:support@techrec.com"
-                className="text-primary hover:text-primary-focus transition-colors duration-200 font-medium"
+                className="text-primary hover:text-primary-focus transition-colors duration-100 font-medium"
               >
                 support@techrec.com
               </a>

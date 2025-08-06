@@ -176,7 +176,7 @@ export const ProjectRecommendationCard: React.FC<ProjectRecommendationCardProps>
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <motion.button
               onClick={handleGetStarted}
-              className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+              className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-100 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >

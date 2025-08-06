@@ -25,7 +25,7 @@ const radioGroupVariants = cva(
 )
 
 const radioVariants = cva(
-  "radio transition-all duration-200 ease-smooth focus:ring-2 focus:ring-primary/20 focus:outline-none",
+  "radio transition-all duration-100 ease-smooth focus:ring-2 focus:ring-primary/20 focus:outline-none",
   {
     variants: {
       variant: {
@@ -155,7 +155,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
     return (
       <div className="form-control">
         <motion.label 
-          className="label cursor-pointer justify-start gap-3 p-3 rounded-lg hover:bg-base-200/50 transition-colors duration-200"
+          className="label cursor-pointer justify-start gap-3 p-3 rounded-lg hover:bg-base-200/50 transition-colors duration-100"
           htmlFor={radioId}
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}

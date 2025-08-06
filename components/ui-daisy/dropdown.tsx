@@ -110,7 +110,7 @@ const DropdownTrigger = React.forwardRef<
 DropdownTrigger.displayName = "DropdownTrigger"
 
 const dropdownContentVariants = cva(
-  "dropdown-content menu bg-base-100 rounded-xl z-50 min-w-48 p-2 transition-all duration-200 ease-smooth",
+  "dropdown-content menu bg-base-100 rounded-xl z-50 min-w-48 p-2 transition-all duration-100 ease-smooth",
   {
     variants: {
       variant: {

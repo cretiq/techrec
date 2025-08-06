@@ -206,7 +206,7 @@ export function SuggestionItem({
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className={cn(
-        "relative overflow-hidden rounded-lg border transition-all duration-200",
+        "relative overflow-hidden rounded-lg border transition-all duration-100",
         "bg-base-100/60 backdrop-blur-sm border-base-300/50",
         config.bgColor,
         config.borderColor,

@@ -75,7 +75,7 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
-                    <div className="absolute top-full left-0 z-50 w-56 mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ease-out" data-testid="nav-dropdown-how-to-menu">
+                    <div className="absolute top-full left-0 z-50 w-56 mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-100 ease-out" data-testid="nav-dropdown-how-to-menu">
                       <ul className="menu p-2 shadow-lg bg-base-100 rounded-lg border border-base-300">
                         <li>
                           <Link href="/developer/how-to/app" className="hover:bg-base-200 rounded-md flex items-center gap-3" data-testid="nav-dropdown-link-how-to-app">

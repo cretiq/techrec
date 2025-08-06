@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 // Base skeleton styles that all variants inherit
-const skeletonBase = "animate-pulse transition-all duration-200"
+const skeletonBase = "animate-pulse transition-all duration-100"
 
 const skeletonVariants = cva(skeletonBase, {
   variants: {

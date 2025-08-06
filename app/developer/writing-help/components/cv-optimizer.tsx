@@ -595,7 +595,7 @@ export function CVOptimizer({ role, isMultiRoleMode = false }: CVOptimizerProps)
                             className="mb-4"
                           >
                             <Card className={cn(
-                              "bg-base-100/40 backdrop-blur-sm border transition-all duration-200",
+                              "bg-base-100/40 backdrop-blur-sm border transition-all duration-100",
                               suggestion.accepted === true && "border-success/50 bg-success/5",
                               suggestion.accepted === false && "border-error/50 bg-error/5",
                               suggestion.accepted === undefined && "border-base-300/50 hover:border-base-300"

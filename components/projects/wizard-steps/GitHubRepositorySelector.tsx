@@ -87,7 +87,7 @@ export const GitHubRepositorySelector: React.FC<GitHubRepositorySelectorProps> =
             key={repository.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`card border-2 cursor-pointer transition-all duration-200 ${
+            className={`card border-2 cursor-pointer transition-all duration-100 ${
               selectedRepository?.id === repository.id
                 ? 'border-primary bg-primary/5'
                 : 'border-base-300 hover:border-primary/50 hover:shadow-md'

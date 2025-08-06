@@ -165,9 +165,9 @@ export default function ShowcasePage() {
   );
 
   return (
-    <div className="min-h-screen bg-base-100 text-base-content transition-colors duration-200">
+    <div className="min-h-screen bg-base-100 text-base-content transition-colors duration-100">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-300/30 transition-colors duration-200">
+      <header className="sticky top-0 z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-300/30 transition-colors duration-100">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -218,7 +218,7 @@ export default function ShowcasePage() {
 
       <div className="container mx-auto flex">
         {/* Sidebar Navigation */}
-        <aside className="w-64 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto border-r border-base-300/30 bg-base-100/50 p-4 transition-colors duration-200">
+        <aside className="w-64 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto border-r border-base-300/30 bg-base-100/50 p-4 transition-colors duration-100">
           <nav className="space-y-1">
             {filteredSections.map((section) => {
               const Icon = section.icon;
@@ -229,7 +229,7 @@ export default function ShowcasePage() {
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 border border-transparent",
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-100 border border-transparent",
                     "hover:bg-base-200/50 hover:border-base-300/50 text-base-content/60 hover:text-base-content",
                     isActive && "bg-base-200/80 border-base-300/50 text-base-content font-medium"
                   )}

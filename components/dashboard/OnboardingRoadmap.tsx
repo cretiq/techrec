@@ -284,7 +284,7 @@ export function OnboardingRoadmap({ className = '', roadmapData, profileScore = 
               <Card
                 variant="transparent"
                 className={`
-                  cursor-pointer transition-all duration-200 
+                  cursor-pointer transition-all duration-100 
                   bg-base-100/40 backdrop-blur-sm border border-base-300/50
                   hover:bg-base-100/60 hover:border-base-300/70 hover:shadow-lg hover:scale-[1.02]
                   ${milestone.isCompleted ? 'bg-green-50/50 border-green-200/50' : ''}

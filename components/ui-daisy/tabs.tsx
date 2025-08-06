@@ -59,7 +59,7 @@ const Tabs = React.forwardRef<
 Tabs.displayName = "Tabs"
 
 const tabsListVariants = cva(
-  "tabs transition-all duration-200 ease-smooth",
+  "tabs transition-all duration-100 ease-smooth",
   {
     variants: {
       variant: {
@@ -110,7 +110,7 @@ const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
 TabsList.displayName = "TabsList"
 
 const tabsTriggerVariants = cva(
-  "tab relative transition-all duration-200 ease-smooth font-medium hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20",
+  "tab relative transition-all duration-100 ease-smooth font-medium hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20",
   {
     variants: {
       variant: {

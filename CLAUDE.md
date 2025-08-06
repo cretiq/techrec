@@ -232,30 +232,133 @@ const buttonVariants = cva("base-classes", {
 4. **Documentation**: Add to design system with usage examples
 5. **Refactoring**: Replace any one-off implementations with new component
 
-**Component Library Organization**:
+**Component Architecture (4-Layer System)**:
 ```
-components/ui-daisy/
-├── button.tsx          // All button variants
-├── card.tsx            // All card variants  
-├── badge.tsx           // All badge variants
-├── section-badge.tsx   // Specialized reusable pill component
-├── input.tsx           // All input variants
-└── index.ts            // Export all components
+📁 /components/ui-daisy/           ← 🎯 LAYER 1: UI PRIMITIVES (40+ components)
+├── button.tsx                     // Base Button with 15+ variants (gradient, glass, etc.)
+├── card.tsx                       // Base Card with 8 variants (transparent, solid, etc.)
+├── accordion.tsx                  // Base Accordion with variant system
+├── input.tsx, textarea.tsx        // Form primitives with professional styling
+├── badge.tsx, alert.tsx           // Display components with variants
+├── dialog.tsx, popover.tsx        // Overlay components with animations
+├── suggestion-card.tsx            // Specialized but reusable components
+└── index.ts                       // Central exports for all UI primitives
+
+📁 /components/                    ← 🏗️ LAYER 2: BUSINESS COMPONENTS
+├── buttons.tsx                    // Business-specific button wrappers
+├── analysis/                      // CV analysis feature components
+│   ├── AnalysisResultDisplay.tsx  // Complex feature using ui-daisy primitives
+│   └── display/                   // Analysis sub-components
+├── cv/                           // CV management components  
+├── roles/                        // Job roles components
+├── landing/                      // Landing page components
+└── [feature]/                    // Other domain-specific components
+
+📁 /app/components/                ← 📄 LAYER 3: PAGE-SPECIFIC (minimal)
+└── question-template-selector.tsx // App-specific component (rare)
+
+📁 /app/[route]/                   ← 🌐 LAYER 4: PAGES (consume all layers)
+└── page.tsx                       // Pages import from any layer as needed
 ```
 
-**Real-World Examples from Our Codebase**:
+**Import Patterns & Usage Examples**:
+
+**🎯 LAYER 1 - UI Primitives (98% of imports)**:
 ```tsx
-// ✅ SectionBadge - Reusable pill component
-<SectionBadge variant="gradient" icon={<AlertTriangle />}>
-  The Cost of Waiting
-</SectionBadge>
+// ✅ PRIMARY PATTERN: Import ui-daisy components directly
+import { Button, Card, Accordion, Badge } from '@/components/ui-daisy'
 
-// ✅ Card - Standardized variants
-<Card variant="gradient" className="h-full">
+// Usage with professional variants
+<Card variant="gradient" hoverable animated>
+  <Button variant="glass" size="lg" leftIcon={<Play />}>
+    Start Analysis
+  </Button>
+</Card>
 
-// ✅ Button - Consistent animation controls
-<Button variant="gradient" className="!transition-none" />
+<Accordion type="multiple" value={openSections}>
+  <AccordionItem variant="glass" value="contact">
+    <AccordionTrigger>Contact Information</AccordionTrigger>
+    <AccordionContent>...</AccordionContent>
+  </AccordionItem>
+</Accordion>
 ```
+
+**🏗️ LAYER 2 - Business Components (targeted usage)**:
+```tsx
+// ✅ BUSINESS WRAPPERS: When you need domain-specific behavior
+import { StartAssessmentButton, WarningButton } from '@/components/buttons'
+import { ContactInfoDisplay } from '@/components/analysis/display'
+
+// Business components use ui-daisy internally
+<StartAssessmentButton onClick={handleStart} loading={isLoading} />
+<ContactInfoDisplay data={contactData} onChange={handleUpdate} />
+```
+
+**📄 LAYER 3 - Page-Specific (rare)**:
+```tsx
+// ✅ PAGE-SPECIFIC: Only when component is truly unique to one page
+import { QuestionTemplateSelector } from '@/app/components'
+
+// Used only in specific app routes
+<QuestionTemplateSelector templates={templates} />
+```
+
+**🌐 LAYER 4 - Pages (composition)**:
+```tsx
+// ✅ PAGES: Compose all layers together
+import { Card, Button } from '@/components/ui-daisy'
+import { AnalysisResultDisplay } from '@/components/analysis'
+import { StartAssessmentButton } from '@/components/buttons'
+
+// Pages orchestrate the full user experience
+export default function CVManagementPage() {
+  return (
+    <Card variant="transparent">
+      <AnalysisResultDisplay />
+      <StartAssessmentButton onClick={handleStart} />
+    </Card>
+  )
+}
+```
+
+**📋 Component Decision Matrix**:
+
+| **When to Create** | **Where to Put It** | **Example** |
+|-------------------|---------------------|-------------|
+| Reusable UI primitive | `/components/ui-daisy/` | Base Button, Card, Input |
+| Business logic wrapper | `/components/buttons.tsx` | StartAssessmentButton |
+| Feature-specific component | `/components/[feature]/` | AnalysisResultDisplay |
+| Page-unique component | `/app/components/` | QuestionTemplateSelector |
+| One-off page element | Inline in page | Simple divs, text |
+
+**🚨 COMPONENT CREATION RULES**:
+
+```tsx
+// ✅ DO: Extend existing ui-daisy components with variants
+const buttonVariants = cva("base-classes", {
+  variants: {
+    variant: { newStyle: "custom-classes" }
+  }
+})
+
+// ✅ DO: Create business wrappers for domain logic
+export function CVUploadButton({ onUpload, acceptedTypes }) {
+  return <Button variant="gradient" onClick={onUpload}>Upload CV</Button>
+}
+
+// ❌ DON'T: Create duplicate UI primitives
+// Instead of new Button component, add variant to existing
+
+// ❌ DON'T: Mix business logic in ui-daisy
+// Keep ui-daisy components pure and reusable
+```
+
+**🔍 Before Creating New Component Checklist**:
+1. **Can I use existing ui-daisy component with different variant?** 
+2. **Can I compose existing components together?**
+3. **Does this contain business logic?** → `/components/[feature]/`
+4. **Is this truly reusable?** → `/components/ui-daisy/`
+5. **Is this page-specific?** → `/app/components/` (rare)
 
 ### Design System
 **Glass Morphism Theme**:
@@ -267,7 +370,7 @@ components/ui-daisy/
 **Animation Standards**:
 - **Loading**: Sophisticated orbital loaders over simple spinners
 - **Hover Effects**: Include movement, shadow, and background changes
-- **Transitions**: Use `transition-all duration-200` for smooth multi-property changes
+- **Transitions**: Use `transition-all duration-100` for smooth multi-property changes
 
 **Standardized Text Sizing System**:
 ```tsx

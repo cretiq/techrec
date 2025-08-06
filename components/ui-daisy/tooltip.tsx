@@ -114,7 +114,7 @@ export function TooltipEnhanced({
       {/* Custom tooltip content */}
       <div 
         className={cn(
-          'absolute invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200',
+          'absolute invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-100',
           'bg-base-content text-base-100 rounded-lg shadow-lg',
           'whitespace-nowrap pointer-events-none',
           'z-[9999]', // Ensure tooltip appears above all other content

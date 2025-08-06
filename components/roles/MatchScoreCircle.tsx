@@ -126,7 +126,7 @@ const MatchScoreCircle: React.FC<MatchScoreCircleProps> = ({
       className={cn(
         "relative flex items-center justify-center rounded-full group cursor-help",
         getBackgroundColor(score),
-        "border border-base-300/50 hover:shadow-md transition-all duration-200"
+        "border border-base-300/50 hover:shadow-md transition-all duration-100"
       )}
       style={{ width: diameter, height: diameter }}
       data-testid="match-score-circle"

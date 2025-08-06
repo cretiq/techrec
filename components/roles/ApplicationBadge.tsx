@@ -31,7 +31,7 @@ export const ApplicationBadge: React.FC<ApplicationBadgeProps> = ({
     return (
       <Badge
         variant="default"
-        className={`bg-[#0077b5]/20 text-[#0077b5] border-[#0077b5]/30 hover:bg-[#0077b5]/30 backdrop-blur-sm transition-all duration-200 ${className}`}
+        className={`bg-[#0077b5]/20 text-[#0077b5] border-[#0077b5]/30 hover:bg-[#0077b5]/30 backdrop-blur-sm transition-all duration-100 ${className}`}
         data-testid={testId || 'application-badge-easy-apply'}
       >
         <LinkedInIcon className="mr-1 h-3 w-3" />
@@ -44,7 +44,7 @@ export const ApplicationBadge: React.FC<ApplicationBadgeProps> = ({
   return (
     <Badge
       variant="outline"
-      className={`border-[#0077b5]/30 text-[#0077b5] hover:bg-[#0077b5]/10 backdrop-blur-sm transition-all duration-200 ${className}`}
+      className={`border-[#0077b5]/30 text-[#0077b5] hover:bg-[#0077b5]/10 backdrop-blur-sm transition-all duration-100 ${className}`}
       data-testid={testId || 'application-badge-external'}
     >
       <LinkedInIcon className="mr-1 h-3 w-3" />

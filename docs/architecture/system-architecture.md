@@ -232,7 +232,7 @@ updateAnalysisData: (state, action: PayloadAction<{ path: string; value: any }>)
 ### Animation Standards
 - **Loading**: Sophisticated orbital loaders
 - **Hover Effects**: Movement (`translate-x-1`) + shadow + background changes
-- **Transitions**: `transition-all duration-200` for smooth effects
+- **Transitions**: `transition-all duration-100` for smooth effects
 - **Progress**: Animated progress bars with shimmer effects
 
 ---

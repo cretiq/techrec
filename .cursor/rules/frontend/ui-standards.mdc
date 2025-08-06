@@ -155,7 +155,7 @@ alwaysApply: false # Auto-attached based on globs
 - **Common Animations**
   ```css
   /* Hover transitions */
-  transition-all duration-200 ease-in-out
+  transition-all duration-100 ease-in-out
 
   /* Page transitions */
   animate-fade-in duration-300

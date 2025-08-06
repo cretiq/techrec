@@ -413,7 +413,7 @@ export function OutreachMessageGenerator({
                     onClick={onRemoveRole}
                     onMouseEnter={() => onRemoveHover?.(true)}
                     onMouseLeave={() => onRemoveHover?.(false)}
-                    className="h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10 transition-all duration-200"
+                    className="h-8 w-8 text-base-content/50 hover:text-error hover:bg-error/10 transition-all duration-100"
                     aria-label="Remove role"
                     title="Remove role"
                     data-testid={`write-multirole-remove-button-${role.id}`}

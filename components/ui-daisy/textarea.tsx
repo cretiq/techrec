@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
 
 const textareaVariants = cva(
-  "textarea textarea-bordered w-full transition-all duration-200 ease-smooth resize-none focus:shadow-medium focus:outline-none focus:ring-2 focus:ring-primary/20",
+  "textarea textarea-bordered w-full transition-all duration-100 ease-smooth resize-none focus:shadow-medium focus:outline-none focus:ring-2 focus:ring-primary/20",
   {
     variants: {
       variant: {

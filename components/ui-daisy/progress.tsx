@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 // Base progress styles that all variants inherit
-const progressBase = "progress transition-all duration-200 ease-smooth"
+const progressBase = "progress transition-all duration-100 ease-smooth"
 
 const progressVariants = cva(progressBase, {
   variants: {

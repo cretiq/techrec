@@ -13,7 +13,7 @@ import {
 } from "lucide-react"
 
 // Base alert styles that all variants inherit
-const alertBase = "alert transition-all duration-200 ease-smooth"
+const alertBase = "alert transition-all duration-100 ease-smooth"
 
 const alertVariants = cva(alertBase, {
   variants: {

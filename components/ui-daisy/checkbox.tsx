@@ -7,7 +7,7 @@ import { Check, Minus } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // Base checkbox styles that all variants inherit
-const checkboxBase = "checkbox transition-all duration-200 ease-smooth"
+const checkboxBase = "checkbox transition-all duration-100 ease-smooth"
 
 const checkboxVariants = cva(checkboxBase, {
   variants: {

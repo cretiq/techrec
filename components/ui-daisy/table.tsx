@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 // Base table styles that all variants inherit
-const tableBase = "table transition-all duration-200"
+const tableBase = "table transition-all duration-100"
 
 const tableVariants = cva(tableBase, {
   variants: {

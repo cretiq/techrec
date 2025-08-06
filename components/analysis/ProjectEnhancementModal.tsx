@@ -278,7 +278,7 @@ export const ProjectEnhancementModal: React.FC<ProjectEnhancementModalProps> = (
                 <motion.button
                   onClick={handleGetStarted}
                   disabled={!selectedOption || isLoading}
-                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-100 flex items-center justify-center gap-2 ${
                     selectedOption && !isLoading
                       ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
