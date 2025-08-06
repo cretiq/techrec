@@ -545,7 +545,7 @@ export default function CVManagementPage() {
                                 {/* Smart Scoring Sidebar */}
                                 <aside className="w-80 hidden lg:block" data-testid="cv-management-scoring-sidebar">
                                     <Card 
-                                        variant="transparent"
+                                        variant="default"
                                         className="sticky top-20"
                                         data-testid="cv-management-scoring-card"
                                     >

@@ -86,10 +86,10 @@ export function AboutDisplay({
             value={editData}
             onChange={handleTextChange}
             placeholder="Enter summary or about section..."
-            className="min-h-[100px] text-sm"
+            className="min-h-[100px] text-sm opacity-100"
           />
         ) : (
-          <p className={`text-sm whitespace-pre-wrap p-2 rounded-md ${highlightClasses}`}>
+          <p className={`text-sm whitespace-pre-wrap  rounded-md ${highlightClasses} dark:opacity-80`}>
             {editData}
           </p>
         )}

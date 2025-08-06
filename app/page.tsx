@@ -18,8 +18,8 @@ export default function Home() {
       {/* <FeaturesBenefitsSection /> */}
       {/* <EnhancedSocialProof /> */}
       <UrgencyScarcitySection />
-      <FAQSection />
       <FinalCTASection />
+      <FAQSection />
     </div>
   )
 }

@@ -41,8 +41,8 @@ export function LandingHero() {
               variant="gradient" 
               size="xl" 
               rounded="full" 
-              elevation="float"
               rightIcon={<ArrowRight className="h-5 w-5" />}
+              className="!transition-none !transform-none hover:!scale-100 active:!scale-100"
             >
               Start My Free Job Match Analysis
             </Button>

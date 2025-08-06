@@ -89,7 +89,7 @@
     "@types/stripe": "^8.0.416",
     "ajv": "^8.17.1",
     "arctic": "^3.6.0",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "^10.4.17",
     "axios": "^1.6.7",
     "bcrypt": "^6.0.0",
     "boxen": "^8.0.1",

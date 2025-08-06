@@ -7,8 +7,6 @@ import { Loading } from '@/components/loading'
 import Link from 'next/link'
 import { SessionProvider, useSession } from 'next-auth/react'
 import { ModeToggle } from '@/components/mode-toggle'
-import { ThemeColorToggle } from '@/components/theme-color-toggle'
-import { FontSwitcher } from "@/components/font-switcher"
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { store, persistor } from '@/lib/store'
@@ -47,7 +45,7 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <div className="ai-backdrop"></div>
       <div className="flex min-h-screen flex-col relative" data-testid="layout-main-container">
-        <header className="fixed top-0 z-50 w-full glass" data-testid="layout-header">
+        <header className="fixed top-0 z-50 w-full glass border-b-base-100 bg-base-100/95 backdrop-blur-md" data-testid="layout-header">
           <div className="container mx-auto max-w-7xl">
             <div className="flex h-16 items-center justify-between px-4 md:px-6" data-testid="layout-header-content">
               <div className="flex items-center gap-8" data-testid="layout-header-left">

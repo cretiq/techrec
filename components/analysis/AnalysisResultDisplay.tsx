@@ -494,7 +494,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                     className="scroll-mt-20"
                   >
                     <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Work Experience</AccordionTrigger>
-                    <AccordionContent className="pt-3">
+                    <AccordionContent className="">
                       <AnimatePresence initial={false}>
                         <motion.div
                           key="experience-content"

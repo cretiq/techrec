@@ -14,4 +14,5 @@ export * from './accordion'
 // Custom components
 export * from './feature-card'
 export * from './hero-section'
-export * from './trust-indicator' 
+export * from './trust-indicator'
+export * from './section-badge' 

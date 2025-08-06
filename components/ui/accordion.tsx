@@ -14,10 +14,10 @@ const accordionItemVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-4 border-white",
-        outlined: "border-4 border-blue-500 text-white rounded-xl mb-4 overflow-hidden p-6",
-        glass: "bg-base-100/60 backdrop-blur-lg border border-base-300/30 rounded-xl mb-4 overflow-hidden",
+        default: "bg-base-300 border border-base-100 text-base-content rounded-xl mb-4 overflow-hidden",
+        outlined: "bg-base-100/80 border-2 border-green-200 text-base-content rounded-xl mb-4 overflow-hidden",
         solid: "bg-base-200 border-2 border-base-300 rounded-xl mb-4 overflow-hidden",
+        glass: "bg-base-100/60 backdrop-blur-lg border border-base-300/30 rounded-xl mb-4 overflow-hidden",
       },
       size: {
         default: "p-6",

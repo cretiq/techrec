@@ -76,14 +76,14 @@ export function FAQSection() {
           </div>
 
           {/* FAQ Accordion */}
-          <div className="rounded-3xl shadow-lg">
+          <div className="">
             <Accordion variant="plus" grouped={true} className="w-full">
               {faqData.map((faq, index) => (
                 <AccordionItem 
                   key={index}
                   name="faq-accordion"
                   defaultOpen={index === 0}
-                  className="bg-base-100/90 backdrop-blur-sm border-base-300/20"
+                  className="bg-gradient-to-br from-base-200 to-base-300 border border-base-100 rounded-3xl mb-2"
                 >
                   <AccordionTitle className="hover:text-primary transition-colors duration-200 px-8 py-6">
                     <div className="flex flex-col items-start gap-2">
