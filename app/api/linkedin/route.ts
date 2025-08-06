@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { linkedInClient } from '@/lib/linkedin';
+import { getLinkedInClient } from '@/lib/linkedin';
 import { cookies } from 'next/headers';
 import { generateState } from 'arctic';
 
@@ -27,10 +27,10 @@ export async function GET(request: Request) {
     }
 
     // Exchange the authorization code for an access token
-    const { access_token, id_token } = await linkedInClient.exchangeCodeForToken(code);
+    const { access_token, id_token } = await getLinkedInClient().exchangeCodeForToken(code);
 
     // Get user info using the access token
-    const userInfo = await linkedInClient.getUserInfo(access_token);
+    const userInfo = await getLinkedInClient().getUserInfo(access_token);
 
     // Store the tokens in cookies
     cookies().set('linkedin_access_token', access_token, {

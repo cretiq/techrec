@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { linkedInClient } from '@/lib/linkedin';
+import { getLinkedInClient } from '@/lib/linkedin';
 import { cookies } from 'next/headers';
 
 export async function GET(request: Request) {
@@ -23,11 +23,11 @@ export async function GET(request: Request) {
     }
 
     // Exchange the code for an access token
-    const { access_token, id_token } = await linkedInClient.exchangeCodeForToken(code);
+    const { access_token, id_token } = await getLinkedInClient().exchangeCodeForToken(code);
 
     // ---- Verification Step ----
     try {
-      const userInfo = await linkedInClient.getUserInfo(access_token);
+      const userInfo = await getLinkedInClient().getUserInfo(access_token);
       console.log('LinkedIn User Info Verification Successful:', userInfo);
     } catch (verificationError) {
       console.error('LinkedIn User Info Verification Failed:', verificationError);

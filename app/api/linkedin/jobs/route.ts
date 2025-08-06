@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { linkedInClient } from '@/lib/linkedin';
+import { getLinkedInClient } from '@/lib/linkedin';
 import { prisma } from '@/prisma/prisma';
 import { RoleType } from '@prisma/client';
 import { cookies } from 'next/headers';
@@ -38,7 +38,7 @@ export async function GET(request: Request) {
       return NextResponse.json(
         { 
           error: 'LinkedIn API authentication required', 
-          authUrl: linkedInClient.getAuthorizationUrl(state)
+          authUrl: getLinkedInClient().getAuthorizationUrl(state)
         },
         { status: 401 }
       );
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     console.log('count', count);
     console.log('accessToken', accessToken);
     // Search LinkedIn jobs
-    const searchResults = await linkedInClient.searchJobs(accessToken, keywords, location, start, count);
+    const searchResults = await getLinkedInClient().searchJobs(accessToken, keywords, location, start, count);
 
     // Map LinkedIn job listings to our format
     const jobs = searchResults.jobs.map((job: any) => ({
@@ -106,7 +106,7 @@ export async function POST(request: Request) {
     }
 
     // Exchange the code for an access token
-    const { access_token } = await linkedInClient.exchangeCodeForToken(data.code);
+    const { access_token } = await getLinkedInClient().exchangeCodeForToken(data.code);
 
     return NextResponse.json({ accessToken: access_token });
   } catch (error) {

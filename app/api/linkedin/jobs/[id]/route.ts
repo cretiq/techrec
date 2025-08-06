@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { linkedInClient } from '@/lib/linkedin';
+import { getLinkedInClient } from '@/lib/linkedin';
 import { RoleType } from '@prisma/client';
 
 // Helper function to convert LinkedIn job type to our RoleType enum
@@ -26,13 +26,13 @@ export async function GET(
     const authHeader = request.headers.get('authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
-      linkedInClient.setAccessToken(token, 3600); // Assuming token is valid for 1 hour
+      getLinkedInClient().setAccessToken(token, 3600); // Assuming token is valid for 1 hour
     }
 
     // If no token in header and not authenticated, return error
-    if (!linkedInClient.isTokenValid()) {
+    if (!getLinkedInClient().isTokenValid()) {
       return NextResponse.json(
-        { error: 'LinkedIn API authentication required', authUrl: linkedInClient.getAuthorizationUrl(['r_liteprofile', 'r_emailaddress', 'job_search']) },
+        { error: 'LinkedIn API authentication required', authUrl: getLinkedInClient().getAuthorizationUrl(['r_liteprofile', 'r_emailaddress', 'job_search']) },
         { status: 401 }
       );
     }
@@ -46,7 +46,7 @@ export async function GET(
     }
 
     // Get LinkedIn job by ID
-    const job = await linkedInClient.getJob(jobId);
+    const job = await getLinkedInClient().getJob(jobId);
 
     // Map LinkedIn job to our format
     const formattedJob = {

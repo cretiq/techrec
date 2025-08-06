@@ -56,9 +56,14 @@ export class LinkedInClient {
   private readonly baseUrl: string;
 
   constructor() {
-    this.clientId = process.env.LINKEDIN_CLIENT_ID!;
-    this.clientSecret = process.env.LINKEDIN_CLIENT_SECRET!;
-    this.redirectUri = process.env.LINKEDIN_REDIRECT_URI!;
+    // Check for required environment variables
+    if (!process.env.LINKEDIN_CLIENT_ID || !process.env.LINKEDIN_CLIENT_SECRET || !process.env.LINKEDIN_REDIRECT_URI) {
+      throw new Error('LinkedIn not configured - Missing required environment variables: LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET, LINKEDIN_REDIRECT_URI');
+    }
+    
+    this.clientId = process.env.LINKEDIN_CLIENT_ID;
+    this.clientSecret = process.env.LINKEDIN_CLIENT_SECRET;
+    this.redirectUri = process.env.LINKEDIN_REDIRECT_URI;
     this.baseUrl = 'https://www.linkedin.com/oauth/v2';
   }
 
@@ -217,9 +222,24 @@ export class LinkedInClient {
 }
 
 // Create and export a singleton instance with credentials from environment variables
-export const linkedInClient = new LinkedInClient();
+// Lazy initialization function to avoid build-time errors
+let linkedInClientInstance: LinkedInClient | null = null;
 
-// Add this console log for debugging
-console.log('[LinkedIn Client Init] ID:', process.env.LINKEDIN_CLIENT_ID?.substring(0, 5) + '...');
-console.log('[LinkedIn Client Init] Secret:', process.env.LINKEDIN_CLIENT_SECRET?.substring(0, 5) + '...');
-console.log('[LinkedIn Client Init] Redirect URI:', process.env.LINKEDIN_REDIRECT_URI); 
+export function getLinkedInClient(): LinkedInClient {
+  if (!linkedInClientInstance) {
+    linkedInClientInstance = new LinkedInClient();
+    
+    // Add debug logging only when client is actually created
+    console.log('[LinkedIn Client Init] ID:', process.env.LINKEDIN_CLIENT_ID?.substring(0, 5) + '...');
+    console.log('[LinkedIn Client Init] Secret:', process.env.LINKEDIN_CLIENT_SECRET?.substring(0, 5) + '...');
+    console.log('[LinkedIn Client Init] Redirect URI:', process.env.LINKEDIN_REDIRECT_URI);
+  }
+  return linkedInClientInstance;
+}
+
+// For backward compatibility, export a getter
+export const linkedInClient = {
+  get instance() {
+    return getLinkedInClient();
+  }
+}; 
