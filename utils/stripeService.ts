@@ -2,10 +2,15 @@ import Stripe from 'stripe';
 import { randomBytes } from 'crypto';
 import { configService, SubscriptionTierConfig } from './configService';
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
-});
+// Lazy initialization function to avoid build-time errors
+function getStripeClient() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Stripe not configured - STRIPE_SECRET_KEY environment variable is missing');
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2025-05-28.basil',
+  });
+}
 
 export interface CreateSubscriptionParams {
   customerId: string;
@@ -31,10 +36,15 @@ export class StripeService {
     return StripeService.instance;
   }
 
+  // Private method to get stripe client with lazy initialization
+  private getStripe() {
+    return getStripeClient();
+  }
+
   // Customer Management
   public async createCustomer(params: CreateCustomerParams): Promise<Stripe.Customer> {
     try {
-      const customer = await stripe.customers.create({
+      const customer = await this.getStripe().customers.create({
         email: params.email,
         name: params.name,
         metadata: {
@@ -51,7 +61,7 @@ export class StripeService {
 
   public async getCustomer(customerId: string): Promise<Stripe.Customer | null> {
     try {
-      const customer = await stripe.customers.retrieve(customerId);
+      const customer = await this.getStripe().customers.retrieve(customerId);
       return customer as Stripe.Customer;
     } catch (error) {
       console.error('Failed to retrieve Stripe customer:', error);
@@ -61,7 +71,7 @@ export class StripeService {
 
   public async updateCustomer(customerId: string, updates: Partial<Stripe.CustomerUpdateParams>): Promise<Stripe.Customer> {
     try {
-      const customer = await stripe.customers.update(customerId, updates);
+      const customer = await this.getStripe().customers.update(customerId, updates);
       return customer;
     } catch (error) {
       console.error('Failed to update Stripe customer:', error);
@@ -72,7 +82,7 @@ export class StripeService {
   // Subscription Management
   public async createSubscription(params: CreateSubscriptionParams): Promise<Stripe.Subscription> {
     try {
-      const subscription = await stripe.subscriptions.create({
+      const subscription = await this.getStripe().subscriptions.create({
         customer: params.customerId,
         items: [
           {
@@ -96,7 +106,7 @@ export class StripeService {
 
   public async getSubscription(subscriptionId: string): Promise<Stripe.Subscription | null> {
     try {
-      const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+      const subscription = await this.getStripe().subscriptions.retrieve(subscriptionId);
       return subscription;
     } catch (error) {
       console.error('Failed to retrieve subscription:', error);
@@ -109,7 +119,7 @@ export class StripeService {
     updates: Partial<Stripe.SubscriptionUpdateParams>
   ): Promise<Stripe.Subscription> {
     try {
-      const subscription = await stripe.subscriptions.update(subscriptionId, updates);
+      const subscription = await this.getStripe().subscriptions.update(subscriptionId, updates);
       return subscription;
     } catch (error) {
       console.error('Failed to update subscription:', error);
@@ -120,10 +130,10 @@ export class StripeService {
   public async cancelSubscription(subscriptionId: string, immediately = false): Promise<Stripe.Subscription> {
     try {
       if (immediately) {
-        const subscription = await stripe.subscriptions.cancel(subscriptionId);
+        const subscription = await this.getStripe().subscriptions.cancel(subscriptionId);
         return subscription;
       } else {
-        const subscription = await stripe.subscriptions.update(subscriptionId, {
+        const subscription = await this.getStripe().subscriptions.update(subscriptionId, {
           cancel_at_period_end: true,
         });
         return subscription;
@@ -140,7 +150,7 @@ export class StripeService {
       // First, create or get the product
       const product = await this.createOrGetProduct(tier);
 
-      const price = await stripe.prices.create({
+      const price = await this.getStripe().prices.create({
         currency: 'usd',
         unit_amount: Math.round(tierConfig.price * 100), // Convert to cents
         recurring: {
@@ -164,7 +174,7 @@ export class StripeService {
   private async createOrGetProduct(tier: string): Promise<Stripe.Product> {
     try {
       // Try to find existing product
-      const products = await stripe.products.list({
+      const products = await this.getStripe().products.list({
         active: true,
         limit: 100,
       });
@@ -176,7 +186,7 @@ export class StripeService {
 
       // Create new product
       const tierConfig = await configService.getSubscriptionTier(tier as any);
-      const product = await stripe.products.create({
+      const product = await this.getStripe().products.create({
         name: `TechRec ${tier.charAt(0) + tier.slice(1).toLowerCase()} Plan`,
         description: `${tierConfig.monthlyPoints} monthly points, ${tierConfig.xpMultiplier}x XP multiplier`,
         metadata: {
@@ -194,7 +204,7 @@ export class StripeService {
   // Payment Intent Management
   public async createPaymentIntent(amount: number, customerId: string): Promise<Stripe.PaymentIntent> {
     try {
-      const paymentIntent = await stripe.paymentIntents.create({
+      const paymentIntent = await this.getStripe().paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: 'usd',
         customer: customerId,
@@ -215,7 +225,7 @@ export class StripeService {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
     
     try {
-      const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      const event = this.getStripe().webhooks.constructEvent(payload, signature, webhookSecret);
       return event;
     } catch (error) {
       console.error('Failed to construct webhook event:', error);
@@ -226,7 +236,7 @@ export class StripeService {
   // Utility methods
   public async listCustomerSubscriptions(customerId: string): Promise<Stripe.Subscription[]> {
     try {
-      const subscriptions = await stripe.subscriptions.list({
+      const subscriptions = await this.getStripe().subscriptions.list({
         customer: customerId,
         status: 'all',
         expand: ['data.default_payment_method'],
@@ -241,7 +251,7 @@ export class StripeService {
 
   public async getCustomerPaymentMethods(customerId: string): Promise<Stripe.PaymentMethod[]> {
     try {
-      const paymentMethods = await stripe.paymentMethods.list({
+      const paymentMethods = await this.getStripe().paymentMethods.list({
         customer: customerId,
         type: 'card',
       });
@@ -300,7 +310,7 @@ export class StripeService {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
     
     try {
-      const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      const event = this.getStripe().webhooks.constructEvent(payload, signature, webhookSecret);
       
       // Check for replay attacks (events older than 10 minutes)
       const eventAge = (Date.now() / 1000) - event.created;

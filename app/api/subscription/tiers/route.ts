@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { configService } from '@/utils/configService';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-});
+// Lazy initialization function to avoid build-time errors
+function getStripeClient() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Stripe not configured - STRIPE_SECRET_KEY environment variable is missing');
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2024-12-18.acacia',
+  });
+}
 
 // GET /api/subscription/tiers - Get all subscription tiers with pricing
 export async function GET(request: NextRequest) {
@@ -13,6 +19,7 @@ export async function GET(request: NextRequest) {
     const tiers = await configService.getSubscriptionTiers();
     
     // Get Stripe prices for paid tiers
+    const stripe = getStripeClient();
     const prices = await stripe.prices.list({
       active: true,
       type: 'recurring',

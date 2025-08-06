@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
-import { connectToDatabase } from '@/prisma/prisma'
-// Removed non-existent import
+import { prisma } from '@/prisma/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import mongoose from 'mongoose'
 
 export async function POST(
   request: Request,
@@ -11,7 +9,7 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -20,45 +18,46 @@ export async function POST(
 
     console.log('Session user:', session.user)
 
-    await connectToDatabase()
-    
-    // Find or create developer
-    let developer = await Developer.findOne({ email: session.user.email })
+    // Get params 
+    const params = await context.params
+    const roleId = params.roleId
+    console.log('Role ID:', roleId)
+
+    // Find or create developer using Prisma
+    let developer = await prisma.developer.findUnique({ 
+      where: { email: session.user.email },
+      include: { savedRoles: true }
+    })
     console.log('Found developer:', developer)
 
     if (!developer) {
       // Create a new developer if one doesn't exist
-      developer = new Developer({
-        name: session.user.name || '',
-        title: 'Developer', // Default title
-        email: session.user.email,
-        skills: [],
-        experience: [],
-        applications: [],
-        savedRoles: []
+      developer = await prisma.developer.create({
+        data: {
+          name: session.user.name || '',
+          title: 'Developer', // Default title
+          email: session.user.email,
+        },
+        include: { savedRoles: true }
       })
       console.log('Created new developer:', developer)
     }
 
-    // Get params and convert roleId to ObjectId
-    const params = await context.params
-    const roleId = new mongoose.Types.ObjectId(params.roleId)
-    console.log('Role ID:', roleId)
-
     // Check if role is already saved
     const isSaved = developer.savedRoles.some(
-      (savedRole: mongoose.Types.ObjectId) => savedRole.toString() === roleId.toString()
+      (savedRole) => savedRole.roleId === roleId
     )
     console.log('Is role saved:', isSaved)
 
     if (!isSaved) {
-      // Initialize savedRoles if it's undefined
-      if (!developer.savedRoles) {
-        developer.savedRoles = []
-      }
-      developer.savedRoles.push(roleId)
-      await developer.save()
-      console.log('Saved developer:', developer)
+      // Create saved role entry
+      await prisma.savedRole.create({
+        data: {
+          developerId: developer.id,
+          roleId: roleId,
+        }
+      })
+      console.log('Role saved for developer:', developer.id)
     }
 
     return NextResponse.json({
@@ -80,15 +79,17 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user) {
+    if (!session?.user?.email) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    await connectToDatabase()
-    const developer = await Developer.findOne({ email: session.user.email })
+    // Find developer
+    const developer = await prisma.developer.findUnique({ 
+      where: { email: session.user.email } 
+    })
     if (!developer) {
       return NextResponse.json(
         { error: 'Developer not found' },
@@ -96,14 +97,17 @@ export async function DELETE(
       )
     }
 
-    // Get params and convert roleId to ObjectId
+    // Get params 
     const params = await context.params
-    const roleId = new mongoose.Types.ObjectId(params.roleId)
+    const roleId = params.roleId
 
-    developer.savedRoles = developer.savedRoles.filter(
-      (savedRole: mongoose.Types.ObjectId) => savedRole.toString() !== roleId.toString()
-    )
-    await developer.save()
+    // Remove saved role using Prisma
+    await prisma.savedRole.deleteMany({
+      where: {
+        developerId: developer.id,
+        roleId: roleId
+      }
+    })
 
     return NextResponse.json({
       message: 'Role removed from saved roles',
@@ -116,4 +120,4 @@ export async function DELETE(
       { status: 500 }
     )
   }
-} 
+}

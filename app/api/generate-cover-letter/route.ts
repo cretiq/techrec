@@ -128,13 +128,17 @@ TopKeywords: ${keywords.join(", ")}
 Professional Title: ${developerProfile.title ?? "Software Developer"}
 CoreSkills: ${coreSkills.join(", ")}
 KeyAchievements:
-${achievements.map((a) => `- ${a}`).join("\n")}
+${achievements.map((a) => `- ${a}`).join("\n")} ${scrapedContent ? `
 
+<JOB_DESCRIPTION>
+${scrapedContent}
+</JOB_DESCRIPTION>
+` : ''}
 <TASK>
 Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} that follows this structure:
 1. Greeting: "Dear ${hiringManager ?? "Hiring Team"},".
 2. Hook: cite role title + single company fact.
-3. Proof: weave achievements & 3 keywords naturally.
+3. Proof: weave achievements & 3 keywords naturally. ${scrapedContent ? 'Reference keywords and requirements from the JOB_DESCRIPTION provided.' : ''}
 4. Alignment: explain how skills solve company need.
 5. CTA & sign-off.
 
