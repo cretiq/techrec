@@ -2,15 +2,18 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 
+// Base card styles that all variants inherit
+const cardBase = "rounded-3xl transition-all duration-200 ease-smooth"
+
 const cardVariants = {
-  default: "bg-base-200 border border-base-300 rounded-lg transition-all duration-200 ease-smooth shadow-sm",
-  transparent: "bg-base-100/80 backdrop-blur-sm border border-base-300/50 rounded-lg transition-all duration-200 ease-smooth",
-  glass: "bg-base-300 backdrop-blur-lg border border-base-100 rounded-lg transition-all duration-200 ease-smooth shadow-soft",
-  solid: "bg-base-100 border border-base-300 rounded-lg transition-all duration-200 ease-smooth shadow-sm",
-  outlined: "bg-transparent border-2 border-base-300 rounded-lg transition-all duration-200 ease-smooth hover:border-primary/50 hover:bg-base-100/50",
-  elevated: "bg-base-100 border border-base-300/50 rounded-lg transition-all duration-200 ease-smooth shadow-md hover:shadow-lg",
-  floating: "bg-base-100/95 backdrop-blur-md border border-base-300/40 rounded-lg transition-all duration-200 ease-smooth shadow-lg",
-  gradient: "bg-gradient-to-br from-base-200 to-base-300 border-[1px] border-base-100 rounded-lg transition-all duration-200 ease-smooth hover:from-base-100 hover:to-base-300",
+  default: `${cardBase} bg-base-200 border border-base-300 shadow-sm`,
+  transparent: `${cardBase} bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
+  glass: `${cardBase} bg-base-300 backdrop-blur-lg border border-base-100 shadow-soft`,
+  solid: `${cardBase} bg-base-100 border border-base-300 shadow-sm`,
+  outlined: `${cardBase} bg-transparent border-2 border-base-300 hover:border-primary/50 hover:bg-base-100/50`,
+  elevated: `${cardBase} bg-base-100 border border-base-300/50 shadow-md hover:shadow-lg`,
+  floating: `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
+  gradient: `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100 hover:from-base-100 hover:to-base-300`,
 }
 
 const Card = React.forwardRef<
