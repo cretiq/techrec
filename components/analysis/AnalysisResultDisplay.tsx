@@ -369,11 +369,11 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="contactInfo" 
                     id="contact-info" 
-                    variant="default"
+                    variant="hybrid"
                     className="scroll-mt-20"
                   >
                     <div className="flex items-center justify-between group">
-                      <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3 flex-1">
+                      <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline flex-1">
                         Contact Info
                       </AccordionTrigger>
                       <AIAssistanceButton
@@ -413,11 +413,11 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="about" 
                     id="about" 
-                    variant="default"
+                    variant="hybrid"
                     className="scroll-mt-20"
                   >
                     <div className="flex items-center justify-between group">
-                      <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3 flex-1">
+                      <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline flex-1">
                         About / Summary
                       </AccordionTrigger>
                       <AIAssistanceButton
@@ -457,10 +457,10 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="skills" 
                     id="skills" 
-                    variant="default"
+                    variant="hybrid"
                     className="scroll-mt-20"
                   >
-                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Skills</AccordionTrigger>
+                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline">Skills</AccordionTrigger>
                     <AccordionContent className="pt-3">
                       <AnimatePresence initial={false}>
                         <motion.div
@@ -490,10 +490,10 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="experience" 
                     id="experience" 
-                    variant="default"
+                    variant="hybrid"
                     className="scroll-mt-20"
                   >
-                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Work Experience</AccordionTrigger>
+                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline">Work Experience</AccordionTrigger>
                     <AccordionContent className="">
                       <AnimatePresence initial={false}>
                         <motion.div
@@ -522,10 +522,10 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <AccordionItem 
                     value="education" 
                     id="education" 
-                    variant="default"
+                    variant="hybrid"
                     className="scroll-mt-20"
                   >
-                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline pt-0 pb-3">Education</AccordionTrigger>
+                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline">Education</AccordionTrigger>
                     <AccordionContent className="pt-3">
                       <AnimatePresence initial={false}>
                         <motion.div

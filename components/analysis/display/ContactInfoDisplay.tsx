@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
-import {  Input  } from '@/components/ui-daisy/input';
-import {  Button  } from '@/components/ui-daisy/button';
-import { Label } from '@/components/ui-daisy/label';
+import { FloatingInput } from '@/components/ui-daisy/floating-input';
+import { Button } from '@/components/ui-daisy/button';
+import { Badge } from '@/components/ui-daisy/badge';
+import { Tooltip } from '@/components/ui-daisy/tooltip';
 import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X, AlertTriangle, Camera, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui-daisy/avatar';
 import { useToast } from '@/components/ui-daisy/use-toast';
@@ -41,7 +42,6 @@ const findSuggestionsForField = (
 
 export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSuggestion, onRejectSuggestion }: ContactInfoProps) {
   console.log('[ContactInfoDisplay] Rendering with data:', data); // LOG
-  const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<ContactInfoData>(data);
   const [profilePicture, setProfilePicture] = useState<string | null>(null); // TODO: Get from user data
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,18 +55,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const { id, value } = e.target;
     const newData = { ...editData, [id]: value || null };
     setEditData(newData);
-    onChange(newData);
-  };
-
-  const handleSave = async () => {
-    // For simplicity, local save confirmation. Parent handles actual save.
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setEditData(data); // Revert to original data from props
-    onChange(data); // Notify parent of reversion
-    setIsEditing(false);
+    onChange(newData); // Immediately notify parent of changes
   };
 
   const handleProfilePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,7 +99,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     if (e.target) e.target.value = '';
   };
 
-  // Function to render a single field (editable or display) with inline suggestions
+  // Function to render a single field with DaisyUI floating input (always editable)
   const renderFieldWithSuggestions = (
     id: keyof ContactInfoData,
     Icon: React.ElementType,
@@ -120,45 +109,29 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
   ) => {
     const currentSuggestions = findSuggestionsForField(suggestions, id);
     const hasValue = data[id] && data[id]?.trim() !== '';
-    const displayValue = hasValue ? data[id] : <span className='text-muted-foreground/50'>{placeholder}...</span>;
     const highlightClasses = useHighlightClasses(`contactInfo.${id}`);
+    const showMissingWarning = !hasValue && id !== 'name' && id !== 'email'; // Don't warn for required fields
 
     return (
-      <div key={id} className="mb-3"> {/* Add margin between fields */}
-        <div className="flex items-center gap-2 text-sm mb-1"> {/* Reduced margin below field */}
-        <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-        {isEditing ? (
-          <div className="flex-1">
-            <Label htmlFor={id} className="sr-only">{label || placeholder}</Label>
-            <Input
-              id={id}
-              type={type}
-              placeholder={placeholder}
-              value={editData[id] || ''}
-              onChange={handleInputChange}
-              className="h-8 text-sm"
-            />
-          </div>
-        ) : (
-              <span className={`truncate p-1 rounded ${highlightClasses}`}>{displayValue}</span>
-          )}
-        </div>
-        {/* Render suggestions OR gentle prompt below the field if not editing */}
-        {!isEditing && (
-          <div className="pl-6 mt-1"> {/* Indent suggestions/prompts */}
-            {!hasValue && id !== 'name' && id !== 'email' ? ( // Don't prompt for missing name/email, only optional fields
-              <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1">
-                 <AlertTriangle className="h-3 w-3" /> Consider adding your {label || id}.
-              </p>
-            ) : null}
-            {/* Inline suggestions removed - using SuggestionManager instead */}
-          </div>
-        )}
+      <div key={id} className="space-y-2">
+        <FloatingInput
+          id={id}
+          type={type}
+          label={label || placeholder}
+          value={editData[id] || ''}
+          onChange={handleInputChange}
+          leftIcon={<Icon className="h-4 w-4" />}
+          showStatus={showMissingWarning}
+          statusVariant="warning"
+          statusTooltip={`Consider adding your ${label || id}`}
+          variant="bordered"
+          className={highlightClasses}
+        />
       </div>
     );
   };
 
-  // Function to render a link field (editable or display) with inline suggestions
+  // Function to render a link field with DaisyUI floating input (always editable)
   const renderLinkWithSuggestions = (
     id: keyof ContactInfoData,
     Icon: React.ElementType,
@@ -169,53 +142,25 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const url = data[id]; // Use data directly for checking presence
     const hasValue = url && url.trim() !== '';
     const editUrl = editData[id]; // Use editData for input value
-    const displayUrl = url?.replace(/^(https?:\/\/)/, '') || '';
     const isValidUrl = hasValue && (url.startsWith('http://') || url.startsWith('https://'));
     const highlightClasses = useHighlightClasses(`contactInfo.${id}`);
+    const showMissingWarning = !hasValue; // Always show for optional profile links
     
     return (
-       <div key={id} className="mb-3"> {/* Add margin between fields */}
-        <div className="flex items-center gap-2 text-sm mb-1"> {/* Reduced margin below field */}
-        <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-        {isEditing ? (
-           <div className="flex-1">
-            <Label htmlFor={id} className="sr-only">{placeholder}</Label>
-            <Input
-                id={id}
-                type="url"
-                placeholder={placeholder}
-                value={editUrl || ''} // Use editData value here
-                onChange={handleInputChange}
-                className="h-8 text-sm"
-             />
-           </div>
-        ) : (
-          hasValue ? (
-             isValidUrl ? (
-                 <a href={url} target="_blank" rel="noopener noreferrer" className={`text-blue-600 hover:underline truncate p-1 rounded ${highlightClasses}`}>
-                       {textPrefix}{displayUrl}
-                 </a>
-             ) : (
-               <span className={`truncate text-red-500 p-1 rounded ${highlightClasses}`} title="Invalid URL format">
-                     {textPrefix}{displayUrl}
-               </span>
-             )
-          ) : (
-             <span className='text-muted-foreground/50'>{placeholder}...</span>
-          )
-        )}
-        </div>
-         {/* Render suggestions OR gentle prompt below the field if not editing */}
-         {!isEditing && (
-           <div className="pl-6 mt-1"> {/* Indent suggestions/prompts */}
-             {!hasValue ? ( // Prompt if missing
-               <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1">
-                 <AlertTriangle className="h-3 w-3" /> Consider adding your {id} profile.
-               </p>
-             ) : null}
-             {/* Inline suggestions removed - using SuggestionManager instead */}
-           </div>
-         )}
+      <div key={id} className="space-y-2">
+        <FloatingInput
+          id={id}
+          type="url"
+          label={placeholder}
+          value={editUrl || ''}
+          onChange={handleInputChange}
+          leftIcon={<Icon className="h-4 w-4" />}
+          showStatus={showMissingWarning}
+          statusVariant="warning"
+          statusTooltip={`Consider adding your ${id} profile`}
+          variant="bordered"
+          className={highlightClasses}
+        />
       </div>
     );
   }
@@ -233,8 +178,8 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
   return (
     // Remove Card, CardHeader - managed by parent
     <div className="space-y-4">
-      {/* Profile Picture and Edit Button Row */}
-      <div className="flex items-start justify-between">
+      {/* Profile Picture Row */}
+      <div className="flex items-start justify-center mb-6">
         {/* Profile Picture */}
         <div className="relative group">
           <Avatar className="h-24 w-24 border-2 border-base-300">
@@ -260,41 +205,42 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
             className="hidden"
           />
         </div>
-
-        {/* Edit/Save Buttons */}
-        <div>
-          {isEditing ? (
-            <div className="flex gap-1">
-              <Button variant="ghost" size="icon" onClick={handleCancel} className="h-7 w-7"><X className="h-4 w-4" /></Button>
-              <Button variant="default" size="icon" onClick={handleSave} className="h-7 w-7"><Save className="h-4 w-4" /></Button>
-            </div>
-          ) : (
-            <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
-          )}
-        </div>
       </div>
 
-      {/* Contact Info Fields */}
-      <div className="space-y-2">
-        {/* Render fields */} 
-        {isEditing && renderFieldWithSuggestions('name', User, 'Full Name', 'Full Name')} {/* Changed icon from Mail to User */}
-        {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email', 'email')}
-        <SuggestionManager section="contactInfo" targetField="email" className="mt-1" />
+      {/* Contact Info Fields - 3x2 Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* First Row */}
+        <div>
+          {renderFieldWithSuggestions('name', User, 'Full Name', 'Full Name')}
+          {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email', 'email')}
+          <SuggestionManager section="contactInfo" targetField="email" className="mt-1" />
+        </div>
         
-        {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone', 'tel')}
-        <SuggestionManager section="contactInfo" targetField="phone" className="mt-1" />
+        <div>
+          {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone', 'tel')}
+          <SuggestionManager section="contactInfo" targetField="phone" className="mt-1" />
+        </div>
         
-        {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)', 'Location')}
-        <SuggestionManager section="contactInfo" targetField="location" className="mt-1" />
+        <div>
+          {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)', 'Location')}
+          <SuggestionManager section="contactInfo" targetField="location" className="mt-1" />
+        </div>
         
-        {renderLinkWithSuggestions('linkedin', Linkedin, 'linkedin.com/in/...')}
-        <SuggestionManager section="contactInfo" targetField="linkedin" className="mt-1" />
+        {/* Second Row */}
+        <div>
+          {renderLinkWithSuggestions('linkedin', Linkedin, 'linkedin.com/in/...')}
+          <SuggestionManager section="contactInfo" targetField="linkedin" className="mt-1" />
+        </div>
         
-        {renderLinkWithSuggestions('github', Github, 'github.com/...')}
-        <SuggestionManager section="contactInfo" targetField="github" className="mt-1" />
+        <div>
+          {renderLinkWithSuggestions('github', Github, 'github.com/...')}
+          <SuggestionManager section="contactInfo" targetField="github" className="mt-1" />
+        </div>
         
-        {renderLinkWithSuggestions('website', LinkIcon, 'yourwebsite.com')}
-        <SuggestionManager section="contactInfo" targetField="website" className="mt-1" />
+        <div>
+          {renderLinkWithSuggestions('website', LinkIcon, 'yourwebsite.com')}
+          <SuggestionManager section="contactInfo" targetField="website" className="mt-1" />
+        </div>
       </div>
     </div>
   );
