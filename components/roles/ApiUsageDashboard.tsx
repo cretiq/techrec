@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card'
 import { Badge } from '@/components/ui-daisy/badge'
 import { Progress } from '@/components/ui-daisy/progress'
-import { Separator } from '@/components/ui/separator'
+import { Separator } from '@/components/ui-daisy/separator'
 import { Button } from '@/components/ui-daisy/button'
 import { 
   Activity, 

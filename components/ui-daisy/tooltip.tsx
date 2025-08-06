@@ -172,3 +172,19 @@ export function TooltipInfo({ content, size = 'medium', position = 'top', classN
     </Tooltip>
   );
 }
+
+// Compatibility exports for shadcn-ui style usage
+export const TooltipProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+export const TooltipTrigger = ({ children, asChild, ...props }: { children: React.ReactNode; asChild?: boolean; [key: string]: any }) => (
+  <div {...props}>{children}</div>
+);
+export const TooltipContent = ({ children, side, className, ...props }: { 
+  children: React.ReactNode; 
+  side?: 'top' | 'bottom' | 'left' | 'right';
+  className?: string;
+  [key: string]: any 
+}) => (
+  <div className={cn('bg-base-content text-base-100 rounded-lg p-2 text-sm shadow-lg', className)} {...props}>
+    {children}
+  </div>
+);

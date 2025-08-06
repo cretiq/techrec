@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {  Button  } from '@/components/ui-daisy/button';
 import {  Input  } from '@/components/ui-daisy/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui-daisy/label';
 import { Progress } from '@/components/ui-daisy/progress'; // Assuming Progress component exists
 import { useToast } from '@/components/ui-daisy/use-toast'; // Assuming useToast hook exists
 import { CheckCircle, Loader2, UploadCloud } from 'lucide-react'; // Import icons

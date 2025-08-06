@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui-daisy/dropdown-menu"
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme()

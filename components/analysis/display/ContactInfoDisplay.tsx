@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import {  Input  } from '@/components/ui-daisy/input';
 import {  Button  } from '@/components/ui-daisy/button';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui-daisy/label';
 import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X, AlertTriangle, Camera, User } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui-daisy/avatar';
 import { useToast } from '@/components/ui-daisy/use-toast';

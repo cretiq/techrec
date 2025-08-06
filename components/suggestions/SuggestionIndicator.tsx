@@ -6,7 +6,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/ui-daisy/popover";
 import {  Button  } from '@/components/ui-daisy/button';
 import { cn } from '@/lib/utils';
 import { CvImprovementSuggestion } from '@/types/cv';

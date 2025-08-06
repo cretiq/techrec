@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {  Input  } from '@/components/ui-daisy/input';
 import {  Button  } from '@/components/ui-daisy/button';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui-daisy/label';
 import { GraduationCap, MapPin, Calendar, Edit, Save, X, Trash2, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { cn, formatDateSafe } from '@/lib/utils';

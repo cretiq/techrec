@@ -10,7 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui-daisy/dropdown-menu"
 
 const colors = [
   { name: "Default", value: "default" },

@@ -23,7 +23,7 @@ import { SkillsDisplay } from './display/SkillsDisplay';
 import { ExperienceDisplay } from './display/ExperienceDisplay';
 import { EducationDisplay } from './display/EducationDisplay';
 import { AIAssistanceButton } from './AIAssistanceButton';
-import { Accordion, AccordionItem as ShadcnAccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { Accordion, AccordionItem as ShadcnAccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui-daisy/accordion';
 import { SuggestionList } from './display/SuggestionList';
 import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 import { ProjectRecommendationCard } from './ProjectRecommendationCard';

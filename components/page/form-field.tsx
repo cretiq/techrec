@@ -1,4 +1,4 @@
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui-daisy/label"
 import { ReactNode } from "react"
 
 interface FormFieldProps {

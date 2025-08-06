@@ -7,9 +7,9 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card';
 import { Button } from '@/components/ui-daisy/button';
 import { Badge } from '@/components/ui-daisy/badge';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui-daisy/label';
+import { Slider } from '@/components/ui-daisy/slider';
+import { Switch } from '@/components/ui-daisy/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui-daisy/select';
 import { 
   Target, 

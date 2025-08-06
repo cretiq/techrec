@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import {  Button  } from '@/components/ui-daisy/button'
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui-daisy/sheet"
 import { Menu, X } from "lucide-react"
 
 export function MobileNav() {

@@ -4,7 +4,7 @@ import { Briefcase, MapPin, Calendar, Edit, Save, X, Plus, Trash2 } from 'lucide
 import { v4 as uuidv4 } from 'uuid';
 import {  Input  } from '@/components/ui-daisy/input';
 import { Textarea } from "@/components/ui-daisy/textarea";
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui-daisy/label';
 import { cn, formatDateSafe } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 

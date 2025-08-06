@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {  Button  } from '@/components/ui-daisy/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui-daisy/table';
 import { Trash2, Download, Eye, Play } from 'lucide-react'; // Icons
 import { useToast } from '@/components/ui-daisy/use-toast';
 import { format } from 'date-fns'; // For date formatting

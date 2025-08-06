@@ -7,12 +7,12 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-} from '@/components/ui/command'
+} from '@/components/ui-daisy/command'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
+} from '@/components/ui-daisy/popover'
 
 const commonSkills = [
   'JavaScript',

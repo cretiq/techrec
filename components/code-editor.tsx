@@ -7,8 +7,8 @@ import {  Tabs, TabsContent, TabsList, TabsTrigger  } from '@/components/ui-dais
 import {  Card, CardFooter, CardHeader, CardTitle  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
 import { Play, XCircle, CheckCircle, Save, RefreshCw, Code, FileText } from "lucide-react"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui-daisy/collapsible"
+import { ScrollArea } from "@/components/ui-daisy/scroll-area"
 
 interface CodeEditorProps {
   initialCode?: string

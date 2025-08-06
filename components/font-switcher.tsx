@@ -11,12 +11,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui-daisy/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui-daisy/popover"
 import { createContext, useContext, useEffect, useState } from "react"
 import { fontObjects } from "@/utils/fonts"
 

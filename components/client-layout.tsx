@@ -1,7 +1,7 @@
 'use client'
 
 import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from '@/components/ui-daisy/toaster'
 import { UserNav } from '@/components/nav'
 import { Loading } from '@/components/loading'
 import Link from 'next/link'

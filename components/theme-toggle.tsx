@@ -3,7 +3,7 @@
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 import {  Button  } from '@/components/ui-daisy/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui-daisy/dropdown-menu"
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui-daisy/dialog";
 import {  Button  } from '@/components/ui-daisy/button';
 import { Loader2, AlertCircle, Check, X as XIcon } from 'lucide-react';
 import {  Badge  } from '@/components/ui-daisy/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui-daisy/scroll-area';
 import { CvImprovementSuggestion } from '@/types/cv';
 
 // Placeholder for a diff component

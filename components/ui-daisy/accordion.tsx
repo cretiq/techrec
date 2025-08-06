@@ -114,4 +114,7 @@ const AccordionContent = React.forwardRef<HTMLDivElement, AccordionContentProps>
 )
 AccordionContent.displayName = "AccordionContent"
 
-export { Accordion, AccordionItem, AccordionTitle, AccordionContent }
+// Create AccordionTrigger alias for AccordionTitle to maintain compatibility
+const AccordionTrigger = AccordionTitle
+
+export { Accordion, AccordionItem, AccordionTitle, AccordionContent, AccordionTrigger }

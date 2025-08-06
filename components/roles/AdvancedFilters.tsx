@@ -6,13 +6,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card'
 import { Button } from '@/components/ui-daisy/button'
 import { Input } from '@/components/ui-daisy/input'
-import { Label } from '@/components/ui/label'
+import { Label } from '@/components/ui-daisy/label'
 import { Badge } from '@/components/ui-daisy/badge'
-import { Slider } from '@/components/ui/slider'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Slider } from '@/components/ui-daisy/slider'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui-daisy/accordion'
 import { Alert, AlertDescription } from '@/components/ui-daisy/alert'
-import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
+import { Separator } from '@/components/ui-daisy/separator'
+import { Switch } from '@/components/ui-daisy/switch'
 import { 
   Search, 
   MapPin, 

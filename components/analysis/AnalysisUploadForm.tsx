@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import {  Button  } from '@/components/ui-daisy/button';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui-daisy/label';
 import { Progress } from '@/components/ui-daisy/progress';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import { CheckCircle, Loader2, UploadCloud, AlertCircle, FileText, X, RefreshCw } from 'lucide-react';
