@@ -28,8 +28,48 @@ export async function GET() {
             return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
         }
 
+        // Get additional gamification and count data
+        const developer = await prisma.developer.findUnique({
+            where: { id: userId },
+            select: {
+                totalXP: true,
+                currentLevel: true,
+                subscriptionTier: true,
+                subscriptionStatus: true,
+                monthlyPoints: true,
+                pointsUsed: true,
+                pointsEarned: true,
+                createdAt: true,
+                updatedAt: true,
+                _count: {
+                    select: {
+                        cvs: true,
+                        developerSkills: true,
+                        experience: true
+                    }
+                }
+            }
+        });
+
+        // Combine the profile with gamification data
+        const enhancedProfile = {
+            ...profile,
+            totalXP: developer?.totalXP || 0,
+            currentLevel: developer?.currentLevel || 1,
+            subscriptionTier: developer?.subscriptionTier || 'FREE',
+            subscriptionStatus: developer?.subscriptionStatus || 'ACTIVE',
+            monthlyPoints: developer?.monthlyPoints || 0,
+            pointsUsed: developer?.pointsUsed || 0,
+            pointsEarned: developer?.pointsEarned || 0,
+            createdAt: developer?.createdAt?.toISOString() || new Date().toISOString(),
+            updatedAt: developer?.updatedAt?.toISOString() || new Date().toISOString(),
+            cvCount: developer?._count?.cvs || 0,
+            skillsCount: developer?._count?.developerSkills || 0,
+            experienceCount: developer?._count?.experience || 0
+        };
+
         console.log(`[API /profile/me] Profile fetched successfully for user ID: ${userId}`);
-        return NextResponse.json(profile);
+        return NextResponse.json(enhancedProfile);
 
     } catch (error) {
         console.error('[API /profile/me] GET Error:', error);
