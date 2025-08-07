@@ -163,7 +163,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   useEffect(() => {
     if (status === 'failed' && error) {
         console.error('[AnalysisResultDisplay] Error toast triggered:', error);
-      toast({ title: "Error", description: error, variant: "destructive" });
+      toast({ title: "Error", description: error, variant: "error" });
     }
   }, [status, error]); // Remove toast from dependencies to prevent infinite loops
 
@@ -210,18 +210,15 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     dispatch(fetchSuggestions(analysisData));
   };
 
-  // Memoized Accept suggestion: dispatch Redux action
+  // Stable Accept suggestion handler - dependencies don't change on analysisData updates
   const handleAcceptSuggestion = useCallback((suggestion: CvImprovementSuggestion) => {
     console.log('Dispatching applySuggestion:', suggestion);
-    if (!analysisData) {
-       toast({ title: "Error", description: "No data to apply suggestion to.", variant: "destructive"});
-       return;
-    }
+    // Remove analysisData dependency - let Redux handle the check
     dispatch(applySuggestion(suggestion));
     toast({ title: "Suggestion Applied", description: `Change applied to ${suggestion.section}.` });
-  }, [analysisData, dispatch, toast]);
+  }, [dispatch, toast]);
 
-  // Memoized Reject suggestion: dispatch Redux action
+  // Stable Reject suggestion handler - dependencies don't change on analysisData updates
   const handleRejectSuggestion = useCallback((suggestion: CvImprovementSuggestion) => {
     console.log('Dispatching dismissSuggestion:', suggestion);
     dispatch(dismissSuggestion(suggestion));
@@ -255,7 +252,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
       });
     } catch (error: any) { 
       console.error("Error saving changes:", error); 
-      toast({ title: "Save Error", description: error, variant: "destructive" }); 
+      toast({ title: "Save Error", description: error, variant: "error" }); 
     } finally { 
       setIsSaving(false); 
     }
@@ -292,7 +289,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
       toast({ title: "Export Successful", description: `Downloaded ${filename}` });
     } catch (error: any) {
       console.error("Error exporting CV:", error);
-      toast({ title: "Export Error", description: error.message || 'Could not export CV.', variant: "destructive" });
+      toast({ title: "Export Error", description: error.message || 'Could not export CV.', variant: "error" });
     } finally {
       setIsExporting(false);
     }
@@ -427,15 +424,14 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
-                          {React.useMemo(() => (
-                            <ContactInfoDisplay 
-                              data={analysisData.contactInfo}
-                              onChange={handleContactInfoChange}
-                              suggestions={suggestions} 
-                              onAcceptSuggestion={handleAcceptSuggestion}
-                              onRejectSuggestion={handleRejectSuggestion}
-                            />
-                          ), [analysisData.contactInfo, handleContactInfoChange, suggestions, handleAcceptSuggestion, handleRejectSuggestion])}
+                          <ContactInfoDisplay 
+                            key="contactinfo-stable" // Stable key prevents unmounting
+                            data={analysisData.contactInfo}
+                            onChange={handleContactInfoChange}
+                            suggestions={suggestions} 
+                            onAcceptSuggestion={handleAcceptSuggestion}
+                            onRejectSuggestion={handleRejectSuggestion}
+                          />
                           
                           {/* AI Suggestions for Contact Info */}
                           <SuggestionManager section="contactInfo" className="mt-4" />

@@ -140,18 +140,17 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     if (e.target) e.target.value = '';
   };
 
-  // Function to render a single field with DaisyUI floating input (always editable)
-  const renderFieldWithSuggestions = (
-    id: keyof ContactInfoData,
-    Icon: React.ElementType,
-    placeholder: string,
-    label?: string,
-    type: string = 'text'
-  ) => {
-    console.log(`🏗️ [ContactInfoDisplay] renderFieldWithSuggestions('${id}')`, {
+  // Memoized field renderer - prevents component identity loss
+  const MemoizedFieldWithSuggestions = React.memo<{
+    id: keyof ContactInfoData;
+    Icon: React.ElementType;
+    placeholder: string;
+    label?: string;
+    type?: string;
+  }>(({ id, Icon, placeholder, label, type = 'text' }) => {
+    console.log(`🏗️ [ContactInfoDisplay] MemoizedFieldWithSuggestions('${id}')`, {
       currentValue: editData[id],
       renderCount: renderCount.current,
-      onChangeFunction: handleInputChange.toString().substring(0, 50),
       timestamp: new Date().toISOString()
     });
     
@@ -161,7 +160,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const showMissingWarning = !hasValue && id !== 'name' && id !== 'email'; // Don't warn for required fields
 
     return (
-      <div key={id} className="space-y-2">
+      <div className="space-y-2">
         <FloatingInput
           id={id}
           type={type}
@@ -177,15 +176,18 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
         />
       </div>
     );
-  };
+  });
+  
+  // Set display name for debugging
+  MemoizedFieldWithSuggestions.displayName = 'MemoizedFieldWithSuggestions';
 
-  // Function to render a link field with DaisyUI floating input (always editable)
-  const renderLinkWithSuggestions = (
-    id: keyof ContactInfoData,
-    Icon: React.ElementType,
-    placeholder: string,
-    textPrefix = ''
-  ) => {
+  // Memoized link field renderer - prevents component identity loss
+  const MemoizedLinkWithSuggestions = React.memo<{
+    id: keyof ContactInfoData;
+    Icon: React.ElementType;
+    placeholder: string;
+    textPrefix?: string;
+  }>(({ id, Icon, placeholder, textPrefix = '' }) => {
     const currentSuggestions = findSuggestionsForField(suggestions, id);
     const url = data[id]; // Use data directly for checking presence
     const hasValue = url && url.trim() !== '';
@@ -195,7 +197,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const showMissingWarning = !hasValue; // Always show for optional profile links
     
     return (
-      <div key={id} className="space-y-2">
+      <div className="space-y-2">
         <FloatingInput
           id={id}
           type="url"
@@ -211,7 +213,10 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
         />
       </div>
     );
-  }
+  });
+  
+  // Set display name for debugging
+  MemoizedLinkWithSuggestions.displayName = 'MemoizedLinkWithSuggestions';
 
   // Get initials for avatar fallback
   const getInitials = (name?: string | null) => {
@@ -312,34 +317,34 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* First Row */}
         <div>
-          {renderFieldWithSuggestions('name', User, 'Full Name', 'Full Name')}
-          {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email', 'email')}
+          <MemoizedFieldWithSuggestions id="name" Icon={User} placeholder="Full Name" label="Full Name" />
+          <MemoizedFieldWithSuggestions id="email" Icon={Mail} placeholder="Email Address" label="Email" type="email" />
           <SuggestionManager section="contactInfo" targetField="email" className="mt-1" />
         </div>
         
         <div>
-          {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone', 'tel')}
+          <MemoizedFieldWithSuggestions id="phone" Icon={Phone} placeholder="Phone Number" label="Phone" type="tel" />
           <SuggestionManager section="contactInfo" targetField="phone" className="mt-1" />
         </div>
         
         <div>
-          {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)', 'Location')}
+          <MemoizedFieldWithSuggestions id="location" Icon={MapPin} placeholder="Location (City, Country)" label="Location" />
           <SuggestionManager section="contactInfo" targetField="location" className="mt-1" />
         </div>
         
         {/* Second Row */}
         <div>
-          {renderLinkWithSuggestions('linkedin', Linkedin, 'linkedin.com/in/...')}
+          <MemoizedLinkWithSuggestions id="linkedin" Icon={Linkedin} placeholder="linkedin.com/in/..." />
           <SuggestionManager section="contactInfo" targetField="linkedin" className="mt-1" />
         </div>
         
         <div>
-          {renderLinkWithSuggestions('github', Github, 'github.com/...')}
+          <MemoizedLinkWithSuggestions id="github" Icon={Github} placeholder="github.com/..." />
           <SuggestionManager section="contactInfo" targetField="github" className="mt-1" />
         </div>
         
         <div>
-          {renderLinkWithSuggestions('website', LinkIcon, 'yourwebsite.com')}
+          <MemoizedLinkWithSuggestions id="website" Icon={LinkIcon} placeholder="yourwebsite.com" />
           <SuggestionManager section="contactInfo" targetField="website" className="mt-1" />
         </div>
       </div>

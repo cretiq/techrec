@@ -135,7 +135,7 @@ export function AIAssistanceButton({
       toast({
         title: "AI Enhancement Failed",
         description: error.message || "Please try again later.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsProcessing(false);
@@ -144,15 +144,9 @@ export function AIAssistanceButton({
 
   return (
     <Button
-      variant="outline"
-      size="sm"
+      variant="default"
       onClick={handleAIAssistance}
       disabled={isProcessing}
-      className={cn(
-        "transition-all duration-100",
-        isProcessing && "opacity-75",
-        className
-      )}
       data-testid={`ai-assistance-button-${section}`}
     >
       {isProcessing ? (
