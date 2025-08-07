@@ -23,7 +23,7 @@ import { SkillsDisplay } from './display/SkillsDisplay';
 import { ExperienceDisplay } from './display/ExperienceDisplay';
 import { EducationDisplay } from './display/EducationDisplay';
 import { AIAssistanceButton } from './AIAssistanceButton';
-import { Accordion, AccordionItem as ShadcnAccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui-daisy/accordion';
+// Accordion imports removed - bypassed cloneElement issue
 import { SuggestionList } from './display/SuggestionList';
 import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 import { ProjectRecommendationCard } from './ProjectRecommendationCard';
@@ -139,17 +139,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   // Local state for UI interactions (saving/exporting)
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  // State for controlled Accordion
-  const accordionSectionKeys = useMemo(() => {
-    const keys = [];
-    if (analysisData?.contactInfo) keys.push('contactInfo');
-    if (analysisData?.about !== undefined) keys.push('about');
-    if (analysisData?.skills && analysisData.skills.length > 0) keys.push('skills');
-    if (analysisData?.experience && analysisData.experience.length > 0) keys.push('experience');
-    if (analysisData?.education && analysisData.education.length > 0) keys.push('education');
-    return keys;
-  }, [analysisData]);
-  const [openSections, setOpenSections] = useState<string[]>(accordionSectionKeys);
+  // Accordion state removed - sections now always visible after bypassing cloneElement issues
 
   // Calculate unsaved changes by comparing current data with original data from store
   const hasUnsavedChanges = useMemo(() => {
@@ -295,32 +285,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     }
   };
 
-  // Handlers for Expand/Collapse All
-  const handleExpandAll = () => {
-    setOpenSections(accordionSectionKeys);
-  };
-  const handleCollapseAll = () => {
-    setOpenSections([]);
-  };
-
-  // Listen for expand/collapse events from AnalysisActionButtons
-  useEffect(() => {
-    const handleExpandAllEvent = () => {
-      setOpenSections(accordionSectionKeys);
-    };
-    
-    const handleCollapseAllEvent = () => {
-      setOpenSections([]);
-    };
-
-    window.addEventListener('expandAllSections', handleExpandAllEvent);
-    window.addEventListener('collapseAllSections', handleCollapseAllEvent);
-
-    return () => {
-      window.removeEventListener('expandAllSections', handleExpandAllEvent);
-      window.removeEventListener('collapseAllSections', handleCollapseAllEvent);
-    };
-  }, [accordionSectionKeys]);
+  // Expand/Collapse functionality removed - sections now always visible after bypassing Accordion
 
 
   // Animation Variants - Use shared transitions
@@ -336,15 +301,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   // };
   const sectionVariants = fadeInUp;
 
-  // Add variants for accordion content - Use shared contentTransition
-  const contentVariants = {
-    hidden: { opacity: 0, y: -10, height: 0 },
-    visible: { opacity: 1, y: 0, height: 'auto', transition: contentTransition },
-    exit: { opacity: 0, y: -10, height: 0, transition: contentTransition } // Use contentTransition for exit too
-  };
-
-  // Use motion version of AccordionItem if available, otherwise forwardRef
-  const AccordionItem = motion(ShadcnAccordionItem);
+  // Animation variants simplified after bypassing Accordion
 
   // Handle loading state based on Redux status
   console.log(`[AnalysisResultDisplay] Checking render conditions: status='${status}', hasAnalysisData=${!!analysisData}`);
@@ -389,23 +346,12 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     >
        <div className="flex flex-col md:flex-row gap-8" data-testid="cv-management-analysis-content">
           <main className="w-full space-y-4" data-testid="cv-management-analysis-main">
-              <Accordion 
-                type="multiple" 
-                value={openSections} 
-                onValueChange={setOpenSections}
-                className="w-full space-y-4"
-              >
-                {analysisData.contactInfo && (
-                  <AccordionItem 
-                    value="contactInfo" 
-                    id="contact-info" 
-                    variant="hybrid"
-                    className="scroll-mt-20"
-                  >
-                    <div className="flex items-center justify-between group">
-                      <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline flex-1">
-                        Contact Info
-                      </AccordionTrigger>
+              <div className="w-full space-y-4">
+                {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Direct render */}
+                {analysisData && (
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                    <div className="flex items-center justify-between group mb-4">
+                      <h2 className="text-2xl font-semibold text-foreground">Contact Info</h2>
                       <AIAssistanceButton
                         section="contactInfo"
                         currentData={analysisData.contactInfo}
@@ -414,43 +360,25 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                         className="opacity-0 group-hover:opacity-100 transition-opacity ml-4"
                       />
                     </div>
-                    <AccordionContent className="pt-3">
-                      <AnimatePresence initial={false}>
-                        <motion.div
-                          key="contactInfo-content"
-                          variants={contentVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          className="overflow-hidden"
-                        >
-                          <ContactInfoDisplay 
-                            key="contactinfo-stable" // Stable key prevents unmounting
-                            data={analysisData.contactInfo}
-                            onChange={handleContactInfoChange}
-                            suggestions={suggestions} 
-                            onAcceptSuggestion={handleAcceptSuggestion}
-                            onRejectSuggestion={handleRejectSuggestion}
-                          />
-                          
-                          {/* AI Suggestions for Contact Info */}
-                          <SuggestionManager section="contactInfo" className="mt-4" />
-                        </motion.div>
-                      </AnimatePresence>
-                    </AccordionContent>
-                  </AccordionItem>
+                    <div>
+                      <ContactInfoDisplay 
+                        key="contactinfo-stable"
+                        data={analysisData.contactInfo}
+                        onChange={handleContactInfoChange}
+                        suggestions={suggestions} 
+                        onAcceptSuggestion={handleAcceptSuggestion}
+                        onRejectSuggestion={handleRejectSuggestion}
+                      />
+                      
+                      <SuggestionManager section="contactInfo" className="mt-4" />
+                    </div>
+                  </div>
                 )}
+                {/* BYPASS ACCORDION CLONEELEMENT ISSUE - About section */}
                 {analysisData.about !== undefined && (
-                  <AccordionItem 
-                    value="about" 
-                    id="about" 
-                    variant="hybrid"
-                    className="scroll-mt-20"
-                  >
-                    <div className="flex items-center justify-between group">
-                      <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline flex-1">
-                        About / Summary
-                      </AccordionTrigger>
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                    <div className="flex items-center justify-between group mb-4">
+                      <h2 className="text-2xl font-semibold text-foreground">About / Summary</h2>
                       <AIAssistanceButton
                         section="about"
                         currentData={analysisData.about}
@@ -459,130 +387,79 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                         className="opacity-0 group-hover:opacity-100 transition-opacity ml-4"
                       />
                     </div>
-                    <AccordionContent className="pt-3">
-                      <AnimatePresence initial={false}>
-                        <motion.div
-                          key="about-content"
-                          variants={contentVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          className="overflow-hidden"
-                        >
-                          <AboutDisplay 
-                            data={analysisData.about}
-                            onChange={(newData) => dispatch(updateAnalysisData({ path: 'about', value: newData }))} 
-                            suggestions={suggestions} 
-                            onAcceptSuggestion={handleAcceptSuggestion}
-                            onRejectSuggestion={handleRejectSuggestion}
-                          />
-                          
-                          {/* AI Suggestions for About/Summary */}
-                          <SuggestionManager section="about" className="mt-4" />
-                        </motion.div>
-                      </AnimatePresence>
-                    </AccordionContent>
-                  </AccordionItem>
+                    <div>
+                      <AboutDisplay 
+                        key="about-stable"
+                        data={analysisData.about}
+                        onChange={(newData) => dispatch(updateAnalysisData({ path: 'about', value: newData }))} 
+                        suggestions={suggestions} 
+                        onAcceptSuggestion={handleAcceptSuggestion}
+                        onRejectSuggestion={handleRejectSuggestion}
+                      />
+                      
+                      <SuggestionManager section="about" className="mt-4" />
+                    </div>
+                  </div>
                 )}
+                {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Skills section */}
                 {analysisData.skills && analysisData.skills.length > 0 && (
-                  <AccordionItem 
-                    value="skills" 
-                    id="skills" 
-                    variant="hybrid"
-                    className="scroll-mt-20"
-                  >
-                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline">Skills</AccordionTrigger>
-                    <AccordionContent className="pt-3">
-                      <AnimatePresence initial={false}>
-                        <motion.div
-                          key="skills-content"
-                          variants={contentVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          className="overflow-hidden"
-                        >
-                          <SkillsDisplay 
-                            data={analysisData.skills}
-                            onChange={(newData) => dispatch(updateAnalysisData({ path: 'skills', value: newData }))} 
-                            suggestions={suggestions} 
-                            onAcceptSuggestion={handleAcceptSuggestion}
-                            onRejectSuggestion={handleRejectSuggestion}
-                          />
-                          
-                          {/* AI Suggestions for Skills */}
-                          <SuggestionManager section="skills" className="mt-4" />
-                        </motion.div>
-                      </AnimatePresence>
-                    </AccordionContent>
-                  </AccordionItem>
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                    <div className="flex items-center justify-between group mb-4">
+                      <h2 className="text-2xl font-semibold text-foreground">Skills</h2>
+                    </div>
+                    <div>
+                      <SkillsDisplay 
+                        key="skills-stable"
+                        data={analysisData.skills}
+                        onChange={(newData) => dispatch(updateAnalysisData({ path: 'skills', value: newData }))} 
+                        suggestions={suggestions} 
+                        onAcceptSuggestion={handleAcceptSuggestion}
+                        onRejectSuggestion={handleRejectSuggestion}
+                      />
+                      
+                      <SuggestionManager section="skills" className="mt-4" />
+                    </div>
+                  </div>
                 )}
+                {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Experience section */}
                 {analysisData.experience && analysisData.experience.length > 0 && (
-                  <AccordionItem 
-                    value="experience" 
-                    id="experience" 
-                    variant="hybrid"
-                    className="scroll-mt-20"
-                  >
-                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline">Work Experience</AccordionTrigger>
-                    <AccordionContent className="">
-                      <AnimatePresence initial={false}>
-                        <motion.div
-                          key="experience-content"
-                          variants={contentVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          className="overflow-hidden"
-                        >
-                          <ExperienceDisplay 
-                            data={analysisData.experience}
-                            onChange={(newData) => dispatch(updateAnalysisData({ path: 'experience', value: newData }))} 
-                            suggestions={suggestions} 
-                            onAcceptSuggestion={handleAcceptSuggestion}
-                            onRejectSuggestion={handleRejectSuggestion}
-                          />
-                          
-                          {/* Granular suggestions now handled within ExperienceDisplay component */}
-                        </motion.div>
-                      </AnimatePresence>
-                    </AccordionContent>
-                  </AccordionItem>
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                    <div className="flex items-center justify-between group mb-4">
+                      <h2 className="text-2xl font-semibold text-foreground">Work Experience</h2>
+                    </div>
+                    <div>
+                      <ExperienceDisplay 
+                        key="experience-stable"
+                        data={analysisData.experience}
+                        onChange={(newData) => dispatch(updateAnalysisData({ path: 'experience', value: newData }))} 
+                        suggestions={suggestions} 
+                        onAcceptSuggestion={handleAcceptSuggestion}
+                        onRejectSuggestion={handleRejectSuggestion}
+                      />
+                    </div>
+                  </div>
                 )}
+                {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Education section */}
                 {analysisData.education && analysisData.education.length > 0 && (
-                  <AccordionItem 
-                    value="education" 
-                    id="education" 
-                    variant="hybrid"
-                    className="scroll-mt-20"
-                  >
-                    <AccordionTrigger className="text-2xl font-semibold text-foreground hover:no-underline">Education</AccordionTrigger>
-                    <AccordionContent className="pt-3">
-                      <AnimatePresence initial={false}>
-                        <motion.div
-                          key="education-content"
-                          variants={contentVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          className="overflow-hidden"
-                        >
-                          <EducationDisplay 
-                            data={analysisData.education}
-                            onChange={(newData) => dispatch(updateAnalysisData({ path: 'education', value: newData }))} 
-                            suggestions={suggestions} 
-                            onAcceptSuggestion={handleAcceptSuggestion}
-                            onRejectSuggestion={handleRejectSuggestion}
-                          />
-                          
-                          {/* AI Suggestions for Education */}
-                          <SuggestionManager section="education" className="mt-4" />
-                        </motion.div>
-                      </AnimatePresence>
-                    </AccordionContent>
-                  </AccordionItem>
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                    <div className="flex items-center justify-between group mb-4">
+                      <h2 className="text-2xl font-semibold text-foreground">Education</h2>
+                    </div>
+                    <div>
+                      <EducationDisplay 
+                        key="education-stable"
+                        data={analysisData.education}
+                        onChange={(newData) => dispatch(updateAnalysisData({ path: 'education', value: newData }))} 
+                        suggestions={suggestions} 
+                        onAcceptSuggestion={handleAcceptSuggestion}
+                        onRejectSuggestion={handleRejectSuggestion}
+                      />
+                      
+                      <SuggestionManager section="education" className="mt-4" />
+                    </div>
+                  </div>
                 )}
-              </Accordion>
+              </div>
           </main>
           
           {/* Project Recommendation Card - Shows for junior developers (≤2 years) only */}

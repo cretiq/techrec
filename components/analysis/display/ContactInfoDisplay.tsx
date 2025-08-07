@@ -45,13 +45,22 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
   const renderCount = useRef(0);
   renderCount.current += 1;
   
+  // CRITICAL DEBUG: Track component instance identity
+  const componentId = useRef(Math.random().toString(36).substr(2, 9));
+  
   console.log(`🔍 [ContactInfoDisplay] RENDER #${renderCount.current}`, {
+    componentId: componentId.current,
     dataKeys: data ? Object.keys(data) : null,
     dataValues: data,
     onChangeType: typeof onChange,
     onChangeString: onChange.toString().substring(0, 100),
     timestamp: new Date().toISOString()
   });
+  
+  // CRITICAL DEBUG: Log if this is a new component instance
+  if (renderCount.current === 1) {
+    console.log(`🆕 [ContactInfoDisplay] NEW COMPONENT INSTANCE created with ID: ${componentId.current}`);
+  }
   
   const [editData, setEditData] = useState<ContactInfoData>(data);
   const [profilePicture, setProfilePicture] = useState<string | null>('/profile_picture.png'); // Default placeholder
@@ -69,12 +78,15 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
+    const inputElement = e.target;
+    
     console.log('⌨️ [ContactInfoDisplay] handleInputChange called', {
       fieldId: id,
       newValue: value,
       currentEditData: editData,
       renderCount: renderCount.current,
       activeElement: document.activeElement?.id,
+      inputElementId: inputElement.id,
       timestamp: new Date().toISOString()
     });
     
@@ -86,16 +98,36 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     });
     
     setEditData(newData);
+    
+    // CRITICAL TEST: Store reference to input element before parent call
+    const elementBeforeParentCall = document.getElementById(id);
+    console.log('🔍 [CRITICAL] Element exists before parent call:', {
+      elementExists: !!elementBeforeParentCall,
+      elementId: elementBeforeParentCall?.id,
+      elementValue: elementBeforeParentCall?.value,
+      sameAsEventTarget: elementBeforeParentCall === inputElement
+    });
+    
     onChange(newData); // Immediately notify parent of changes
     
-    // Check if focus is maintained after state update
+    // CRITICAL TEST: Check if element still exists after parent call
     setTimeout(() => {
-      console.log('🎯 [ContactInfoDisplay] Focus check after onChange', {
+      const elementAfterParentCall = document.getElementById(id);
+      console.log('🎯 [CRITICAL] Element status after parent onChange', {
+        elementStillExists: !!elementAfterParentCall,
+        elementId: elementAfterParentCall?.id,
+        elementValue: elementAfterParentCall?.value,
+        sameElementReference: elementAfterParentCall === elementBeforeParentCall,
         activeElement: document.activeElement?.id,
         expectedFocus: id,
         focusMaintained: document.activeElement?.id === id,
         renderCount: renderCount.current
       });
+      
+      // If element changed, log the issue
+      if (elementAfterParentCall !== elementBeforeParentCall) {
+        console.error('🚨 [ROOT CAUSE FOUND] Input element was replaced! DOM element reference changed.');
+      }
     }, 0);
   };
 
@@ -140,17 +172,18 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     if (e.target) e.target.value = '';
   };
 
-  // Memoized field renderer - prevents component identity loss
-  const MemoizedFieldWithSuggestions = React.memo<{
-    id: keyof ContactInfoData;
-    Icon: React.ElementType;
-    placeholder: string;
-    label?: string;
-    type?: string;
-  }>(({ id, Icon, placeholder, label, type = 'text' }) => {
-    console.log(`🏗️ [ContactInfoDisplay] MemoizedFieldWithSuggestions('${id}')`, {
+  // Function to render a single field with DaisyUI floating input (always editable)
+  const renderFieldWithSuggestions = (
+    id: keyof ContactInfoData,
+    Icon: React.ElementType,
+    placeholder: string,
+    label?: string,
+    type: string = 'text'
+  ) => {
+    console.log(`🏗️ [ContactInfoDisplay] renderFieldWithSuggestions('${id}')`, {
       currentValue: editData[id],
       renderCount: renderCount.current,
+      onChangeFunction: handleInputChange.toString().substring(0, 50),
       timestamp: new Date().toISOString()
     });
     
@@ -160,8 +193,9 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const showMissingWarning = !hasValue && id !== 'name' && id !== 'email'; // Don't warn for required fields
 
     return (
-      <div className="space-y-2">
+      <div key={id} className="space-y-2">
         <FloatingInput
+          key={`${id}-input`}
           id={id}
           type={type}
           label={label || placeholder}
@@ -176,18 +210,15 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
         />
       </div>
     );
-  });
-  
-  // Set display name for debugging
-  MemoizedFieldWithSuggestions.displayName = 'MemoizedFieldWithSuggestions';
+  };
 
-  // Memoized link field renderer - prevents component identity loss
-  const MemoizedLinkWithSuggestions = React.memo<{
-    id: keyof ContactInfoData;
-    Icon: React.ElementType;
-    placeholder: string;
-    textPrefix?: string;
-  }>(({ id, Icon, placeholder, textPrefix = '' }) => {
+  // Function to render a link field with DaisyUI floating input (always editable)
+  const renderLinkWithSuggestions = (
+    id: keyof ContactInfoData,
+    Icon: React.ElementType,
+    placeholder: string,
+    textPrefix = ''
+  ) => {
     const currentSuggestions = findSuggestionsForField(suggestions, id);
     const url = data[id]; // Use data directly for checking presence
     const hasValue = url && url.trim() !== '';
@@ -197,8 +228,9 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const showMissingWarning = !hasValue; // Always show for optional profile links
     
     return (
-      <div className="space-y-2">
+      <div key={id} className="space-y-2">
         <FloatingInput
+          key={`${id}-input`}
           id={id}
           type="url"
           label={placeholder}
@@ -213,10 +245,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
         />
       </div>
     );
-  });
-  
-  // Set display name for debugging
-  MemoizedLinkWithSuggestions.displayName = 'MemoizedLinkWithSuggestions';
+  }
 
   // Get initials for avatar fallback
   const getInitials = (name?: string | null) => {
@@ -317,34 +346,34 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* First Row */}
         <div>
-          <MemoizedFieldWithSuggestions id="name" Icon={User} placeholder="Full Name" label="Full Name" />
-          <MemoizedFieldWithSuggestions id="email" Icon={Mail} placeholder="Email Address" label="Email" type="email" />
+          {renderFieldWithSuggestions('name', User, 'Full Name', 'Full Name')}
+          {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email', 'email')}
           <SuggestionManager section="contactInfo" targetField="email" className="mt-1" />
         </div>
         
         <div>
-          <MemoizedFieldWithSuggestions id="phone" Icon={Phone} placeholder="Phone Number" label="Phone" type="tel" />
+          {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone', 'tel')}
           <SuggestionManager section="contactInfo" targetField="phone" className="mt-1" />
         </div>
         
         <div>
-          <MemoizedFieldWithSuggestions id="location" Icon={MapPin} placeholder="Location (City, Country)" label="Location" />
+          {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)', 'Location')}
           <SuggestionManager section="contactInfo" targetField="location" className="mt-1" />
         </div>
         
         {/* Second Row */}
         <div>
-          <MemoizedLinkWithSuggestions id="linkedin" Icon={Linkedin} placeholder="linkedin.com/in/..." />
+          {renderLinkWithSuggestions('linkedin', Linkedin, 'linkedin.com/in/...')}
           <SuggestionManager section="contactInfo" targetField="linkedin" className="mt-1" />
         </div>
         
         <div>
-          <MemoizedLinkWithSuggestions id="github" Icon={Github} placeholder="github.com/..." />
+          {renderLinkWithSuggestions('github', Github, 'github.com/...')}
           <SuggestionManager section="contactInfo" targetField="github" className="mt-1" />
         </div>
         
         <div>
-          <MemoizedLinkWithSuggestions id="website" Icon={LinkIcon} placeholder="yourwebsite.com" />
+          {renderLinkWithSuggestions('website', LinkIcon, 'yourwebsite.com')}
           <SuggestionManager section="contactInfo" targetField="website" className="mt-1" />
         </div>
       </div>
