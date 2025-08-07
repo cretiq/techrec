@@ -43,6 +43,9 @@ export function SuggestionList() {
   const filteredSuggestions = useMemo(() => {
     let filtered = allSuggestions;
 
+    // Filter out contactInfo suggestions (safety net)
+    filtered = filtered.filter(s => s.section !== 'contactInfo');
+
     // Filter by type
     if (filterType !== 'all') {
       filtered = filtered.filter(s => s.suggestionType === filterType);

@@ -41,6 +41,11 @@ export function SuggestionManager({
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
 
+  // Early return if this is contactInfo section - no suggestions allowed
+  if (section === 'contactInfo') {
+    return null;
+  }
+
   // Redux selectors
   const suggestions = useSelector(selectSuggestions);
   const acceptedSuggestions = useSelector(selectAcceptedSuggestions);

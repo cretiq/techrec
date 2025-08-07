@@ -17,7 +17,7 @@ import { CvImprovementDebugLogger } from '@/utils/debugLogger';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
-const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
+const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
 const SUGGESTION_CACHE_PREFIX = 'cv_suggestion_gemini:';
 const SUGGESTION_CACHE_TTL_SECONDS = 60 * 60; // 1 hour TTL
@@ -153,18 +153,23 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string, s
           console.log(`⚠️ [cv-improvement] Attempt ${attempt} - Warnings:`, validation.warnings);
         }
         
+        // Filter out contactInfo suggestions before building response
+        const filteredSuggestions = validation.qualitySuggestions.filter(s => (s as any).section !== 'contactInfo');
+        console.log(`🚫 [cv-improvement] Filtered out ${validation.qualitySuggestions.length - filteredSuggestions.length} contactInfo suggestions`);
+        console.log(`✅ [cv-improvement] Returning ${filteredSuggestions.length} suggestions (excluding contactInfo)`);
+        
         // Build the final response
         const finalResponse = {
-          suggestions: validation.qualitySuggestions,
+          suggestions: filteredSuggestions,
           summary: {
-            totalSuggestions: validation.qualitySuggestions.length,
-            highPriority: validation.qualitySuggestions.filter(s => (s as any).priority === 'high').length,
+            totalSuggestions: filteredSuggestions.length,
+            highPriority: filteredSuggestions.filter(s => (s as any).priority === 'high').length,
             categories: {
-              experienceBullets: validation.qualitySuggestions.filter(s => (s as any).type === 'experience_bullet').length,
-              educationGaps: validation.qualitySuggestions.filter(s => (s as any).type === 'education_gap').length,
-              missingSkills: validation.qualitySuggestions.filter(s => (s as any).type === 'missing_skill').length,
-              summaryImprovements: validation.qualitySuggestions.filter(s => (s as any).type === 'summary_improvement').length,
-              generalImprovements: validation.qualitySuggestions.filter(s => (s as any).type === 'general_improvement').length,
+              experienceBullets: filteredSuggestions.filter(s => (s as any).type === 'experience_bullet').length,
+              educationGaps: filteredSuggestions.filter(s => (s as any).type === 'education_gap').length,
+              missingSkills: filteredSuggestions.filter(s => (s as any).type === 'missing_skill').length,
+              summaryImprovements: filteredSuggestions.filter(s => (s as any).type === 'summary_improvement').length,
+              generalImprovements: filteredSuggestions.filter(s => (s as any).type === 'general_improvement').length,
             }
           },
           fromCache: false,
@@ -199,18 +204,21 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string, s
           // On final attempt, try fallback response creation
           console.log(`🔄 [cv-improvement] Final attempt - Creating fallback response...`);
           if (validation.qualitySuggestions.length > 0) {
-            console.log(`✅ [cv-improvement] Using ${validation.qualitySuggestions.length} partial suggestions as fallback`);
+            // Filter out contactInfo suggestions from fallback response too
+            const fallbackFilteredSuggestions = validation.qualitySuggestions.filter(s => (s as any).section !== 'contactInfo');
+            console.log(`🚫 [cv-improvement] Fallback: Filtered out ${validation.qualitySuggestions.length - fallbackFilteredSuggestions.length} contactInfo suggestions`);
+            console.log(`✅ [cv-improvement] Using ${fallbackFilteredSuggestions.length} partial suggestions as fallback (excluding contactInfo)`);
             return {
-              suggestions: validation.qualitySuggestions,
+              suggestions: fallbackFilteredSuggestions,
               summary: {
-                totalSuggestions: validation.qualitySuggestions.length,
+                totalSuggestions: fallbackFilteredSuggestions.length,
                 highPriority: 0,
                 categories: {
                   experienceBullets: 0,
                   educationGaps: 0,
                   missingSkills: 0,
                   summaryImprovements: 0,
-                  generalImprovements: validation.qualitySuggestions.length,
+                  generalImprovements: fallbackFilteredSuggestions.length,
                 }
               },
               fromCache: false,

@@ -31,6 +31,16 @@ export function AIAssistanceButton({
   const analysisData = useSelector(selectCurrentAnalysisData);
 
   const handleAIAssistance = async () => {
+    // Disable AI assistance for contactInfo section
+    if (section === 'contactInfo') {
+      toast({
+        title: "Feature Disabled",
+        description: "AI suggestions for contact information have been disabled.",
+        variant: "info",
+      });
+      return;
+    }
+
     setIsProcessing(true);
     
     try {
@@ -142,12 +152,15 @@ export function AIAssistanceButton({
     }
   };
 
+  const isContactInfoSection = section === 'contactInfo';
+  
   return (
     <Button
       variant="default"
       onClick={handleAIAssistance}
-      disabled={isProcessing}
+      disabled={isProcessing || isContactInfoSection}
       data-testid={`ai-assistance-button-${section}`}
+      className={isContactInfoSection ? 'opacity-50 cursor-not-allowed' : ''}
     >
       {isProcessing ? (
         <>

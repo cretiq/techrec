@@ -178,6 +178,71 @@ grep -r "targetId" components/ | grep -i experience
 
 ---
 
+## 🚫 FEATURE DISABLED: CONTACT INFO SUGGESTIONS
+
+**Updated**: August 7, 2025  
+**Status**: **DISABLED** - Contact Info suggestions have been completely disabled across the application
+
+### What Was Disabled
+- **AI Suggestions for contactInfo Section**: No suggestions will be generated for contact information fields (name, email, phone, LinkedIn, GitHub, etc.)
+- **AI Assistance Button**: Disabled for contact info section with user-friendly message
+- **UI Display**: No contact info suggestions will be shown in any UI component
+
+### Implementation Layers
+The disable implementation uses a **multi-layer filtering approach** for complete coverage:
+
+1. **Backend API Filtering** (`app/api/cv-improvement/route.ts`):
+   ```typescript
+   // Filter out contactInfo suggestions before building response
+   const filteredSuggestions = validation.qualitySuggestions.filter(s => (s as any).section !== 'contactInfo');
+   ```
+
+2. **UI Component Safety Net** (`components/analysis/display/SuggestionList.tsx`):
+   ```typescript
+   // Filter out contactInfo suggestions (safety net)
+   filtered = filtered.filter(s => s.section !== 'contactInfo');
+   ```
+
+3. **Section-Level Blocking** (`components/suggestions/SuggestionManager.tsx`):
+   ```typescript
+   // Early return if this is contactInfo section - no suggestions allowed
+   if (section === 'contactInfo') {
+     return null;
+   }
+   ```
+
+4. **Button-Level Disable** (`components/analysis/AIAssistanceButton.tsx`):
+   ```typescript
+   // Disable AI assistance for contactInfo section
+   if (section === 'contactInfo') {
+     toast({ title: "Feature Disabled", description: "AI suggestions for contact information have been disabled." });
+     return;
+   }
+   ```
+
+### Testing Expectations
+When testing AI suggestions, **contactInfo suggestions should NEVER appear**:
+
+```bash
+# ✅ Expected: No contactInfo suggestions in response
+jq '.suggestions[] | select(.section == "contactInfo")' logs/cv-improvement/LATEST-response*.json
+# Output: (empty)
+
+# ✅ Expected: Only these sections should have suggestions
+jq -r '.suggestions[].section | unique' logs/cv-improvement/LATEST-response*.json
+# Output: ["about", "skills", "experience", "education", "achievements"]
+```
+
+### Sections Still Active
+All other sections continue to work normally:
+- ✅ **about**: Summary/description improvements
+- ✅ **skills**: Skill additions and categorization
+- ✅ **experience**: Job description and responsibility improvements  
+- ✅ **education**: Course and degree enhancements
+- ✅ **achievements**: Certification and accomplishment suggestions
+
+---
+
 ## 🧪 AUTONOMOUS TESTING PATTERNS
 
 ### Automated Validation Script
