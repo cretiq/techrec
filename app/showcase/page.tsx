@@ -15,28 +15,12 @@ import {
   Layers,
   Settings,
   ChevronRight,
-  Copy,
-  Check,
-  Sun,
-  Moon,
-  Monitor
+  Copy
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Component imports
 import { Button } from '@/components/ui-daisy/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui-daisy/card';
-import { Input } from '@/components/ui-daisy/input';
-import { Textarea } from '@/components/ui-daisy/textarea';
-import { Select } from '@/components/ui-daisy/select';
-import { RadioGroup } from '@/components/ui-daisy/radio-group';
-import { Badge } from '@/components/ui-daisy/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui-daisy/tabs';
-import { Dropdown, DropdownTrigger, DropdownContent, DropdownItem } from '@/components/ui-daisy/dropdown';
-
-// Animation imports
-import * as animations from '@/lib/animations';
-
 // Types
 type Section = {
   id: string;
@@ -165,60 +149,10 @@ export default function ShowcasePage() {
   );
 
   return (
-    <div className="min-h-screen bg-base-100 text-base-content transition-colors duration-100">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-base-100/80 backdrop-blur-lg border-b border-base-300/30 transition-colors duration-100">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-base-content">
-                TechRec Design System
-              </h1>
-              <Badge variant="gradient-brand" size="sm">v2.0</Badge>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/60" />
-                <input
-                  type="text"
-                  placeholder="Search components..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-64 pl-10 pr-4 py-2 bg-base-200/50 border border-base-300/50 rounded-lg text-base-content placeholder-base-content/60 focus:border-base-content/30 focus:outline-none transition-colors"
-                />
-              </div>
-
-              {/* Theme Switcher */}
-              <Dropdown>
-                <DropdownTrigger asChild>
-                  <Button variant="glass" size="icon">
-                    {theme === 'light' ? <Sun className="h-4 w-4" /> : 
-                     theme === 'dark' ? <Moon className="h-4 w-4" /> : 
-                     <Monitor className="h-4 w-4" />}
-                  </Button>
-                </DropdownTrigger>
-                <DropdownContent align="end">
-                  <DropdownItem onClick={() => setTheme('light')} leftIcon={<Sun className="h-4 w-4" />}>
-                    Light
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setTheme('dark')} leftIcon={<Moon className="h-4 w-4" />}>
-                    Dark
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setTheme('system')} leftIcon={<Monitor className="h-4 w-4" />}>
-                    System
-                  </DropdownItem>
-                </DropdownContent>
-              </Dropdown>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen text-base-content transition-colors duration-100">
       <div className="container mx-auto flex">
         {/* Sidebar Navigation */}
-        <aside className="w-64 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto border-r border-base-300/30 bg-base-100/50 p-4 transition-colors duration-100">
+        <aside className="w-64 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto border-r border-base-300/30 p-4 transition-colors duration-100">
           <nav className="space-y-1">
             {filteredSections.map((section) => {
               const Icon = section.icon;
@@ -273,7 +207,7 @@ export default function ShowcasePage() {
         }}
       >
         <Button
-          variant="gradient-brand"
+          variant="default"
           size="icon"
           className="rounded-full shadow-lg"
           onClick={() => handleCopyCode('// All component examples', 'all')}
