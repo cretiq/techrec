@@ -176,26 +176,33 @@ const generateCacheKey = (data: RequestData): string => {
 - **Legacy**: Custom shadcn/ui components in `/components/ui/`
 - **Current**: DaisyUI components in `/components/ui-daisy/`
 
+### Object-Based Variant Architecture 
+**🚨 CRITICAL EVOLUTION**: **Unified Component System with Object-Based Variants**
+
+**Core Philosophy**: All UI components now follow a unified object-based variant system that replaces CVA complexity with predictable, maintainable patterns. Every component shares consistent base classes, variant names, and interactive behaviors.
+
 ### Component Reusability & Styling Approach
 **🚨 CRITICAL PRINCIPLE**: **Build Reusable, Scalable, Standardized Components Always**
 
-**Core Philosophy**: Every UI element should be a composable, predictable component with consistent APIs and behavior patterns. This is non-negotiable for maintainable, scalable applications.
+**Unified Variant System**: Every UI element uses the same architectural pattern for maximum consistency and developer predictability.
 
-**✅ MANDATORY Approach**: Component-First Architecture
+**✅ MANDATORY Approach**: Object-Based Variant Architecture
 ```tsx
-// ✅ Standardized component with variants (CVA pattern)
-const buttonVariants = cva("base-classes", {
-  variants: {
-    variant: { gradient: "...", glass: "...", outline: "..." },
-    size: { sm: "...", md: "...", lg: "..." },
-    animation: { none: "!transition-none", default: "transition-all" }
-  }
-})
+// ✅ NEW PATTERN: Object-based variants with consistent base classes
+const componentBase = "base-classes transition-all duration-100 ease-smooth"
 
-// ✅ Clean, reusable usage
-<Button variant="gradient" size="xl" animation="none" />
-<Card variant="glass" />
-<SectionBadge variant="outline" icon={<HelpCircle />} />
+const componentVariants = {
+  default: `${componentBase} bg-base-100 border border-base-300/50`,
+  transparent: `${componentBase} bg-base-100/80 backdrop-blur-sm`,
+  glass: `${componentBase} bg-base-300/60 backdrop-blur-lg`,
+  outlined: `${componentBase} bg-transparent border border-base-300/50`,
+  elevated: `${componentBase} shadow-md hover:shadow-lg`,
+}
+
+// ✅ Clean, predictable usage with enhanced props
+<Button variant="glass" hoverable animated />
+<Card variant="elevated" interactive />
+<Accordion variant="transparent" hoverable />
 ```
 
 **❌ FORBIDDEN Approaches**: 
@@ -219,18 +226,22 @@ const buttonVariants = cva("base-classes", {
 - **Scalability**: New features use existing components, extending with variants
 
 **Standardized Component Patterns**:
-1. **Variant-Based Architecture**: Use `class-variance-authority` (CVA) for all variants
-2. **Consistent Prop APIs**: `variant`, `size`, `className`, `children` patterns
-3. **Animation Controls**: `animated`, `hoverable`, `interactive` boolean props
-4. **Icon Integration**: Standardized `icon`, `leftIcon`, `rightIcon` props
-5. **Accessibility First**: Built-in ARIA labels, focus management, keyboard navigation
+1. **Object-Based Variants**: Direct object lookup system replacing CVA complexity
+2. **Unified Base Classes**: All components share consistent `componentBase` patterns  
+3. **Enhanced Interactive Props**: `hoverable`, `animated`, `interactive` for dynamic behavior
+4. **Consistent Prop APIs**: `variant`, `size`, `className`, `children` across all components
+5. **Framer Motion Integration**: Optional `animated` prop enables motion effects
+6. **Faint Border Aesthetic**: Subtle borders with opacity (`border-base-300/50`) 
+7. **Icon Integration**: Standardized `icon`, `leftIcon`, `rightIcon` props
+8. **Accessibility First**: Built-in ARIA labels, focus management, keyboard navigation
 
 **Implementation Workflow**:
 1. **Before Creating**: Check if existing component can be extended with variants
-2. **Component Design**: Define all variants upfront using CVA
-3. **API Design**: Follow established prop patterns (`variant`, `size`, etc.)
-4. **Documentation**: Add to design system with usage examples
-5. **Refactoring**: Replace any one-off implementations with new component
+2. **Component Design**: Define base class and variant object with consistent patterns
+3. **API Design**: Follow established prop patterns (`variant`, `size`, `hoverable`, `animated`)
+4. **Interactive Props**: Add `hoverable`, `animated`, `interactive` support where appropriate
+5. **Documentation**: Add to design system with usage examples
+6. **Refactoring**: Replace any one-off implementations with new component
 
 **Component Architecture (4-Layer System)**:
 ```
@@ -334,23 +345,33 @@ export default function CVManagementPage() {
 **🚨 COMPONENT CREATION RULES**:
 
 ```tsx
-// ✅ DO: Extend existing ui-daisy components with variants
-const buttonVariants = cva("base-classes", {
-  variants: {
-    variant: { newStyle: "custom-classes" }
-  }
-})
+// ✅ DO: Use object-based variants with consistent base classes
+const componentBase = "transition-all duration-100 ease-smooth"
+const componentVariants = {
+  newStyle: `${componentBase} custom-classes`
+}
+
+// ✅ DO: Add interactive props for enhanced UX  
+interface ComponentProps {
+  variant?: keyof typeof componentVariants
+  hoverable?: boolean
+  animated?: boolean
+  interactive?: boolean
+}
 
 // ✅ DO: Create business wrappers for domain logic
 export function CVUploadButton({ onUpload, acceptedTypes }) {
-  return <Button variant="gradient" onClick={onUpload}>Upload CV</Button>
+  return <Button variant="gradient" hoverable onClick={onUpload}>Upload CV</Button>
 }
 
 // ❌ DON'T: Create duplicate UI primitives
 // Instead of new Button component, add variant to existing
 
-// ❌ DON'T: Mix business logic in ui-daisy
+// ❌ DON'T: Mix business logic in ui-daisy  
 // Keep ui-daisy components pure and reusable
+
+// ❌ DON'T: Use CVA - use object-based variants
+// Simpler, more maintainable, better TypeScript support
 ```
 
 **🔍 Before Creating New Component Checklist**:
@@ -467,12 +488,12 @@ boxShadow: {
 ```tsx
 import { Button } from "@/components/ui-daisy/button"
 
-// Professional Variants Available
-<Button variant="gradient-brand" size="lg" elevation="lg">
-  Primary Action
+// Object-Based Variants with Interactive Props
+<Button variant="glass" hoverable animated>
+  Glass Effect Button
 </Button>
-<Button variant="glass" rounded="full" interactive>
-  Glass Morphism
+<Button variant="elevated" interactive loading>
+  Interactive Button
 </Button>
 <Button variant="linkedin" leftIcon={<LinkedInIcon />}>
   LinkedIn Integration
@@ -480,10 +501,11 @@ import { Button } from "@/components/ui-daisy/button"
 ```
 
 **Available Button Variants**:
-- `default`, `primary`, `secondary`, `accent`, `ghost`, `outline`
-- `gradient-brand`, `gradient`, `gradient-blue`, `gradient-emerald`
-- `glass`, `glass-outline`, `glass-primary`
-- `linkedin` (brand-specific styling)
+- **Core**: `default`, `transparent`, `glass`, `solid`, `hybrid`
+- **Layout**: `outlined`, `elevated`, `floating`, `gradient`
+- **Semantic**: `primary`, `secondary`, `success`, `warning`, `error`, `info`
+- **Special**: `ghost`, `link`, `linkedin`
+- **Legacy**: `outline` (alias), `destructive` (alias)
 
 #### Enhanced Form Components
 ```tsx
@@ -535,8 +557,8 @@ import { Card, CardHeader, CardContent } from "@/components/ui-daisy/card"
 ```
 
 **Available Card Variants**:
-- `default`, `transparent`, `glass`, `solid`, `outlined`
-- `elevated`, `floating`, `gradient`
+- **Core**: `default`, `transparent`, `glass`, `solid`, `hybrid`
+- **Layout**: `outlined`, `elevated`, `floating`, `gradient`
 
 #### Professional Badge System
 ```tsx
@@ -870,14 +892,17 @@ When implementing new features:
 
 ### Component Development Checklist
 Before shipping any UI component:
-- [ ] Uses CVA for variant management
-- [ ] Follows standardized prop API patterns
-- [ ] Includes all necessary variants (don't create one-off implementations)
-- [ ] Has proper TypeScript interfaces
-- [ ] Includes accessibility features
-- [ ] Added to component library exports
-- [ ] Documented with usage examples
-- [ ] Tested across different screen sizes
+- [ ] Uses object-based variants with consistent `componentBase` pattern
+- [ ] Includes `hoverable`, `animated`, `interactive` props where appropriate
+- [ ] Follows standardized prop API patterns (`variant`, `size`, `className`)
+- [ ] Implements unified variant names (`glass`, `outlined`, `elevated`, etc.)
+- [ ] Uses faint border aesthetic (`border-base-300/50`)
+- [ ] Has proper TypeScript interfaces with variant key typing
+- [ ] Includes Framer Motion support for `animated` prop
+- [ ] Includes accessibility features (ARIA, focus management)
+- [ ] Added to component library exports (`/components/ui-daisy/index.ts`)
+- [ ] Documented with usage examples in showcase
+- [ ] Tested across different screen sizes and interaction states
 - [ ] No inline styles or className overrides in consuming components
 
 ---
@@ -898,15 +923,15 @@ Before shipping any UI component:
 
 *This guide serves as the comprehensive reference for developing within the TechRec codebase. Follow these guidelines consistently to maintain code quality, architectural integrity, and development efficiency.*
 
-**Last Update**: August 3, 2025 - **COMPREHENSIVE PROFESSIONAL DESIGN SYSTEM COMPLETE**: 
-- ✅ **Professional UI/UX Enhancement**: Complete overhaul with modern design system
-- ✅ **DaisyUI Component Library**: All core components enhanced with professional variants
-- ✅ **Advanced Animation System**: Framer Motion integration with 60fps smooth animations
-- ✅ **Accessibility Excellence**: WCAG AA compliance with comprehensive accessibility utilities
-- ✅ **Glass Morphism & Gradients**: Professional visual effects across all components
-- ✅ **Design Token System**: Consistent color palette, typography, and spacing scales
-- ✅ **Component Architecture**: Button, Card, Input, Textarea, Select, Tabs, Badge, Dropdown, RadioGroup
-- ✅ **Performance Optimized**: Hardware-accelerated animations with reduced motion support
+**Last Update**: August 7, 2025 - **OBJECT-BASED VARIANT SYSTEM COMPLETE**: 
+- ✅ **Architectural Evolution**: Migrated from CVA to object-based variant system
+- ✅ **Unified Component Patterns**: All components share consistent base classes and variant names
+- ✅ **Enhanced Interactive Props**: `hoverable`, `animated`, `interactive` across all components
+- ✅ **Faint Border Aesthetic**: Consistent subtle borders with opacity variants
+- ✅ **Framer Motion Integration**: Optional animation support with hardware acceleration
+- ✅ **Improved Developer Experience**: Better TypeScript support and simpler mental model
+- ✅ **Performance Optimizations**: Direct object lookup vs complex CVA configurations
+- ✅ **Visual Consistency**: Unified variant behavior across Button, Card, Accordion components
 
 **Previous Update**: January 31, 2025 - **MAJOR ARCHITECTURAL MODERNIZATION**: 
 - ✅ **Single Source of Truth Migration**: Eliminated redundant CvAnalysis table
