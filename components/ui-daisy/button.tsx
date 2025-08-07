@@ -6,32 +6,42 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 
-const buttonBase = "btn rounded-xl  transition-all duration-100 ease-smooth relative overflow-hidden border"
+// Base classes - shared foundation for all button variants
+const buttonBase = "btn rounded-xl btn-shadow-mixed transition-all duration-100 ease-smooth relative overflow-hidden border"
 
+// Object-based variants for optimal performance and maintainability
 const buttonVariants = {
+  // Core variants
   default: `${buttonBase} bg-base-100 hover:bg-base-100 hover:border-base-100`,
-  transparent: `${buttonBase} bg-base-100 backdrop-blur-sm hover:bg-base-100`,
-  glass: `${buttonBase} bg-base-300/60 backdrop-blur-lg hover:bg-base-300`,
+  transparent: `${buttonBase} bg-base-100/80 backdrop-blur-sm hover:bg-base-100`,
+  glass: `${buttonBase} bg-base-100/60 backdrop-blur-lg hover:bg-base-100/80`,
   solid: `${buttonBase} bg-base-200 hover:bg-base-300 hover:border-base-300`,
-  hybrid: `${buttonBase} bg-brand-muted hover:bg-brand-muted`,
-  outlined: `${buttonBase} bg-transparent hover:border-primary/50 hover:bg-base-100/50`,
+  hybrid: `${buttonBase} bg-brand-muted hover:bg-brand-sharp`,
+  
+  // Layout variants
+  outlined: `${buttonBase} bg-transparent border-base-300/50 hover:border-primary/50 hover:bg-base-100/50`,
   elevated: `${buttonBase} bg-base-100 shadow-sm hover:shadow-md`,
   floating: `${buttonBase} bg-base-100/95 backdrop-blur-md shadow-sm hover:shadow-md`,
   gradient: `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 hover:from-base-50 hover:to-base-100`,
-  primary: `${buttonBase} bg-primary/80 text-primary-content dark:text-white`,
-  secondary: `${buttonBase} bg-secondary/80 text-secondary-content dark:text-white`,
-  success: `${buttonBase} bg-success/80 text-success-content dark:text-white`,
-  warning: `${buttonBase} bg-warning/80 text-warning-content dark:text-white`,
-  error: `${buttonBase} bg-error/90 text-error-content dark:text-white`,
-  info: `${buttonBase} bg-info/90 text-info-content dark:text-white`,
-  ghost: `${buttonBase} bg-transparent hover:bg-base-200/60 hover:border-base-300/50`,
-  link: `${buttonBase} bg-transparent text-primary hover:text-primary/80 underline hover:no-underline`,
-
-  // Premium variants (keeping some gradients for special cases)
+  
+  // Semantic variants - using DaisyUI semantic colors
+  primary: `${buttonBase} btn-primary`, 
+  secondary: `${buttonBase} btn-secondary`,
+  success: `${buttonBase} btn-success`,
+  warning: `${buttonBase} btn-warning`,
+  error: `${buttonBase} btn-error`,
+  info: `${buttonBase} btn-info`,
+  
+  // Interactive variants
+  ghost: `${buttonBase} btn-ghost hover:bg-base-200/60`,
+  link: `${buttonBase} btn-link text-primary hover:text-primary/80`,
+  
+  // Special variants
   linkedin: `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white font-medium`,
-  outline: `${buttonBase} bg-transparent hover:border-primary/50 hover:bg-base-100/50`,
-
-  destructive: `${buttonBase} bg-error/90 text-error-content hover:bg-error hover:border-error/70`,
+  
+  // Legacy aliases for backwards compatibility
+  outline: `${buttonBase} bg-transparent border-base-300/50 hover:border-primary/50 hover:bg-base-100/50`,
+  destructive: `${buttonBase} btn-error`,
 }
 
 export interface ButtonProps
