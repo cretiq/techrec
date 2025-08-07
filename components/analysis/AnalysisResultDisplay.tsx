@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {  Button  } from '@/components/ui-daisy/button';
-import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
+import { FloatingInput } from '@/components/ui-daisy/floating-input';
+import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp, User } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import _ from 'lodash';
 // Import motion and AnimatePresence
@@ -338,7 +339,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
 
   return (
     <motion.div
-      className="bg-background min-h-screen font-sans rounded-2xl"
+      className="min-h-screen font-sans rounded-2xl"
       variants={pageVariants}
       initial="hidden"
       animate="visible"
@@ -349,16 +350,37 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
               <div className="w-full space-y-4">
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Direct render */}
                 {analysisData && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
-                    <div className="flex items-center justify-between group mb-4">
-                      <h2 className="text-2xl font-semibold text-foreground">Contact Info</h2>
-                      <AIAssistanceButton
-                        section="contactInfo"
-                        currentData={analysisData.contactInfo}
-                        isEmpty={!analysisData.contactInfo?.name && !analysisData.contactInfo?.email}
-                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: improvedData }))}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity ml-4"
-                      />
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
+                    <div className="flex items-start justify-between group mb-4 gap-4">
+                      {/* Name field on the left */}
+                      <div className="flex-1">
+                        <FloatingInput
+                          id="name"
+                          type="text"
+                          label="Full Name"
+                          value={analysisData.contactInfo?.name || ''}
+                          onChange={(e) => {
+                            const newContactInfo = { 
+                              ...analysisData.contactInfo, 
+                              name: e.target.value || null 
+                            };
+                            dispatch(updateAnalysisData({ path: 'contactInfo', value: newContactInfo }));
+                          }}
+                          leftIcon={<User className="h-4 w-4" />}
+                          variant="bordered"
+                        />
+                      </div>
+                      
+                      {/* AI button on the right */}
+                      <div className="flex-shrink-0">
+                        <AIAssistanceButton
+                          section="contactInfo"
+                          currentData={analysisData.contactInfo}
+                          isEmpty={!analysisData.contactInfo?.name && !analysisData.contactInfo?.email}
+                          onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: improvedData }))}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        />
+                      </div>
                     </div>
                     <div>
                       <ContactInfoDisplay 
@@ -376,9 +398,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - About section */}
                 {analysisData.about !== undefined && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
                     <div className="flex items-center justify-between group mb-4">
-                      <h2 className="text-2xl font-semibold text-foreground">About / Summary</h2>
+                      <h2 className="text-2xl font-semibold text-base-content">About / Summary</h2>
                       <AIAssistanceButton
                         section="about"
                         currentData={analysisData.about}
@@ -403,9 +425,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Skills section */}
                 {analysisData.skills && analysisData.skills.length > 0 && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
                     <div className="flex items-center justify-between group mb-4">
-                      <h2 className="text-2xl font-semibold text-foreground">Skills</h2>
+                      <h2 className="text-2xl font-semibold text-base-content">Skills</h2>
                     </div>
                     <div>
                       <SkillsDisplay 
@@ -423,9 +445,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Experience section */}
                 {analysisData.experience && analysisData.experience.length > 0 && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
                     <div className="flex items-center justify-between group mb-4">
-                      <h2 className="text-2xl font-semibold text-foreground">Work Experience</h2>
+                      <h2 className="text-2xl font-semibold text-base-content">Work Experience</h2>
                     </div>
                     <div>
                       <ExperienceDisplay 
@@ -441,9 +463,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Education section */}
                 {analysisData.education && analysisData.education.length > 0 && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-4 mb-4">
+                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
                     <div className="flex items-center justify-between group mb-4">
-                      <h2 className="text-2xl font-semibold text-foreground">Education</h2>
+                      <h2 className="text-2xl font-semibold text-base-content">Education</h2>
                     </div>
                     <div>
                       <EducationDisplay 
