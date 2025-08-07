@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui-daisy/button';
 import { Badge } from '@/components/ui-daisy/badge';
 import { TooltipEnhanced } from '@/components/ui-daisy/tooltip';
@@ -121,157 +120,84 @@ export function SuggestionItem({
   const getStatusDisplay = () => {
     if (isAccepted) {
       return (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
+        <div
           className="flex items-center gap-2 text-success-content bg-success/20 px-3 py-1 rounded-full"
           data-testid={`suggestion-status-accepted-${suggestion.id}`}
         >
           <Check className="h-4 w-4" />
           <span className="text-sm font-medium">Applied</span>
-        </motion.div>
+        </div>
       );
     }
     
     if (isDeclined) {
       return (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
+        <div
           className="flex items-center gap-2 text-error-content bg-error/20 px-3 py-1 rounded-full"
           data-testid={`suggestion-status-declined-${suggestion.id}`}
         >
           <X className="h-4 w-4" />
           <span className="text-sm font-medium">Declined</span>
-        </motion.div>
+        </div>
       );
     }
 
     return (
       <div className="flex gap-2" data-testid={`suggestion-actions-${suggestion.id}`}>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            size="sm"
-            variant="default"
-            onClick={handleAccept}
-            disabled={isProcessing}
-            className="btn-success px-4 py-1 h-8"
-            data-testid={`suggestion-button-accept-${suggestion.id}`}
-          >
-            {isProcessing ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="h-3 w-3 border border-success-content border-t-transparent rounded-full"
-              />
-            ) : (
-              <>
-                <Check className="h-3 w-3 mr-1" />
-                Accept
-              </>
-            )}
-          </Button>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleDecline}
-            disabled={isProcessing}
-            className="btn-error btn-outline px-4 py-1 h-8"
-            data-testid={`suggestion-button-decline-${suggestion.id}`}
-          >
-            {isProcessing ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="h-3 w-3 border border-error border-t-transparent rounded-full"
-              />
-            ) : (
-              <>
-                <X className="h-3 w-3 mr-1" />
-                Decline
-              </>
-            )}
-          </Button>
-        </motion.div>
+        <Button
+          size="sm"
+          variant="default"
+          onClick={handleAccept}
+          disabled={isProcessing}
+          data-testid={`suggestion-button-accept-${suggestion.id}`}
+        >
+          {isProcessing ? (
+            <div className="h-3 w-3 border border-success-content border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <>
+              <Check className="h-3 w-3 mr-1" />
+              Accept
+            </>
+          )}
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={handleDecline}
+          disabled={isProcessing}
+          data-testid={`suggestion-button-decline-${suggestion.id}`}
+        >
+          {isProcessing ? (
+            <div className="h-3 w-3 border border-error border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <>
+              <X className="h-3 w-3 mr-1" />
+              Decline
+            </>
+          )}
+        </Button>
       </div>
     );
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+    <div
       className={cn(
-        "relative overflow-hidden rounded-lg border transition-all duration-100",
-        "bg-base-100/60 backdrop-blur-sm border-base-300/50",
+        "relative overflow-hidden rounded-lg transition-all duration-100",
+        "bg-base-100/60 backdrop-blur-sm",
         config.bgColor,
-        config.borderColor,
         isAccepted && "ring-2 ring-success/50 bg-success/10",
         isDeclined && "ring-2 ring-error/50 bg-error/10 opacity-60",
-        isPending && "hover:bg-base-100/80 hover:border-base-300/70 cursor-pointer",
         className
       )}
       data-testid={`suggestion-item-${suggestion.id}`}
     >
-      {/* Shimmer effect for new suggestions */}
-      {isPending && (
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-        />
-      )}
-
       <div className="relative p-4 space-y-3">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className={cn("p-2 rounded-lg", config.bgColor)}
-            >
+            <div className={cn("p-2 rounded-lg", config.bgColor)}>
               <IconComponent className={cn("h-5 w-5", config.color)} />
-            </motion.div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <Badge 
-                  variant="outline" 
-                  className={cn("text-xs", config.color)}
-                  data-testid={`suggestion-badge-type-${suggestion.id}`}
-                >
-                  {config.label}
-                </Badge>
-                {suggestion.priority === 'high' && (
-                  <Badge 
-                    variant="outline"
-                    className={cn("text-xs", priorityStyle.color, priorityStyle.bgColor)}
-                    data-testid={`suggestion-badge-priority-${suggestion.id}`}
-                  >
-                    <AlertCircle className="h-3 w-3 mr-1" />
-                    {priorityStyle.label}
-                  </Badge>
-                )}
-              </div>
-              
-              <h4 
-                className="font-semibold text-base-content text-sm leading-tight truncate"
-                data-testid={`suggestion-title-${suggestion.id}`}
-              >
-                {suggestion.title}
-              </h4>
-              
-              {suggestion.confidence && (
-                <div className="mt-1 text-xs text-base-content/60">
-                  Confidence: {Math.round(suggestion.confidence * 100)}%
-                </div>
-              )}
             </div>
           </div>
           
@@ -315,6 +241,6 @@ export function SuggestionItem({
           </TooltipEnhanced>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
