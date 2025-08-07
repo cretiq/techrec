@@ -1,95 +1,40 @@
-# 🚀 TechRec - AI-Powered Tech Recruitment Platform
+# 🚀 TechRec
 
-This is a comprehensive tech recruitment platform built with **Next.js 15+**, **TypeScript**, **TailwindCSS 4**, and **DaisyUI**, featuring sophisticated AI-powered CV analysis, gamification, and a professional component architecture.
+> **AI-powered recruitment platform that gamifies job searching for tech professionals**
 
-## Getting Started
+TechRec transforms the job search experience by combining intelligent CV analysis, batch job applications, AI-generated content, and a comprehensive gamification system. Upload your CV, get instant feedback, apply to multiple positions at once, and level up your career.
 
-First, run the development server:
+## What TechRec Does
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**🤖 Smart CV Analysis**  
+Upload your CV and get instant multi-dimensional scoring on ATS compatibility, content quality, and formatting. Our AI extracts your profile data and provides actionable improvement suggestions.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**🎯 Batch Job Applications**  
+Apply to 20+ relevant positions simultaneously. Our matching algorithm scores compatibility between your profile and job roles, then generates personalized cover letters for each application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**📝 AI Content Generation**  
+Create professional cover letters, LinkedIn outreach messages, and project descriptions. Choose from multiple writing styles (formal, casual, confident) tailored to each opportunity.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**🎮 Gamified Experience**  
+Earn XP through platform activities, unlock achievements, maintain daily streaks, and climb leaderboards. Premium subscription tiers provide point-based access to advanced AI features.
 
-## 🏗️ Architecture & Documentation
+**🎨 Professional Design**  
+Modern glass morphism interface with smooth animations, 40+ custom components, and full accessibility support.
 
-### Component System
-- **[Component Architecture Guide](./COMPONENT_ARCHITECTURE.md)** - Complete 4-layer component system documentation
-- **[CLAUDE.md](./CLAUDE.md)** - Comprehensive project guidelines and development patterns
-- **4-Layer Architecture**: UI Primitives → Business Components → Page-Specific → Pages
+## Technology Stack
 
-### Quick Component Reference
-```tsx
-// Layer 1: UI Primitives (98% of imports)
-import { Button, Card, Accordion } from '@/components/ui-daisy'
+**Frontend**  
+Next.js 15+ • TypeScript • TailwindCSS 4 • DaisyUI • Framer Motion • Redux Toolkit
 
-// Layer 2: Business Components  
-import { StartAssessmentButton } from '@/components/buttons'
-import { AnalysisResultDisplay } from '@/components/analysis'
+**Backend**  
+Next.js API Routes • MongoDB • Prisma ORM • Redis Caching • NextAuth.js
 
-// Layer 3: Page-Specific (rare)
-import { QuestionTemplateSelector } from '@/app/components'
-```
+**AI & Services**  
+Google Gemini • OpenAI GPT • Stripe Payments • AWS S3 • LinkedIn API
 
-### Key Features
-- **🎨 Professional Design System** - Glass morphism, gradients, 40+ components
-- **⚡ Object-based Variants** - Consistent, type-safe component APIs
-- **🎭 Framer Motion** - Smooth animations and transitions
-- **♿ Accessibility First** - WCAG AA compliance built-in
-- **🧩 Modular Architecture** - Clean separation of concerns
-- **🤖 Centralized AI Configuration** - Environment-based Gemini model management
+**Testing**  
+Jest • Playwright • React Testing Library • Zod Validation
 
-## ⚙️ Configuration
+---
 
-### AI Model Configuration
-TechRec uses a centralized AI model configuration system. Configure models via environment variables:
-
-```bash
-# Global fallback model
-GEMINI_MODEL=gemini-2.5-flash
-
-# Specific use case models (optional)
-GEMINI_CV_ANALYSIS_MODEL=gemini-2.5-flash
-GEMINI_COVER_LETTER_MODEL=gemini-2.5-flash
-GEMINI_OUTREACH_MODEL=gemini-2.5-flash
-# ... see CLAUDE.md for complete list
-```
-
-### Development Usage
-```typescript
-import { getGeminiModel } from '@/lib/modelConfig';
-
-// Use case-specific model selection
-const model = genAI.getGenerativeModel({ 
-  model: getGeminiModel('cv-analysis'),
-  generationConfig: { ... }
-});
-```
-
-For complete configuration details, see **[CLAUDE.md](./CLAUDE.md)**.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Built for tech professionals who want to level up their job search game*
