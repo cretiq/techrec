@@ -4,11 +4,10 @@ import { ProfileAnalysisDataSchema } from '@/types/cv';
 import { geminiCircuitBreaker } from '@/utils/circuitBreaker';
 import { traceGeminiCall, logGeminiAPI, LogLevel } from '@/utils/apiLogger';
 import { calculateTotalExperience } from '@/utils/experienceCalculator';
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Initialize Google AI client (requires GOOGLE_AI_API_KEY environment variable)
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '', );
-
-const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
 // Helper to measure elapsed time
 const getElapsedTime = (start: [number, number]) => {
@@ -193,7 +192,8 @@ ${cvText}
 Return ONLY the JSON object, no explanatory text:`;
 
   try {
-    console.log(`[Gemini Analysis] Sending request to Gemini model: ${geminiModel}`);
+    const modelName = getGeminiModel('cv-analysis');
+    console.log(`[Gemini Analysis] Sending request to Gemini model: ${modelName}`);
     
     // Use circuit breaker protection for Gemini API call
     const circuitResult = await geminiCircuitBreaker.execute(
@@ -203,7 +203,7 @@ Return ONLY the JSON object, no explanatory text:`;
           async () => {
             // Get the generative model
             const model = genAI.getGenerativeModel({ 
-              model: geminiModel,
+              model: modelName,
               generationConfig: {
                 temperature: 0.1, // Low temperature for consistent parsing
                 topK: 40,
@@ -218,7 +218,7 @@ Return ONLY the JSON object, no explanatory text:`;
             
             logGeminiAPI('cv-analysis', LogLevel.INFO, `Received response from Gemini model`, {
               contentLength: content.length,
-              model: geminiModel,
+              model: modelName,
               estimatedTokens
             });
             
@@ -387,7 +387,7 @@ Return ONLY the JSON object, no explanatory text:`;
       } else if (error.message.includes('quota') || error.message.includes('rate limit')) {
         throw new Error('Google AI API quota exceeded or rate limited. Please try again later.');
       } else if (error.message.includes('model')) {
-        throw new Error(`Gemini model "${geminiModel}" is not available. Please check your model configuration.`);
+        throw new Error(`Gemini model "${modelName}" is not available. Please check your model configuration.`);
       }
       throw error;
     } else {

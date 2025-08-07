@@ -6,10 +6,10 @@ import { traceGeminiCall, logGeminiAPI, LogLevel } from '@/utils/apiLogger';
 import { ServerCache } from '@/lib/serverCache';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { z } from 'zod';
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
-const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
 
 // Cache configuration
 const IDEAS_CACHE_TTL = 3600; // 1 hour for project ideas
@@ -269,8 +269,9 @@ Return ONLY the JSON object, no explanatory text:`;
           return await traceGeminiCall(
             'project-ideas-generation',
             async () => {
+              const modelName = getGeminiModel('project-ideas');
               const model = genAI.getGenerativeModel({
-                model: geminiModel,
+                model: modelName,
                 generationConfig: {
                   temperature: 0.7, // Higher temperature for creative project ideas
                   topK: 40,
@@ -285,7 +286,7 @@ Return ONLY the JSON object, no explanatory text:`;
 
               logGeminiAPI('project-ideas-generation', LogLevel.INFO, 'Ideas generation completed', {
                 contentLength: content.length,
-                model: geminiModel,
+                model: modelName,
                 skills: skills.length,
                 experienceLevel
               });
@@ -496,7 +497,8 @@ Return ONLY the JSON object, no explanatory text:`;
     try {
       const prompt = `Give me one quick project idea for a ${experienceLevel} developer to showcase ${skill} skills. Respond with just the project title and 1-sentence description. Keep it under 100 characters total.`;
       
-      const model = genAI.getGenerativeModel({ model: geminiModel });
+      const modelName = getGeminiModel('project-ideas');
+      const model = genAI.getGenerativeModel({ model: modelName });
       const result = await model.generateContent(prompt);
       const suggestion = result.response.text().trim();
       

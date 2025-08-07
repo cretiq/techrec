@@ -1,10 +1,10 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { InternalProfile, InternalSkill } from "@/types/types";
 import { Role } from "@/types/role";
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
-const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
 // Re-use the same interfaces from the OpenAI version for compatibility
 interface RoleInfo {
@@ -101,8 +101,9 @@ Please generate only the final cover letter text, starting with the greeting.
 
     try {
         // Get the generative model
+        const modelName = getGeminiModel('cover-letter');
         const model = genAI.getGenerativeModel({ 
-            model: geminiModel,
+            model: modelName,
             generationConfig: {
                 temperature: 0.6,
                 topK: 40,

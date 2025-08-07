@@ -2,6 +2,7 @@ import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
 import fs from 'fs';
 import path from 'path';
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Environment validation
 const envSchema = z.object({
@@ -10,7 +11,6 @@ const envSchema = z.object({
 
 // Direct upload configuration
 const DIRECT_UPLOAD_CONFIG = {
-  MODEL: 'gemini-2.0-flash', // Latest and fastest model
   SUPPORTED_MIME_TYPES: {
     '.pdf': 'application/pdf',
     '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -169,8 +169,9 @@ export class DirectGeminiUploadService {
     try {
       const prompt = this.buildAnalysisPrompt();
       
+      const modelName = getGeminiModel('direct-upload');
       const response = await this.ai.models.generateContent({
-        model: DIRECT_UPLOAD_CONFIG.MODEL,
+        model: modelName,
         contents: [
           {
             role: 'user',

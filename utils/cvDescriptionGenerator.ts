@@ -13,10 +13,10 @@ import { PointsSpendType } from '@prisma/client';
 import { GitHubRepository } from '@/lib/github/repositoryService';
 import { ReadmeAnalysis } from '@/utils/readmeAnalyzer';
 import { ProjectIdea } from '@/utils/projectIdeasGenerator';
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
-const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
 
 // Cache configuration
 const CV_DESCRIPTION_CACHE_TTL = 3600; // 1 hour for CV descriptions
@@ -403,8 +403,9 @@ Return ONLY the JSON object, no explanatory text:`;
         return await traceGeminiCall(
           'cv-description-generation',
           async () => {
+            const modelName = getGeminiModel('project-description');
             const model = genAI.getGenerativeModel({
-              model: geminiModel,
+              model: modelName,
               generationConfig: {
                 temperature: 0.3, // Lower temperature for consistent professional tone
                 topK: 40,
@@ -419,7 +420,7 @@ Return ONLY the JSON object, no explanatory text:`;
 
             logGeminiAPI('cv-description-generation', LogLevel.INFO, 'CV description generation completed', {
               contentLength: content.length,
-              model: geminiModel,
+              model: modelName,
               sourceType: projectInput.type,
               style,
               focus

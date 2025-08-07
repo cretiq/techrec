@@ -6,10 +6,10 @@ import { traceGeminiCall, logGeminiAPI, LogLevel } from '@/utils/apiLogger';
 import { ServerCache } from '@/lib/serverCache';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { z } from 'zod';
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
-const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
 
 // Cache configuration
 const README_CACHE_TTL = 7200; // 2 hours for README analysis
@@ -253,8 +253,9 @@ Return ONLY the JSON object, no explanatory text:`;
           return await traceGeminiCall(
             'readme-analysis',
             async () => {
+              const modelName = getGeminiModel('readme-analysis');
               const model = genAI.getGenerativeModel({
-                model: geminiModel,
+                model: modelName,
                 generationConfig: {
                   temperature: 0.2, // Low temperature for consistent analysis
                   topK: 40,
@@ -269,7 +270,7 @@ Return ONLY the JSON object, no explanatory text:`;
 
               logGeminiAPI('readme-analysis', LogLevel.INFO, `Analysis completed for ${repositoryInfo.name}`, {
                 contentLength: content.length,
-                model: geminiModel,
+                model: modelName,
                 repositoryName: repositoryInfo.name
               });
 

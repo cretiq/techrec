@@ -1,6 +1,6 @@
-# CLAUDE.md - Project Guidelines & Context
+# GEMINI.md - Project Guidelines & Context
 
-This file provides comprehensive guidance for Claude Code when working with the TechRec repository.
+This file provides comprehensive guidance for Gemini when working with the TechRec repository.
 
 ---
 
@@ -208,33 +208,26 @@ const generateCacheKey = (data: RequestData): string => {
 - **Legacy**: Custom shadcn/ui components in `/components/ui/`
 - **Current**: DaisyUI components in `/components/ui-daisy/`
 
-### Object-Based Variant Architecture 
-**🚨 CRITICAL EVOLUTION**: **Unified Component System with Object-Based Variants**
-
-**Core Philosophy**: All UI components now follow a unified object-based variant system that replaces CVA complexity with predictable, maintainable patterns. Every component shares consistent base classes, variant names, and interactive behaviors.
-
 ### Component Reusability & Styling Approach
 **🚨 CRITICAL PRINCIPLE**: **Build Reusable, Scalable, Standardized Components Always**
 
-**Unified Variant System**: Every UI element uses the same architectural pattern for maximum consistency and developer predictability.
+**Core Philosophy**: Every UI element should be a composable, predictable component with consistent APIs and behavior patterns. This is non-negotiable for maintainable, scalable applications.
 
-**✅ MANDATORY Approach**: Object-Based Variant Architecture
+**✅ MANDATORY Approach**: Component-First Architecture
 ```tsx
-// ✅ NEW PATTERN: Object-based variants with consistent base classes
-const componentBase = "base-classes transition-all duration-100 ease-smooth"
+// ✅ Standardized component with variants (CVA pattern)
+const buttonVariants = cva("base-classes", {
+  variants: {
+    variant: { gradient: "...", glass: "...", outline: "..." },
+    size: { sm: "...", md: "...", lg: "..." },
+    animation: { none: "!transition-none", default: "transition-all" }
+  }
+})
 
-const componentVariants = {
-  default: `${componentBase} bg-base-100 border border-base-300/50`,
-  transparent: `${componentBase} bg-base-100/80 backdrop-blur-sm`,
-  glass: `${componentBase} bg-base-300/60 backdrop-blur-lg`,
-  outlined: `${componentBase} bg-transparent border border-base-300/50`,
-  elevated: `${componentBase} shadow-md hover:shadow-lg`,
-}
-
-// ✅ Clean, predictable usage with enhanced props
-<Button variant="glass" hoverable animated />
-<Card variant="elevated" interactive />
-<Accordion variant="transparent" hoverable />
+// ✅ Clean, reusable usage
+<Button variant="gradient" size="xl" animation="none" />
+<Card variant="glass" />
+<SectionBadge variant="outline" icon={<HelpCircle />} />
 ```
 
 **❌ FORBIDDEN Approaches**: 
@@ -258,160 +251,43 @@ const componentVariants = {
 - **Scalability**: New features use existing components, extending with variants
 
 **Standardized Component Patterns**:
-1. **Object-Based Variants**: Direct object lookup system replacing CVA complexity
-2. **Unified Base Classes**: All components share consistent `componentBase` patterns  
-3. **Enhanced Interactive Props**: `hoverable`, `animated`, `interactive` for dynamic behavior
-4. **Consistent Prop APIs**: `variant`, `size`, `className`, `children` across all components
-5. **Framer Motion Integration**: Optional `animated` prop enables motion effects
-6. **Faint Border Aesthetic**: Subtle borders with opacity (`border-base-300/50`) 
-7. **Icon Integration**: Standardized `icon`, `leftIcon`, `rightIcon` props
-8. **Accessibility First**: Built-in ARIA labels, focus management, keyboard navigation
+1. **Variant-Based Architecture**: Use `class-variance-authority` (CVA) for all variants
+2. **Consistent Prop APIs**: `variant`, `size`, `className`, `children` patterns
+3. **Animation Controls**: `animated`, `hoverable`, `interactive` boolean props
+4. **Icon Integration**: Standardized `icon`, `leftIcon`, `rightIcon` props
+5. **Accessibility First**: Built-in ARIA labels, focus management, keyboard navigation
 
 **Implementation Workflow**:
 1. **Before Creating**: Check if existing component can be extended with variants
-2. **Component Design**: Define base class and variant object with consistent patterns
-3. **API Design**: Follow established prop patterns (`variant`, `size`, `hoverable`, `animated`)
-4. **Interactive Props**: Add `hoverable`, `animated`, `interactive` support where appropriate
-5. **Documentation**: Add to design system with usage examples
-6. **Refactoring**: Replace any one-off implementations with new component
+2. **Component Design**: Define all variants upfront using CVA
+3. **API Design**: Follow established prop patterns (`variant`, `size`, etc.)
+4. **Documentation**: Add to design system with usage examples
+5. **Refactoring**: Replace any one-off implementations with new component
 
-**Component Architecture (4-Layer System)**:
+**Component Library Organization**:
 ```
-📁 /components/ui-daisy/           ← 🎯 LAYER 1: UI PRIMITIVES (40+ components)
-├── button.tsx                     // Base Button with 15+ variants (gradient, glass, etc.)
-├── card.tsx                       // Base Card with 8 variants (transparent, solid, etc.)
-├── accordion.tsx                  // Base Accordion with variant system
-├── input.tsx, textarea.tsx        // Form primitives with professional styling
-├── badge.tsx, alert.tsx           // Display components with variants
-├── dialog.tsx, popover.tsx        // Overlay components with animations
-├── suggestion-card.tsx            // Specialized but reusable components
-└── index.ts                       // Central exports for all UI primitives
-
-📁 /components/                    ← 🏗️ LAYER 2: BUSINESS COMPONENTS
-├── buttons.tsx                    // Business-specific button wrappers
-├── analysis/                      // CV analysis feature components
-│   ├── AnalysisResultDisplay.tsx  // Complex feature using ui-daisy primitives
-│   └── display/                   // Analysis sub-components
-├── cv/                           // CV management components  
-├── roles/                        // Job roles components
-├── landing/                      // Landing page components
-└── [feature]/                    // Other domain-specific components
-
-📁 /app/components/                ← 📄 LAYER 3: PAGE-SPECIFIC (minimal)
-└── question-template-selector.tsx // App-specific component (rare)
-
-📁 /app/[route]/                   ← 🌐 LAYER 4: PAGES (consume all layers)
-└── page.tsx                       // Pages import from any layer as needed
+components/ui-daisy/
+├── button.tsx          // All button variants
+├── card.tsx            // All card variants  
+├── badge.tsx           // All badge variants
+├── section-badge.tsx   // Specialized reusable pill component
+├── input.tsx           // All input variants
+└── index.ts            // Export all components
 ```
 
-**Import Patterns & Usage Examples**:
-
-**🎯 LAYER 1 - UI Primitives (98% of imports)**:
+**Real-World Examples from Our Codebase**:
 ```tsx
-// ✅ PRIMARY PATTERN: Import ui-daisy components directly
-import { Button, Card, Accordion, Badge } from '@/components/ui-daisy'
+// ✅ SectionBadge - Reusable pill component
+<SectionBadge variant="gradient" icon={<AlertTriangle />}>
+  The Cost of Waiting
+</SectionBadge>
 
-// Usage with professional variants
-<Card variant="gradient" hoverable animated>
-  <Button variant="glass" size="lg" leftIcon={<Play />}>
-    Start Analysis
-  </Button>
-</Card>
+// ✅ Card - Standardized variants
+<Card variant="gradient" className="h-full">
 
-<Accordion type="multiple" value={openSections}>
-  <AccordionItem variant="glass" value="contact">
-    <AccordionTrigger>Contact Information</AccordionTrigger>
-    <AccordionContent>...</AccordionContent>
-  </AccordionItem>
-</Accordion>
+// ✅ Button - Consistent animation controls
+<Button variant="gradient" className="!transition-none" />
 ```
-
-**🏗️ LAYER 2 - Business Components (targeted usage)**:
-```tsx
-// ✅ BUSINESS WRAPPERS: When you need domain-specific behavior
-import { StartAssessmentButton, WarningButton } from '@/components/buttons'
-import { ContactInfoDisplay } from '@/components/analysis/display'
-
-// Business components use ui-daisy internally
-<StartAssessmentButton onClick={handleStart} loading={isLoading} />
-<ContactInfoDisplay data={contactData} onChange={handleUpdate} />
-```
-
-**📄 LAYER 3 - Page-Specific (rare)**:
-```tsx
-// ✅ PAGE-SPECIFIC: Only when component is truly unique to one page
-import { QuestionTemplateSelector } from '@/app/components'
-
-// Used only in specific app routes
-<QuestionTemplateSelector templates={templates} />
-```
-
-**🌐 LAYER 4 - Pages (composition)**:
-```tsx
-// ✅ PAGES: Compose all layers together
-import { Card, Button } from '@/components/ui-daisy'
-import { AnalysisResultDisplay } from '@/components/analysis'
-import { StartAssessmentButton } from '@/components/buttons'
-
-// Pages orchestrate the full user experience
-export default function CVManagementPage() {
-  return (
-    <Card variant="transparent">
-      <AnalysisResultDisplay />
-      <StartAssessmentButton onClick={handleStart} />
-    </Card>
-  )
-}
-```
-
-**📋 Component Decision Matrix**:
-
-| **When to Create** | **Where to Put It** | **Example** |
-|-------------------|---------------------|-------------|
-| Reusable UI primitive | `/components/ui-daisy/` | Base Button, Card, Input |
-| Business logic wrapper | `/components/buttons.tsx` | StartAssessmentButton |
-| Feature-specific component | `/components/[feature]/` | AnalysisResultDisplay |
-| Page-unique component | `/app/components/` | QuestionTemplateSelector |
-| One-off page element | Inline in page | Simple divs, text |
-
-**🚨 COMPONENT CREATION RULES**:
-
-```tsx
-// ✅ DO: Use object-based variants with consistent base classes
-const componentBase = "transition-all duration-100 ease-smooth"
-const componentVariants = {
-  newStyle: `${componentBase} custom-classes`
-}
-
-// ✅ DO: Add interactive props for enhanced UX  
-interface ComponentProps {
-  variant?: keyof typeof componentVariants
-  hoverable?: boolean
-  animated?: boolean
-  interactive?: boolean
-}
-
-// ✅ DO: Create business wrappers for domain logic
-export function CVUploadButton({ onUpload, acceptedTypes }) {
-  return <Button variant="gradient" hoverable onClick={onUpload}>Upload CV</Button>
-}
-
-// ❌ DON'T: Create duplicate UI primitives
-// Instead of new Button component, add variant to existing
-
-// ❌ DON'T: Mix business logic in ui-daisy  
-// Keep ui-daisy components pure and reusable
-
-// ❌ DON'T: Use CVA - use object-based variants
-// Simpler, more maintainable, better TypeScript support
-```
-
-**🔍 Before Creating New Component Checklist**:
-1. **Can I use existing ui-daisy component with different variant?** 
-2. **Can I compose existing components together?**
-3. **Does this contain business logic?** → `/components/[feature]/`
-4. **Is this truly reusable?** → `/components/ui-daisy/`
-5. **Is this page-specific?** → `/app/components/` (rare)
 
 ### Design System
 **Glass Morphism Theme**:
@@ -520,12 +396,12 @@ boxShadow: {
 ```tsx
 import { Button } from "@/components/ui-daisy/button"
 
-// Object-Based Variants with Interactive Props
-<Button variant="glass" hoverable animated>
-  Glass Effect Button
+// Professional Variants Available
+<Button variant="gradient-brand" size="lg" elevation="lg">
+  Primary Action
 </Button>
-<Button variant="elevated" interactive loading>
-  Interactive Button
+<Button variant="glass" rounded="full" interactive>
+  Glass Morphism
 </Button>
 <Button variant="linkedin" leftIcon={<LinkedInIcon />}>
   LinkedIn Integration
@@ -533,11 +409,10 @@ import { Button } from "@/components/ui-daisy/button"
 ```
 
 **Available Button Variants**:
-- **Core**: `default`, `transparent`, `glass`, `solid`, `hybrid`
-- **Layout**: `outlined`, `elevated`, `floating`, `gradient`
-- **Semantic**: `primary`, `secondary`, `success`, `warning`, `error`, `info`
-- **Special**: `ghost`, `link`, `linkedin`
-- **Legacy**: `outline` (alias), `destructive` (alias)
+- `default`, `primary`, `secondary`, `accent`, `ghost`, `outline`
+- `gradient-brand`, `gradient`, `gradient-blue`, `gradient-emerald`
+- `glass`, `glass-outline`, `glass-primary`
+- `linkedin` (brand-specific styling)
 
 #### Enhanced Form Components
 ```tsx
@@ -589,8 +464,8 @@ import { Card, CardHeader, CardContent } from "@/components/ui-daisy/card"
 ```
 
 **Available Card Variants**:
-- **Core**: `default`, `transparent`, `glass`, `solid`, `hybrid`
-- **Layout**: `outlined`, `elevated`, `floating`, `gradient`
+- `default`, `transparent`, `glass`, `solid`, `outlined`
+- `elevated`, `floating`, `gradient`
 
 #### Professional Badge System
 ```tsx
@@ -936,17 +811,14 @@ When implementing new features:
 
 ### Component Development Checklist
 Before shipping any UI component:
-- [ ] Uses object-based variants with consistent `componentBase` pattern
-- [ ] Includes `hoverable`, `animated`, `interactive` props where appropriate
-- [ ] Follows standardized prop API patterns (`variant`, `size`, `className`)
-- [ ] Implements unified variant names (`glass`, `outlined`, `elevated`, etc.)
-- [ ] Uses faint border aesthetic (`border-base-300/50`)
-- [ ] Has proper TypeScript interfaces with variant key typing
-- [ ] Includes Framer Motion support for `animated` prop
-- [ ] Includes accessibility features (ARIA, focus management)
-- [ ] Added to component library exports (`/components/ui-daisy/index.ts`)
-- [ ] Documented with usage examples in showcase
-- [ ] Tested across different screen sizes and interaction states
+- [ ] Uses CVA for variant management
+- [ ] Follows standardized prop API patterns
+- [ ] Includes all necessary variants (don't create one-off implementations)
+- [ ] Has proper TypeScript interfaces
+- [ ] Includes accessibility features
+- [ ] Added to component library exports
+- [ ] Documented with usage examples
+- [ ] Tested across different screen sizes
 - [ ] No inline styles or className overrides in consuming components
 
 ---
@@ -954,7 +826,7 @@ Before shipping any UI component:
 ## 📚 DOCUMENTATION STANDARDS
 
 ### Key Documentation Files
-- `CLAUDE.md` - This file (project guidelines)
+- `GEMINI.md` - This file (project guidelines)
 - `GAMIFICATION_STRATEGY.md` - Comprehensive gamification documentation
 - `README.md` - Project setup and overview
 
@@ -967,25 +839,15 @@ Before shipping any UI component:
 
 *This guide serves as the comprehensive reference for developing within the TechRec codebase. Follow these guidelines consistently to maintain code quality, architectural integrity, and development efficiency.*
 
-**Last Update**: August 7, 2025 - **CENTRALIZED GEMINI MODEL CONFIGURATION SYSTEM**: 
-- ✅ **Centralized Configuration**: All Gemini models now managed via `lib/modelConfig.ts`
-- ✅ **Environment Variable System**: 10 specific model use cases configurable via env vars
-- ✅ **Type Safety**: Full TypeScript support with proper use case types
-- ✅ **13 Files Updated**: Complete migration across API routes, services, and utilities
-- ✅ **Debug Visibility**: Development logging shows model selection per use case
-- ✅ **Fallback Strategy**: Hierarchical fallbacks (specific → GEMINI_MODEL → default)
-- ✅ **Performance Optimization**: Optimized model selection per specific task
-- ✅ **Developer Experience**: Single import replaces hardcoded model strings
-
-**Previous Update**: August 7, 2025 - **OBJECT-BASED VARIANT SYSTEM COMPLETE**: 
-- ✅ **Architectural Evolution**: Migrated from CVA to object-based variant system
-- ✅ **Unified Component Patterns**: All components share consistent base classes and variant names
-- ✅ **Enhanced Interactive Props**: `hoverable`, `animated`, `interactive` across all components
-- ✅ **Faint Border Aesthetic**: Consistent subtle borders with opacity variants
-- ✅ **Framer Motion Integration**: Optional animation support with hardware acceleration
-- ✅ **Improved Developer Experience**: Better TypeScript support and simpler mental model
-- ✅ **Performance Optimizations**: Direct object lookup vs complex CVA configurations
-- ✅ **Visual Consistency**: Unified variant behavior across Button, Card, Accordion components
+**Last Update**: August 3, 2025 - **COMPREHENSIVE PROFESSIONAL DESIGN SYSTEM COMPLETE**: 
+- ✅ **Professional UI/UX Enhancement**: Complete overhaul with modern design system
+- ✅ **DaisyUI Component Library**: All core components enhanced with professional variants
+- ✅ **Advanced Animation System**: Framer Motion integration with 60fps smooth animations
+- ✅ **Accessibility Excellence**: WCAG AA compliance with comprehensive accessibility utilities
+- ✅ **Glass Morphism & Gradients**: Professional visual effects across all components
+- ✅ **Design Token System**: Consistent color palette, typography, and spacing scales
+- ✅ **Component Architecture**: Button, Card, Input, Textarea, Select, Tabs, Badge, Dropdown, RadioGroup
+- ✅ **Performance Optimized**: Hardware-accelerated animations with reduced motion support
 
 **Previous Update**: January 31, 2025 - **MAJOR ARCHITECTURAL MODERNIZATION**: 
 - ✅ **Single Source of Truth Migration**: Eliminated redundant CvAnalysis table

@@ -9,10 +9,10 @@ import {
 } from "@/types/coverLetter";
 import { validateLetterOutput, enforceWordCount, sanitizeInput } from "@/utils/coverLetterOutput";
 import { getCache, setCache } from "@/lib/redis";
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
-const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
 // Cache configuration
 const CACHE_TTL_MINUTES = 10; // 10 minutes cache for generated letters
@@ -154,8 +154,9 @@ Rules:
 
     try {
         // Get the generative model
+        const modelName = getGeminiModel('cover-letter');
         const model = genAI.getGenerativeModel({ 
-            model: geminiModel,
+            model: modelName,
             generationConfig: {
                 temperature: 0.5,
                 topK: 40,

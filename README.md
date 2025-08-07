@@ -44,10 +44,40 @@ import { QuestionTemplateSelector } from '@/app/components'
 
 ### Key Features
 - **🎨 Professional Design System** - Glass morphism, gradients, 40+ components
-- **⚡ CVA-based Variants** - Consistent, type-safe component APIs
+- **⚡ Object-based Variants** - Consistent, type-safe component APIs
 - **🎭 Framer Motion** - Smooth animations and transitions
 - **♿ Accessibility First** - WCAG AA compliance built-in
 - **🧩 Modular Architecture** - Clean separation of concerns
+- **🤖 Centralized AI Configuration** - Environment-based Gemini model management
+
+## ⚙️ Configuration
+
+### AI Model Configuration
+TechRec uses a centralized AI model configuration system. Configure models via environment variables:
+
+```bash
+# Global fallback model
+GEMINI_MODEL=gemini-2.5-flash
+
+# Specific use case models (optional)
+GEMINI_CV_ANALYSIS_MODEL=gemini-2.5-flash
+GEMINI_COVER_LETTER_MODEL=gemini-2.5-flash
+GEMINI_OUTREACH_MODEL=gemini-2.5-flash
+# ... see CLAUDE.md for complete list
+```
+
+### Development Usage
+```typescript
+import { getGeminiModel } from '@/lib/modelConfig';
+
+// Use case-specific model selection
+const model = genAI.getGenerativeModel({ 
+  model: getGeminiModel('cv-analysis'),
+  generationConfig: { ... }
+});
+```
+
+For complete configuration details, see **[CLAUDE.md](./CLAUDE.md)**.
 
 ## Learn More
 

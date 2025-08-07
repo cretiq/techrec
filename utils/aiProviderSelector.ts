@@ -1,6 +1,7 @@
 import { analyzeCvWithGemini } from './geminiAnalysis';
 import { generateCoverLetterContentWithGemini } from '../lib/generation/geminiCoverLetterGenerator';
 import { GeminiCoverLetterGenerationParams } from '../lib/generation/geminiCoverLetterGenerator';
+import { getGeminiModel } from '@/lib/modelConfig';
 
 export type AIProvider = 'gemini';
 
@@ -22,17 +23,21 @@ export const generateCoverLetterWithProvider = async (
 export const selectAIProvider = (taskType: string): { provider: AIProvider; model: string } => {
   const provider = getDefaultProvider();
   
-  const models = {
-    gemini: {
-      analysis: 'gemini-1.5-flash',
-      generation: 'gemini-1.5-flash',
-      outreach: 'gemini-1.5-flash'
-    }
+  // Map task types to model use cases
+  const taskTypeMap: Record<string, Parameters<typeof getGeminiModel>[0]> = {
+    'analysis': 'cv-analysis',
+    'generation': 'cover-letter',
+    'outreach': 'outreach',
+    'cv-improvement': 'cv-improvement',
+    'cv-optimization': 'cv-optimization'
   };
+  
+  const useCase = taskTypeMap[taskType] || 'general';
+  const model = getGeminiModel(useCase);
   
   return {
     provider,
-    model: models[provider][taskType as keyof typeof models[typeof provider]] || models[provider].generation
+    model
   };
 };
 

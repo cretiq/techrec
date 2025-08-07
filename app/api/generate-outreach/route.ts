@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
-const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-pro";
 
 const PLATFORM_CONSTRAINTS = {
   linkedin: {
@@ -72,8 +72,9 @@ export async function POST(req: Request) {
 
     try {
         // Get the generative model
+        const modelName = getGeminiModel('outreach');
         const model = genAI.getGenerativeModel({ 
-            model: geminiModel,
+            model: modelName,
             generationConfig: {
                 temperature: 0.7,
                 topK: 40,

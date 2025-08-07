@@ -14,10 +14,10 @@ import {
 } from '@/utils/cvSuggestionValidation';
 // Import debug logger
 import { CvImprovementDebugLogger } from '@/utils/debugLogger';
+import { getGeminiModel } from '@/lib/modelConfig';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
-const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
 const SUGGESTION_CACHE_PREFIX = 'cv_suggestion_gemini:';
 const SUGGESTION_CACHE_TTL_SECONDS = 60 * 60; // 1 hour TTL
@@ -37,14 +37,15 @@ async function generateSuggestionsWithRetryGemini(cvData: any, prompt: string, s
   
   for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
     console.log(`🔄 [cv-improvement] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} - Generating suggestions...`);
-    console.log(`🤖 [cv-improvement] Using model: ${geminiModel}`);
+    const modelName = getGeminiModel('cv-improvement');
+    console.log(`🤖 [cv-improvement] Using model: ${modelName}`);
     
     const apiCallStartTime = Date.now(); // Move to broader scope
     
     try {
       // Get the generative model with optimized settings for structured output
       const model = genAI.getGenerativeModel({ 
-        model: geminiModel,
+        model: modelName,
         generationConfig: {
           temperature: 0.2, // Lower temperature for more consistent, structured output
           topK: 10, // Reduce randomness in token selection
@@ -343,7 +344,8 @@ export async function POST(request: Request) {
 
     // --- Generate suggestions (no caching) ---
     console.log('🤖 [cv-improvement] Generating suggestions with Gemini...');
-    console.log('🤖 [cv-improvement] Model:', geminiModel);
+    const modelName = getGeminiModel('cv-improvement');
+    console.log('🤖 [cv-improvement] Model:', modelName);
     console.log('🤖 [cv-improvement] CV data summary:');
     console.log(`  - Contact Info: ${cvData.contactInfo ? 'Present' : 'Missing'}`);
     console.log(`  - About: ${cvData.about ? `${cvData.about.length} chars` : 'Missing'}`);
