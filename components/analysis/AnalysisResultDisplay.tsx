@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {  Button  } from '@/components/ui-daisy/button';
 import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
@@ -61,8 +61,14 @@ interface AnalysisResultProps {
 
 // Removed analysisData, analysisId props
 export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps) {
-  console.log('[AnalysisResultDisplay] Component Mount/Render'); // Log render start
-  console.log('[AnalysisResultDisplay] Props received:', { originalMimeType }); // Log props
+  const renderCount = useRef(0);
+  renderCount.current += 1;
+  
+  console.log(`🔍 [AnalysisResultDisplay] RENDER #${renderCount.current}`, { 
+    originalMimeType,
+    timestamp: new Date().toISOString()
+  });
+  
   // Get dispatch function
   const dispatch: AppDispatch = useDispatch();
   const { toast } = useToast();
@@ -161,13 +167,40 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     }
   }, [status, error]); // Remove toast from dependencies to prevent infinite loops
 
-  // Update handler: dispatch Redux action
+  // Update handler: dispatch Redux action with debugging
   const handleSectionChange = <T extends any>(
       path: string, // Use string path for lodash compatibility 
       updatedSectionData: T
   ) => {
+    console.log('🔄 [AnalysisResultDisplay] handleSectionChange called', {
+      path,
+      updatedSectionData,
+      timestamp: new Date().toISOString()
+    });
     dispatch(updateAnalysisData({ path, value: updatedSectionData }));
   };
+
+  // Memoized onChange function for ContactInfo to prevent component recreation
+  const handleContactInfoChange = React.useCallback((newData: any) => {
+    console.log('📞 [AnalysisResultDisplay] ContactInfo onChange called', {
+      newData,
+      currentAnalysisData: analysisData?.contactInfo,
+      aboutToDispatchAction: 'updateAnalysisData',
+      path: 'contactInfo',
+      timestamp: new Date().toISOString(),
+      renderCount: renderCount.current
+    });
+    
+    dispatch(updateAnalysisData({ path: 'contactInfo', value: newData }));
+    
+    // Log Redux state after dispatch
+    setTimeout(() => {
+      console.log('📊 [AnalysisResultDisplay] Redux state after ContactInfo update', {
+        activeElement: document.activeElement?.id,
+        timestamp: new Date().toISOString()
+      });
+    }, 0);
+  }, [dispatch]); // Only recreate if dispatch changes (which never happens)
 
   // Suggestion Handler: dispatch fetchSuggestions thunk
   const handleGetSuggestions = () => {
@@ -177,8 +210,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     dispatch(fetchSuggestions(analysisData));
   };
 
-  // Accept suggestion: dispatch Redux action
-  const handleAcceptSuggestion = (suggestion: CvImprovementSuggestion) => {
+  // Memoized Accept suggestion: dispatch Redux action
+  const handleAcceptSuggestion = useCallback((suggestion: CvImprovementSuggestion) => {
     console.log('Dispatching applySuggestion:', suggestion);
     if (!analysisData) {
        toast({ title: "Error", description: "No data to apply suggestion to.", variant: "destructive"});
@@ -186,14 +219,14 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
     }
     dispatch(applySuggestion(suggestion));
     toast({ title: "Suggestion Applied", description: `Change applied to ${suggestion.section}.` });
-  };
+  }, [analysisData, dispatch, toast]);
 
-  // Reject suggestion: dispatch Redux action
-  const handleRejectSuggestion = (suggestion: CvImprovementSuggestion) => {
+  // Memoized Reject suggestion: dispatch Redux action
+  const handleRejectSuggestion = useCallback((suggestion: CvImprovementSuggestion) => {
     console.log('Dispatching dismissSuggestion:', suggestion);
     dispatch(dismissSuggestion(suggestion));
     toast({ title: "Suggestion Rejected", description: `Suggestion for ${suggestion.section} dismissed.` });
-  };
+  }, [dispatch, toast]);
 
   // Save Handler: Use Redux versioned saving
   const handleSaveAll = async () => {
@@ -394,13 +427,15 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           exit="exit"
                           className="overflow-hidden"
                         >
-                          <ContactInfoDisplay 
-                            data={analysisData.contactInfo}
-                            onChange={(newData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: newData }))} 
-                            suggestions={suggestions} 
-                            onAcceptSuggestion={handleAcceptSuggestion}
-                            onRejectSuggestion={handleRejectSuggestion}
-                          />
+                          {React.useMemo(() => (
+                            <ContactInfoDisplay 
+                              data={analysisData.contactInfo}
+                              onChange={handleContactInfoChange}
+                              suggestions={suggestions} 
+                              onAcceptSuggestion={handleAcceptSuggestion}
+                              onRejectSuggestion={handleRejectSuggestion}
+                            />
+                          ), [analysisData.contactInfo, handleContactInfoChange, suggestions, handleAcceptSuggestion, handleRejectSuggestion])}
                           
                           {/* AI Suggestions for Contact Info */}
                           <SuggestionManager section="contactInfo" className="mt-4" />

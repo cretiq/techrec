@@ -7,6 +7,7 @@ import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X,
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui-daisy/avatar';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import { useHighlightClasses } from '@/utils/suggestionHighlight';
+import { motion } from 'framer-motion';
 
 // Import suggestion-related types and components
 import { CvImprovementSuggestion } from '@/types/cv';
@@ -41,21 +42,61 @@ const findSuggestionsForField = (
 };
 
 export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSuggestion, onRejectSuggestion }: ContactInfoProps) {
-  console.log('[ContactInfoDisplay] Rendering with data:', data); // LOG
+  const renderCount = useRef(0);
+  renderCount.current += 1;
+  
+  console.log(`🔍 [ContactInfoDisplay] RENDER #${renderCount.current}`, {
+    dataKeys: data ? Object.keys(data) : null,
+    dataValues: data,
+    onChangeType: typeof onChange,
+    onChangeString: onChange.toString().substring(0, 100),
+    timestamp: new Date().toISOString()
+  });
+  
   const [editData, setEditData] = useState<ContactInfoData>(data);
-  const [profilePicture, setProfilePicture] = useState<string | null>(null); // TODO: Get from user data
+  const [profilePicture, setProfilePicture] = useState<string | null>('/profile_picture.png'); // Default placeholder
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   React.useEffect(() => {
+    console.log('🔄 [ContactInfoDisplay] useEffect: data changed, updating editData', {
+      oldEditData: editData,
+      newData: data,
+      renderCount: renderCount.current
+    });
     setEditData(data);
   }, [data]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
+    console.log('⌨️ [ContactInfoDisplay] handleInputChange called', {
+      fieldId: id,
+      newValue: value,
+      currentEditData: editData,
+      renderCount: renderCount.current,
+      activeElement: document.activeElement?.id,
+      timestamp: new Date().toISOString()
+    });
+    
     const newData = { ...editData, [id]: value || null };
+    console.log('📤 [ContactInfoDisplay] About to call parent onChange', {
+      newData,
+      parentOnChangeType: typeof onChange,
+      renderCount: renderCount.current
+    });
+    
     setEditData(newData);
     onChange(newData); // Immediately notify parent of changes
+    
+    // Check if focus is maintained after state update
+    setTimeout(() => {
+      console.log('🎯 [ContactInfoDisplay] Focus check after onChange', {
+        activeElement: document.activeElement?.id,
+        expectedFocus: id,
+        focusMaintained: document.activeElement?.id === id,
+        renderCount: renderCount.current
+      });
+    }, 0);
   };
 
   const handleProfilePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,6 +148,13 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     label?: string,
     type: string = 'text'
   ) => {
+    console.log(`🏗️ [ContactInfoDisplay] renderFieldWithSuggestions('${id}')`, {
+      currentValue: editData[id],
+      renderCount: renderCount.current,
+      onChangeFunction: handleInputChange.toString().substring(0, 50),
+      timestamp: new Date().toISOString()
+    });
+    
     const currentSuggestions = findSuggestionsForField(suggestions, id);
     const hasValue = data[id] && data[id]?.trim() !== '';
     const highlightClasses = useHighlightClasses(`contactInfo.${id}`);
@@ -177,33 +225,86 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
 
   return (
     // Remove Card, CardHeader - managed by parent
-    <div className="space-y-4">
-      {/* Profile Picture Row */}
-      <div className="flex items-start justify-center mb-6">
-        {/* Profile Picture */}
-        <div className="relative group">
-          <Avatar className="h-24 w-24 border-2 border-base-300">
-            <AvatarImage src={profilePicture || undefined} alt={data.name || 'Profile'} />
-            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-lg font-semibold">
-              {getInitials(data.name)}
-            </AvatarFallback>
-          </Avatar>
-          
-          {/* Upload overlay */}
-          <div 
-            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Camera className="h-6 w-6 text-white" />
+    <div className="space-y-6">
+      {/* Profile Picture and Name Row - 1/3 2/3 Layout */}
+      <div className="flex items-center gap-6 mb-8">
+        {/* Profile Picture - 1/3 */}
+        <div className="flex-shrink-0 w-1/3 flex justify-center">
+          <div className="relative group">
+            <Avatar className="h-32 w-32 border-4 border-base-300/50 shadow-lg">
+              <AvatarImage src={profilePicture || '/profile_picture.png'} alt={data.name || 'Profile'} />
+              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-2xl font-bold">
+                {getInitials(data.name)}
+              </AvatarFallback>
+            </Avatar>
+            
+            {/* Upload overlay */}
+            <div 
+              className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Camera className="h-8 w-8 text-white" />
+            </div>
+            
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePictureChange}
+              className="hidden"
+            />
           </div>
-          
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleProfilePictureChange}
-            className="hidden"
-          />
+        </div>
+
+        {/* Name Display - 2/3 */}
+        <div className="flex-1 w-2/3">
+          <motion.div
+            initial={{ opacity: 0, x: 20, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ 
+              duration: 0.8, 
+              ease: "easeOut",
+              delay: 0.2
+            }}
+          >
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 1.2, 
+                ease: "easeOut",
+                delay: 0.4
+              }}
+            >
+              {data.name || 'Your Name'}
+            </motion.h1>
+            
+            {/* Floating particles effect */}
+            <div className="absolute -inset-4 opacity-30 pointer-events-none">
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-primary/40 rounded-full"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                  }}
+                  animate={{
+                    y: [0, -20, 0],
+                    opacity: [0.3, 0.8, 0.3],
+                    scale: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: i * 0.5,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
 
