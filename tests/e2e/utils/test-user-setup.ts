@@ -28,6 +28,26 @@ export const TEST_USERS = {
     email: 'newbie@test.techrec.com',
     password: 'testpass123', 
     name: 'New Test User'
+  },
+  cv_upload_clean: {
+    email: 'cv-upload-test@test.techrec.com',
+    password: 'testpass123',
+    name: 'CV Upload Test User'
+  },
+  cv_upload_1: {
+    email: 'cv-upload-1@test.techrec.com',
+    password: 'testpass123',
+    name: 'CV Upload Test User 1'
+  },
+  cv_upload_2: {
+    email: 'cv-upload-2@test.techrec.com',
+    password: 'testpass123',
+    name: 'CV Upload Test User 2'
+  },
+  cv_upload_3: {
+    email: 'cv-upload-3@test.techrec.com',
+    password: 'testpass123',
+    name: 'CV Upload Test User 3'
   }
 } as const;
 
@@ -49,7 +69,8 @@ export async function createTestUser(userType: keyof typeof TEST_USERS): Promise
           profileEmail: userData.email,
           name: userData.name,
           title: userType === 'junior_developer' ? 'Junior Developer' : 
-                 userType === 'experienced_developer' ? 'Senior Developer' : 'Developer',
+                 userType === 'experienced_developer' ? 'Senior Developer' :
+                 userType === 'cv_upload_clean' ? 'Test CV Upload User' : 'Developer',
           hashedPassword
         }
       });

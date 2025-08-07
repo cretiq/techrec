@@ -31,11 +31,15 @@ export class AuthHelper {
   /**
    * Login as specific user type for testing
    */
-  async loginAsUserType(userType: 'junior_developer' | 'experienced_developer' | 'new_user') {
+  async loginAsUserType(userType: 'junior_developer' | 'experienced_developer' | 'new_user' | 'cv_upload_clean' | 'cv_upload_1' | 'cv_upload_2' | 'cv_upload_3') {
     const users = {
       junior_developer: { email: 'junior@test.techrec.com', password: 'testpass123' },
       experienced_developer: { email: 'senior@test.techrec.com', password: 'testpass123' },
-      new_user: { email: 'newbie@test.techrec.com', password: 'testpass123' }
+      new_user: { email: 'newbie@test.techrec.com', password: 'testpass123' },
+      cv_upload_clean: { email: 'cv-upload-test@test.techrec.com', password: 'testpass123' },
+      cv_upload_1: { email: 'cv-upload-1@test.techrec.com', password: 'testpass123' },
+      cv_upload_2: { email: 'cv-upload-2@test.techrec.com', password: 'testpass123' },
+      cv_upload_3: { email: 'cv-upload-3@test.techrec.com', password: 'testpass123' }
     };
 
     const user = users[userType];
@@ -46,7 +50,7 @@ export class AuthHelper {
   /**
    * Ensure user is logged in (opposite of ensureLoggedOut)
    */
-  async ensureLoggedIn(userType: 'junior_developer' | 'experienced_developer' | 'new_user' = 'junior_developer') {
+  async ensureLoggedIn(userType: 'junior_developer' | 'experienced_developer' | 'new_user' | 'cv_upload_clean' | 'cv_upload_1' | 'cv_upload_2' | 'cv_upload_3' = 'junior_developer') {
     // Check if already logged in by trying to access dashboard
     await this.page.goto('/developer/dashboard');
     
