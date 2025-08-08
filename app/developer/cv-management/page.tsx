@@ -374,13 +374,11 @@ export default function CVManagementPage() {
     }
 
     return (
-        <div className="container mx-auto p-4 space-y-8 animate-fade-in-up" style={{ animationDelay: '100ms' }} data-testid="cv-management-page-container">
-            <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }} data-testid="cv-management-page-header">
-            </div>
+        <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-in-up" style={{ animationDelay: '100ms' }} data-testid="cv-management-page-container">
             {/* Entry Section - Upload CV or Start from Scratch - Show when no completed CV */}
             {(!currentCV || currentCV.status === AnalysisStatus.FAILED || currentCV.status === AnalysisStatus.PENDING) && (
                 <Card 
-                    variant="transparent" 
+                    variant="glass-interactive" 
                     className="animate-fade-in-up" 
                     style={{ animationDelay: '300ms' }}
                     data-testid="cv-management-entry-section"
@@ -406,7 +404,7 @@ export default function CVManagementPage() {
                 if (isCVLoading) {
                     return (
                         <Card 
-                            variant="transparent" 
+                            variant="glass-interactive" 
                             className="animate-fade-in-up" 
                             style={{ animationDelay: '500ms' }}
                             data-testid="cv-management-cv-loading"
@@ -428,7 +426,7 @@ export default function CVManagementPage() {
                 if (currentCV && currentCV.status === AnalysisStatus.ANALYZING) {
                     return (
                         <Card 
-                            variant="transparent" 
+                            variant="glass-interactive" 
                             className="animate-fade-in-up" 
                             style={{ animationDelay: '500ms' }}
                             data-testid="cv-management-analyzing"
@@ -477,7 +475,8 @@ export default function CVManagementPage() {
                         >
                             {/* Quick Actions Bar */}
                             <Card 
-                                variant="hybrid"
+                                variant="gradient-interactive"
+                                className="rounded-xl"
                                 data-testid="cv-management-quick-actions"
                             >
                                 <CardContent className="py-3">
@@ -488,8 +487,9 @@ export default function CVManagementPage() {
                                                 onUploadComplete={handleUploadComplete}
                                             />
                                             <Button
-                                                variant="outline"
+                                                variant="elevated"
                                                 size="sm"
+                                                hoverable
                                                 onClick={() => {
                                                     // TODO: Implement PDF export
                                                     toast({
@@ -503,8 +503,9 @@ export default function CVManagementPage() {
                                                 Export PDF
                                             </Button>
                                             <Button
-                                                variant="outline"
+                                                variant="elevated"
                                                 size="sm"
+                                                hoverable
                                                 onClick={() => {
                                                     // TODO: Implement view analysis
                                                     toast({
@@ -518,8 +519,9 @@ export default function CVManagementPage() {
                                                 View Analysis
                                             </Button>
                                             <Button
-                                                variant="outline"
+                                                variant="gradient"
                                                 size="sm"
+                                                hoverable
                                                 onClick={() => setShowProjectEnhancementModal(true)}
                                                 leftIcon={<Rocket className="h-4 w-4" />}
                                                 data-testid="cv-management-action-project-enhancement"
@@ -528,9 +530,6 @@ export default function CVManagementPage() {
                                             </Button>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <div className="text-base text-neutral-600 leading-6">
-                                                Last updated: {new Date().toLocaleDateString()}
-                                            </div>
                                             {/* Additional action buttons moved from AnalysisResultDisplay */}
                                             <div className="flex gap-2" data-testid="cv-management-additional-actions">
                                                 <AnalysisActionButtons />
@@ -544,7 +543,7 @@ export default function CVManagementPage() {
                                 {/* Smart Scoring Sidebar */}
                                 <aside className="w-80 hidden lg:block" data-testid="cv-management-scoring-sidebar">
                                     <Card 
-                                        variant="hybrid"
+                                        variant="elevated-interactive"
                                         className="sticky top-20"
                                         data-testid="cv-management-scoring-card"
                                     >
@@ -570,7 +569,7 @@ export default function CVManagementPage() {
                 if (currentCV && currentCV.status === AnalysisStatus.FAILED) {
                     return (
                         <Card 
-                            variant="transparent" 
+                            variant="glass-interactive" 
                             className="animate-fade-in-up" 
                             style={{ animationDelay: '500ms' }}
                             data-testid="cv-management-failed"
@@ -592,11 +591,12 @@ export default function CVManagementPage() {
                                     </div>
                                     <Button 
                                         onClick={() => fetchUserCVs()} 
-                                        variant="outline"
+                                        variant="elevated"
                                         size="sm"
-                                        className="flex items-center gap-2"
+                                        hoverable
+                                        leftIcon={<RefreshCw className="h-4 w-4" />}
+                                        className="shadow-md hover:shadow-lg"
                                     >
-                                        <RefreshCw className="h-4 w-4" />
                                         Try Again
                                     </Button>
                                 </div>
