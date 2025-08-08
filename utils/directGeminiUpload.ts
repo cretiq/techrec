@@ -333,6 +333,8 @@ export class DirectGeminiUploadService {
     return `
 Extract comprehensive information from this CV/resume document and return it as valid JSON. Pay special attention to preserving the relationship between work experience and associated projects.
 
+CRITICAL FORMATTING RULE: When extracting work experience, if the CV shows bullet points under a job role, extract each bullet point as an individual item in the "responsibilities" array. Do NOT consolidate or rewrite multiple bullets into paragraph form.
+
 CRITICAL: When a job/position mentions "client projects" or lists specific projects within the experience description, those projects should be included as nested objects within that experience entry, NOT as separate achievements.
 
 Return JSON with this exact structure:
@@ -364,7 +366,7 @@ Return JSON with this exact structure:
       "startDate": "YYYY-MM | null",
       "endDate": "YYYY-MM | null", 
       "current": boolean,
-      "responsibilities": ["string"],
+      "responsibilities": ["string - individual bullet points from CV, one bullet per array item"],
       "achievements": ["string"],
       "projects": [
         {
@@ -397,7 +399,7 @@ Return JSON with this exact structure:
       "technologies": ["string"],
       "githubUrl": "string | null",
       "liveUrl": "string | null",
-      "status": "completed | in-progress | archived"
+      "status": "COMPLETED | IN_PROGRESS | ARCHIVED"
     }
   ],
   "achievements": [
@@ -416,6 +418,26 @@ Return JSON with this exact structure:
     "method": "direct_upload_analysis"
   }
 }
+
+CRITICAL BULLET POINT EXTRACTION RULES:
+1. PRESERVE ORIGINAL STRUCTURE: If a job has bullet points (•, -, *, or numbered lists), extract each bullet as a separate "responsibilities" array item
+2. ONE BULLET = ONE ARRAY ITEM: Never combine multiple bullets into a single string or paragraph
+3. MAINTAIN EXACT TEXT: Keep bullet content as close to original as possible - don't rephrase or consolidate
+4. BULLET MARKERS: Remove visual markers (•, -, *, numbers) but preserve the complete text content
+5. NESTED BULLETS: Flatten sub-bullets into main responsibilities array with appropriate context
+
+BULLET POINT EXTRACTION EXAMPLE:
+CV Source:
+• Developed microservices using .NET Core and SQL
+• Implemented automated testing with CI/CD pipelines  
+• Collaborated with Norwegian product owner on requirements
+
+JSON Output:
+"responsibilities": [
+  "Developed microservices using .NET Core and SQL",
+  "Implemented automated testing with CI/CD pipelines",
+  "Collaborated with Norwegian product owner on requirements"
+]
 
 IMPORTANT EXTRACTION RULES:
 1. If experience mentions "client projects" or "following projects", extract those as nested "projects" array within that experience
