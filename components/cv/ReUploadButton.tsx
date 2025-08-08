@@ -202,45 +202,82 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
     setShowConfirmation(false);
   }, []);
 
-  // Determine the current state and icon/text
-  const getButtonContent = () => {
+  // Determine the current state for dynamic variant selection
+  const getButtonState = () => {
     if (isDeleting) {
       return {
-        icon: <Loader2 className="h-4 w-4 animate-spin" />,
+        variant: "primary-interactive" as const,
+        icon: <Loader2 className="h-4 w-4 text-primary-content animate-spin" />,
         text: "Clearing Data...",
-        disabled: true
+        loading: true,
+        animated: true,
+        accentuated: true
       };
     }
     
     if (isUploading) {
       return {
-        icon: <Loader2 className="h-4 w-4 animate-spin" />,
+        variant: "flashy-interactive" as const,
+        icon: <Loader2 className="h-4 w-4 text-primary animate-spin" />,
         text: `Uploading (${uploadProgress}%)`,
-        disabled: true
+        loading: true,
+        animated: true,
+        accentuated: true
       };
     }
 
     return {
-      icon: <RefreshCw className="h-4 w-4" />,
+      variant: "flashy-interactive" as const,
+      icon: <RefreshCw className="h-4 w-4 group-hover:rotate-180 transition-transform duration-300" />,
       text: "Re-upload CV",
-      disabled: false
+      loading: false,
+      animated: false,
+      accentuated: false
     };
   };
 
-  const { icon, text, disabled } = getButtonContent();
+  const { variant, icon, text, loading, animated, accentuated } = getButtonState();
 
   return (
     <>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleReUpload}
-        disabled={disabled || !hasDeveloperData}
-        leftIcon={icon}
-        data-testid="cv-management-action-reupload"
-      >
-        {text}
-      </Button>
+      <div className={`relative group ${accentuated ? 'animate-pulse' : ''}`}>
+        <Button
+          variant={variant}
+          size="sm"
+          onClick={handleReUpload}
+          disabled={!hasDeveloperData}
+          leftIcon={icon}
+          loading={loading}
+          animated={animated}
+          data-testid="cv-management-action-reupload"
+          className={`
+            ${accentuated ? 'scale-110 shadow-2xl shadow-primary/40 animate-bounce' : ''}
+            ${isUploading ? 'ring-2 ring-primary/50 ring-offset-2 ring-offset-base-100' : ''}
+            transition-all duration-500 ease-in-out
+          `}
+        >
+          <span className={accentuated ? 'animate-pulse font-bold' : ''}>{text}</span>
+        </Button>
+        
+        {/* Enhanced progress bar overlay for upload state */}
+        {isUploading && uploadProgress > 0 && (
+          <div className="absolute bottom-0 left-0 right-0 h-2 bg-base-300/30 rounded-b-xl overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300 ease-out rounded-b-xl shadow-sm animate-pulse"
+              style={{ width: `${uploadProgress}%` }}
+            />
+            <div 
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        )}
+        
+        {/* Glowing effect ring for active states */}
+        {accentuated && (
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-xl blur-sm animate-pulse -z-10" />
+        )}
+      </div>
 
       {/* Confirmation Modal */}
       {showConfirmation && (
