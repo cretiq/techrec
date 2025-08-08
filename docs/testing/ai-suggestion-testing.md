@@ -1,7 +1,12 @@
 # AI Suggestion Response Testing Guide
 
-**Updated**: August 2, 2025  
+**Updated**: August 7, 2025 (POST-CLEANUP)  
+**Status**: ⚠️ AI SUGGESTION E2E TESTS REMOVED - Use manual testing only  
 **Purpose**: Comprehensive guide for testing AI-generated CV improvement suggestions with autonomous debugging and feedback loops
+
+**🚨 IMPORTANT**: AI suggestion E2E tests were removed due to API timeouts and external dependencies. This guide remains for manual testing and debugging purposes only.
+
+**📖 See**: [`../../E2E_TESTING_BEST_PRACTICES.md`](../../E2E_TESTING_BEST_PRACTICES.md) for current testing approach.
 
 ---
 

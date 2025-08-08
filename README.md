@@ -35,6 +35,21 @@ Google Gemini • OpenAI GPT • Stripe Payments • AWS S3 • LinkedIn API
 **Testing**  
 Jest • Playwright • React Testing Library • Zod Validation
 
+## 🧪 Testing
+
+**E2E Tests**: 91% success rate (41/45 tests passing)  
+**📖 See**: [`E2E_TESTING_BEST_PRACTICES.md`](./E2E_TESTING_BEST_PRACTICES.md) for comprehensive testing guidelines
+
+```bash
+# Run all E2E tests
+npx playwright test --timeout=60000
+
+# Run with UI
+npx playwright test --ui
+```
+
+**Key Requirements**: Authentication-first testing, graceful CV data handling, mobile compatibility
+
 ---
 
 *Built for tech professionals who want to level up their job search game*

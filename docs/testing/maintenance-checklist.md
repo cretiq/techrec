@@ -1,23 +1,27 @@
 # 🔧 Test Suite Maintenance Checklist
 
-**Created**: August 6, 2025  
+**Updated**: August 7, 2025 (POST-CLEANUP)  
 **Purpose**: Ongoing test health monitoring and maintenance procedures for TechRec platform  
 **Owner**: Development Team (Tech Lead oversight)
 
+**🚨 CRITICAL**: Read the comprehensive E2E testing best practices:  
+**📖 See: [`../../E2E_TESTING_BEST_PRACTICES.md`](../../E2E_TESTING_BEST_PRACTICES.md)**
+
 ---
 
-## 📅 **MAINTENANCE SCHEDULE**
+## 📅 **MAINTENANCE SCHEDULE (Updated Post-Cleanup)**
 
 ### **Daily** (During Active Development)
-- [ ] Run unit tests before committing changes (`npm run test`)
-- [ ] Monitor test execution time (should be < 5 seconds for unit tests)
-- [ ] Check that new code includes appropriate tests
+- [ ] Run authentication tests before committing changes (`@test-auth`)
+- [ ] MANDATORY: All new tests must authenticate first using `AuthHelper.ensureLoggedIn()`
+- [ ] MANDATORY: CV-related tests must handle existing user data gracefully
+- [ ] Monitor test execution time (clean suite: ~1 minute)
 
-### **Weekly** (Development Team)
-- [ ] Run full test suite including E2E tests
-- [ ] Review test failures and fix immediately
-- [ ] Update [Test Health Report](./test-health-report.md) if significant changes
-- [ ] Monitor E2E test stability
+### **Weekly** (Development Team) 
+- [ ] Run cleaned test suite (`@test-all`) - Should maintain 91% success rate
+- [ ] Review any test failures and fix immediately (should be minimal now)
+- [ ] Update [Test Health Report](./test-health-report.md) if success rate drops below 90%
+- [ ] NO complex workflow or API-dependent tests allowed
 
 ### **Monthly** (Tech Lead)
 - [ ] Comprehensive test health assessment
