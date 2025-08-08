@@ -214,6 +214,13 @@ const mockPrismaClient = {
     update: jest.fn(),
     delete: jest.fn(),
   },
+  skillCategory: {
+    findMany: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    upsert: jest.fn(),
+  },
   developerSkill: {
     findMany: jest.fn(),
     create: jest.fn(),

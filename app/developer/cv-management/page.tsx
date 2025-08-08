@@ -13,11 +13,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
 import { setAnalysis, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
 import { cn } from '@/lib/utils';
-import { RefreshCw, Download, BarChart3, Rocket, Loader2 } from 'lucide-react';
+import { RefreshCw, Download, BarChart3, Rocket, Loader2, Sparkles } from 'lucide-react';
 import { ProjectEnhancementModal } from '@/components/analysis/ProjectEnhancementModal';
 import { ReUploadButton } from '@/components/cv/ReUploadButton';
 import { useSession } from 'next-auth/react';
 import { AnalysisStatus } from '@prisma/client';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface CV {
     id: string;
@@ -42,6 +43,12 @@ export default function CVManagementPage() {
     const [userCVs, setUserCVs] = useState<CV[]>([]);
     const [cvFetchStatus, setCvFetchStatus] = useState<'idle' | 'loading' | 'succeeded' | 'failed'>('idle');
     const [currentCV, setCurrentCV] = useState<CV | null>(null);
+    
+    // Animation state for the quick actions card
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [processingText, setProcessingText] = useState('');
+    const [showSparkles, setShowSparkles] = useState(false);
+    const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
     // Authentication hooks
     const { data: session, status } = useSession();
@@ -254,6 +261,161 @@ export default function CVManagementPage() {
             fetchUserCVs();
         }, 1000); // 1 second delay
     }, [fetchUserCVs]);
+
+    // --- Handler for Animation State Change ---
+    const handleAnimationStateChange = useCallback((animating: boolean, text: string, sparkles: boolean) => {
+        setIsAnimating(animating);
+        setProcessingText(text);
+        setShowSparkles(sparkles);
+    }, []);
+
+    // Text colors for each phrase - Blue/Teal shades only
+    const textColors = [
+        'text-blue-400',      // Uploading...
+        'text-teal-500',      // Churning... 
+        'text-blue-600',      // Analyzing...
+        'text-cyan-500',      // Building...
+        'text-blue-500',      // Cooking...
+        'text-teal-600',      // Processing...
+        'text-cyan-400',      // Optimizing...
+        'text-blue-700',      // Enhancing...
+        'text-teal-400',      // Polishing...
+        'text-cyan-600'       // Finalizing...
+    ];
+
+
+    // Enhanced sparkle particles animations
+    const SparkleParticle = ({ delay = 0, variant = 'default' }: { delay?: number, variant?: 'default' | 'large' | 'star' | 'shooting' }) => {
+        const variants = {
+            default: {
+                className: "absolute w-1 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full",
+                scale: [0, 1.5, 0],
+                duration: 1.2
+            },
+            large: {
+                className: "absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full",
+                scale: [0, 2, 0],
+                duration: 1.8
+            },
+            star: {
+                className: "absolute w-1 h-1 bg-gradient-to-r from-pink-400 to-red-500",
+                scale: [0, 2, 0],
+                duration: 1.5
+            },
+            shooting: {
+                className: "absolute w-0.5 h-3 bg-gradient-to-b from-cyan-400 to-transparent rounded-full",
+                scale: [0, 1, 0],
+                duration: 0.8
+            }
+        };
+
+        const config = variants[variant];
+        
+        return (
+            <motion.div
+                className={config.className}
+                style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                }}
+                initial={{ 
+                    opacity: 0,
+                    scale: 0,
+                    rotate: variant === 'star' ? 0 : undefined
+                }}
+                animate={{
+                    opacity: [0, 1, 1, 0],
+                    scale: config.scale,
+                    x: variant === 'shooting' ? [0, Math.random() * 100 - 50] : [0, Math.random() * 40 - 20],
+                    y: variant === 'shooting' ? [0, Math.random() * 100 + 50] : [0, Math.random() * 40 - 20],
+                    rotate: variant === 'star' ? [0, 180, 360] : [0, 360]
+                }}
+                transition={{
+                    duration: config.duration,
+                    delay,
+                    repeat: Infinity,
+                    repeatDelay: Math.random() * 3 + 1,
+                    ease: variant === 'shooting' ? "easeOut" : "easeInOut"
+                }}
+            />
+        );
+    };
+
+    // Floating text sparkles that appear around the text
+    const TextSparkle = ({ delay = 0 }: { delay?: number }) => (
+        <motion.div
+            className="absolute w-1.5 h-1.5 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"
+            style={{
+                left: `${20 + Math.random() * 60}%`,
+                top: `${30 + Math.random() * 40}%`,
+            }}
+            initial={{ 
+                opacity: 0,
+                scale: 0,
+            }}
+            animate={{
+                opacity: [0, 1, 0],
+                scale: [0, 1.2, 0],
+                y: [0, -20, -40],
+                rotate: [0, 180]
+            }}
+            transition={{
+                duration: 2,
+                delay,
+                repeat: Infinity,
+                repeatDelay: Math.random() * 4 + 2,
+                ease: "easeOut"
+            }}
+        />
+    );
+
+    // Corner burst effects
+    const CornerBurst = ({ corner, delay = 0 }: { corner: 'tl' | 'tr' | 'bl' | 'br', delay?: number }) => {
+        const positions = {
+            tl: { top: '10%', left: '10%' },
+            tr: { top: '10%', right: '10%' },
+            bl: { bottom: '10%', left: '10%' },
+            br: { bottom: '10%', right: '10%' }
+        };
+
+        return (
+            <motion.div
+                className="absolute"
+                style={positions[corner]}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{
+                    duration: 0.5,
+                    delay,
+                    repeat: Infinity,
+                    repeatDelay: Math.random() * 5 + 3
+                }}
+            >
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute w-0.5 h-0.5 bg-gradient-to-r from-violet-400 to-fuchsia-500 rounded-full"
+                        initial={{ 
+                            scale: 0,
+                            x: 0,
+                            y: 0
+                        }}
+                        animate={{
+                            scale: [0, 1.5, 0],
+                            x: [0, (Math.cos(i * 60 * Math.PI / 180) * 25)],
+                            y: [0, (Math.sin(i * 60 * Math.PI / 180) * 25)]
+                        }}
+                        transition={{
+                            duration: 0.8,
+                            delay: delay + (i * 0.05),
+                            repeat: Infinity,
+                            repeatDelay: Math.random() * 5 + 3
+                        }}
+                    />
+                ))}
+            </motion.div>
+        );
+    };
 
     // Effect hooks - ALL MUST BE TOGETHER
     // Authentication effect
@@ -473,28 +635,118 @@ export default function CVManagementPage() {
                             style={{ animationDelay: '500ms' }}
                             data-testid="cv-management-profile-section"
                         >
-                            {/* Quick Actions Bar */}
+                            {/* Quick Actions Bar - With Spectacular Animations */}
                             <Card 
-                                variant="gradient-interactive"
+                                variant="gradient"
                                 className="rounded-xl"
                                 data-testid="cv-management-quick-actions"
                             >
-                                <CardContent className="py-3">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <ReUploadButton
-                                                analysisData={analysisData}
-                                                onUploadComplete={handleUploadComplete}
+                                <motion.div
+                                    className="relative overflow-visible"
+                                    animate={{
+                                        scale: isAnimating ? [1, 1.02, 1] : 1,
+                                        rotate: isAnimating ? [0, 0.3, -0.3, 0] : 0
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: isAnimating ? Infinity : 0,
+                                        ease: "easeInOut"
+                                    }}
+                                >
+                                    {/* Base gray gradient background */}
+                                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-base-200/80 via-base-300/90 to-base-400/80" />
+                                    
+
+
+                                    {/* Epic glowing effect rings for active states */}
+                                    {isAnimating && (
+                                        <>
+                                            <motion.div 
+                                                className="absolute -inset-2 bg-gradient-to-r from-yellow-400/20 via-orange-500/20 to-red-500/20 rounded-xl blur-lg -z-10"
+                                                animate={{
+                                                    scale: [1, 1.1, 1],
+                                                    opacity: [0.2, 0.4, 0.2]
+                                                }}
+                                                transition={{
+                                                    duration: 4,
+                                                    repeat: Infinity,
+                                                    ease: "easeInOut"
+                                                }}
                                             />
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            {/* Additional action buttons moved from AnalysisResultDisplay */}
-                                            <div className="flex gap-2" data-testid="cv-management-additional-actions">
-                                                <AnalysisActionButtons />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardContent>
+                                            <motion.div 
+                                                className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-accent/30 rounded-xl blur-sm -z-10"
+                                                animate={{
+                                                    scale: [1, 1.05, 1],
+                                                    opacity: [0.3, 0.6, 0.3]
+                                                }}
+                                                transition={{
+                                                    duration: 2,
+                                                    repeat: Infinity,
+                                                    ease: "easeInOut"
+                                                }}
+                                            />
+                                        </>
+                                    )}
+
+                                    <CardContent className={`relative ${isAnimating ? 'py-0' : 'py-3'}`}>
+                                        <AnimatePresence mode="wait">
+                                            {isAnimating ? (
+                                                /* Animated processing state */
+                                                <motion.div
+                                                    key="processing"
+                                                    className="flex items-center justify-center"
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.9 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    {/* Jackpot-style animated text - Slot machine wheel effect */}
+                                                    <div className="relative h-12 overflow-hidden flex items-center justify-center min-w-[160px]">
+                                                        <AnimatePresence mode="wait">
+                                                            <motion.span
+                                                                key={processingText}
+                                                                initial={{ y: 32, opacity: 0 }}
+                                                                animate={{ y: 0, opacity: 1 }}
+                                                                exit={{ y: -32, opacity: 0 }}
+                                                                transition={{ 
+                                                                    duration: 0.5,
+                                                                    ease: "easeInOut"
+                                                                }}
+                                                                className={`absolute inset-x-0 text-center text-lg font-bold ${textColors[currentTextIndex]}`}
+                                                            >
+                                                                {processingText}
+                                                            </motion.span>
+                                                        </AnimatePresence>
+                                                    </div>
+                                                </motion.div>
+                                            ) : (
+                                                /* Normal button state */
+                                                <motion.div
+                                                    key="buttons"
+                                                    className="flex items-center justify-between"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        <ReUploadButton
+                                                            analysisData={analysisData}
+                                                            onUploadComplete={handleUploadComplete}
+                                                            onAnimationStateChange={handleAnimationStateChange}
+                                                        />
+                                                    </div>
+                                                    <div className="flex items-center gap-4">
+                                                        {/* Additional action buttons moved from AnalysisResultDisplay */}
+                                                        <div className="flex gap-2" data-testid="cv-management-additional-actions">
+                                                            <AnalysisActionButtons />
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </CardContent>
+                                </motion.div>
                             </Card>
 
                             <div className="flex gap-6">

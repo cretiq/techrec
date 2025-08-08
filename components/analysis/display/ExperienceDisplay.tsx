@@ -130,7 +130,7 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
 
   // Handlers for projects array
   const handleAddProject = (expIndex: number) => {
-    const newProject: ExperienceProject = { name: '', description: '', technologies: [], teamSize: null, role: '' };
+    const newProject: ExperienceProject = { name: '', description: '', responsibilities: [], technologies: [], teamSize: null, role: '' };
     const newData = editData.map((item, i) =>
       i === expIndex ? { ...item, projects: [...(item.projects || []), newProject] } : item
     );
@@ -316,6 +316,14 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                               placeholder="Project description" 
                               className="text-sm min-h-[60px]" 
                             />
+                            <Textarea 
+                              value={project?.responsibilities?.join('\n') || ''} 
+                              onChange={(e) => handleProjectChange(index, pIndex, 'responsibilities', 
+                                e.target.value.split('\n').map(r => r.trim()).filter(r => r)
+                              )} 
+                              placeholder="Project responsibilities (one per line)" 
+                              className="text-sm min-h-[80px]" 
+                            />
                             <div className="grid grid-cols-2 gap-2">
                               <Input 
                                 value={project?.role || ''} 
@@ -457,6 +465,18 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                                   <p className="text-sm text-base-content/80 mt-1 leading-relaxed">
                                     {project.description}
                                   </p>
+                                )}
+                                {project.responsibilities && project.responsibilities.length > 0 && (
+                                  <ul className="list mt-2 ml-4">
+                                    {project.responsibilities.map((resp, respIndex) => (
+                                      <li key={respIndex} className="list-row py-1">
+                                        <div className="text-primary/70 text-xs">•</div>
+                                        <div className="text-xs text-base-content/80 list-col-grow pl-2">
+                                          {resp}
+                                        </div>
+                                      </li>
+                                    ))}
+                                  </ul>
                                 )}
                                 <div className="flex flex-wrap gap-2 mt-2 text-xs text-muted-foreground">
                                   {project.role && (

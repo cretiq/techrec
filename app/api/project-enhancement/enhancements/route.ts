@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     } = validation.data;
 
     // Verify the portfolio belongs to the user
-    const portfolio = await prisma.projectPortfolio.findFirst({
+    const portfolio = await prisma.personalProjectPortfolio.findFirst({
       where: {
         id: portfolioId,
         developerId: userId
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create project enhancement record
-    const projectEnhancement = await prisma.projectEnhancement.create({
+    const projectEnhancement = await prisma.personalProjectEnhancement.create({
       data: {
         portfolioId,
         enhancementType,
@@ -160,7 +160,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get project enhancements
-    const projectEnhancements = await prisma.projectEnhancement.findMany({
+    const projectEnhancements = await prisma.personalProjectEnhancement.findMany({
       where,
       include: {
         portfolio: {
@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get total count for pagination
-    const totalCount = await prisma.projectEnhancement.count({ where });
+    const totalCount = await prisma.personalProjectEnhancement.count({ where });
 
     return NextResponse.json({
       success: true,
@@ -245,7 +245,7 @@ export async function PUT(request: NextRequest) {
     const { id, ...updateData } = validation.data;
 
     // Check if enhancement exists and user has access
-    const existingEnhancement = await prisma.projectEnhancement.findFirst({
+    const existingEnhancement = await prisma.personalProjectEnhancement.findFirst({
       where: {
         id,
         portfolio: {
@@ -262,7 +262,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update project enhancement
-    const updatedEnhancement = await prisma.projectEnhancement.update({
+    const updatedEnhancement = await prisma.personalProjectEnhancement.update({
       where: { id },
       data: {
         ...updateData,
@@ -314,7 +314,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if enhancement exists and user has access
-    const existingEnhancement = await prisma.projectEnhancement.findFirst({
+    const existingEnhancement = await prisma.personalProjectEnhancement.findFirst({
       where: {
         id: enhancementId,
         portfolio: {
@@ -331,7 +331,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete project enhancement
-    await prisma.projectEnhancement.delete({
+    await prisma.personalProjectEnhancement.delete({
       where: { id: enhancementId }
     });
 
@@ -370,7 +370,7 @@ export async function getStats(request: NextRequest) {
     const userId = session.user.id;
 
     // Get enhancement statistics
-    const stats = await prisma.projectEnhancement.groupBy({
+    const stats = await prisma.personalProjectEnhancement.groupBy({
       by: ['enhancementType'],
       where: {
         portfolio: {
@@ -389,7 +389,7 @@ export async function getStats(request: NextRequest) {
     });
 
     // Get recent activity
-    const recentActivity = await prisma.projectEnhancement.findMany({
+    const recentActivity = await prisma.personalProjectEnhancement.findMany({
       where: {
         portfolio: {
           developerId: userId

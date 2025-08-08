@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     } = validation.data;
 
     // Create project portfolio
-    const projectPortfolio = await prisma.projectPortfolio.create({
+    const personalProjectPortfolio = await prisma.personalProjectPortfolio.create({
       data: {
         developerId: userId,
         title,
@@ -157,7 +157,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get project portfolios
-    const projectPortfolios = await prisma.projectPortfolio.findMany({
+    const personalProjectPortfolios = await prisma.personalProjectPortfolio.findMany({
       where,
       include: {
         enhancements: includeEnhancements ? {
@@ -171,11 +171,11 @@ export async function GET(request: NextRequest) {
     });
 
     // Get total count for pagination
-    const totalCount = await prisma.projectPortfolio.count({ where });
+    const totalCount = await prisma.personalProjectPortfolio.count({ where });
 
     return NextResponse.json({
       success: true,
-      projectPortfolios,
+      projectPortfolios: personalProjectPortfolios,
       pagination: {
         total: totalCount,
         limit,
@@ -238,7 +238,7 @@ export async function PUT(request: NextRequest) {
     const { id, ...updateData } = validation.data;
 
     // Check if portfolio exists and belongs to user
-    const existingPortfolio = await prisma.projectPortfolio.findFirst({
+    const existingPortfolio = await prisma.personalProjectPortfolio.findFirst({
       where: {
         id,
         developerId: userId
@@ -253,7 +253,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update project portfolio
-    const updatedPortfolio = await prisma.projectPortfolio.update({
+    const updatedPortfolio = await prisma.personalProjectPortfolio.update({
       where: { id },
       data: {
         ...updateData,
@@ -305,7 +305,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if portfolio exists and belongs to user
-    const existingPortfolio = await prisma.projectPortfolio.findFirst({
+    const existingPortfolio = await prisma.personalProjectPortfolio.findFirst({
       where: {
         id: portfolioId,
         developerId: userId
@@ -320,7 +320,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete project portfolio (cascade will handle enhancements)
-    await prisma.projectPortfolio.delete({
+    await prisma.personalProjectPortfolio.delete({
       where: { id: portfolioId }
     });
 

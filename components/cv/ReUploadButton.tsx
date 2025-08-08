@@ -1,20 +1,41 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui-daisy/button';
-import { RefreshCw, Upload, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Modal, ModalContent, ModalFooter } from '@/components/ui-daisy/modal';
+import { RefreshCw, Upload, AlertCircle, CheckCircle, Loader2, Sparkles } from 'lucide-react';
 import { toast } from "@/components/ui-daisy/use-toast";
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ReUploadButtonProps {
   analysisData?: any;
   onUploadComplete: (analysisId?: string) => void;
+  onAnimationStateChange?: (isAnimating: boolean, processingText: string, sparkles: boolean) => void;
 }
 
-export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButtonProps) {
+export function ReUploadButton({ analysisData, onUploadComplete, onAnimationStateChange }: ReUploadButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  
+  // Animation states
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [showSparkles, setShowSparkles] = useState(false);
+  
+  // Fun processing text phrases
+  const processingTexts = [
+    "Uploading...",
+    "Churning...", 
+    "Analyzing...",
+    "Building...",
+    "Cooking...",
+    "Processing...",
+    "Optimizing...",
+    "Enhancing...",
+    "Polishing...",
+    "Finalizing..."
+  ];
 
   // Check if we have developer data (any profile information)
   const hasDeveloperData = analysisData && (
@@ -27,6 +48,34 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
 
   // Get the current CV ID from analysis data
   const currentCvId = analysisData?.cv?.id || analysisData?.cvId;
+
+  // Jackpot-style text rotation effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (isDeleting || isUploading) {
+      setShowSparkles(true);
+      interval = setInterval(() => {
+        setCurrentTextIndex(prev => (prev + 1) % processingTexts.length);
+      }, 800); // Change text every 800ms for that jackpot feel
+    } else {
+      setShowSparkles(false);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isDeleting, isUploading, processingTexts.length]);
+
+  // Notify parent component about animation state changes
+  useEffect(() => {
+    const isAnimating = isDeleting || isUploading;
+    const currentText = processingTexts[currentTextIndex];
+    
+    if (onAnimationStateChange) {
+      onAnimationStateChange(isAnimating, currentText, showSparkles);
+    }
+  }, [isDeleting, isUploading, currentTextIndex, showSparkles, onAnimationStateChange, processingTexts]);
 
   const handleReUpload = useCallback(async () => {
     if (!hasDeveloperData) {
@@ -207,8 +256,8 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
     if (isDeleting) {
       return {
         variant: "primary-interactive" as const,
-        icon: <Loader2 className="h-4 w-4 text-primary-content animate-spin" />,
-        text: "Clearing Data...",
+        icon: <Sparkles className="h-4 w-4 text-primary-content animate-pulse" />,
+        text: processingTexts[currentTextIndex],
         loading: true,
         animated: true,
         accentuated: true
@@ -218,8 +267,8 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
     if (isUploading) {
       return {
         variant: "flashy-interactive" as const,
-        icon: <Loader2 className="h-4 w-4 text-primary animate-spin" />,
-        text: `Uploading (${uploadProgress}%)`,
+        icon: <Sparkles className="h-4 w-4 text-primary animate-spin" />,
+        text: uploadProgress > 0 ? `${processingTexts[currentTextIndex]} (${uploadProgress}%)` : processingTexts[currentTextIndex],
         loading: true,
         animated: true,
         accentuated: true
@@ -240,107 +289,89 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
 
   return (
     <>
-      <div className={`relative group ${accentuated ? 'animate-pulse' : ''}`}>
-        <Button
-          variant={variant}
-          size="sm"
-          onClick={handleReUpload}
-          disabled={!hasDeveloperData}
-          leftIcon={icon}
-          loading={loading}
-          animated={animated}
-          data-testid="cv-management-action-reupload"
-          className={`
-            ${accentuated ? 'scale-110 shadow-2xl shadow-primary/40 animate-bounce' : ''}
-            ${isUploading ? 'ring-2 ring-primary/50 ring-offset-2 ring-offset-base-100' : ''}
-            transition-all duration-500 ease-in-out
-          `}
-        >
-          <span className={accentuated ? 'animate-pulse font-bold' : ''}>{text}</span>
-        </Button>
-        
-        {/* Enhanced progress bar overlay for upload state */}
-        {isUploading && uploadProgress > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 h-2 bg-base-300/30 rounded-b-xl overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300 ease-out rounded-b-xl shadow-sm animate-pulse"
-              style={{ width: `${uploadProgress}%` }}
-            />
-            <div 
-              className="absolute top-0 left-0 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"
-              style={{ width: `${uploadProgress}%` }}
-            />
-          </div>
-        )}
-        
-        {/* Glowing effect ring for active states */}
-        {accentuated && (
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-xl blur-sm animate-pulse -z-10" />
-        )}
-      </div>
+      {/* Simple button without container animations */}
+      <Button
+        variant={variant}
+        size="lg"
+        onClick={handleReUpload}
+        disabled={!hasDeveloperData}
+        leftIcon={icon}
+        loading={loading}
+        animated={animated}
+        data-testid="cv-management-action-reupload"
+        className={`
+          ${accentuated ? 'shadow-2xl shadow-primary/40 border-2 border-primary/60' : 'border-2 border-base-300'}
+          ${isUploading ? 'ring-4 ring-primary/50 ring-offset-4 ring-offset-base-100 border-primary' : ''}
+          transition-all duration-300 ease-in-out relative overflow-hidden px-6 py-3
+        `}
+      >
+        {text}
+      </Button>
 
       {/* Confirmation Modal */}
-      {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg shadow-lg max-w-lg w-full mx-4">
-            <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-error" />
-              <h3 className="text-lg font-semibold">Clear Profile Data & Upload New CV?</h3>
-            </div>
-            
-            <div className="space-y-4 mb-6">
-              <div className="bg-error/10 border border-error/20 p-4 rounded-md">
-                <p className="text-error font-medium mb-2">⚠️ WARNING: This action will permanently delete ALL your profile data!</p>
-                <p className="text-base-content/80 text-sm">
-                  This includes your CV file, extracted profile information, work experience, education, skills, and all analysis results. You will need to start over with a fresh CV upload and analysis.
-                </p>
-              </div>
-              
-              {/* Show what will be deleted */}
-              <div className="bg-base-200 p-4 rounded-md">
-                <h4 className="font-medium text-base-content mb-2">The following data will be permanently deleted:</h4>
-                <div className="grid grid-cols-2 gap-2 text-sm text-base-content/70">
-                  {analysisData?.contactInfo && <div>• Contact Information</div>}
-                  {analysisData?.about && <div>• About/Summary</div>}
-                  {analysisData?.skills?.length > 0 && <div>• {analysisData.skills.length} Skills</div>}
-                  {analysisData?.experience?.length > 0 && <div>• {analysisData.experience.length} Work Experiences</div>}
-                  {analysisData?.education?.length > 0 && <div>• {analysisData.education.length} Education Entries</div>}
-                  {analysisData?.cv && <div>• CV File: {analysisData.cv.originalName || 'Current CV'}</div>}
-                  <div>• All Analysis Results</div>
-                  <div>• Profile Score & Metrics</div>
-                </div>
-              </div>
-
-              <p className="text-error text-sm font-medium">
-                🚨 This action cannot be undone! Make sure you want to completely start over.
+      <Modal
+        isOpen={showConfirmation}
+        onClose={handleCancelConfirmation}
+        title="Clear Profile Data & Upload New CV?"
+        variant="elevated"
+        backdropVariant="default"
+        size="lg"
+        closeOnBackdrop={!isDeleting}
+        closeOnEscape={!isDeleting}
+      >
+        <ModalContent className="p-0">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertCircle className="w-6 h-6 text-error" />
+            <span className="text-base text-base-content/80">This action will permanently delete all your data</span>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="bg-error/10 border border-error/20 p-4 rounded-md">
+              <p className="text-error font-medium mb-2">⚠️ WARNING: This action will permanently delete ALL your profile data!</p>
+              <p className="text-base-content/80 text-sm">
+                This includes your CV file, extracted profile information, work experience, education, skills, and all analysis results. You will need to start over with a fresh CV upload and analysis.
               </p>
             </div>
             
-            <div className="flex gap-3 justify-end">
-              <Button
-                variant="ghost"
-                onClick={handleCancelConfirmation}
-                disabled={isDeleting}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={handleConfirmReUpload}
-                disabled={isDeleting}
-                className="flex items-center gap-2"
-              >
-                {isDeleting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Upload className="w-4 h-4" />
-                )}
-                {isDeleting ? 'Clearing Data...' : 'Clear All Data & Upload New CV'}
-              </Button>
+            {/* Show what will be deleted */}
+            <div className="bg-base-200 p-4 rounded-md">
+              <h4 className="font-medium text-base-content mb-2">The following data will be permanently deleted:</h4>
+              <div className="grid grid-cols-2 gap-2 text-sm text-base-content/70">
+                {analysisData?.contactInfo && <div>• Contact Information</div>}
+                {analysisData?.about && <div>• About/Summary</div>}
+                {analysisData?.skills?.length > 0 && <div>• {analysisData.skills.length} Skills</div>}
+                {analysisData?.experience?.length > 0 && <div>• {analysisData.experience.length} Work Experiences</div>}
+                {analysisData?.education?.length > 0 && <div>• {analysisData.education.length} Education Entries</div>}
+                {analysisData?.cv && <div>• CV File: {analysisData.cv.originalName || 'Current CV'}</div>}
+                <div>• All Analysis Results</div>
+                <div>• Profile Score & Metrics</div>
+              </div>
             </div>
+
+            <p className="text-error text-sm font-medium">
+              🚨 This action cannot be undone! Make sure you want to completely start over.
+            </p>
           </div>
-        </div>
-      )}
+        </ModalContent>
+        
+        <ModalFooter>
+          <Button
+            variant="ghost"
+            onClick={handleCancelConfirmation}
+            disabled={isDeleting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleConfirmReUpload}
+            disabled={isDeleting}
+            leftIcon={isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+          >
+            {isDeleting ? 'Clearing Data...' : 'Clear All Data & Upload New CV'}
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   );
 }

@@ -98,6 +98,7 @@ export function transformExperienceProjects(projects: any[] | null | undefined):
     .map(project => ({
       name: project.name!,
       description: project.description || '',
+      responsibilities: project.responsibilities || [],
       technologies: project.technologies || [],
       teamSize: project.teamSize || null,
       role: project.role || null,

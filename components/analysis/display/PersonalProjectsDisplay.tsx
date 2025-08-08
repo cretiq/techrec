@@ -238,7 +238,7 @@ export const PersonalProjectsDisplay = React.forwardRef<PersonalProjectsDisplayR
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
               className={cn(
-                "bg-base-100/60 backdrop-blur-sm border border-base-300/50 rounded-lg p-6",
+                "border border-base-300/50 rounded-lg p-6",
                 project.isNew && "ring-2 ring-primary/20"
               )}
               data-testid={`personal-project-${index}`}

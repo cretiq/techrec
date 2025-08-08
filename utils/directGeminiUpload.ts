@@ -371,7 +371,8 @@ Return JSON with this exact structure:
       "projects": [
         {
           "name": "string",
-          "description": "string", 
+          "description": "string - brief project overview", 
+          "responsibilities": ["string - individual bullet points for this project"],
           "technologies": ["string"],
           "teamSize": "number | null",
           "role": "string | null"
@@ -441,14 +442,15 @@ JSON Output:
 
 IMPORTANT EXTRACTION RULES:
 1. If experience mentions "client projects" or "following projects", extract those as nested "projects" array within that experience
-2. Extract "personalProjects" for individual portfolio projects (personal apps, open source, side projects) - these are SEPARATE from work experience projects
-3. Only use "achievements" for certifications, awards, publications, or other standalone accomplishments
-4. Preserve project-to-company relationships - don't separate them
-5. Extract all technical skills mentioned, categorize appropriately  
-6. Calculate total experience accurately from date ranges
-7. Set isJuniorDeveloper to true if total experience < 3 years
-8. Use null for missing information, don't guess
-9. Be precise with date formats (YYYY-MM)
+2. For each project within experience, if bullet points are provided specifically for that project, extract them into the project's "responsibilities" array
+3. Extract "personalProjects" for individual portfolio projects (personal apps, open source, side projects) - these are SEPARATE from work experience projects
+4. Only use "achievements" for certifications, awards, publications, or other standalone accomplishments
+5. Preserve project-to-company relationships - don't separate them
+6. Extract all technical skills mentioned, categorize appropriately  
+7. Calculate total experience accurately from date ranges
+8. Set isJuniorDeveloper to true if total experience < 3 years
+9. Use null for missing information, don't guess
+10. Be precise with date formats (YYYY-MM)
 
 PROJECT EXTRACTION GUIDELINES:
 - "experience.projects[]" = Client projects done DURING employment (nested within work experience)

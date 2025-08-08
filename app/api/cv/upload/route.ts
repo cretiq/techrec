@@ -76,13 +76,13 @@ export async function POST(request: Request) {
       const authHeader = request.headers.get('authorization');
       console.log('Authorization header:', authHeader ? 'Present' : 'None');
       
-      // TEMPORARY: For testing, create a mock session if in development
+      // TEMPORARY: For testing, use real test user if in development
       if (process.env.NODE_ENV === 'development') {
-        console.log('⚠️ DEVELOPMENT: Using mock developer ID for testing');
-        const developerId = '507f1f77bcf86cd799439011'; // Valid MongoDB ObjectID format
+        console.log('⚠️ DEVELOPMENT: Using test user for CV upload debugging');
+        const developerId = '689491c6de5f64dd40843cd0'; // Real test user: cv-upload-test@test.techrec.com
         
-        // Continue with mock session for testing
-        console.log('🧪 Mock developer ID:', developerId);
+        // Continue with test user session for testing
+        console.log('🧪 Test user ID:', developerId);
       } else {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
@@ -91,8 +91,8 @@ export async function POST(request: Request) {
       console.log('Authenticated developer ID:', developerId);
     }
     
-    // Set developerId for use throughout the function
-    const developerId = session?.user?.id || '507f1f77bcf86cd799439011';
+    // Set developerId for use throughout the function (use real test user in development)
+    const developerId = session?.user?.id || '689491c6de5f64dd40843cd0'; // cv-upload-test@test.techrec.com
     console.log('Using developer ID:', developerId);
 
     const formData = await request.formData();
@@ -233,6 +233,21 @@ export async function POST(request: Request) {
           
           logUploadFlow('DIRECT', 'Syncing to profile tables...');
           const syncStartTime = Date.now();
+          
+          // Verify developer exists before attempting sync
+          const developerExists = await prisma.developer.findUnique({
+            where: { id: developerId },
+            select: { id: true, email: true }
+          });
+          
+          if (!developerExists) {
+            throw new Error(`Developer with ID ${developerId} not found. Cannot sync profile data.`);
+          }
+          
+          logUploadFlow('DIRECT', 'Developer verified, proceeding with sync', {
+            developerId: developerExists.id,
+            email: developerExists.email
+          });
           
           let syncDuration = 0;
           try {

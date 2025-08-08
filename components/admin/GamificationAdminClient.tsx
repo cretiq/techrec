@@ -21,7 +21,10 @@ import {
   Trash2,
   Download,
   Calendar,
-  HardDrive
+  HardDrive,
+  ChevronUp,
+  ChevronDown,
+  Users
 } from 'lucide-react';
 
 interface Developer {
@@ -34,6 +37,8 @@ interface Developer {
   pointsUsed: number;
   pointsEarned: number;
   subscriptionTier: string;
+  createdAt: Date;
+  updatedAt: Date;
   userBadges: Array<{
     badgeId: string;
     earnedAt: Date;
@@ -54,6 +59,11 @@ interface Developer {
     mimeType: string;
   }>;
   cvCount: number;
+  skillsCount: number;
+  experienceCount: number;
+  educationCount: number;
+  achievementsCount: number;
+  personalProjectsCount: number;
 }
 
 interface Suggestion {
@@ -69,15 +79,14 @@ interface AdminOperation {
 
 export function GamificationAdminClient() {
   const [selectedDeveloper, setSelectedDeveloper] = useState<Developer | null>(null);
-  const [searchEmail, setSearchEmail] = useState('');
+  const [developers, setDevelopers] = useState<Developer[]>([]);
+  const [filteredDevelopers, setFilteredDevelopers] = useState<Developer[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<string>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [operation, setOperation] = useState<AdminOperation | null>(null);
   const [loading, setLoading] = useState(false);
-
-  // Type-ahead search state
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
-  const [isSuggestionsVisible, setIsSuggestionsVisible] = useState(false);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const [loadingDevelopers, setLoadingDevelopers] = useState(true);
 
   // Points management
   const [pointsAmount, setPointsAmount] = useState<number>(0);
@@ -110,78 +119,92 @@ export function GamificationAdminClient() {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [isDeletingCv, setIsDeletingCv] = useState(false);
 
-  // Debounced search for suggestions
+  // Profile clearing
+  const [isClearProfileConfirmOpen, setIsClearProfileConfirmOpen] = useState(false);
+  const [isClearingProfile, setIsClearingProfile] = useState(false);
+  const [profileDataToDelete, setProfileDataToDelete] = useState<{
+    skills: number;
+    experience: number;
+    education: number;
+    achievements: number;
+    personalProjects: number;
+    experienceProjects: number;
+  } | null>(null);
+
+  // Load developers on component mount
   useEffect(() => {
-    if (searchEmail.trim().length < 2) {
-      setSuggestions([]);
-      return;
+    loadDevelopers();
+  }, []);
+
+  // Filter and sort developers when search term, sort, or developers change
+  useEffect(() => {
+    let filtered = developers;
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      filtered = developers.filter(dev => 
+        dev.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        dev.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    setIsSuggestionsLoading(true);
-    const debounceTimer = setTimeout(async () => {
-      try {
-        const response = await fetch(`/api/admin/gamification/developers/search?q=${encodeURIComponent(searchEmail)}`);
-        const data = await response.json();
-        if (response.ok) {
-          setSuggestions(data);
-        } else {
-          setSuggestions([]);
-        }
-      } catch (error) {
-        setSuggestions([]);
-        console.error("Failed to fetch suggestions:", error);
-      } finally {
-        setIsSuggestionsLoading(false);
-      }
-    }, 300);
+    // Apply sorting
+    filtered = [...filtered].sort((a, b) => {
+      let aValue: any = a[sortBy as keyof Developer];
+      let bValue: any = b[sortBy as keyof Developer];
 
-    return () => clearTimeout(debounceTimer);
-  }, [searchEmail]);
-  
-    // Handle clicks outside of search to close suggestions
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
-        setIsSuggestionsVisible(false);
+      // Handle string comparisons
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [searchContainerRef]);
 
-  // Search for developer
-  const searchDeveloper = async (emailToSearch?: string) => {
-    const finalEmail = emailToSearch || searchEmail;
-    if (!finalEmail.trim()) return;
-    
-    setLoading(true);
-    setSuggestions([]);
-    setIsSuggestionsVisible(false);
-    setOperation({ type: 'loading', message: 'Searching for developer...' });
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    setFilteredDevelopers(filtered);
+  }, [developers, searchTerm, sortBy, sortOrder]);
+
+  // Load all developers
+  const loadDevelopers = async () => {
+    setLoadingDevelopers(true);
+    setOperation({ type: 'loading', message: 'Loading developers...' });
     
     try {
-      const response = await fetch(`/api/admin/gamification/developer?email=${encodeURIComponent(finalEmail)}`);
+      const response = await fetch(`/api/admin/gamification/developers?sortBy=${sortBy}&sortOrder=${sortOrder}`);
       const data = await response.json();
       
       if (response.ok) {
-        setSelectedDeveloper(data.developer);
-        setOperation({ type: 'success', message: `Found developer: ${data.developer.name}` });
+        setDevelopers(data.developers);
+        setOperation({ type: 'success', message: `Loaded ${data.developers.length} developers` });
       } else {
-        setSelectedDeveloper(null);
-        setOperation({ type: 'error', message: data.error || 'Developer not found' });
+        setOperation({ type: 'error', message: data.error || 'Failed to load developers' });
       }
     } catch (error) {
-      setOperation({ type: 'error', message: 'Error searching for developer' });
+      setOperation({ type: 'error', message: 'Error loading developers' });
     } finally {
-      setLoading(false);
+      setLoadingDevelopers(false);
     }
   };
-  
-  const handleSuggestionClick = (suggestion: Suggestion) => {
-    setSearchEmail(suggestion.email);
-    setSuggestions([]);
-    setIsSuggestionsVisible(false);
-    searchDeveloper(suggestion.email);
+
+  // Handle developer selection
+  const selectDeveloper = async (developer: Developer) => {
+    setSelectedDeveloper(developer);
+    setOperation({ type: 'success', message: `Selected developer: ${developer.name}` });
+  };
+
+  // Handle sorting
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
   };
 
 
@@ -210,7 +233,7 @@ export function GamificationAdminClient() {
         setPointsAmount(0);
         setPointsReason('');
         // Refresh developer data
-        searchDeveloper();
+        await loadDevelopers();
       } else {
         setOperation({ type: 'error', message: data.error || 'Failed to award points' });
       }
@@ -251,7 +274,7 @@ export function GamificationAdminClient() {
         setXpSource('');
         setXpDescription('');
         // Refresh developer data
-        searchDeveloper();
+        await loadDevelopers();
       } else {
         setOperation({ type: 'error', message: data.error || 'Failed to award XP' });
       }
@@ -285,7 +308,7 @@ export function GamificationAdminClient() {
         setOperation({ type: 'success', message: `Successfully awarded badge` });
         setSelectedBadge('');
         // Refresh developer data
-        searchDeveloper();
+        await loadDevelopers();
       } else {
         setOperation({ type: 'error', message: data.error || 'Failed to award badge' });
       }
@@ -328,7 +351,7 @@ export function GamificationAdminClient() {
       if (response.ok) {
         setOperation({ type: 'success', message: 'CV deleted successfully' });
         // Refresh developer data
-        searchDeveloper();
+        await loadDevelopers();
       } else {
         setOperation({ type: 'error', message: data.error || 'Failed to delete CV' });
       }
@@ -345,6 +368,70 @@ export function GamificationAdminClient() {
   const handleDeleteCvClick = (cv: any) => {
     setCvToDelete(cv);
     setIsDeleteConfirmOpen(true);
+  };
+
+  // Fetch profile data counts
+  const fetchProfileDataCounts = async (developerId: string) => {
+    try {
+      const response = await fetch(`/api/admin/gamification/profile-counts?developerId=${developerId}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        return data;
+      } else {
+        console.error('Failed to fetch profile data counts:', data.error);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching profile data counts:', error);
+      return null;
+    }
+  };
+
+  // Handle clear profile confirmation
+  const handleClearProfileClick = async () => {
+    if (!selectedDeveloper) return;
+    
+    setOperation({ type: 'loading', message: 'Loading profile data...' });
+    const counts = await fetchProfileDataCounts(selectedDeveloper.id);
+    
+    if (counts) {
+      setProfileDataToDelete(counts);
+      setIsClearProfileConfirmOpen(true);
+      setOperation(null);
+    } else {
+      setOperation({ type: 'error', message: 'Failed to load profile data' });
+    }
+  };
+
+  // Clear profile data
+  const clearProfileData = async () => {
+    if (!selectedDeveloper) return;
+    
+    setIsClearingProfile(true);
+    setOperation({ type: 'loading', message: 'Clearing profile data...' });
+    
+    try {
+      const response = await fetch(`/api/admin/gamification/clear-profile?developerId=${selectedDeveloper.id}`, {
+        method: 'DELETE'
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setOperation({ type: 'success', message: 'Profile data cleared successfully' });
+        // Refresh developer data
+        await loadDevelopers();
+      } else {
+        setOperation({ type: 'error', message: data.error || 'Failed to clear profile data' });
+      }
+    } catch (error) {
+      setOperation({ type: 'error', message: 'Error clearing profile data' });
+    } finally {
+      setIsClearingProfile(false);
+      setIsClearProfileConfirmOpen(false);
+      setProfileDataToDelete(null);
+    }
   };
 
   // Format file size
@@ -369,61 +456,158 @@ export function GamificationAdminClient() {
 
   return (
     <div className="space-y-6">
-      {/* Developer Search */}
+      {/* Developer List */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="w-5 h-5" />
-            Find Developer
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Developers ({filteredDevelopers.length})
+            </div>
+            <Button 
+              onClick={loadDevelopers}
+              disabled={loadingDevelopers}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              {loadingDevelopers ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+              Refresh
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 items-end">
-            <div className="flex-1 relative" ref={searchContainerRef}>
-              <label className="block text-sm font-medium mb-2">Email Address</label>
-              <Input
-                type="email"
-                value={searchEmail}
-                onChange={(e) => {
-                  setSearchEmail(e.target.value);
-                  setIsSuggestionsVisible(true);
-                }}
-                placeholder="developer@example.com"
-                className="w-full"
-                autoComplete="off"
-              />
-              {isSuggestionsVisible && (suggestions.length > 0 || isSuggestionsLoading) && (
-                <div className="absolute z-10 w-full mt-1 bg-base-100 border border-base-300 rounded-md shadow-lg">
-                  <ul className="max-h-60 overflow-auto">
-                    {isSuggestionsLoading && (
-                      <li className="px-4 py-2 text-sm text-base-content/60 flex items-center">
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Searching...
-                      </li>
-                    )}
-                    {!isSuggestionsLoading && suggestions.map((suggestion) => (
-                      <li
-                        key={suggestion.id}
-                        className="px-4 py-2 text-sm hover:bg-base-200 cursor-pointer"
-                        onClick={() => handleSuggestionClick(suggestion)}
-                      >
-                        <p className="font-medium">{suggestion.name}</p>
-                        <p className="text-xs text-base-content/60">{suggestion.email}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-            <Button 
-              onClick={() => searchDeveloper()}
-              disabled={loading || !searchEmail.trim()}
-              className="flex items-center gap-2"
-            >
-              {loading && !isSuggestionsLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              Search
-            </Button>
+          {/* Search Filter */}
+          <div className="mb-4">
+            <Input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Filter by name or email..."
+              className="max-w-sm"
+            />
           </div>
+
+          {/* Developer Table */}
+          {loadingDevelopers ? (
+            <div className="text-center py-8">
+              <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
+              <p className="text-base-content/70">Loading developers...</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="table table-zebra w-full">
+                <thead>
+                  <tr>
+                    <th 
+                      className="cursor-pointer hover:bg-base-200"
+                      onClick={() => handleSort('name')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Name
+                        {sortBy === 'name' && (
+                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-base-200"
+                      onClick={() => handleSort('email')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Email
+                        {sortBy === 'email' && (
+                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-base-200"
+                      onClick={() => handleSort('currentLevel')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Level
+                        {sortBy === 'currentLevel' && (
+                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-base-200"
+                      onClick={() => handleSort('totalXP')}
+                    >
+                      <div className="flex items-center gap-1">
+                        XP
+                        {sortBy === 'totalXP' && (
+                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                        )}
+                      </div>
+                    </th>
+                    <th>Points</th>
+                    <th 
+                      className="cursor-pointer hover:bg-base-200"
+                      onClick={() => handleSort('subscriptionTier')}
+                    >
+                      <div className="flex items-center gap-1">
+                        Tier
+                        {sortBy === 'subscriptionTier' && (
+                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                        )}
+                      </div>
+                    </th>
+                    <th>Profile Data</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredDevelopers.map((developer) => (
+                    <tr 
+                      key={developer.id}
+                      className={selectedDeveloper?.id === developer.id ? 'bg-primary/10' : ''}
+                    >
+                      <td>
+                        <div className="font-medium">{developer.name}</div>
+                      </td>
+                      <td>
+                        <div className="text-sm text-base-content/70">{developer.email}</div>
+                      </td>
+                      <td>
+                        <Badge variant="outline">Level {developer.currentLevel}</Badge>
+                      </td>
+                      <td>
+                        <div className="text-sm">{developer.totalXP.toLocaleString()}</div>
+                      </td>
+                      <td>
+                        <div className="text-sm">
+                          {(developer.monthlyPoints - developer.pointsUsed + developer.pointsEarned).toLocaleString()}
+                        </div>
+                      </td>
+                      <td>
+                        <Badge variant="outline">{developer.subscriptionTier}</Badge>
+                      </td>
+                      <td>
+                        <div className="text-xs text-base-content/60">
+                          <div>CVs: {developer.cvCount}</div>
+                          <div>Skills: {developer.skillsCount}</div>
+                          <div>Exp: {developer.experienceCount}</div>
+                          <div>Edu: {developer.educationCount}</div>
+                        </div>
+                      </td>
+                      <td>
+                        <Button
+                          variant={selectedDeveloper?.id === developer.id ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => selectDeveloper(developer)}
+                        >
+                          {selectedDeveloper?.id === developer.id ? "Selected" : "Select"}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -664,9 +848,25 @@ export function GamificationAdminClient() {
             <TabsContent value="cvs" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    CV Management
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-5 h-5" />
+                      CV Management
+                    </div>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleClearProfileClick}
+                      disabled={loading || isClearingProfile}
+                      className="flex items-center gap-2"
+                    >
+                      {isClearingProfile ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                      Clear All Profile Data
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -792,6 +992,72 @@ export function GamificationAdminClient() {
                           <Trash2 className="w-4 h-4" />
                         )}
                         Delete CV
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Clear Profile Confirmation Modal */}
+              {isClearProfileConfirmOpen && profileDataToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-base-100 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <AlertCircle className="w-6 h-6 text-red-500" />
+                      <h3 className="text-lg font-semibold">Confirm Profile Data Deletion</h3>
+                    </div>
+                    
+                    <div className="space-y-3 mb-6">
+                      <p className="text-base-content/80">
+                        Are you sure you want to delete ALL profile data for <strong>{selectedDeveloper?.name}</strong>? This action cannot be undone.
+                      </p>
+                      
+                      <div className="bg-red-50 border border-red-200 p-4 rounded-md">
+                        <h4 className="font-semibold text-red-800 mb-2">The following data will be permanently deleted:</h4>
+                        <ul className="text-sm text-red-700 space-y-1">
+                          <li>• <strong>{profileDataToDelete.skills}</strong> Skills</li>
+                          <li>• <strong>{profileDataToDelete.experience}</strong> Work Experience entries</li>
+                          <li>• <strong>{profileDataToDelete.education}</strong> Education entries</li>
+                          <li>• <strong>{profileDataToDelete.achievements}</strong> Achievement entries</li>
+                          <li>• <strong>{profileDataToDelete.personalProjects}</strong> Personal Projects</li>
+                          <li>• <strong>{profileDataToDelete.experienceProjects}</strong> Experience Projects</li>
+                        </ul>
+                        <p className="text-xs text-red-600 mt-3 font-medium">
+                          Total items to be deleted: {
+                            profileDataToDelete.skills + 
+                            profileDataToDelete.experience + 
+                            profileDataToDelete.education + 
+                            profileDataToDelete.achievements + 
+                            profileDataToDelete.personalProjects + 
+                            profileDataToDelete.experienceProjects
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3 justify-end">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setIsClearProfileConfirmOpen(false);
+                          setProfileDataToDelete(null);
+                        }}
+                        disabled={isClearingProfile}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={clearProfileData}
+                        disabled={isClearingProfile}
+                        className="flex items-center gap-2"
+                      >
+                        {isClearingProfile ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                        Delete All Profile Data
                       </Button>
                     </div>
                   </div>

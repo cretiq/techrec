@@ -53,6 +53,7 @@ export const SkillSchema = z.object({
 export const ExperienceProjectSchema = z.object({
   name: z.string().optional(),
   description: z.string().nullable().optional(),
+  responsibilities: z.array(z.string()).nullable().optional(),
   technologies: z.array(z.string()).nullable().optional(),
   teamSize: z.number().nullable().optional(),
   role: z.string().nullable().optional(),

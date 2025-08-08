@@ -181,7 +181,7 @@ model Developer {
   experience      Experience[]
   education       Education[]
   achievements    Achievement[]
-  projects        Project[]
+  personalProjects PersonalProject[]
   assessments     Assessment[]
   applications    Application[]
   savedRoles      SavedRole[]
@@ -198,8 +198,8 @@ model Developer {
   gamePreferences GamePreferences?
   pointsTransactions PointsTransaction[]
   
-  // Project Portfolio relations
-  projectPortfolios ProjectPortfolio[]
+  // Personal Project Portfolio relations
+  personalProjectPortfolios PersonalProjectPortfolio[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -306,12 +306,34 @@ model Experience {
   developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
   developerId String    @db.ObjectId
 
+  // Related projects from CV experience
+  projects    ExperienceProject[]
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   @@index([startDate, endDate])
   @@index([developerId])
   @@map("Experience")
+}
+
+model ExperienceProject {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  experienceId  String @db.ObjectId
+  experience    Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  
+  name          String
+  description   String
+  responsibilities String[]
+  technologies  String[]
+  teamSize      Int?
+  role          String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([experienceId])
+  @@map("ExperienceProject")
 }
 
 model Education {
@@ -336,7 +358,7 @@ model Education {
   @@map("Education")
 }
 
-model Project {
+model PersonalProject {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
@@ -359,7 +381,7 @@ model Project {
 
   @@index([developerId])
   @@index([status])
-  @@map("Project")
+  @@map("PersonalProject")
 }
 
 model Assessment {
@@ -753,7 +775,7 @@ model ConfigurationSettings {
 
 // AI-Powered Project Portfolio Enhancement System Models
 
-model ProjectPortfolio {
+model PersonalProjectPortfolio {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   developerId     String   @db.ObjectId // No @unique constraint - allows multiple portfolios per developer
   developer       Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
@@ -770,7 +792,7 @@ model ProjectPortfolio {
   metadata        Json    @default("{}") // Additional project metadata
   
   // ENHANCEMENT RECORDS
-  enhancements    ProjectEnhancement[]
+  enhancements    PersonalProjectEnhancement[]
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -778,13 +800,13 @@ model ProjectPortfolio {
   @@index([developerId])
   @@index([sourceType])
   @@index([isPublic])
-  @@map("ProjectPortfolio")
+  @@map("PersonalProjectPortfolio")
 }
 
-model ProjectEnhancement {
+model PersonalProjectEnhancement {
   id              String @id @default(auto()) @map("_id") @db.ObjectId
   portfolioId     String @db.ObjectId
-  portfolio       ProjectPortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  portfolio       PersonalProjectPortfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
   
   // ENHANCEMENT DATA
   enhancementType String // 'cv_description', 'technical_summary', 'impact_analysis', 'project_ideas'
@@ -801,5 +823,5 @@ model ProjectEnhancement {
   @@index([portfolioId])
   @@index([enhancementType])
   @@index([createdAt])
-  @@map("ProjectEnhancement")
+  @@map("PersonalProjectEnhancement")
 }

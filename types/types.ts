@@ -34,6 +34,7 @@ export interface InternalSkill {
 export interface InternalExperienceProject {
   name: string;
   description: string;
+  responsibilities: string[];
   technologies: string[];
   teamSize: number | null;
   role: string | null;

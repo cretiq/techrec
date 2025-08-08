@@ -114,16 +114,16 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
             where: { developerId: existingCv.developerId }
           });
           
-          // Delete projects
-          const projects = await tx.project.deleteMany({
+          // Delete personal projects
+          const personalProjects = await tx.personalProject.deleteMany({
             where: { developerId: existingCv.developerId }
           });
           
-          // Delete project portfolios (and their enhancements via cascade)
-          const projectPortfolios = await tx.projectPortfolio.deleteMany({
+          // Delete personal project portfolios (and their enhancements via cascade)
+          const personalProjectPortfolios = await tx.personalProjectPortfolio.deleteMany({
             where: { developerId: existingCv.developerId }
           });
-          // Note: ProjectEnhancement records are automatically deleted via cascade
+          // Note: PersonalProjectEnhancement records are automatically deleted via cascade
           
           return {
             contactInfo: contactInfo.count,
@@ -131,8 +131,8 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
             experience: experience.count,
             education: education.count,
             achievements: achievements.count,
-            projects: projects.count,
-            projectPortfolios: projectPortfolios.count
+            personalProjects: personalProjects.count,
+            personalProjectPortfolios: personalProjectPortfolios.count
           };
         });
         

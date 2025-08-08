@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {  Button  } from '@/components/ui-daisy/button';
 import {  Input  } from '@/components/ui-daisy/input';
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui-daisy/label';
 import { Progress } from '@/components/ui-daisy/progress'; // Assuming Progress component exists
 import { useToast } from '@/components/ui-daisy/use-toast'; // Assuming useToast hook exists
 import { CheckCircle, Loader2, UploadCloud } from 'lucide-react'; // Import icons
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Define allowed MIME types and max size (should match backend)
 const ALLOWED_MIME_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
@@ -24,12 +25,63 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
   const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [uploadProgress, setUploadProgress] = useState(0);
   const { toast } = useToast();
+  
+  // Animation states for spectacular upload effects
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [processingText, setProcessingText] = useState('Uploading...');
+  
+  // Fun processing text phrases for upload
+  const processingTexts = [
+    "Uploading...",
+    "Scanning...", 
+    "Processing...",
+    "Analyzing...",
+    "Parsing...",
+    "Extracting...",
+    "Understanding...",
+    "Building...",
+    "Organizing...",
+    "Finalizing..."
+  ];
+  
+  // Text colors - Blue/Teal shades only
+  const textColors = [
+    'text-blue-400',      // Uploading...
+    'text-teal-500',      // Scanning... 
+    'text-blue-600',      // Processing...
+    'text-cyan-500',      // Analyzing...
+    'text-blue-500',      // Parsing...
+    'text-teal-600',      // Extracting...
+    'text-cyan-400',      // Understanding...
+    'text-blue-700',      // Building...
+    'text-teal-400',      // Organizing...
+    'text-cyan-600'       // Finalizing...
+  ];
 
   const resetState = () => {
     setSelectedFile(null);
     setUploadProgress(0);
     setUploadState('idle');
   }
+
+  // Text rotation effect during upload
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (uploadState === 'uploading') {
+      interval = setInterval(() => {
+        setCurrentTextIndex(prev => {
+          const newIndex = (prev + 1) % processingTexts.length;
+          setProcessingText(processingTexts[newIndex]);
+          return newIndex;
+        });
+      }, 1200); // Change text every 1.2 seconds
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [uploadState, processingTexts]);
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     setUploadState('idle'); // Reset state if new file dropped
@@ -209,50 +261,163 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md p-4 border rounded-lg shadow-sm dark:border-gray-500" data-testid="cv-management-upload-form-container">
-      <Label htmlFor="cv-upload" data-testid="cv-management-upload-label">Upload CV</Label>
-      <div
-        {...getRootProps()}
-        id="cv-upload"
-        className={`mt-2 flex flex-col justify-center items-center w-full h-32 px-6 py-10 border-2 border-dashed dark:border-gray-500 rounded-md cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-input hover:border-primary/50'} ${uploadState === 'success' ? 'border-green-500 bg-green-50' : ''}`}
-        data-testid="cv-management-upload-dropzone"
+    <div className="w-full max-w-md" data-testid="cv-management-upload-form-container">
+      {/* Animated Container */}
+      <motion.div
+        className="relative overflow-hidden rounded-xl border border-base-300"
+        animate={{
+          scale: uploadState === 'uploading' ? [1, 1.02, 1] : 1,
+          rotate: uploadState === 'uploading' ? [0, 0.2, -0.2, 0] : 0
+        }}
+        transition={{
+          duration: 2,
+          repeat: uploadState === 'uploading' ? Infinity : 0,
+          ease: "easeInOut"
+        }}
       >
-        <input {...getInputProps()} disabled={uploadState === 'uploading' || uploadState === 'success'} data-testid="cv-management-upload-file-input" />
-        {
-          uploadState === 'uploading' ? (
-            <Loader2 className="h-8 w-8 animate-spin text-primary" data-testid="cv-management-upload-icon-loading" />
-          ) : uploadState === 'success' ? (
-            <CheckCircle className="h-8 w-8 text-green-500" data-testid="cv-management-upload-icon-success" />
-          ) : (
-             <UploadCloud className="h-8 w-8 text-muted-foreground" data-testid="cv-management-upload-icon-default" />
-          )
-        }
-        <p className={`mt-2 text-sm text-center ${uploadState === 'success' ? 'text-green-600 font-medium' : 'text-muted-foreground'}`} data-testid="cv-management-upload-status-text">
-          {isDragActive ? "Drop the file here ..." : 
-           uploadState === 'uploading' ? `Uploading (${uploadProgress}%)` : 
-           uploadState === 'success' ? "Upload Complete!" : 
-           selectedFile ? selectedFile.name : 
-           "Drag & drop or click to select"}
-        </p>
-        {uploadState !== 'uploading' && uploadState !== 'success' && !selectedFile && (
-             <p className="text-xs text-muted-foreground mt-1" data-testid="cv-management-upload-file-restrictions">(PDF, DOCX, TXT - Max {MAX_FILE_SIZE_MB}MB)</p>
+        {/* Base background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-base-200/80 via-base-300/90 to-base-400/80" />
+        
+        {/* Glowing rings during upload */}
+        {uploadState === 'uploading' && (
+          <>
+            <motion.div 
+              className="absolute -inset-2 bg-gradient-to-r from-blue-400/20 via-teal-500/20 to-cyan-500/20 rounded-xl blur-lg -z-10"
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.2, 0.4, 0.2]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            <motion.div 
+              className="absolute -inset-1 bg-gradient-to-r from-blue-500/30 via-teal-600/30 to-cyan-400/30 rounded-xl blur-sm -z-10"
+              animate={{
+                scale: [1, 1.05, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </>
         )}
-      </div>
 
-      {selectedFile && uploadState !== 'success' && (
-        <div className="mt-4" data-testid="cv-management-upload-actions">
-          {/* Optionally show progress bar outside dropzone too */}
-          {/* {uploadState === 'uploading' && <Progress value={uploadProgress} className="mt-2 h-2" />} */} 
-          <Button
-            onClick={handleUpload}
-            disabled={uploadState === 'uploading'}
-            className="w-full"
-            data-testid="cv-management-button-upload-trigger"
+        <div className="relative p-6">
+          <Label htmlFor="cv-upload" className="text-lg font-semibold mb-4 block" data-testid="cv-management-upload-label">Upload Your CV</Label>
+          
+          <div
+            {...getRootProps()}
+            id="cv-upload"
+            className={`flex flex-col justify-center items-center w-full min-h-48 px-6 py-8 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 ${
+              isDragActive ? 'border-primary bg-primary/10 scale-105' : 
+              uploadState === 'uploading' ? 'border-blue-400 bg-blue-50/50' :
+              uploadState === 'success' ? 'border-green-500 bg-green-50' : 
+              'border-base-300 hover:border-primary/50 hover:bg-base-50'
+            }`}
+            data-testid="cv-management-upload-dropzone"
           >
-            {uploadState === 'uploading' ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-upload-button-spinner" /> Uploading...</> : 'Upload CV'}
-          </Button>
+            <input {...getInputProps()} disabled={uploadState === 'uploading' || uploadState === 'success'} data-testid="cv-management-upload-file-input" />
+            
+            {/* Icon with animations */}
+            <motion.div
+              animate={{
+                rotate: uploadState === 'uploading' ? 360 : 0,
+                scale: uploadState === 'uploading' ? [1, 1.1, 1] : 1
+              }}
+              transition={{
+                rotate: { duration: 2, repeat: uploadState === 'uploading' ? Infinity : 0, ease: "linear" },
+                scale: { duration: 1, repeat: uploadState === 'uploading' ? Infinity : 0, ease: "easeInOut" }
+              }}
+            >
+              {uploadState === 'uploading' ? (
+                <Loader2 className="h-12 w-12 animate-spin text-blue-500" data-testid="cv-management-upload-icon-loading" />
+              ) : uploadState === 'success' ? (
+                <CheckCircle className="h-12 w-12 text-green-500" data-testid="cv-management-upload-icon-success" />
+              ) : (
+                <UploadCloud className="h-12 w-12 text-base-content/60" data-testid="cv-management-upload-icon-default" />
+              )}
+            </motion.div>
+
+            {/* Animated text for upload state */}
+            {uploadState === 'uploading' ? (
+              <div className="mt-4 text-center">
+                {/* Slot machine text animation */}
+                <div className="relative h-16 overflow-hidden flex items-center justify-center min-w-[200px] mb-2">
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={processingText}
+                      initial={{ y: 48, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -48, opacity: 0 }}
+                      transition={{ 
+                        duration: 0.5,
+                        ease: "easeInOut"
+                      }}
+                      className={`absolute inset-x-0 text-center text-2xl font-bold ${textColors[currentTextIndex]}`}
+                    >
+                      {processingText}
+                    </motion.span>
+                  </AnimatePresence>
+                </div>
+                
+                {/* Progress indicator */}
+                <motion.p
+                  className="text-lg text-base-content/70 font-medium"
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {uploadProgress}% Complete
+                </motion.p>
+              </div>
+            ) : (
+              <div className="mt-4 text-center">
+                <p className={`text-lg font-medium ${uploadState === 'success' ? 'text-green-600' : 'text-base-content'}`} data-testid="cv-management-upload-status-text">
+                  {isDragActive ? "Drop the file here!" : 
+                   uploadState === 'success' ? "Upload Complete!" : 
+                   selectedFile ? selectedFile.name : 
+                   "Drag & drop or click to select"}
+                </p>
+                {uploadState !== 'success' && !selectedFile && (
+                  <p className="text-sm text-base-content/60 mt-2" data-testid="cv-management-upload-file-restrictions">
+                    PDF, DOCX, TXT - Max {MAX_FILE_SIZE_MB}MB
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {selectedFile && uploadState !== 'success' && (
+            <div className="mt-6" data-testid="cv-management-upload-actions">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <Button
+                  onClick={handleUpload}
+                  disabled={uploadState === 'uploading'}
+                  variant="elevated-interactive"
+                  size="lg"
+                  className="w-full"
+                  data-testid="cv-management-button-upload-trigger"
+                >
+                  {uploadState === 'uploading' ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-upload-button-spinner" /> Processing...</>
+                  ) : (
+                    'Upload CV'
+                  )}
+                </Button>
+              </motion.div>
+            </div>
+          )}
         </div>
-      )}
+      </motion.div>
     </div>
   );
 } 
