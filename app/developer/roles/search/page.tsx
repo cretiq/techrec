@@ -392,7 +392,7 @@ export default function RolesSearch2Page() {
 
           {/* No Results State */}
           {!loading && filteredRoles.length === 0 && (
-            <Card className="text-center p-8 bg-base-100/60 backdrop-blur-sm animate-fade-in-up" data-testid="role-search-card-no-results">
+            <Card variant="glass-interactive" className="text-center p-8 animate-fade-in-up" data-testid="role-search-card-no-results">
               <CardHeader>
                 <CardTitle>Ready to Search for Roles</CardTitle>
                 <CardDescription>
@@ -528,15 +528,16 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
   if (!role) return null
 
   return (
-                <Card 
+    <Card 
+      variant="gradient-interactive"
       tabIndex={0}
       role="checkbox"
       aria-checked={isSelected}
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
       className={cn(
-        "hover:shadow-lg transition-all hover:transform hover:scale-[1.02] bg-base-100/60 backdrop-blur-sm animate-fade-in-up flex flex-col h-full relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 border border-base-200",
-        isSelected && "border-2 border-primary bg-primary/20 shadow-primary/20 shadow-md"
+        "animate-fade-in-up flex flex-col h-full relative cursor-pointer focus:outline-none",
+        isSelected && "bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm border-blue-300 dark:bg-blue-900/30 dark:border-blue-700"
       )}
       style={{ animationDelay: `${index * 100}ms` }}
       data-testid={testId || `role-search-card-role-item-${role.id}`}
@@ -585,25 +586,16 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4" data-testid={`role-search-content-role-${role.id}`}>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary" className="flex items-center whitespace-nowrap">
-                        <MapPin className="mr-1 h-3 w-3 flex-shrink-0" />
-                        <span className="line-clamp-1">{role.location || 'N/A'}</span>
+                      <Badge variant="secondary" leftIcon={<MapPin className="h-3 w-3 flex-shrink-0" />} className="whitespace-nowrap">
+                        {role.location || 'N/A'}
                       </Badge>
-                      <Badge variant="secondary" className="flex items-center whitespace-nowrap">
-                        <Briefcase className="mr-1 h-3 w-3 flex-shrink-0" />
-                        <span>{formatJobType(role.type)}</span>
+                      <Badge variant="secondary" leftIcon={<Briefcase className="h-3 w-3 flex-shrink-0" />} className="whitespace-nowrap">
+                        {formatJobType(role.type)}
                       </Badge>
                       {role.remote && (
-                        <Badge variant="secondary" className="flex items-center whitespace-nowrap">
-                          <Clock className="mr-1 h-3 w-3 flex-shrink-0" />
-                          <span>Remote</span>
+                        <Badge variant="secondary" leftIcon={<Clock className="h-3 w-3 flex-shrink-0" />} className="whitespace-nowrap">
+                          Remote
                         </Badge>
-                      )}
-                      {role.applicationInfo && (
-                        <ApplicationBadge 
-                          applicationInfo={role.applicationInfo}
-                          data-testid={`role-search-badge-application-${role.id}`}
-                        />
                       )}
                     </div>
                     <p className="text-muted-foreground text-sm line-clamp-3">{role.description || 'No description available.'}</p>
@@ -677,7 +669,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                         <div className="flex-shrink-0">
                           <Button
                             size="sm"
-                            variant="outline"
+                            variant="default"
                             onClick={handleWriteClick}
                             disabled={!session?.user}
                             leftIcon={<PenTool className="h-3 w-3" />}

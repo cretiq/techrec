@@ -208,12 +208,16 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
         </div>
       )}
       
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4">
         <AnimatePresence initial={false}>
           {editData.map((exp, index) => (
             <motion.div
               key={exp.id || `exp-${index}`}
-              className={`p-6 rounded-lg relative group bg-white/20 dark:bg-base-100/20 dark:border dark:border-base-100 ${exp.isNew ? 'border-dashed border-primary' : ''}`}
+              className={cn(
+                "p-6 rounded-lg relative group bg-gradient-to-br from-base-200/80 to-base-300/80 border border-base-100 shadow-sm hover:shadow-md transition-all duration-200",
+                exp.isNew && "border-dashed border-primary",
+                "hover:from-blue-50 hover:to-blue-100"
+              )}
               variants={listItemVariants}
               initial="hidden"
               animate="visible"

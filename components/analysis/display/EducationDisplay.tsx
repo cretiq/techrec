@@ -123,22 +123,26 @@ export function EducationDisplay({ data, onChange, suggestions, onAcceptSuggesti
     <div>
       <div className="flex justify-end mb-2">
         {isEditing ? (
-          <div className="flex gap-1 items-center">
-            <Button variant="outline" size="sm" onClick={handleAddItem} className="mr-2 h-7 text-xs"><Plus className="h-3 w-3 mr-1" /> Add Entry</Button>
-            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-7 w-7"><X className="h-4 w-4" /></Button>
-            <Button variant="default" size="icon" onClick={handleSave} className="h-7 w-7"><Save className="h-4 w-4" /></Button>
+          <div className="flex gap-2 items-center">
+            <Button variant="outline" size="sm" onClick={handleAddItem} className="mr-2 h-8 text-xs"><Plus className="h-4 w-4 mr-1" /> Add Entry</Button>
+            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-10 w-10 hover:bg-base-200"><X className="h-5 w-5" /></Button>
+            <Button variant="elevated" size="icon" onClick={handleSave} className="h-10 w-10 shadow-md hover:shadow-lg"><Save className="h-5 w-5" /></Button>
           </div>
         ) : (
-          <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
+          <Button variant="elevated" size="icon" onClick={() => setIsEditing(true)} className="h-10 w-10 shadow-md hover:shadow-lg"><Edit className="h-5 w-5" /></Button>
         )}
       </div>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4">
         <AnimatePresence initial={false}>
           {editData.map((edu, index) => (
             <motion.div
               key={edu.id || `edu-${index}`}
-              className={`p-6 rounded-lg relative group bg-white/20 dark:bg-black/20 ${edu.isNew ? 'border-dashed border-primary' : ''}`}
+              className={cn(
+                "p-6 rounded-lg relative group bg-gradient-to-br from-base-200/80 to-base-300/80 border border-base-100 shadow-sm hover:shadow-md transition-all duration-200",
+                edu.isNew && "border-dashed border-primary",
+                "hover:from-blue-50 hover:to-blue-100"
+              )}
               variants={listItemVariants}
               initial="hidden"
               animate="visible"

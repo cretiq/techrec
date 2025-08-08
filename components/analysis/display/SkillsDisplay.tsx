@@ -107,12 +107,12 @@ export function SkillsDisplay({
     <div>
         <div className="flex justify-end mb-2">
         {isEditing ? (
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-7 w-7"><X className="h-4 w-4" /></Button>
-            <Button variant="default" size="icon" onClick={handleSave} className="h-7 w-7"><Save className="h-4 w-4" /></Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-10 w-10 hover:bg-base-200"><X className="h-5 w-5" /></Button>
+            <Button variant="elevated" size="icon" onClick={handleSave} className="h-10 w-10 shadow-md hover:shadow-lg"><Save className="h-5 w-5" /></Button>
           </div>
         ) : (
-          <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
+          <Button variant="elevated" size="icon" onClick={() => setIsEditing(true)} className="h-10 w-10 shadow-md hover:shadow-lg"><Edit className="h-5 w-5" /></Button>
         )}
         </div>
 
@@ -125,8 +125,8 @@ export function SkillsDisplay({
             return (
               <div key={skill.id || `skill-${index}`} className="mb-2"> {/* Wrapper for badge + suggestions */} 
                 <Badge 
-                  variant="glass" 
-                  className={cn("relative group dark:text-opacity-80", isEditing ? "pr-6" : "")}
+                  variant="hybrid" 
+                  className={cn("relative group text-base-content", isEditing ? "pr-6" : "")}
                 >
                 {skillName} 
                 {isEditing && (

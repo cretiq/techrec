@@ -3,20 +3,33 @@
 import React from "react"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
+import { getAccordionHoverEffect } from "@/lib/hoverSystem"
 
 // Base accordion styles that all variants inherit
 const accordionBase = "rounded-2xl transition-all duration-100 ease-smooth p-2 border shadow-xs"
 
 const accordionVariants = {
-  default: `${accordionBase} bg-base-100 border border-base-300 shadow-sm hover:shadow-md`,
+  // Basic variants without built-in hover effects
+  default: `${accordionBase} bg-base-100 border border-base-300 shadow-sm`,
   transparent: `${accordionBase} bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
   glass: `${accordionBase} bg-base-300/60 backdrop-blur-lg border border-base-100/50 shadow-soft`,
   hybrid: `${accordionBase} bg-base-100 border border-brand-sharp`,
   solid: `${accordionBase} bg-base-200 border border-base-300 shadow-sm`,
-  outlined: `${accordionBase} bg-transparent border-2 border-base-300 hover:border-primary/50 hover:bg-base-100/50`,
-  elevated: `${accordionBase} bg-base-100 border border-base-300/50 shadow-md hover:shadow-lg`,
+  outlined: `${accordionBase} bg-transparent border-2 border-base-300`,
+  elevated: `${accordionBase} bg-base-100 border border-base-300/50 shadow-md`,
   floating: `${accordionBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
-  gradient: `${accordionBase} bg-gradient-to-br from-base-100 to-base-200 border border-base-300/50 hover:from-base-50 hover:to-base-100`,
+  gradient: `${accordionBase} bg-gradient-to-br from-base-100 to-base-200 border border-base-300/50`,
+  
+  // Interactive variants with built-in hover effects
+  'default-interactive': `${accordionBase} bg-base-100 border border-base-300 shadow-sm`,
+  'transparent-interactive': `${accordionBase} bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
+  'glass-interactive': `${accordionBase} bg-base-300/60 backdrop-blur-lg border border-base-100/50 shadow-soft`,
+  'hybrid-interactive': `${accordionBase} bg-base-100 border border-brand-sharp`,
+  'solid-interactive': `${accordionBase} bg-base-200 border border-base-300 shadow-sm`,
+  'outlined-interactive': `${accordionBase} bg-transparent border-2 border-base-300`,
+  'elevated-interactive': `${accordionBase} bg-base-100 border border-base-300/50 shadow-md`,
+  'floating-interactive': `${accordionBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
+  'gradient-interactive': `${accordionBase} bg-gradient-to-br from-base-100 to-base-200 border border-base-300/50`,
 }
 
 interface AccordionProps {
@@ -32,9 +45,12 @@ interface AccordionItemProps {
   className?: string
   value: string
   id?: string
+  /** Visual style variant. Use '-interactive' suffix for built-in hover effects */
   variant?: keyof typeof accordionVariants
+  /** @deprecated Use 'variant-interactive' instead */
   hoverable?: boolean
   animated?: boolean
+  /** @deprecated Use 'variant-interactive' instead */
   interactive?: boolean
 }
 
@@ -106,10 +122,16 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps & {
     onToggle,
     ...props 
   }, ref) => {
+    // Determine if this is an interactive variant or needs hover effects applied
+    const isInteractiveVariant = variant.includes('-interactive')
+    const needsHoverEffects = (hoverable || interactive) && !isInteractiveVariant
+    
     const accordionClasses = cn(
       accordionVariants[variant],
-      hoverable && "hover:shadow-sm hover:-translate-y-0.5 transform-gpu",
-      interactive && "hover:scale-[1.01] transform-gpu",
+      // Apply hover effects for interactive variants or legacy props
+      isInteractiveVariant && getAccordionHoverEffect(variant.replace('-interactive', '')),
+      needsHoverEffects && hoverable && getAccordionHoverEffect('default'),
+      needsHoverEffects && interactive && getAccordionHoverEffect('interactive'),
       "overflow-hidden",
       className
     )

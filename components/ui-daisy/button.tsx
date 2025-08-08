@@ -5,24 +5,25 @@ import { Slot } from "@radix-ui/react-slot"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
+import { getButtonHoverEffect } from "@/lib/hoverSystem"
 
 // Base classes - shared foundation for all button variants
 const buttonBase = "btn rounded-xl btn-shadow-mixed transition-all duration-100 ease-smooth relative overflow-hidden border"
 
 // Object-based variants for optimal performance and maintainability
 const buttonVariants = {
-  // Core variants
-  default: `${buttonBase} bg-base-100 hover:bg-base-100 hover:border-base-100`,
-  transparent: `${buttonBase} bg-base-100/80 backdrop-blur-sm hover:bg-base-100`,
-  glass: `${buttonBase} bg-base-100/60 backdrop-blur-lg hover:bg-base-100/80`,
-  solid: `${buttonBase} bg-base-200 hover:bg-base-300 hover:border-base-300`,
-  hybrid: `${buttonBase} bg-brand-muted hover:bg-brand-sharp`,
+  // Basic variants (no built-in hover effects)
+  default: `${buttonBase} bg-base-100 border-base-300`,
+  transparent: `${buttonBase} bg-base-100/80 backdrop-blur-sm border-base-300/50`,
+  glass: `${buttonBase} bg-base-100/60 backdrop-blur-lg border-base-300/30`,
+  solid: `${buttonBase} bg-base-200 border-base-300`,
+  hybrid: `${buttonBase} bg-brand-muted border-brand-sharp`,
   
   // Layout variants
-  outlined: `${buttonBase} bg-transparent border-base-300/50 hover:border-primary/50 hover:bg-base-100/50`,
-  elevated: `${buttonBase} bg-base-100 shadow-sm hover:shadow-md`,
-  floating: `${buttonBase} bg-base-100/95 backdrop-blur-md shadow-sm hover:shadow-md`,
-  gradient: `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 hover:from-base-50 hover:to-base-100`,
+  outlined: `${buttonBase} bg-transparent border-base-300/50`,
+  elevated: `${buttonBase} bg-base-100 shadow-sm border-base-300/50`,
+  floating: `${buttonBase} bg-base-100/95 backdrop-blur-md shadow-sm border-base-300/30`,
+  gradient: `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 border-base-300/50`,
   
   // Semantic variants - using DaisyUI semantic colors
   primary: `${buttonBase} btn-primary`, 
@@ -33,16 +34,35 @@ const buttonVariants = {
   info: `${buttonBase} btn-info`,
   
   // Interactive variants
-  ghost: `${buttonBase} btn-ghost hover:bg-base-200/60`,
-  link: `${buttonBase} btn-link text-primary hover:text-primary/80`,
+  ghost: `${buttonBase} btn-ghost`,
+  link: `${buttonBase} btn-link text-primary`,
   
   // Special variants
-  linkedin: `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] hover:from-[#005885] hover:to-[#004165] text-white font-medium`,
+  linkedin: `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] text-white font-medium border-transparent`,
+  writeto: `${buttonBase} bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium border-transparent`,
+  markasapplied: `${buttonBase} bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium border-transparent`,
+  
+  // Interactive variants with built-in hover effects
+  'default-interactive': `${buttonBase} bg-base-100 border-base-300`,
+  'elevated-interactive': `${buttonBase} bg-base-100 shadow-sm border-base-300/50`,
+  'gradient-interactive': `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 border-base-300/50`,
+  'outlined-interactive': `${buttonBase} bg-transparent border-base-300/50`,
+  'ghost-interactive': `${buttonBase} btn-ghost`,
+  'primary-interactive': `${buttonBase} btn-primary`,
+  'secondary-interactive': `${buttonBase} btn-secondary`,
+  'success-interactive': `${buttonBase} btn-success`,
+  'warning-interactive': `${buttonBase} btn-warning`,
+  'error-interactive': `${buttonBase} btn-error`,
+  'info-interactive': `${buttonBase} btn-info`,
+  'linkedin-interactive': `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] text-white font-medium border-transparent`,
   
   // Legacy aliases for backwards compatibility
-  outline: `${buttonBase} bg-transparent border-base-300/50 hover:border-primary/50 hover:bg-base-100/50`,
+  outline: `${buttonBase} bg-transparent border-base-300/50`,
   destructive: `${buttonBase} btn-error`,
 }
+
+// Type for all available button variants
+type ButtonVariant = keyof typeof buttonVariants
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -50,10 +70,13 @@ export interface ButtonProps
   loading?: boolean
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode
-  variant?: keyof typeof buttonVariants
+  /** Visual style variant. Use '-interactive' suffix for built-in hover effects */
+  variant?: ButtonVariant
   size?: "sm" | "default" | "lg" | "xl" | "icon"
+  /** @deprecated Use 'variant-interactive' instead */
   hoverable?: boolean
   animated?: boolean
+  /** @deprecated Use 'variant-interactive' instead */
   interactive?: boolean
 }
 
@@ -87,11 +110,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const showSpinner = loading && !hasIcons
     const animateExistingIcons = loading && hasIcons
     
+    // Determine if this is an interactive variant or needs hover effects applied
+    const isInteractiveVariant = variant.includes('-interactive')
+    const needsHoverEffects = (hoverable || interactive) && !isInteractiveVariant
+    
     const buttonClasses = cn(
       buttonVariants[variant],
       sizeVariants[size],
-      hoverable && "hover:shadow-sm hover:-translate-y-0.5 transform-gpu",
-      interactive && "hover:scale-[1.01] transform-gpu",
+      // Apply hover effects for interactive variants or legacy props
+      isInteractiveVariant && getButtonHoverEffect(variant.replace('-interactive', '')),
+      needsHoverEffects && hoverable && getButtonHoverEffect('default'),
+      needsHoverEffects && interactive && getButtonHoverEffect('interactive'),
       disabled && "opacity-50 cursor-not-allowed",
       className
     )

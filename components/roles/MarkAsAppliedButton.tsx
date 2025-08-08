@@ -127,7 +127,7 @@ export default function MarkAsAppliedButton({
   // Default state - show mark as applied button
   return (
     <Button
-      variant="default"
+      variant="markasapplied"
       size="xl"
       loading={isMarkingAsApplied}
       disabled={!session?.user || isMarkingAsApplied}

@@ -26,7 +26,7 @@ interface CardShowcaseProps {
 }
 
 export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShowcaseProps) {
-  const cardVariants = [
+  const basicCardVariants = [
     { variant: 'default', label: 'Default' },
     { variant: 'transparent', label: 'Transparent' },
     { variant: 'glass', label: 'Glass' },
@@ -37,33 +37,43 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
     { variant: 'gradient', label: 'Gradient' },
   ];
 
+  const interactiveCardVariants = [
+    { variant: 'default-interactive', label: 'Default Interactive', description: 'Subtle background and shadow change on hover' },
+    { variant: 'gradient-interactive', label: 'Gradient Interactive', description: 'Gradient shifts to blue/purple with shadow on hover' },
+    { variant: 'elevated-interactive', label: 'Elevated Interactive', description: 'Shadow lift and background lightening on hover' },
+    { variant: 'glass-interactive', label: 'Glass Interactive', description: 'Enhanced backdrop blur and background on hover' },
+    { variant: 'outlined-interactive', label: 'Outlined Interactive', description: 'Border glow and background fill on hover' },
+    { variant: 'floating-interactive', label: 'Floating Interactive', description: 'Enhanced shadow and lift effect on hover' },
+  ];
+
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-3xl font-bold mb-2 text-base-content">Card Component</h2>
         <p className="text-base-content/70 mb-6">
-          Versatile card components with consistent borders and minimal design. All variants now share
-          the same subtle border styling and rounded corners for perfect visual consistency.
+          Versatile card components with consistent borders and minimal design. Now featuring a comprehensive
+          hover system with interactive variants that provide consistent, reusable hover behaviors across the application.
         </p>
       </div>
 
-      {/* Variants Grid */}
+      {/* Basic Variants Grid */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-base-content">Card Variants</h3>
+          <h3 className="text-xl font-semibold text-base-content">Basic Card Variants</h3>
           <button
             onClick={() => onCopyCode(
               `import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui-daisy/card';
 
-// All card variants now have consistent borders and styling
-<Card variant="default">...</Card>
-<Card variant="transparent">...</Card>
-<Card variant="glass">...</Card>
-<Card variant="solid">...</Card>
-<Card variant="outlined">...</Card>
-<Card variant="elevated">...</Card>
-<Card variant="floating">...</Card>
-<Card variant="gradient">...</Card>`,
+// Basic variants (no hover effects)
+<Card variant="default">Basic card</Card>
+<Card variant="glass">Glass effect card</Card>
+<Card variant="gradient">Gradient card</Card>
+
+// Interactive variants (with built-in hover effects) ✨
+<Card variant="default-interactive">Hover-enabled default card</Card>
+<Card variant="glass-interactive">Hover-enabled glass card</Card>
+<Card variant="gradient-interactive">Hover-enabled gradient card</Card>
+<Card variant="elevated-interactive">Hover-enabled elevated card</Card>`,
               'card-variants'
             )}
             className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
@@ -88,7 +98,7 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
           initial="initial"
           animate="animate"
         >
-          {cardVariants.map(({ variant, label }) => (
+          {basicCardVariants.map(({ variant, label }) => (
             <motion.div key={variant} variants={staggerItem}>
               <Card variant={variant as any} className="h-full">
                 <CardHeader>
@@ -105,20 +115,161 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
         </motion.div>
       </section>
 
-      {/* Interactive States */}
+      {/* Interactive Variants - NEW HOVER SYSTEM */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold">Interactive States</h3>
+          <h3 className="text-xl font-semibold text-base-content">Interactive Card Variants ✨</h3>
           <button
             onClick={() => onCopyCode(
-              `// Interactive card props
+              `// New Interactive Variants - Built-in Hover Effects
+<Card variant="gradient-interactive">Gradient with hover effects</Card>
+<Card variant="elevated-interactive">Elevated with hover effects</Card>
+<Card variant="glass-interactive">Glass with hover effects</Card>
+<Card variant="outlined-interactive">Outlined with hover effects</Card>
+<Card variant="floating-interactive">Floating with hover effects</Card>
+<Card variant="default-interactive">Default with hover effects</Card>
+
+// Clean API - No manual hover classes needed!
+// Hover effects are built into the variant`,
+              'interactive-variants'
+            )}
+            className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
+          >
+            {copiedCode === 'interactive-variants' ? (
+              <>
+                <Check className="h-3 w-3" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                Copy code
+              </>
+            )}
+          </button>
+        </div>
+        
+        <div className="bg-info/10 border border-info/20 rounded-lg p-4 mb-4">
+          <p className="text-sm text-info-content">
+            <strong>✨ New Hover System:</strong> Interactive variants have built-in hover effects that are consistent 
+            across the entire application. No need for manual hover classes - just use the 
+            <code className="bg-info/20 px-1 rounded text-xs mx-1">-interactive</code> suffix!
+          </p>
+        </div>
+
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+        >
+          {interactiveCardVariants.map(({ variant, label, description }) => (
+            <motion.div key={variant} variants={staggerItem}>
+              <Card variant={variant as any} className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-lg">{label}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-base-content/70 mb-3">
+                    {description}
+                  </p>
+                  <div className="bg-base-200/50 rounded p-2">
+                    <code className="text-xs text-base-content/80">
+                      variant="{variant}"
+                    </code>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* Migration Guide */}
+      <section className="space-y-4">
+        <h3 className="text-xl font-semibold text-base-content">Migration Guide: Old vs New</h3>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Old Way */}
+          <Card variant="outlined" className="">
+            <CardHeader>
+              <CardTitle className="text-error flex items-center gap-2">
+                ❌ Old Way (Don't Use)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="bg-base-200 rounded p-3">
+                <code className="text-sm text-base-content/80">
+                  {`<Card className="
+  bg-gradient-to-br 
+  from-base-200 
+  to-base-300 
+  hover:from-blue-50 
+  hover:to-purple-100 
+  hover:shadow-md 
+  transition-all 
+  duration-200"
+>`}
+                </code>
+              </div>
+              <div className="text-sm text-base-content/70">
+                <strong>Problems:</strong>
+                <ul className="list-disc list-inside mt-1 space-y-1">
+                  <li>Scattered hover classes everywhere</li>
+                  <li>Inconsistent behavior across pages</li>
+                  <li>Hard to maintain and update</li>
+                  <li>Duplicated hover logic</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* New Way */}
+          <Card variant="gradient-interactive" className="">
+            <CardHeader>
+              <CardTitle className="text-success flex items-center gap-2">
+                ✅ New Way (Recommended)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="bg-base-200 rounded p-3">
+                <code className="text-sm text-base-content/80">
+                  {`<Card variant="gradient-interactive">
+  {/* Content */}
+</Card>`}
+                </code>
+              </div>
+              <div className="text-sm text-base-content/70">
+                <strong>Benefits:</strong>
+                <ul className="list-disc list-inside mt-1 space-y-1">
+                  <li>Clean, readable component API</li>
+                  <li>Consistent hover behavior everywhere</li>
+                  <li>Easy to maintain and update globally</li>
+                  <li>Built-in accessibility support</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Legacy Interactive States */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold">Legacy Interactive Props ⚠️</h3>
+          <button
+            onClick={() => onCopyCode(
+              `// ⚠️ Legacy props (still supported but prefer interactive variants)
 <Card hoverable>Hoverable card</Card>
 <Card clickable>Clickable card</Card>
 <Card interactive>Interactive card</Card>
-<Card animated>Animated card</Card>`,
+<Card animated>Animated card</Card>
+
+// ✅ Recommended: Use interactive variants instead
+<Card variant="gradient-interactive">Modern approach</Card>`,
               'card-interactive'
             )}
-            className="text-sm text-brand-600 hover:text-brand-700 flex items-center gap-1"
+            className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
           >
             {copiedCode === 'card-interactive' ? (
               <>
@@ -132,6 +283,13 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
               </>
             )}
           </button>
+        </div>
+        
+        <div className="bg-warning/10 border border-warning/20 rounded-lg p-3 mb-4">
+          <p className="text-sm text-warning-content">
+            <strong>⚠️ Legacy Support:</strong> These props are still supported for backward compatibility, 
+            but we recommend using interactive variants for new code.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -179,7 +337,7 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Job Card */}
-          <Card variant="glass" hoverable animated>
+          <Card variant="glass-interactive" animated>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
@@ -222,7 +380,7 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
           </Card>
 
           {/* Profile Card */}
-          <Card variant="floating" hoverable>
+          <Card variant="floating-interactive">
             <CardHeader>
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-bold text-xl">
@@ -338,7 +496,7 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
             </CardContent>
           </Card>
 
-          <Card variant="elevated" hoverable>
+          <Card variant="elevated-interactive">
             <CardHeader>
               <CardTitle>Premium Feature</CardTitle>
               <CardDescription>

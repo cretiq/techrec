@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { FloatingInput } from '@/components/ui-daisy/floating-input';
+import { Input } from '@/components/ui-daisy/input';
 import { Button } from '@/components/ui-daisy/button';
 import { Badge } from '@/components/ui-daisy/badge';
 import { Tooltip } from '@/components/ui-daisy/tooltip';
@@ -129,7 +129,7 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
   };
 
 
-  // Function to render a single field with DaisyUI floating input (always editable)
+  // Function to render a single field with enhanced DaisyUI input (always editable)
   const renderFieldWithSuggestions = (
     id: keyof ContactInfoData,
     Icon: React.ElementType,
@@ -151,25 +151,29 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
 
     return (
       <div key={id} className="space-y-2">
-        <FloatingInput
-          key={`${id}-input`}
-          id={id}
-          type={type}
-          label={label || placeholder}
-          value={editData[id] || ''}
-          onChange={handleInputChange}
-          leftIcon={<Icon className="h-4 w-4" />}
-          showStatus={showMissingWarning}
-          statusVariant="warning"
-          statusTooltip={`Consider adding your ${label || id}`}
-          variant="bordered"
-          className={highlightClasses}
-        />
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text font-medium text-base-content">{label || placeholder}</span>
+          </label>
+          <Input
+            key={`${id}-input`}
+            id={id}
+            type={type}
+            placeholder={placeholder}
+            value={editData[id] || ''}
+            onChange={handleInputChange}
+            variant="elevated"
+            inputSize="md"
+            hoverable
+            leftIcon={<Icon className="h-4 w-4" />}
+            className={highlightClasses}
+          />
+        </div>
       </div>
     );
   };
 
-  // Function to render a link field with DaisyUI floating input (always editable)
+  // Function to render a link field with enhanced DaisyUI input (always editable)
   const renderLinkWithSuggestions = (
     id: keyof ContactInfoData,
     Icon: React.ElementType,
@@ -186,20 +190,24 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     
     return (
       <div key={id} className="space-y-2">
-        <FloatingInput
-          key={`${id}-input`}
-          id={id}
-          type="url"
-          label={placeholder}
-          value={editUrl || ''}
-          onChange={handleInputChange}
-          leftIcon={<Icon className="h-4 w-4" />}
-          showStatus={showMissingWarning}
-          statusVariant="warning"
-          statusTooltip={`Consider adding your ${id} profile`}
-          variant="bordered"
-          className={highlightClasses}
-        />
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text font-medium text-base-content">{placeholder}</span>
+          </label>
+          <Input
+            key={`${id}-input`}
+            id={id}
+            type="url"
+            placeholder={placeholder}
+            value={editUrl || ''}
+            onChange={handleInputChange}
+            variant="elevated"
+            inputSize="md"
+            hoverable
+            leftIcon={<Icon className="h-4 w-4" />}
+            className={highlightClasses}
+          />
+        </div>
       </div>
     );
   }
@@ -212,12 +220,12 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* First Row */}
         <div>
-          {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email', 'email')}
+          {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email')}
           <SuggestionManager section="contactInfo" targetField="email" className="mt-1" />
         </div>
         
         <div>
-          {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone', 'tel')}
+          {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone')}
           <SuggestionManager section="contactInfo" targetField="phone" className="mt-1" />
         </div>
         

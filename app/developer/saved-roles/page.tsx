@@ -566,7 +566,7 @@ function SavedRoleCard({ savedRole, onWriteTo, onRoleMarkedAsApplied, onUnsaveRo
             <div className="flex-shrink-0">
               <Button
                 size="sm"
-                variant="outline"
+                variant="writeto"
                 onClick={onWriteTo}
                 leftIcon={<PenTool className="h-3 w-3" />}
                 title="Get writing assistance"

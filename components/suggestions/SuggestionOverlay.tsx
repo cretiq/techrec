@@ -95,7 +95,7 @@ export function SuggestionOverlay({
       exit={{ opacity: 0, y: -10 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className={cn(
-        "relative bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 backdrop-blur-sm border border-primary/20 rounded-lg shadow-lg overflow-hidden",
+        "relative bg-gradient-to-r from-base-100 via-base-200 to-base-300 border rounded-xl overflow-hidden",
         className
       )}
       data-testid={`suggestion-overlay-${section}${targetId ? `-${targetId}` : ''}`}

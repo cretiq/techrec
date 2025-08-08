@@ -17,7 +17,7 @@ export function LandingHero() {
         <Badge 
           variant="gradient" 
           size="xl" 
-          rounded="full" 
+          rounded="none" 
           pulse 
           className="mb-8"
         >
@@ -40,19 +40,15 @@ export function LandingHero() {
             <Button 
               variant="gradient" 
               size="xl" 
-              rounded="full" 
               rightIcon={<ArrowRight className="h-5 w-5" />}
-              className="!transition-none !transform-none hover:!scale-100 active:!scale-100"
             >
               Start My Free Job Match Analysis
             </Button>
           </Link>
           <Link href="#how-it-works">
             <Button 
-              variant="glass-outline" 
+              variant="glass" 
               size="xl" 
-              rounded="full"
-              className="border-2"
             >
               See How It Works
             </Button>

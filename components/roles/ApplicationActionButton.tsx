@@ -76,19 +76,17 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
           onClick={handleClick}
           disabled={disabled}
           leftIcon={
-            <div className={`flex items-center ${isFullWidth ? 'gap-2' : 'gap-1'}`}>
-              <LinkedInIcon className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0`} />
-              <Zap className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0 group-hover:animate-pulse`} />
-            </div>
+            <>
+              <LinkedInIcon className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0`} />
+              <Zap className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0 group-hover:animate-pulse`} />
+            </>
           }
-          rightIcon={isFullWidth ? <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" /> : undefined}
-          className={`${isFullWidth ? 'text-base' : 'text-xs'} font-medium group ${className}`}
+          rightIcon={isFullWidth ? <ArrowRight className="h-4 w-4 flex-shrink-0 group-hover:translate-x-1 transition-transform" /> : undefined}
+          className={`${isFullWidth ? 'text-sm' : 'text-xs'} font-medium group whitespace-nowrap ${className}`}
           title="Apply directly through LinkedIn Easy Apply"
           data-testid={testId || 'application-action-button-easy-apply'}
         >
-          <span className={`${isFullWidth ? 'text-lg' : ''}`}>
-            {isFullWidth ? 'Apply on LinkedIn - Easy Apply' : 'Easy Apply'}
-          </span>
+          {isFullWidth ? 'Apply on LinkedIn - Easy Apply' : 'Easy Apply'}
         </Button>
       </motion.div>
     )
@@ -103,19 +101,16 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
     >
       <Button
         size={isFullWidth ? "lg" : "sm"}
-        variant="glass-outline"
-        elevation="md"
+        variant="glass"
         onClick={handleClick}
         disabled={disabled}
-        leftIcon={<LinkedInIcon className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0`} />}
-        rightIcon={<ArrowRight className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0 group-hover:translate-x-0.5 transition-transform`} />}
-        className={`${isFullWidth ? 'text-base' : 'text-xs'} font-medium text-[#0077b5] hover:text-[#005885] border-[#0077b5]/30 hover:border-[#0077b5]/50 hover:bg-[#0077b5]/10 group ${className}`}
+        leftIcon={<LinkedInIcon className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0`} />}
+        rightIcon={<ArrowRight className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0 group-hover:translate-x-0.5 transition-transform`} />}
+        className={`${isFullWidth ? 'text-sm' : 'text-xs'} font-medium text-[#0077b5] hover:text-[#005885] border-[#0077b5]/30 hover:border-[#0077b5]/50 hover:bg-[#0077b5]/10 group whitespace-nowrap ${className}`}
         title="Apply via LinkedIn (opens in new tab)"
         data-testid={testId || 'application-action-button-external'}
       >
-        <span className={`${isFullWidth ? 'text-lg' : ''}`}>
-          {isFullWidth ? 'Apply on LinkedIn - External' : 'Apply on LinkedIn'}
-        </span>
+        {isFullWidth ? 'Apply on LinkedIn - External' : 'Apply on LinkedIn'}
       </Button>
     </motion.div>
   )
