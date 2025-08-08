@@ -156,28 +156,34 @@ export function AIAssistanceButton({
   
   return (
     <Button
-      variant="default"
+      variant="gradient"
+      size="lg"
+      hoverable
       onClick={handleAIAssistance}
       disabled={isProcessing || isContactInfoSection}
       data-testid={`ai-assistance-button-${section}`}
-      className={isContactInfoSection ? 'opacity-50 cursor-not-allowed' : ''}
+      className={cn(
+        "shadow-md hover:shadow-lg transition-all duration-200",
+        isContactInfoSection ? 'opacity-50 cursor-not-allowed' : '',
+        className
+      )}
     >
       {isProcessing ? (
         <>
-          <Loader2 className="h-4 w-4 mr-2 animate-spin" data-testid={`ai-assistance-loading-icon-${section}`} />
+          <Loader2 className="h-5 w-5 mr-2 animate-spin" data-testid={`ai-assistance-loading-icon-${section}`} />
           Enhancing...
         </>
       ) : (
         <>
           {isEmpty ? (
             <>
-              <Sparkles className="h-4 w-4 mr-2" data-testid={`ai-assistance-write-icon-${section}`} />
+              <Sparkles className="h-5 w-5 mr-2" data-testid={`ai-assistance-write-icon-${section}`} />
               Write this for me
             </>
           ) : (
             <>
-              <Wand2 className="h-4 w-4 mr-2" data-testid={`ai-assistance-improve-icon-${section}`} />
-              Improve with AI
+              <Wand2 className="h-5 w-5 mr-2" data-testid={`ai-assistance-improve-icon-${section}`} />
+              Improve
             </>
           )}
         </>

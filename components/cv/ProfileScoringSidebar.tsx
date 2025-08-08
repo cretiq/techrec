@@ -561,7 +561,7 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
                     <Sparkles className="h-4 w-4 mr-2" data-testid="profile-action-get-suggestions-icon" />
                   </motion.div>
                   <span data-testid="profile-action-get-suggestions-text">
-                    {suggestionsStats.total > 0 ? 'Refresh Suggestions' : 'Get AI Suggestions'}
+                    {suggestionsStats.total > 0 ? 'Refresh Suggestions' : 'Improve Everything'}
                   </span>
                 </>
               )}

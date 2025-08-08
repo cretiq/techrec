@@ -486,48 +486,6 @@ export default function CVManagementPage() {
                                                 analysisData={analysisData}
                                                 onUploadComplete={handleUploadComplete}
                                             />
-                                            <Button
-                                                variant="elevated"
-                                                size="sm"
-                                                hoverable
-                                                onClick={() => {
-                                                    // TODO: Implement PDF export
-                                                    toast({
-                                                        title: "Export PDF",
-                                                        description: "PDF export coming soon!",
-                                                    });
-                                                }}
-                                                leftIcon={<Download className="h-4 w-4" />}
-                                                data-testid="cv-management-action-export"
-                                            >
-                                                Export PDF
-                                            </Button>
-                                            <Button
-                                                variant="elevated"
-                                                size="sm"
-                                                hoverable
-                                                onClick={() => {
-                                                    // TODO: Implement view analysis
-                                                    toast({
-                                                        title: "View Analysis",
-                                                        description: "Detailed analysis view coming soon!",
-                                                    });
-                                                }}
-                                                leftIcon={<BarChart3 className="h-4 w-4" />}
-                                                data-testid="cv-management-action-analysis"
-                                            >
-                                                View Analysis
-                                            </Button>
-                                            <Button
-                                                variant="gradient"
-                                                size="sm"
-                                                hoverable
-                                                onClick={() => setShowProjectEnhancementModal(true)}
-                                                leftIcon={<Rocket className="h-4 w-4" />}
-                                                data-testid="cv-management-action-project-enhancement"
-                                            >
-                                                Enhance Projects
-                                            </Button>
                                         </div>
                                         <div className="flex items-center gap-4">
                                             {/* Additional action buttons moved from AnalysisResultDisplay */}
