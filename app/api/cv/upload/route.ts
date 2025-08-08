@@ -12,7 +12,8 @@ import crypto from 'crypto'; // Import crypto for hashing
 import { syncCvDataToProfile } from '@/utils/backgroundProfileSync'; // Import background sync
 import { clearCachePattern } from '@/lib/redis'; // Import cache invalidation
 import { CvUploadDebugLogger } from '@/utils/cvUploadDebugLogger'; // Import CV upload debug logger
-import { directGeminiUpload } from '@/utils/directGeminiUpload'; // Import direct Gemini upload service
+import { DirectGeminiUploadService, directGeminiUpload } from '@/utils/directGeminiUpload'; // Import direct Gemini upload service
+import { DirectUploadDebugLogger } from '@/utils/directUploadDebugLogger'; // Import direct upload debug logger
 
 const prisma = new PrismaClient(); // Instantiate Prisma client
 
@@ -176,6 +177,9 @@ export async function POST(request: Request) {
 
       // Determine which upload method to use
       const shouldUseDirectUpload = USE_DIRECT_GEMINI_UPLOAD && directGeminiUpload.isAvailable();
+      
+      // Create debug-enabled direct upload service if debug session exists
+      const debugDirectUpload = debugSessionId ? new DirectGeminiUploadService(debugSessionId) : directGeminiUpload;
       let directUploadSuccessful = false;
       
       console.log(`\n🎯 [CV-UPLOAD] === UPLOAD METHOD SELECTION ===`);
@@ -200,7 +204,11 @@ export async function POST(request: Request) {
         
         try {
           logUploadFlow('DIRECT', 'Uploading PDF directly to Gemini API...');
-          const directResult = await directGeminiUpload.uploadAndAnalyze(tempFilePath, newCV.originalName);
+          
+          // Set debug context for the service
+          debugDirectUpload.setDebugContext(newCV.id, developerId);
+          
+          const directResult = await debugDirectUpload.uploadAndAnalyze(tempFilePath, newCV.originalName);
           
           // Clean up temp file
           fs.unlinkSync(tempFilePath);
@@ -225,8 +233,62 @@ export async function POST(request: Request) {
           
           logUploadFlow('DIRECT', 'Syncing to profile tables...');
           const syncStartTime = Date.now();
-          await syncCvDataToProfile(developerId, analysisResult);
-          const syncDuration = Date.now() - syncStartTime;
+          
+          let syncDuration = 0;
+          try {
+            await syncCvDataToProfile(developerId, analysisResult);
+            syncDuration = Date.now() - syncStartTime;
+
+            // Debug logging for profile sync success
+            if (debugSessionId) {
+              DirectUploadDebugLogger.logProfileSync({
+                cvId: newCV.id,
+                extractedData: analysisResult,
+                syncResult: {
+                  success: true,
+                  contactInfoSynced: !!(analysisResult?.contactInfo?.name || analysisResult?.contactInfo?.email),
+                  experienceItemsSynced: analysisResult?.experience?.length || 0,
+                  educationItemsSynced: analysisResult?.education?.length || 0,
+                  skillsSynced: analysisResult?.skills?.length || 0,
+                  achievementsSynced: analysisResult?.achievements?.length || 0,
+                },
+                improvementScore: improvementScore,
+                syncDuration: syncDuration,
+                timestamp: new Date().toISOString(),
+              });
+            }
+          } catch (syncError) {
+            syncDuration = Date.now() - syncStartTime;
+            logUploadFlow('DIRECT', 'Profile sync failed', { 
+              syncDuration, 
+              error: syncError.message 
+            });
+
+            // Debug logging for profile sync failure
+            if (debugSessionId) {
+              DirectUploadDebugLogger.logProfileSync({
+                cvId: newCV.id,
+                extractedData: analysisResult,
+                syncResult: {
+                  success: false,
+                  contactInfoSynced: false,
+                  experienceItemsSynced: 0,
+                  educationItemsSynced: 0,
+                  skillsSynced: 0,
+                  achievementsSynced: 0,
+                },
+                improvementScore: improvementScore,
+                syncDuration: syncDuration,
+                timestamp: new Date().toISOString(),
+                error: {
+                  message: syncError.message,
+                  stack: syncError.stack,
+                },
+              });
+            }
+            
+            throw new Error('Failed to save CV data to profile. Please try again.');
+          }
           
           // Update CV record
           await updateCV(newCV.id, {
@@ -254,7 +316,9 @@ export async function POST(request: Request) {
         }
       }
       
-      // === TRADITIONAL UPLOAD FLOW ===
+      // === TRADITIONAL UPLOAD FLOW === 
+      // COMMENTED OUT - Focus only on Direct Upload debugging
+      /*
       // Only run if direct upload was not attempted OR if it failed
       if (!shouldUseDirectUpload) {
         logUploadFlow('TRADITIONAL', 'Starting workflow (direct upload disabled)...');
@@ -435,6 +499,12 @@ export async function POST(request: Request) {
       } else {
         logUploadFlow('DIRECT', 'Traditional method skipped - direct upload completed successfully');
       } // End traditional method conditional
+      */
+      
+      // Direct Upload Only Mode - No Traditional Fallback
+      if (!shouldUseDirectUpload || !directUploadSuccessful) {
+        throw new Error('Direct upload failed and traditional method is disabled for debugging');
+      }
 
     } catch (analysisError) {
       console.error(`[Analysis ${newCV.id}] Error during analysis process:`, analysisError);

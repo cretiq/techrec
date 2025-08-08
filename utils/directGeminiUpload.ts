@@ -3,6 +3,7 @@ import { z } from 'zod';
 import fs from 'fs';
 import path from 'path';
 import { getGeminiModel } from '@/lib/modelConfig';
+import { DirectUploadDebugLogger } from './directUploadDebugLogger';
 
 // Environment validation
 const envSchema = z.object({
@@ -47,16 +48,33 @@ export interface DirectAnalysisResult {
 export class DirectGeminiUploadService {
   private ai: GoogleGenAI;
   private isEnabled: boolean;
+  private debugSessionId: string | null = null;
+  private cvId: string | null = null;
+  private developerId: string | null = null;
 
-  constructor() {
+  constructor(debugSessionId?: string) {
     try {
       const env = envSchema.parse(process.env);
       this.ai = new GoogleGenAI({ apiKey: env.GOOGLE_AI_API_KEY });
       this.isEnabled = true;
+      
+      // Set debug session if provided
+      if (debugSessionId) {
+        this.debugSessionId = debugSessionId;
+        DirectUploadDebugLogger.setSessionId(debugSessionId);
+      }
     } catch (error) {
       console.error('DirectGeminiUploadService initialization failed:', error);
       this.isEnabled = false;
     }
+  }
+
+  /**
+   * Set context for debug logging
+   */
+  setDebugContext(cvId: string, developerId: string): void {
+    this.cvId = cvId;
+    this.developerId = developerId;
   }
 
   /**
@@ -115,13 +133,14 @@ export class DirectGeminiUploadService {
     }
 
     const startTime = Date.now();
+    
+    // Validate file (moved outside try block for broader scope)
+    const validation = this.validateFile(filePath);
+    if (!validation.valid) {
+      return { success: false, error: validation.error };
+    }
 
     try {
-      // Validate file
-      const validation = this.validateFile(filePath);
-      if (!validation.valid) {
-        return { success: false, error: validation.error };
-      }
 
       // Upload file to Gemini
       const uploadResult = await this.ai.files.upload({
@@ -134,7 +153,7 @@ export class DirectGeminiUploadService {
 
       const uploadDuration = Date.now() - startTime;
 
-      return {
+      const result = {
         success: true,
         fileUri: uploadResult.uri,
         fileName: uploadResult.name,
@@ -143,13 +162,47 @@ export class DirectGeminiUploadService {
         uploadDuration,
       };
 
+      // Debug logging
+      if (this.cvId && this.developerId) {
+        const stats = fs.statSync(filePath);
+        DirectUploadDebugLogger.logFileUpload({
+          cvId: this.cvId,
+          developerId: this.developerId,
+          filename: displayName || path.basename(filePath),
+          filePath: filePath,
+          fileSize: stats.size,
+          mimeType: validation.mimeType!,
+          uploadResult: result,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      return result;
+
     } catch (error) {
       const uploadDuration = Date.now() - startTime;
-      return {
+      const result = {
         success: false,
         error: `Upload failed: ${error instanceof Error ? error.message : String(error)}`,
         uploadDuration,
       };
+
+      // Debug logging for failures too
+      if (this.cvId && this.developerId) {
+        const stats = fs.statSync(filePath);
+        DirectUploadDebugLogger.logFileUpload({
+          cvId: this.cvId,
+          developerId: this.developerId,
+          filename: displayName || path.basename(filePath),
+          filePath: filePath,
+          fileSize: stats.size,
+          mimeType: validation.mimeType!,
+          uploadResult: result,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      return result;
     }
   }
 
@@ -226,20 +279,50 @@ export class DirectGeminiUploadService {
         }
       }
 
-      return {
+      const result = {
         success: true,
         extractedData,
         analysisDuration,
         rawResponse,
       };
 
+      // Debug logging
+      if (this.cvId) {
+        DirectUploadDebugLogger.logGeminiAnalysis({
+          cvId: this.cvId,
+          fileUri: fileUri,
+          analysisPrompt: prompt,
+          modelUsed: modelName,
+          analysisResult: result,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      return result;
+
     } catch (error) {
       const analysisDuration = Date.now() - startTime;
-      return {
+      const result = {
         success: false,
         error: `Analysis failed: ${error instanceof Error ? error.message : String(error)}`,
         analysisDuration,
       };
+
+      // Debug logging for failures too
+      if (this.cvId) {
+        const prompt = this.buildAnalysisPrompt();
+        const modelName = getGeminiModel('direct-upload');
+        DirectUploadDebugLogger.logGeminiAnalysis({
+          cvId: this.cvId,
+          fileUri: fileUri,
+          analysisPrompt: prompt,
+          modelUsed: modelName,
+          analysisResult: result,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      return result;
     }
   }
 
@@ -379,5 +462,5 @@ CRITICAL: Return ONLY the raw JSON object, no markdown formatting, no code block
   }
 }
 
-// Export singleton instance
+// Export singleton instance for backward compatibility
 export const directGeminiUpload = new DirectGeminiUploadService();
