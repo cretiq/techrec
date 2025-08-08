@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Input } from '@/components/ui-daisy/input';
 import { Button } from '@/components/ui-daisy/button';
-import { Badge } from '@/components/ui-daisy/badge';
+import { Badge, StatusBadge } from '@/components/ui-daisy/badge';
 import { Tooltip } from '@/components/ui-daisy/tooltip';
 import { Mail, Phone, MapPin, Linkedin, Github, Link as LinkIcon, Edit, Save, X, AlertTriangle, User } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
@@ -148,13 +148,12 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const hasValue = data[id] && data[id]?.trim() !== '';
     const highlightClasses = useHighlightClasses(`contactInfo.${id}`);
     const showMissingWarning = !hasValue && id !== 'name' && id !== 'email'; // Don't warn for required fields
+    const isRequired = id === 'name' || id === 'email';
+    const isEmpty = !hasValue;
 
     return (
       <div key={id} className="space-y-2">
         <div className="form-control">
-          <label className="label">
-            <span className="label-text font-medium text-base-content">{label || placeholder}</span>
-          </label>
           <Input
             key={`${id}-input`}
             id={id}
@@ -166,6 +165,14 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
             inputSize="md"
             hoverable
             leftIcon={<Icon className="h-4 w-4" />}
+            rightIcon={showMissingWarning ? (
+              <StatusBadge 
+                status="warning" 
+                pulse={true}
+                size="xs"
+                dot={true}
+              />
+            ) : undefined}
             className={highlightClasses}
           />
         </div>
@@ -187,13 +194,11 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
     const isValidUrl = hasValue && (url.startsWith('http://') || url.startsWith('https://'));
     const highlightClasses = useHighlightClasses(`contactInfo.${id}`);
     const showMissingWarning = !hasValue; // Always show for optional profile links
+    const isEmpty = !hasValue;
     
     return (
       <div key={id} className="space-y-2">
         <div className="form-control">
-          <label className="label">
-            <span className="label-text font-medium text-base-content">{placeholder}</span>
-          </label>
           <Input
             key={`${id}-input`}
             id={id}
@@ -205,6 +210,14 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
             inputSize="md"
             hoverable
             leftIcon={<Icon className="h-4 w-4" />}
+            rightIcon={showMissingWarning ? (
+              <StatusBadge 
+                status="warning" 
+                pulse={true}
+                size="xs"
+                dot={true}
+              />
+            ) : undefined}
             className={highlightClasses}
           />
         </div>
@@ -220,17 +233,17 @@ export function ContactInfoDisplay({ data, onChange, suggestions, onAcceptSugges
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* First Row */}
         <div>
-          {renderFieldWithSuggestions('email', Mail, 'Email Address', 'Email')}
+          {renderFieldWithSuggestions('email', Mail, 'Email Address')}
           <SuggestionManager section="contactInfo" targetField="email" className="mt-1" />
         </div>
         
         <div>
-          {renderFieldWithSuggestions('phone', Phone, 'Phone Number', 'Phone')}
+          {renderFieldWithSuggestions('phone', Phone, 'Phone Number')}
           <SuggestionManager section="contactInfo" targetField="phone" className="mt-1" />
         </div>
         
         <div>
-          {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)', 'Location')}
+          {renderFieldWithSuggestions('location', MapPin, 'Location (City, Country)')}
           <SuggestionManager section="contactInfo" targetField="location" className="mt-1" />
         </div>
         

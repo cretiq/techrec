@@ -29,6 +29,8 @@ interface SkillsProps {
   suggestions?: CvImprovementSuggestion[];
   onAcceptSuggestion?: (suggestion: CvImprovementSuggestion) => void;
   onRejectSuggestion?: (suggestion: CvImprovementSuggestion) => void;
+  isEditing?: boolean;
+  onEditingChange?: (editing: boolean) => void;
 }
 
 // Helper function (can be generalized later)
@@ -48,10 +50,13 @@ export function SkillsDisplay({
   onChange, 
   suggestions, 
   onAcceptSuggestion,
-  onRejectSuggestion
+  onRejectSuggestion,
+  isEditing = false,
+  onEditingChange
 }: SkillsProps) {
   console.log('[SkillsDisplay] Rendering with data (count):', data?.length); // LOG
-  const [isEditing, setIsEditing] = useState(false);
+  const [localIsEditing, setLocalIsEditing] = useState(false);
+  const currentIsEditing = isEditing !== undefined ? isEditing : localIsEditing;
   // Use the imported type for state as well
   const [editData, setEditData] = useState<CvSkillType[]>(data || []);
   const [newSkillName, setNewSkillName] = useState('');
@@ -88,33 +93,39 @@ export function SkillsDisplay({
 
   const handleSave = async () => {
     console.log("Confirming skill edits (locally)...", editData);
-    setIsEditing(false);
+    if (onEditingChange) {
+      onEditingChange(false);
+    } else {
+      setLocalIsEditing(false);
+    }
   };
 
   const handleCancel = () => {
     const originalData = data || [];
     setEditData(originalData);
     onChange(originalData); // Notify parent of reset
-    setIsEditing(false);
+    if (onEditingChange) {
+      onEditingChange(false);
+    } else {
+      setLocalIsEditing(false);
+    }
     setNewSkillName('');
   };
 
-  if (!isEditing && (!editData || editData.length === 0)) {
+  if (!currentIsEditing && (!editData || editData.length === 0)) {
     return null;
   }
 
   return (
     <div>
-        <div className="flex justify-end mb-2">
-        {isEditing ? (
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-10 w-10 hover:bg-base-200"><X className="h-5 w-5" /></Button>
-            <Button variant="elevated" size="icon" onClick={handleSave} className="h-10 w-10 shadow-md hover:shadow-lg"><Save className="h-5 w-5" /></Button>
+        {currentIsEditing && (
+          <div className="flex justify-end mb-2">
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={handleCancel} className="h-12 w-12 p-0 hover:bg-base-200 flex items-center justify-center"><X className="h-5 w-5" /></Button>
+              <Button variant="elevated" onClick={handleSave} className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"><Save className="h-5 w-5" /></Button>
+            </div>
           </div>
-        ) : (
-          <Button variant="elevated" size="icon" onClick={() => setIsEditing(true)} className="h-10 w-10 shadow-md hover:shadow-lg"><Edit className="h-5 w-5" /></Button>
         )}
-        </div>
 
         <div className="flex flex-wrap gap-2">
           {editData.map((skill, index) => {
@@ -126,10 +137,10 @@ export function SkillsDisplay({
               <div key={skill.id || `skill-${index}`} className="mb-2"> {/* Wrapper for badge + suggestions */} 
                 <Badge 
                   variant="hybrid" 
-                  className={cn("relative group text-base-content", isEditing ? "pr-6" : "")}
+                  className={cn("relative group text-base-content", currentIsEditing ? "pr-6" : "")}
                 >
                 {skillName} 
-                {isEditing && (
+                {currentIsEditing && (
                   <button 
                       onClick={() => handleRemoveSkill(index)}
                       className="absolute top-1 -right-1 p-0.5 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/80" 
@@ -146,7 +157,7 @@ export function SkillsDisplay({
           })}
         </div>
 
-        {isEditing && (
+        {currentIsEditing && (
           <div className="mt-4 flex gap-2 items-center">
             <Input 
                 type="text" 

@@ -202,8 +202,8 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
         <div className="flex justify-end mb-2">
           <div className="flex gap-2 items-center">
             <Button variant="outline" size="sm" onClick={handleAddItem} className="mr-2 h-8 text-xs"><Plus className="h-4 w-4 mr-1" /> Add Entry</Button>
-            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-10 w-10 hover:bg-base-200"><X className="h-5 w-5" /></Button>
-            <Button variant="elevated" size="icon" onClick={handleSave} className="h-10 w-10 shadow-md hover:shadow-lg"><Save className="h-5 w-5" /></Button>
+            <Button variant="ghost" onClick={handleCancel} className="h-12 w-12 p-0 hover:bg-base-200 flex items-center justify-center"><X className="h-5 w-5" /></Button>
+            <Button variant="elevated" onClick={handleSave} className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"><Save className="h-5 w-5" /></Button>
           </div>
         </div>
       )}

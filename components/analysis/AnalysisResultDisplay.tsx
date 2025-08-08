@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {  Button  } from '@/components/ui-daisy/button';
 import {  Card  } from '@/components/ui-daisy/card';
-import { FloatingInput } from '@/components/ui-daisy/floating-input';
+import { Input } from '@/components/ui-daisy/input';
 import { Save, Loader2, Download, Wand2, User, Edit } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import _ from 'lodash';
@@ -144,6 +144,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   // Local state for UI interactions (saving/exporting)
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [skillsEditing, setSkillsEditing] = useState(false);
   // Accordion state removed - sections now always visible after bypassing cloneElement issues
 
   // Calculate unsaved changes by comparing current data with original data from store
@@ -358,10 +359,10 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                     <div className="flex items-start justify-between group mb-4 gap-4">
                       {/* Name field on the left */}
                       <div className="flex-1">
-                        <FloatingInput
+                        <Input
                           id="name"
                           type="text"
-                          label="Full Name"
+                          placeholder="Full Name"
                           value={analysisData.contactInfo?.name || ''}
                           onChange={(e) => {
                             const newContactInfo = { 
@@ -370,8 +371,10 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                             };
                             dispatch(updateAnalysisData({ path: 'contactInfo', value: newContactInfo }));
                           }}
+                          variant="elevated"
+                          inputSize="md"
+                          hoverable
                           leftIcon={<User className="h-4 w-4" />}
-                          variant="bordered"
                         />
                       </div>
                       
@@ -431,13 +434,23 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Skills</h2>
-                      <AIAssistanceButton
-                        section="skills"
-                        currentData={analysisData.skills}
-                        isEmpty={!analysisData.skills || analysisData.skills.length === 0}
-                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'skills', value: improvedData }))}
-                        className="ml-4"
-                      />
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="elevated" 
+                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
+                          onClick={() => setSkillsEditing(true)}
+                          data-testid="skills-edit-button"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </Button>
+                        <AIAssistanceButton
+                          section="skills"
+                          currentData={analysisData.skills}
+                          isEmpty={!analysisData.skills || analysisData.skills.length === 0}
+                          onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'skills', value: improvedData }))}
+                          className="ml-2"
+                        />
+                      </div>
                     </div>
                     <div>
                       <SkillsDisplay 
@@ -447,6 +460,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                         suggestions={suggestions} 
                         onAcceptSuggestion={handleAcceptSuggestion}
                         onRejectSuggestion={handleRejectSuggestion}
+                        isEditing={skillsEditing}
+                        onEditingChange={setSkillsEditing}
                       />
                       
                       <SuggestionManager section="skills" className="mt-4" />
@@ -461,8 +476,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       <div className="flex gap-2">
                         <Button 
                           variant="elevated" 
-                          size="icon" 
-                          className="h-10 w-10 shadow-md hover:shadow-lg"
+                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
                           onClick={() => experienceDisplayRef.current?.startEditing()}
                           data-testid="experience-edit-button"
                         >
