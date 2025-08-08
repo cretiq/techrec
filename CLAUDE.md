@@ -300,6 +300,16 @@ ENABLE_DIRECT_GEMINI_UPLOAD=true
 DEBUG_CV_UPLOAD=true NODE_ENV=development [command]
 ```
 
+#### **Test User Configuration**
+**🛡️ CRITICAL**: The upload route uses a **real test user** to prevent orphaned CV records:
+
+- **Test User Email**: `cv-upload-test@test.techrec.com`
+- **Test User ID**: `689491c6de5f64dd40843cd0`
+- **Purpose**: Ensures proper database integrity and foreign key constraints
+- **Safety**: Developer existence verified before profile sync operations
+
+**Why This Matters**: Previous mock IDs created orphaned CV records that couldn't sync to profiles, violating database constraints and causing Prisma errors.
+
 #### **Debug File Generation**
 **Automatic during CV upload** - When debug is enabled, 3 files are created in `/logs/direct-gemini-upload/`:
 
@@ -365,6 +375,37 @@ DEBUG_CV_UPLOAD=true NODE_ENV=development npx tsx scripts/analyze-direct-upload.
 
 # Check latest session without running full analysis:
 DEBUG_CV_UPLOAD=true NODE_ENV=development npx tsx scripts/analyze-cv-upload-parsing.ts
+
+# Test direct upload via curl (uses real test user):
+curl -X POST http://localhost:3000/api/cv/upload \
+  -F "file=@tests/fixtures/KRUSHAL_SONANI.pdf" \
+  -H "Content-Type: multipart/form-data"
+```
+
+#### **Expected Success Indicators**
+When the debug system is working correctly, you should see:
+
+```bash
+# In server logs:
+🧪 Test user ID: 689491c6de5f64dd40843cd0
+🚀 [DIRECT-GEMINI] Developer verified, proceeding with sync {
+  developerId: '689491c6de5f64dd40843cd0',
+  email: 'cv-upload-test@test.techrec.com'
+}
+🚀 [DIRECT-GEMINI] Workflow completed successfully { 
+  improvementScore: 100, 
+  syncDuration: ~2400ms, 
+  finalStatus: 'COMPLETED' 
+}
+
+# In curl response:
+{"status":"COMPLETED","cvId":"...","improvementScore":100}
+
+# Debug files created:
+logs/direct-gemini-upload/
+├── [timestamp]-direct-upload.json
+├── [timestamp]-direct-analysis.json  
+└── [timestamp]-direct-sync.json
 ```
 
 ---
@@ -438,6 +479,21 @@ nohup npm run dev > server.log 2>&1 &
 # 3. Validate startup
 sleep 3 && head -10 server.log
 ```
+
+### Database Integrity & Test User Setup
+**🛡️ CRITICAL SAFETY**: The CV upload route uses a real test user to prevent database integrity issues:
+
+**Test User Details**:
+- **Email**: `cv-upload-test@test.techrec.com`
+- **Developer ID**: `689491c6de5f64dd40843cd0`
+- **Purpose**: Prevents orphaned CV records and Prisma constraint violations
+
+**Safety Validations**:
+- Developer existence verified before profile sync
+- Foreign key constraints properly maintained
+- No orphaned CV records created during debugging
+
+**Previous Issue**: Mock developer IDs created CV records that couldn't link to profiles, causing Prisma P2025 errors during profile sync.
 
 ### Essential Debug Commands
 ```bash
@@ -591,7 +647,7 @@ Before shipping any UI component:
 
 *This guide serves as the comprehensive reference for developing within the TechRec codebase. Follow these guidelines consistently to maintain code quality, architectural integrity, and development efficiency.*
 
-**Last Update**: August 8, 2025 - **DIRECT GEMINI UPLOAD DEBUG SYSTEM COMPLETE**:
+**Last Update**: August 8, 2025 - **DIRECT GEMINI UPLOAD DEBUG SYSTEM COMPLETE + DATABASE INTEGRITY FIX**:
 - ✅ **Direct Upload Primary Method**: Traditional upload commented out, Direct Gemini Upload is now the primary workflow
 - ✅ **Comprehensive Debug System**: Complete debug logging with 4-file output structure for Direct Upload analysis
 - ✅ **Debug Analysis Scripts**: Two analysis scripts (`analyze-direct-upload.ts`, `analyze-cv-upload-parsing.ts`) with environment setup
@@ -600,6 +656,9 @@ Before shipping any UI component:
 - ✅ **Environment Configuration**: Proper `.env.local` setup and per-command environment variable usage
 - ✅ **Fixed Critical Issues**: Resolved "validation is not defined" error and directory creation issues in debug logging
 - ✅ **Successful Testing**: Direct Upload working with 100% improvement score and complete debug file generation
+- ✅ **DATABASE INTEGRITY FIX**: Replaced mock developer ID with real test user (`cv-upload-test@test.techrec.com`) to prevent orphaned CV records
+- ✅ **Developer Verification**: Added existence check before profile sync to ensure database constraints are respected
+- ✅ **No More Prisma Errors**: Profile sync now works correctly without foreign key constraint violations
 
 **Previous Update**: August 8, 2025 - **CLAUDE.MD CLEANUP & OPTIMIZATION**: 
 - ✅ **Content Consolidation**: Removed redundant Professional Design System section (lines 480-715)
