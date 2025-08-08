@@ -247,16 +247,15 @@ export async function DELETE() {
                 education: await tx.education.deleteMany({ where: { developerId } }),
                 achievements: await tx.achievement.deleteMany({ where: { developerId } }),
                 contactInfo: await tx.contactInfo.deleteMany({ where: { developerId } }),
-                experienceProjects: await tx.project.deleteMany({ 
+                experienceProjects: await tx.experienceProject.deleteMany({ 
                     where: { experienceId: { in: [] } } // This will be handled by cascade
                 })
             };
 
-            // Reset basic profile fields
+            // Reset basic profile fields (keep required name field)
             await tx.developer.update({
                 where: { id: developerId },
                 data: {
-                    name: null,
                     title: null,
                     profileEmail: null,
                     about: null,
