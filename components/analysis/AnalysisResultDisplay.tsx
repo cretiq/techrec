@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {  Button  } from '@/components/ui-daisy/button';
+import {  Card  } from '@/components/ui-daisy/card';
 import { FloatingInput } from '@/components/ui-daisy/floating-input';
-import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp, User, Edit } from 'lucide-react';
+import { Save, Loader2, Download, Wand2, User, Edit } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import _ from 'lodash';
 // Import motion and AnimatePresence
@@ -342,18 +343,18 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
 
   return (
     <motion.div
-      className="min-h-screen font-sans rounded-2xl"
+      className="min-h-screen font-sans rounded-2xl animate-fade-in-up"
       variants={pageVariants}
       initial="hidden"
       animate="visible"
       data-testid="cv-management-analysis-display-container"
     >
-       <div className="flex flex-col md:flex-row gap-8" data-testid="cv-management-analysis-content">
-          <main className="w-full space-y-4" data-testid="cv-management-analysis-main">
-              <div className="w-full space-y-4">
+       <div className="flex flex-col gap-6" data-testid="cv-management-analysis-content">
+          <main className="w-full space-y-6" data-testid="cv-management-analysis-main">
+              <div className="w-full space-y-6">
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Direct render */}
                 {analysisData && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
+                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between group mb-4 gap-4">
                       {/* Name field on the left */}
                       <div className="flex-1">
@@ -396,11 +397,11 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       
                       <SuggestionManager section="contactInfo" className="mt-4" />
                     </div>
-                  </div>
+                  </Card>
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - About section */}
                 {analysisData.about !== undefined && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
+                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">About / Summary</h2>
                       <AIAssistanceButton
@@ -423,11 +424,11 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       
                       <SuggestionManager section="about" className="mt-4" />
                     </div>
-                  </div>
+                  </Card>
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Skills section */}
                 {analysisData.skills && analysisData.skills.length > 0 && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
+                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Skills</h2>
                       <AIAssistanceButton
@@ -450,11 +451,11 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       
                       <SuggestionManager section="skills" className="mt-4" />
                     </div>
-                  </div>
+                  </Card>
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Experience section */}
                 {analysisData.experience && analysisData.experience.length > 0 && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
+                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Work Experience</h2>
                       <div className="flex gap-2">
@@ -487,11 +488,11 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                         onRejectSuggestion={handleRejectSuggestion}
                       />
                     </div>
-                  </div>
+                  </Card>
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Education section */}
                 {analysisData.education && analysisData.education.length > 0 && (
-                  <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
+                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Education</h2>
                       <AIAssistanceButton
@@ -514,7 +515,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       
                       <SuggestionManager section="education" className="mt-4" />
                     </div>
-                  </div>
+                  </Card>
                 )}
               </div>
           </main>

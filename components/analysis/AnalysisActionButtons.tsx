@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui-daisy/button';
-import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp } from 'lucide-react';
+import { Save, Loader2, Download, Wand2 } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import { ApiFailureModal } from '@/components/ui-daisy/ApiFailureModal';
 import { useSelector, useDispatch } from 'react-redux';
@@ -40,19 +40,6 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
     const [isSuggesting, setIsSuggesting] = useState(false);
     const [showApiFailureModal, setShowApiFailureModal] = useState(false);
 
-    // Calculate accordion section keys
-    const accordionSectionKeys = useMemo(() => {
-        const keys = [];
-        if (analysisData?.about !== undefined) keys.push('about');
-        if (analysisData?.skills && analysisData.skills.length > 0) keys.push('skills');
-        if (analysisData?.experience && analysisData.experience.length > 0) keys.push('experience');
-        if (analysisData?.education && analysisData.education.length > 0) keys.push('education');
-        return keys;
-    }, [analysisData]);
-
-    // Note: Open sections state would need to be managed from parent component
-    // For now, we'll handle expand/collapse through DOM manipulation
-    const openSections: string[] = accordionSectionKeys; // Assume all sections are available
 
     // Check for unsaved changes
     const hasUnsavedChanges = useMemo(() => {
@@ -189,15 +176,6 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
         }
     };
 
-    const handleExpandAll = () => {
-        // Trigger expand all through custom event that AnalysisResultDisplay can listen to
-        window.dispatchEvent(new CustomEvent('expandAllSections'));
-    };
-
-    const handleCollapseAll = () => {
-        // Trigger collapse all through custom event that AnalysisResultDisplay can listen to
-        window.dispatchEvent(new CustomEvent('collapseAllSections'));
-    };
 
     return (
         <>
@@ -208,57 +186,6 @@ export function AnalysisActionButtons({ className }: AnalysisActionButtonsProps)
                 feature="CV suggestions generation"
             />
             <div className={`flex gap-2 ${className || ''}`} data-testid="cv-management-analysis-action-buttons">
-            <Button 
-                onClick={handleExpandAll} 
-                variant="outline" 
-                size="sm" 
-                disabled={isProcessing} 
-                data-testid="cv-management-button-expand-all"
-            >
-                <ChevronsDownUp className="mr-2 h-4 w-4" data-testid="cv-management-icon-expand-all" />
-                Expand All
-            </Button>
-            
-            <Button 
-                onClick={handleCollapseAll} 
-                variant="outline" 
-                size="sm" 
-                disabled={isProcessing} 
-                data-testid="cv-management-button-collapse-all"
-            >
-                <ChevronsUpDown className="mr-2 h-4 w-4" data-testid="cv-management-icon-collapse-all" />
-                Collapse All
-            </Button>
-            
-            <Button 
-                onClick={handleGetSuggestions} 
-                disabled={isSuggesting || isSaving || isExporting || isProcessing} 
-                size="sm" 
-                variant="outline" 
-                data-testid="cv-management-button-get-suggestions"
-            >
-                {isSuggesting ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-icon-suggestions-loading" />
-                ) : (
-                    <Wand2 className="mr-2 h-4 w-4" data-testid="cv-management-icon-suggestions" />
-                )}
-                {isSuggesting ? 'Getting Suggestions...' : 'Get Suggestions'}
-            </Button>
-            
-            <Button 
-                onClick={handleExport} 
-                disabled={isExporting || isSaving || isSuggesting || isProcessing || analysisData == null} 
-                size="sm" 
-                variant="outline" 
-                data-testid="cv-management-button-export"
-            >
-                {isExporting ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="cv-management-icon-export-loading" />
-                ) : (
-                    <Download className="mr-2 h-4 w-4" data-testid="cv-management-icon-export" />
-                )}
-                {isExporting ? 'Exporting...' : 'Export Edited CV'}
-            </Button>
             
             <Button
                 onClick={handleSaveAll}

@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 const ADMIN_EMAILS = [
   'filipmellqvist255@gmail.com',
   'admin@techrec.com',
+  'admin@test.com',
 ];
 
 export async function GET(request: NextRequest) {

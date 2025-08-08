@@ -23,6 +23,7 @@ export default async function GamificationAdminPage() {
   const adminEmails = [
     "filipmellqvist255@gmail.com",
     "admin@techrec.com",
+    "admin@test.com",
     // Add more admin emails as needed
   ]
 
