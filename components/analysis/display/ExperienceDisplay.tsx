@@ -9,7 +9,7 @@ import { cn, formatDateSafe } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Import suggestion-related types and components
-import { ExperienceItem as CvExperienceItem, CvImprovementSuggestion } from '@/types/cv';
+import { ExperienceItem as CvExperienceItem, ExperienceProject, CvImprovementSuggestion } from '@/types/cv';
 import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 
 interface ExperienceProps {
@@ -149,6 +149,37 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
     notifyChange(newData);
   };
 
+  // Handlers for projects array
+  const handleAddProject = (expIndex: number) => {
+    const newProject: ExperienceProject = { name: '', description: '', technologies: [], teamSize: null, role: '' };
+    const newData = editData.map((item, i) =>
+      i === expIndex ? { ...item, projects: [...(item.projects || []), newProject] } : item
+    );
+    notifyChange(newData);
+  };
+
+  const handleProjectChange = (expIndex: number, projIndex: number, field: keyof ExperienceProject, value: string | number | string[] | null) => {
+    const newData = editData.map((item, i) =>
+      i === expIndex ? {
+        ...item,
+        projects: (item.projects || []).map((proj, pI) => 
+          pI === projIndex ? { ...proj, [field]: value } : proj
+        )
+      } : item
+    );
+    notifyChange(newData);
+  };
+
+  const handleRemoveProject = (expIndex: number, projIndex: number) => {
+    const newData = editData.map((item, i) =>
+      i === expIndex ? {
+        ...item,
+        projects: (item.projects || []).filter((_, pI) => pI !== projIndex)
+      } : item
+    );
+    notifyChange(newData);
+  };
+
   // Handlers for adding/removing entire experience items
   const handleAddItem = () => {
     const newItem: CvExperienceItem = { id: `temp_exp_${uuidv4()}`, title: '', company: '', isNew: true };
@@ -279,6 +310,66 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                       <Plus className="h-3 w-3 mr-1" /> Add Responsibility
                     </Button>
                   </div>
+                  
+                  {/* Projects Section */}
+                  <div>
+                    <Label className="text-xs font-medium block mb-2">Projects</Label>
+                    <div className="space-y-3 bg-base-100/30 rounded-lg p-2 mb-2">
+                      {((exp.projects && exp.projects.length > 0) ? exp.projects : []).map((project, pIndex) => (
+                        <div key={pIndex} className="p-3 bg-base-100/50 rounded-lg border border-base-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <Label className="text-xs text-primary">Project {pIndex + 1}</Label>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleRemoveProject(index, pIndex)} 
+                              className="h-6 w-6 p-0 opacity-70 hover:opacity-100 hover:bg-error/10"
+                            >
+                              <Trash2 className="h-3 w-3 text-error" />
+                            </Button>
+                          </div>
+                          <div className="space-y-2">
+                            <Input 
+                              value={project?.name || ''} 
+                              onChange={(e) => handleProjectChange(index, pIndex, 'name', e.target.value)} 
+                              placeholder="Project name" 
+                              className="h-8 text-sm" 
+                            />
+                            <Textarea 
+                              value={project?.description || ''} 
+                              onChange={(e) => handleProjectChange(index, pIndex, 'description', e.target.value)} 
+                              placeholder="Project description" 
+                              className="text-sm min-h-[60px]" 
+                            />
+                            <div className="grid grid-cols-2 gap-2">
+                              <Input 
+                                value={project?.role || ''} 
+                                onChange={(e) => handleProjectChange(index, pIndex, 'role', e.target.value)} 
+                                placeholder="Your role" 
+                                className="h-8 text-sm" 
+                              />
+                              <Input 
+                                type="number" 
+                                value={project?.teamSize || ''} 
+                                onChange={(e) => handleProjectChange(index, pIndex, 'teamSize', e.target.value ? parseInt(e.target.value) : null)} 
+                                placeholder="Team size" 
+                                className="h-8 text-sm" 
+                              />
+                            </div>
+                            <Input 
+                              value={project?.technologies?.join(', ') || ''} 
+                              onChange={(e) => handleProjectChange(index, pIndex, 'technologies', e.target.value.split(',').map(t => t.trim()).filter(t => t))} 
+                              placeholder="Technologies (comma-separated)" 
+                              className="h-8 text-sm" 
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => handleAddProject(index)} className="h-7 text-xs">
+                      <Plus className="h-3 w-3 mr-1" /> Add Project
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -365,6 +456,62 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                           ))
                       ) : null}
                     </ul>
+                  )}
+                  
+                  {/* Display Projects */}
+                  {exp.projects && exp.projects.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="text-sm font-medium text-base-content mb-2">Projects:</h4>
+                      <div className="space-y-3">
+                        {exp.projects.map((project, pIndex) => (
+                          <div key={pIndex} className="p-3 bg-base-100/40 rounded-lg border border-base-200/50">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h5 className="font-medium text-sm text-primary">{project.name}</h5>
+                                {project.description && (
+                                  <p className="text-sm text-base-content/80 mt-1 leading-relaxed">
+                                    {project.description}
+                                  </p>
+                                )}
+                                <div className="flex flex-wrap gap-2 mt-2 text-xs text-muted-foreground">
+                                  {project.role && (
+                                    <span className="px-2 py-1 bg-primary/10 text-primary rounded-full">
+                                      Role: {project.role}
+                                    </span>
+                                  )}
+                                  {project.teamSize && (
+                                    <span className="px-2 py-1 bg-info/10 text-info rounded-full">
+                                      Team: {project.teamSize} people
+                                    </span>
+                                  )}
+                                </div>
+                                {project.technologies && project.technologies.length > 0 && (
+                                  <div className="mt-2">
+                                    <div className="flex flex-wrap gap-1">
+                                      {project.technologies.map((tech, tIndex) => (
+                                        <span 
+                                          key={tIndex} 
+                                          className="px-2 py-1 text-xs bg-secondary/20 text-secondary rounded"
+                                        >
+                                          {tech}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {/* Project-specific suggestions */}
+                            <SuggestionManager 
+                              section="experience" 
+                              targetId={exp.id} 
+                              targetField={`projects[${pIndex}]`} 
+                              className="mt-2" 
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                   
                   {/* General suggestions for overall experience quality */}

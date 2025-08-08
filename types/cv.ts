@@ -49,6 +49,15 @@ export const SkillSchema = z.object({
   ]).optional(),
 });
 
+// Schema for a project within an experience item
+export const ExperienceProjectSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().nullable().optional(),
+  technologies: z.array(z.string()).nullable().optional(),
+  teamSize: z.number().nullable().optional(),
+  role: z.string().nullable().optional(),
+});
+
 // Schema for a single experience item - aligned with database Experience model
 export const ExperienceItemSchema = z.object({
   id: z.string().optional(),
@@ -61,6 +70,7 @@ export const ExperienceItemSchema = z.object({
   current: z.boolean().optional(),
   responsibilities: z.array(z.string()).nullable().optional(),
   achievements: z.array(z.string()).nullable().optional(),
+  projects: z.array(ExperienceProjectSchema).nullable().optional(),
   teamSize: z.number().nullable().optional(),
   techStack: z.array(z.string()).nullable().optional(),
   isNew: z.boolean().optional(),
@@ -310,6 +320,7 @@ export const CvListFilterSchema = z.object({
 // --- TypeScript Interfaces/Types derived from Zod Schemas ---
 export type ContactInfoData = z.infer<typeof ContactInfoSchema>;
 export type Skill = z.infer<typeof SkillSchema>;
+export type ExperienceProject = z.infer<typeof ExperienceProjectSchema>;
 export type ExperienceItem = z.infer<typeof ExperienceItemSchema>;
 export type EducationItem = z.infer<typeof EducationItemSchema>;
 export type AchievementItem = z.infer<typeof AchievementSchema>;
