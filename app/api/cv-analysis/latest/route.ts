@@ -51,6 +51,9 @@ export async function GET(request: Request) {
           }
         },
         experience: {
+          include: {
+            projects: true
+          },
           orderBy: { startDate: 'desc' }
         },
         education: {
@@ -157,6 +160,7 @@ export async function GET(request: Request) {
           current: exp.current,
           responsibilities: exp.responsibilities,
           achievements: exp.achievements,
+          projects: exp.projects || [], // Include projects from the database
         })),
         
         // Education - transform from proper Education table
