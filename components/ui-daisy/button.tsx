@@ -55,6 +55,7 @@ const buttonVariants = {
   'error-interactive': `${buttonBase} btn-error`,
   'info-interactive': `${buttonBase} btn-info`,
   'linkedin-interactive': `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] text-white font-medium border-transparent`,
+  'flashy-interactive': `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 border-base-300/50 text-base-content font-medium`,
   
   // Legacy aliases for backwards compatibility
   outline: `${buttonBase} bg-transparent border-base-300/50`,

@@ -156,7 +156,7 @@ export function AIAssistanceButton({
   
   return (
     <Button
-      variant="default-interactive"
+      variant="flashy-interactive"
       size="lg"
       onClick={handleAIAssistance}
       disabled={isProcessing || isContactInfoSection}

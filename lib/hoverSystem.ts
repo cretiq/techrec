@@ -49,6 +49,7 @@ export const HOVER_SYSTEM = {
       info: "hover:shadow-md",
       linkedin: "hover:shadow-md hover:from-[#005885] hover:to-[#004165]",
       interactive: "hover:shadow-md",
+      flashy: "hover:shadow-xl hover:shadow-primary/60 hover:from-primary/60 hover:to-secondary/60 hover:border-primary/70",
     },
     accordion: {
       default: "hover:shadow-md hover:bg-base-100/90",

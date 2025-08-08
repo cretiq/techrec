@@ -381,15 +381,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                         />
                       </div>
                       
-                      {/* AI button on the right */}
-                      <div className="flex-shrink-0">
-                        <AIAssistanceButton
-                          section="contactInfo"
-                          currentData={analysisData.contactInfo}
-                          isEmpty={!analysisData.contactInfo?.name && !analysisData.contactInfo?.email}
-                          onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: improvedData }))}
-                        />
-                      </div>
                     </div>
                     <div>
                       <ContactInfoDisplay 
@@ -412,8 +403,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       <h2 className="text-2xl font-semibold text-base-content">About</h2>
                       <div className="flex gap-2">
                         <Button 
-                          variant="elevated" 
-                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
+                          variant="default-interactive" 
+                          className="h-12 w-12 p-0 flex items-center justify-center"
                           onClick={() => setAboutEditing(true)}
                           data-testid="about-edit-button"
                         >
@@ -451,8 +442,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       <h2 className="text-2xl font-semibold text-base-content">Skills</h2>
                       <div className="flex gap-2">
                         <Button 
-                          variant="elevated" 
-                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
+                          variant="default-interactive" 
+                          className="h-12 w-12 p-0 flex items-center justify-center"
                           onClick={() => setSkillsEditing(true)}
                           data-testid="skills-edit-button"
                         >
@@ -483,8 +474,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       <h2 className="text-2xl font-semibold text-base-content">Work Experience</h2>
                       <div className="flex gap-2">
                         <Button 
-                          variant="elevated" 
-                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
+                          variant="default-interactive" 
+                          className="h-12 w-12 p-0 flex items-center justify-center"
                           onClick={() => experienceDisplayRef.current?.startEditing()}
                           data-testid="experience-edit-button"
                         >
@@ -519,8 +510,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                       <h2 className="text-2xl font-semibold text-base-content">Education</h2>
                       <div className="flex gap-2">
                         <Button 
-                          variant="elevated" 
-                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
+                          variant="default-interactive" 
+                          className="h-12 w-12 p-0 flex items-center justify-center"
                           onClick={() => setEducationEditing(true)}
                           data-testid="education-edit-button"
                         >
