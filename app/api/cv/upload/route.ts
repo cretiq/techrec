@@ -189,7 +189,7 @@ export async function POST(request: Request) {
         logUploadFlow('DIRECT', 'Starting workflow...', {
           cvId: newCV.id,
           filename: newCV.originalName,
-          model: 'gemini-2.0-flash'
+          model: 'gemini-2.5-flash'
         });
         
         // Create temporary file for direct upload
@@ -312,7 +312,7 @@ export async function POST(request: Request) {
         logUploadFlow('TRADITIONAL', 'Starting Gemini analysis with parsed text', {
           inputTextLength: parsedContent.text.length,
           estimatedTokens: Math.ceil(parsedContent.text.length / 4),
-          model: 'gemini-1.5-pro'
+          model: 'gemini-2.5-flash'
         });
 
         const geminiStartTime = Date.now();
