@@ -23,7 +23,7 @@ function PersistenceLoading() {
   }
   
   return (
-    <div className="flex items-center justify-center min-h-screen" data-testid="layout-persist-loading">
+    <div className="flex items-center justify-center min-h-screen bg-base-100" data-testid="layout-persist-loading">
       <div className="flex flex-col items-center space-y-4">
         <div className="sparkle-loader pulse-ring animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" data-testid="layout-persist-spinner"></div>
         <div className="text-sm text-muted-foreground animate-pulse" data-testid="layout-persist-message">
