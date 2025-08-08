@@ -449,13 +449,16 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                   <Card id="skills" variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Skills</h2>
-                      <AIAssistanceButton
-                        section="skills"
-                        currentData={analysisData.skills}
-                        isEmpty={!analysisData.skills || analysisData.skills.length === 0}
-                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'skills', value: improvedData }))}
-                        className="ml-4"
-                      />
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="elevated" 
+                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
+                          onClick={() => setSkillsEditing(true)}
+                          data-testid="skills-edit-button"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </Button>
+                      </div>
                     </div>
                     <div>
                       <SkillsDisplay 

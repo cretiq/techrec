@@ -16,6 +16,7 @@ import {
   Briefcase,
   GraduationCap,
   Award,
+  Code,
   Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -128,6 +129,20 @@ export function ProfileScoringSidebar({ analysisData }: ProfileScoringSidebarPro
         sectionIcon: GraduationCap,
         id: 'education',
         quickWin: score < 100 ? 'Add your education history' : undefined
+      });
+    }
+
+    // Personal Projects
+    if (analysisData?.personalProjects) {
+      const projectCount = analysisData.personalProjects.length;
+      const score = projectCount >= 3 ? 100 : Math.round((projectCount / 3) * 100);
+      scores.push({
+        name: 'Projects',
+        score,
+        icon: AlertCircle,
+        sectionIcon: Code,
+        id: 'personal-projects',
+        quickWin: score < 100 ? `Add ${3 - projectCount} more projects` : undefined
       });
     }
 

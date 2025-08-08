@@ -88,6 +88,24 @@ export const AchievementSchema = z.object({
   issuer: z.string().nullable().optional(),
 });
 
+// Schema for a single personal project item - aligned with database PersonalProject model
+export const PersonalProjectSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().optional(),
+  description: z.string().nullable().optional(),
+  technologies: z.array(z.string()).nullable().optional(),
+  url: z.string().nullable().optional(),
+  repository: z.string().nullable().optional(),
+  liveUrl: z.string().nullable().optional(),
+  startDate: z.string().nullable().optional(),
+  endDate: z.string().nullable().optional(),
+  teamSize: z.number().nullable().optional(),
+  role: z.string().nullable().optional(),
+  highlights: z.array(z.string()).nullable().optional(),
+  status: z.enum(["PLANNED", "IN_PROGRESS", "COMPLETED", "ARCHIVED"]).optional(),
+  isNew: z.boolean().optional(),
+});
+
 // Helper function to validate with warnings and required field checks
 export const validateWithWarnings = <T>(
   schema: z.ZodType<T>,
@@ -193,6 +211,7 @@ export const ProfileAnalysisDataSchema = z.object({
   experience: z.array(ExperienceItemSchema).nullable().optional(),
   education: z.array(EducationItemSchema).nullable().optional(),
   achievements: z.array(AchievementSchema).nullable().optional(),
+  personalProjects: z.array(PersonalProjectSchema).nullable().optional(),
   
   // Experience calculation fields for project enhancement recommendations
   totalYearsExperience: z.number().nullable().optional(),
@@ -294,6 +313,7 @@ export type Skill = z.infer<typeof SkillSchema>;
 export type ExperienceItem = z.infer<typeof ExperienceItemSchema>;
 export type EducationItem = z.infer<typeof EducationItemSchema>;
 export type AchievementItem = z.infer<typeof AchievementSchema>;
+export type PersonalProjectItem = z.infer<typeof PersonalProjectSchema>;
 export type ProfileAnalysisData = z.infer<typeof ProfileAnalysisDataSchema>;
 export type CvListFilters = z.infer<typeof CvListFilterSchema>;
 
