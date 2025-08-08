@@ -3,17 +3,18 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui-daisy/button';
 import { Badge } from '@/components/ui-daisy/badge';
-import { TooltipEnhanced } from '@/components/ui-daisy/tooltip';
+import { Card } from '@/components/ui-daisy/card';
+import { Tooltip } from '@/components/ui-daisy/tooltip';
 import { 
   Check, 
   X, 
   Plus, 
-  Lightbulb, 
   Sparkles,
   Target,
   BookOpen,
   User,
-  AlertCircle
+  AlertCircle,
+  HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EnhancedCvSuggestion } from '@/types/cv';
@@ -58,7 +59,7 @@ const typeConfig = {
     label: 'Summary Enhancement'
   },
   general_improvement: {
-    icon: Lightbulb,
+    icon: AlertCircle,
     color: 'text-accent',
     bgColor: 'bg-accent/10',
     borderColor: 'border-accent/30',
@@ -94,10 +95,6 @@ export function SuggestionItem({
   className
 }: SuggestionItemProps) {
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const config = typeConfig[suggestion.type];
-  const priorityStyle = priorityConfig[suggestion.priority];
-  const IconComponent = config.icon;
 
   const handleAccept = async () => {
     setIsProcessing(true);
@@ -142,105 +139,93 @@ export function SuggestionItem({
       );
     }
 
-    return (
-      <div className="flex gap-2" data-testid={`suggestion-actions-${suggestion.id}`}>
-        <Button
-          size="sm"
-          variant="default"
-          onClick={handleAccept}
-          disabled={isProcessing}
-          data-testid={`suggestion-button-accept-${suggestion.id}`}
-        >
-          {isProcessing ? (
-            <div className="h-3 w-3 border border-success-content border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <>
-              <Check className="h-3 w-3 mr-1" />
-              Accept
-            </>
-          )}
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleDecline}
-          disabled={isProcessing}
-          data-testid={`suggestion-button-decline-${suggestion.id}`}
-        >
-          {isProcessing ? (
-            <div className="h-3 w-3 border border-error border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <>
-              <X className="h-3 w-3 mr-1" />
-              Decline
-            </>
-          )}
-        </Button>
-      </div>
-    );
+    return null;
   };
 
   return (
-    <div
+    <Card
+      variant="transparent" 
       className={cn(
-        "relative overflow-hidden rounded-lg transition-all duration-100",
-        "bg-base-100/60 backdrop-blur-sm",
-        config.bgColor,
+        "border-0",
         isAccepted && "ring-2 ring-success/50 bg-success/10",
         isDeclined && "ring-2 ring-error/50 bg-error/10 opacity-60",
         className
       )}
       data-testid={`suggestion-item-${suggestion.id}`}
     >
-      <div className="relative p-4 space-y-3">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            <div className={cn("p-2 rounded-lg", config.bgColor)}>
-              <IconComponent className={cn("h-5 w-5", config.color)} />
-            </div>
-          </div>
-          
+      {(isAccepted || isDeclined) && (
+        <div className="flex items-start justify-between gap-3 mb-3">
           {getStatusDisplay()}
         </div>
+      )}
 
-        {/* Suggested Content Preview */}
-        <div className="space-y-2">
-          <div 
-            className="bg-success/20 border border-success/50 rounded-lg p-3"
-            data-testid={`suggestion-content-preview-${suggestion.id}`}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-success" />
-              <span className="text-sm font-medium text-success-content">Suggested Addition</span>
-            </div>
-            <p className="text-sm text-success-content/90 font-medium leading-relaxed">
-              {suggestion.suggestedContent}
-            </p>
+      {/* Suggested Content */}
+      <Tooltip
+        content={suggestion.reasoning}
+        position="top"
+        size="large"
+        className="block"
+      >
+        <div 
+          className="relative bg-success/5 rounded-lg p-4 cursor-help hover:bg-success/10 transition-colors"
+          data-testid={`suggestion-content-preview-${suggestion.id}`}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-4 w-4 text-base-content/60" />
+            <span className="text-sm font-medium text-base-content/70">Suggested Addition</span>
           </div>
+          
+          <p className="text-base text-base-content font-medium leading-relaxed mb-4">
+            {suggestion.suggestedContent}
+          </p>
 
-          {/* Tooltip for reasoning */}
-          <TooltipEnhanced
-            content={
-              <div className="max-w-xs">
-                <p className="text-sm leading-relaxed">
-                  {suggestion.reasoning}
-                </p>
-              </div>
-            }
-            position="top"
-            size="medium"
-            className="inline-block"
-          >
-            <span 
-              className="text-xs text-base-content/60 hover:text-base-content/80 transition-colors cursor-help underline decoration-dotted"
+          <div className="flex items-center justify-between">
+            <div className="flex gap-2">
+              {isPending && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={handleAccept}
+                    disabled={isProcessing}
+                    data-testid={`suggestion-button-accept-${suggestion.id}`}
+                  >
+                    {isProcessing ? (
+                      <div className="h-3 w-3 border border-success-content border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <Check className="h-3 w-3 mr-1" />
+                        Accept
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleDecline}
+                    disabled={isProcessing}
+                    data-testid={`suggestion-button-decline-${suggestion.id}`}
+                  >
+                    {isProcessing ? (
+                      <div className="h-3 w-3 border border-error border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        <X className="h-3 w-3 mr-1" />
+                        Decline
+                      </>
+                    )}
+                  </Button>
+                </>
+              )}
+            </div>
+            
+            <HelpCircle 
+              className="h-4 w-4 text-base-content/40" 
               data-testid={`suggestion-reasoning-tooltip-${suggestion.id}`}
-            >
-              Why this helps
-            </span>
-          </TooltipEnhanced>
+            />
+          </div>
         </div>
-      </div>
-    </div>
+      </Tooltip>
+    </Card>
   );
 }

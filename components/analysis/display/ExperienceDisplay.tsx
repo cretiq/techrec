@@ -20,6 +20,11 @@ interface ExperienceProps {
   onRejectSuggestion?: (suggestion: CvImprovementSuggestion) => void;
 }
 
+export interface ExperienceDisplayRef {
+  startEditing: () => void;
+  isEditing: boolean;
+}
+
 // Helper to format date ranges
 const formatDateRange = (start?: string | null, end?: string | null): string => {
   const formatPart = (dateStr: string | null | undefined): string => {
@@ -57,7 +62,7 @@ const createPath = (base: string, index: number, field?: string, subIndex?: numb
   return path;
 };
 
-export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggestion, onRejectSuggestion }: ExperienceProps) {
+export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, ExperienceProps>(({ data, onChange, suggestions, onAcceptSuggestion, onRejectSuggestion }, ref) => {
   console.log('[ExperienceDisplay] Rendering with data (count):', data?.length);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<CvExperienceItem[]>(data || []);
@@ -166,6 +171,18 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
     setIsEditing(false);
   };
 
+  const startEditing = () => {
+    const processedData = prepareDataForEdit(editData);
+    setEditData(processedData);
+    setIsEditing(true);
+  };
+
+  // Expose functions via ref
+  React.useImperativeHandle(ref, () => ({
+    startEditing,
+    isEditing
+  }), [isEditing]);
+
   // Removed renderInlineSuggestions function - using SuggestionManager instead
 
   // Animation variants for list items
@@ -181,21 +198,15 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
 
   return (
     <div>
-      <div className="flex justify-end mb-2">
-        {isEditing ? (
-          <div className="flex gap-1 items-center">
-            <Button variant="outline" size="sm" onClick={handleAddItem} className="mr-2 h-7 text-xs"><Plus className="h-3 w-3 mr-1" /> Add Entry</Button>
-            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-7 w-7"><X className="h-4 w-4" /></Button>
-            <Button variant="default" size="icon" onClick={handleSave} className="h-7 w-7"><Save className="h-4 w-4" /></Button>
+      {isEditing && (
+        <div className="flex justify-end mb-2">
+          <div className="flex gap-2 items-center">
+            <Button variant="outline" size="sm" onClick={handleAddItem} className="mr-2 h-8 text-xs"><Plus className="h-4 w-4 mr-1" /> Add Entry</Button>
+            <Button variant="ghost" size="icon" onClick={handleCancel} className="h-10 w-10 hover:bg-base-200"><X className="h-5 w-5" /></Button>
+            <Button variant="elevated" size="icon" onClick={handleSave} className="h-10 w-10 shadow-md hover:shadow-lg"><Save className="h-5 w-5" /></Button>
           </div>
-        ) : (
-          <Button variant="ghost" size="icon" onClick={() => {
-            const processedData = prepareDataForEdit(editData);
-            setEditData(processedData);
-            setIsEditing(true);
-          }} className="h-7 w-7"><Edit className="h-4 w-4" /></Button>
-        )}
-      </div>
+        </div>
+      )}
       
       <div className="space-y-6">
         <AnimatePresence initial={false}>
@@ -367,4 +378,6 @@ export function ExperienceDisplay({ data, onChange, suggestions, onAcceptSuggest
       </div>
     </div>
   );
-} 
+});
+
+ExperienceDisplay.displayName = "ExperienceDisplay"; 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {  Button  } from '@/components/ui-daisy/button';
 import { FloatingInput } from '@/components/ui-daisy/floating-input';
-import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp, User } from 'lucide-react';
+import { Save, Loader2, Download, Wand2, ChevronsUpDown, ChevronsDownUp, User, Edit } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import _ from 'lodash';
 // Import motion and AnimatePresence
@@ -21,7 +21,7 @@ import {
 import { ContactInfoDisplay } from './display/ContactInfoDisplay';
 import { AboutDisplay } from './display/AboutDisplay';
 import { SkillsDisplay } from './display/SkillsDisplay';
-import { ExperienceDisplay } from './display/ExperienceDisplay';
+import { ExperienceDisplay, type ExperienceDisplayRef } from './display/ExperienceDisplay';
 import { EducationDisplay } from './display/EducationDisplay';
 import { AIAssistanceButton } from './AIAssistanceButton';
 // Accordion imports removed - bypassed cloneElement issue
@@ -81,6 +81,9 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   const status = useSelector(selectAnalysisStatus);
   const error = useSelector(selectAnalysisError);
   const originalData = useSelector(selectOriginalAnalysisData);
+
+  // Ref for ExperienceDisplay
+  const experienceDisplayRef = useRef<ExperienceDisplayRef>(null);
 
   // Enhanced logging of Redux state
   console.log('[AnalysisResultDisplay] 🔍 COMPREHENSIVE REDUX STATE:', {
@@ -378,7 +381,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           currentData={analysisData.contactInfo}
                           isEmpty={!analysisData.contactInfo?.name && !analysisData.contactInfo?.email}
                           onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'contactInfo', value: improvedData }))}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
                     </div>
@@ -399,14 +401,14 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - About section */}
                 {analysisData.about !== undefined && (
                   <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
-                    <div className="flex items-center justify-between group mb-4">
+                    <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">About / Summary</h2>
                       <AIAssistanceButton
                         section="about"
                         currentData={analysisData.about}
                         isEmpty={!analysisData.about || analysisData.about.trim() === ''}
                         onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'about', value: improvedData }))}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity ml-4"
+                        className="ml-4"
                       />
                     </div>
                     <div>
@@ -426,8 +428,15 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Skills section */}
                 {analysisData.skills && analysisData.skills.length > 0 && (
                   <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
-                    <div className="flex items-center justify-between group mb-4">
+                    <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Skills</h2>
+                      <AIAssistanceButton
+                        section="skills"
+                        currentData={analysisData.skills}
+                        isEmpty={!analysisData.skills || analysisData.skills.length === 0}
+                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'skills', value: improvedData }))}
+                        className="ml-4"
+                      />
                     </div>
                     <div>
                       <SkillsDisplay 
@@ -446,11 +455,30 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Experience section */}
                 {analysisData.experience && analysisData.experience.length > 0 && (
                   <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
-                    <div className="flex items-center justify-between group mb-4">
+                    <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Work Experience</h2>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="elevated" 
+                          size="icon" 
+                          className="h-10 w-10 shadow-md hover:shadow-lg"
+                          onClick={() => experienceDisplayRef.current?.startEditing()}
+                          data-testid="experience-edit-button"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </Button>
+                        <AIAssistanceButton
+                          section="experience"
+                          currentData={analysisData.experience}
+                          isEmpty={!analysisData.experience || analysisData.experience.length === 0}
+                          onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'experience', value: improvedData }))}
+                          className="ml-2"
+                        />
+                      </div>
                     </div>
                     <div>
                       <ExperienceDisplay 
+                        ref={experienceDisplayRef}
                         key="experience-stable"
                         data={analysisData.experience}
                         onChange={(newData) => dispatch(updateAnalysisData({ path: 'experience', value: newData }))} 
@@ -464,8 +492,15 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Education section */}
                 {analysisData.education && analysisData.education.length > 0 && (
                   <div className="bg-base-100 border border-brand-sharp rounded-2xl p-6 mb-4">
-                    <div className="flex items-center justify-between group mb-4">
+                    <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Education</h2>
+                      <AIAssistanceButton
+                        section="education"
+                        currentData={analysisData.education}
+                        isEmpty={!analysisData.education || analysisData.education.length === 0}
+                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'education', value: improvedData }))}
+                        className="ml-4"
+                      />
                     </div>
                     <div>
                       <EducationDisplay 
