@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {  Input  } from '@/components/ui-daisy/input';
 import {  Button  } from '@/components/ui-daisy/button';
+import {  Card  } from '@/components/ui-daisy/card';
 import { Label } from '@/components/ui-daisy/label';
 import { GraduationCap, MapPin, Calendar, Edit, Save, X, Trash2, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
@@ -148,18 +149,14 @@ export function EducationDisplay({
       <div className="grid grid-cols-1 gap-4">
         <AnimatePresence initial={false}>
           {editData.map((edu, index) => (
-            <motion.div
+            <Card
               key={edu.id || `edu-${index}`}
+              variant="gradient-interactive"
               className={cn(
-                "p-6 rounded-lg relative group bg-gradient-to-br from-base-200/80 to-base-300/80 border border-base-100 shadow-sm hover:shadow-md transition-all duration-200",
-                edu.isNew && "border-dashed border-primary",
-                "hover:from-blue-50 hover:to-blue-100"
+                "p-6 relative group shadow-lg hover:shadow-xl transition-all duration-200",
+                edu.isNew && "border-dashed border-primary"
               )}
-              variants={listItemVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              layout
+              animated
             >
               {isEditing && (
                 <Button
@@ -223,7 +220,7 @@ export function EducationDisplay({
                   </div>
                 </>
               )}
-            </motion.div>
+            </Card>
           ))}
         </AnimatePresence>
       </div>

@@ -214,4 +214,83 @@ export async function PUT(request: Request) {
             { status: 500 }
         );
     }
+}
+
+/**
+ * DELETE handler to clear all profile data for the current authenticated user.
+ * This deletes CV files, skills, experience, education, achievements, and contact info.
+ * Similar to what the admin clear profile functionality does.
+ */
+export async function DELETE() {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const developerId = session.user.id;
+        console.log(`[API /profile/me] DELETE request for user ID: ${developerId}`);
+
+        // Use a transaction to ensure all deletions happen atomically
+        const result = await prisma.$transaction(async (tx) => {
+            // First, get all CVs to delete from S3 later
+            const cvs = await tx.cV.findMany({
+                where: { developerId },
+                select: { id: true, s3Key: true, filename: true }
+            });
+
+            // Delete all related data
+            const deletionCounts = {
+                cvs: await tx.cV.deleteMany({ where: { developerId } }),
+                skills: await tx.developerSkill.deleteMany({ where: { developerId } }),
+                experience: await tx.experience.deleteMany({ where: { developerId } }),
+                education: await tx.education.deleteMany({ where: { developerId } }),
+                achievements: await tx.achievement.deleteMany({ where: { developerId } }),
+                contactInfo: await tx.contactInfo.deleteMany({ where: { developerId } }),
+                experienceProjects: await tx.project.deleteMany({ 
+                    where: { experienceId: { in: [] } } // This will be handled by cascade
+                })
+            };
+
+            // Reset basic profile fields
+            await tx.developer.update({
+                where: { id: developerId },
+                data: {
+                    name: null,
+                    title: null,
+                    profileEmail: null,
+                    about: null,
+                    // Keep gamification data intact
+                }
+            });
+
+            return { cvs, deletionCounts };
+        });
+
+        console.log(`[API /profile/me] Profile data cleared successfully for user ID: ${developerId}`, {
+            deletedCounts: result.deletionCounts,
+            cvsFound: result.cvs.length
+        });
+
+        // Note: S3 file deletion could be added here if needed
+        // For now, we're just clearing the database records
+        
+        return NextResponse.json({ 
+            success: true,
+            message: 'All profile data cleared successfully',
+            deletedCounts: {
+                cvs: result.deletionCounts.cvs.count,
+                skills: result.deletionCounts.skills.count,
+                experience: result.deletionCounts.experience.count,
+                education: result.deletionCounts.education.count,
+                achievements: result.deletionCounts.achievements.count,
+                contactInfo: result.deletionCounts.contactInfo.count,
+            }
+        });
+
+    } catch (error) {
+        console.error('[API /profile/me] DELETE Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to clear profile data';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
+    }
 } 

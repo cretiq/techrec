@@ -15,8 +15,8 @@ interface ExperienceCardProps {
 export function ExperienceCard({ profile, onDeleteExperience }: ExperienceCardProps) {
   return (
     <Card 
-      variant="transparent" 
-      className="animate-fade-in-up" 
+      variant="gradient-interactive" 
+      className="animate-fade-in-up shadow-lg" 
       data-testid="profile-experience-card"
     >
       <CardHeader className="flex flex-row items-center justify-between" data-testid="profile-experience-header">
@@ -68,6 +68,14 @@ export function ExperienceCard({ profile, onDeleteExperience }: ExperienceCardPr
                 </Button>
               </div>
             </div>
+            
+            {/* Display description */}
+            {exp.description && (
+              <div className="space-y-1">
+                <h4 className="text-sm font-medium">Description:</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{exp.description}</p>
+              </div>
+            )}
             
             {/* Display responsibilities */}
             {exp.responsibilities && exp.responsibilities.length > 0 && (

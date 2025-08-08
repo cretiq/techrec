@@ -16,39 +16,49 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Check if we have developer data (any profile information)
+  const hasDeveloperData = analysisData && (
+    analysisData.contactInfo ||
+    (analysisData.skills && analysisData.skills.length > 0) ||
+    (analysisData.experience && analysisData.experience.length > 0) ||
+    (analysisData.education && analysisData.education.length > 0) ||
+    analysisData.about
+  );
+
   // Get the current CV ID from analysis data
   const currentCvId = analysisData?.cv?.id || analysisData?.cvId;
 
   const handleReUpload = useCallback(async () => {
-    if (!currentCvId) {
+    if (!hasDeveloperData) {
       toast({
-        title: "Error",
-        description: "No CV found to replace",
+        title: "No Profile Data",
+        description: "No profile data found to clear. Please upload a CV first.",
         variant: "destructive",
       });
       return;
     }
 
     setShowConfirmation(true);
-  }, [currentCvId]);
+  }, [hasDeveloperData]);
 
   const handleConfirmReUpload = useCallback(async () => {
     setShowConfirmation(false);
     setIsDeleting(true);
 
     try {
-      // Step 1: Delete existing CV
-      console.log('[ReUpload] Deleting existing CV:', currentCvId);
-      const deleteResponse = await fetch(`/api/cv/${currentCvId}`, {
+      // Step 1: Clear all profile data (includes CV files, skills, experience, etc.)
+      console.log('[ReUpload] Clearing all profile data...');
+      const deleteResponse = await fetch('/api/developer/me/profile', {
         method: 'DELETE',
       });
 
       if (!deleteResponse.ok) {
         const errorData = await deleteResponse.json();
-        throw new Error(errorData.error || 'Failed to delete existing CV');
+        throw new Error(errorData.error || 'Failed to clear profile data');
       }
 
-      console.log('[ReUpload] CV deleted successfully');
+      const deleteResult = await deleteResponse.json();
+      console.log('[ReUpload] Profile data cleared successfully:', deleteResult);
       
       // Step 2: Show file picker
       setIsDeleting(false);
@@ -100,15 +110,15 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
       document.body.removeChild(fileInput);
 
     } catch (error) {
-      console.error('[ReUpload] Error deleting CV:', error);
+      console.error('[ReUpload] Error clearing profile data:', error);
       setIsDeleting(false);
       toast({
-        title: "Deletion Failed",
-        description: error instanceof Error ? error.message : "Failed to delete existing CV",
+        title: "Data Clearing Failed",
+        description: error instanceof Error ? error.message : "Failed to clear profile data",
         variant: "destructive",
       });
     }
-  }, [currentCvId]);
+  }, []);
 
   const handleFileUpload = useCallback(async (file: File) => {
     setIsUploading(true);
@@ -197,7 +207,7 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
     if (isDeleting) {
       return {
         icon: <Loader2 className="h-4 w-4 animate-spin" />,
-        text: "Deleting CV...",
+        text: "Clearing Data...",
         disabled: true
       };
     }
@@ -225,7 +235,7 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
         variant="outline"
         size="sm"
         onClick={handleReUpload}
-        disabled={disabled || !currentCvId}
+        disabled={disabled || !hasDeveloperData}
         leftIcon={icon}
         data-testid="cv-management-action-reupload"
       >
@@ -235,27 +245,37 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
       {/* Confirmation Modal */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+          <div className="bg-base-100 p-6 rounded-lg shadow-lg max-w-lg w-full mx-4">
             <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-warning" />
-              <h3 className="text-lg font-semibold">Replace Current CV?</h3>
+              <AlertCircle className="w-6 h-6 text-error" />
+              <h3 className="text-lg font-semibold">Clear Profile Data & Upload New CV?</h3>
             </div>
             
-            <div className="space-y-3 mb-6">
-              <p className="text-base-content/80">
-                This will permanently delete your current CV and all its analysis data. 
-                You'll then be able to upload a new CV file.
-              </p>
+            <div className="space-y-4 mb-6">
+              <div className="bg-error/10 border border-error/20 p-4 rounded-md">
+                <p className="text-error font-medium mb-2">⚠️ WARNING: This action will permanently delete ALL your profile data!</p>
+                <p className="text-base-content/80 text-sm">
+                  This includes your CV file, extracted profile information, work experience, education, skills, and all analysis results. You will need to start over with a fresh CV upload and analysis.
+                </p>
+              </div>
               
-              <div className="bg-base-200 p-3 rounded-md">
-                <div className="text-sm">
-                  <div><strong>Current CV:</strong> {analysisData?.cv?.originalName || 'Unknown'}</div>
-                  <div><strong>Upload Date:</strong> {analysisData?.cv?.uploadDate ? new Date(analysisData.cv.uploadDate).toLocaleDateString() : 'Unknown'}</div>
+              {/* Show what will be deleted */}
+              <div className="bg-base-200 p-4 rounded-md">
+                <h4 className="font-medium text-base-content mb-2">The following data will be permanently deleted:</h4>
+                <div className="grid grid-cols-2 gap-2 text-sm text-base-content/70">
+                  {analysisData?.contactInfo && <div>• Contact Information</div>}
+                  {analysisData?.about && <div>• About/Summary</div>}
+                  {analysisData?.skills?.length > 0 && <div>• {analysisData.skills.length} Skills</div>}
+                  {analysisData?.experience?.length > 0 && <div>• {analysisData.experience.length} Work Experiences</div>}
+                  {analysisData?.education?.length > 0 && <div>• {analysisData.education.length} Education Entries</div>}
+                  {analysisData?.cv && <div>• CV File: {analysisData.cv.originalName || 'Current CV'}</div>}
+                  <div>• All Analysis Results</div>
+                  <div>• Profile Score & Metrics</div>
                 </div>
               </div>
 
-              <p className="text-warning text-sm font-medium">
-                ⚠️ This action cannot be undone!
+              <p className="text-error text-sm font-medium">
+                🚨 This action cannot be undone! Make sure you want to completely start over.
               </p>
             </div>
             
@@ -278,7 +298,7 @@ export function ReUploadButton({ analysisData, onUploadComplete }: ReUploadButto
                 ) : (
                   <Upload className="w-4 h-4" />
                 )}
-                Replace CV
+                {isDeleting ? 'Clearing Data...' : 'Clear All Data & Upload New CV'}
               </Button>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {  Button  } from '@/components/ui-daisy/button';
+import {  Card  } from '@/components/ui-daisy/card';
 import { Briefcase, MapPin, Calendar, Edit, Save, X, Plus, Trash2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import {  Input  } from '@/components/ui-daisy/input';
@@ -67,38 +68,16 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<CvExperienceItem[]>(data || []);
 
-  // Convert description to responsibilities array when entering edit mode
+  // Prepare data for edit mode without auto-converting descriptions
   const prepareDataForEdit = (items: CvExperienceItem[]): CvExperienceItem[] => {
+    // Don't auto-convert descriptions to responsibilities
+    // Keep description and responsibilities as separate fields
     return items.map((item, index) => {
-      if (!item.responsibilities || item.responsibilities.length === 0) {
-        if (item.description) {
-          // Parse description into responsibilities array
-          let responsibilities: string[] = [];
-          
-          // Try different parsing methods
-          if (item.description.includes('•') || item.description.includes('-') || item.description.includes('*')) {
-            // Parse bullet points
-            responsibilities = item.description
-              .split(/[•\-\*]\s*/)
-              .map(text => text.trim())
-              .filter(text => text.length > 10); // Only keep substantial content
-          } else {
-            // Split by sentences/paragraphs if no bullet points
-            responsibilities = item.description
-              .split(/\.\s+|\n\s*/)
-              .map(text => text.trim())
-              .filter(text => text.length > 20); // Only keep substantial content
-          }
-          
-          // Ensure we have at least one responsibility
-          if (responsibilities.length === 0) {
-            responsibilities = [item.description.trim()];
-          }
-          
-          return { ...item, responsibilities };
-        }
-      }
-      return item;
+      // Ensure responsibilities is at least an empty array
+      return { 
+        ...item, 
+        responsibilities: item.responsibilities || []
+      };
     });
   };
 
@@ -242,18 +221,14 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
       <div className="grid grid-cols-1 gap-4">
         <AnimatePresence initial={false}>
           {editData.map((exp, index) => (
-            <motion.div
+            <Card
               key={exp.id || `exp-${index}`}
+              variant="gradient-interactive"
               className={cn(
-                "p-6 rounded-lg relative group bg-gradient-to-br from-base-200/80 to-base-300/80 border border-base-100 shadow-sm hover:shadow-md transition-all duration-200",
-                exp.isNew && "border-dashed border-primary",
-                "hover:from-blue-50 hover:to-blue-100"
+                "p-6 relative group shadow-lg hover:shadow-xl transition-all duration-200",
+                exp.isNew && "border-dashed border-primary"
               )}
-              variants={listItemVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              layout
+              animated
             >
               {isEditing && (
                 <Button
@@ -374,7 +349,7 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
               ) : (
                 <>
                   <div>
-                    <h3 className="font-semibold flex items-center gap-2 mb-0.5">
+                    <h3 className="font-semibold flex items-center gap-2 mb-1.5">
                       <Briefcase className="h-4 w-4" />
                       {exp.title ?? 'Untitled Role'}
                     </h3>
@@ -387,7 +362,7 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                     />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground mb-0.5">{exp.company ?? 'Unknown Company'}</p>
+                    <p className="text-sm text-muted-foreground mb-1">{exp.company ?? 'Unknown Company'}</p>
                     {/* Field-specific suggestions for company */}
                     <SuggestionManager 
                       section="experience" 
@@ -396,7 +371,7 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                       className="mt-1" 
                     />
                   </div>
-                  <div className="flex items-start gap-4 text-xs text-muted-foreground mt-1 mb-0.5">
+                  <div className="flex items-start gap-4 text-xs text-muted-foreground mt-2 mb-1">
                     {(exp.startDate || exp.endDate) && 
                       <div className='flex-shrink-0'>
                         <span className="flex items-center gap-1">
@@ -421,41 +396,51 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                       </div>
                     }
                   </div>
-                  {/* Display either responsibilities array or description string using DaisyUI list */}
-                  {((exp.responsibilities && exp.responsibilities.length > 0) || exp.description) && (
-                    <ul className="list bg-base-100/30 rounded-lg mt-3 p-2">
-                      {exp.responsibilities && exp.responsibilities.length > 0 ? (
-                        // Display responsibilities array
-                        exp.responsibilities.map((resp, rIndex) => (
-                          <li key={rIndex} className="list-row py-1.5">
-                            <div className="text-primary/70 text-sm">•</div>
-                            <div className="text-sm text-base-content/90 list-col-grow pl-2">
-                              {resp ?? ''}
-                              {/* Field-specific suggestions for this responsibility */}
-                              <SuggestionManager 
-                                section="experience" 
-                                targetId={exp.id} 
-                                targetField={`responsibilities[${rIndex}]`} 
-                                className="mt-1" 
-                              />
-                            </div>
-                          </li>
-                        ))
-                      ) : exp.description ? (
-                        // Convert description string to list items
-                        exp.description
-                          .split(/[•\-\*]\s*/)
-                          .filter(item => item.trim().length > 0)
-                          .map((item, rIndex) => (
-                            <li key={rIndex} className="list-row py-1.5">
-                              <div className="text-primary/70 text-sm">•</div>
-                              <div className="text-sm text-base-content/90 list-col-grow pl-2">
-                                {item.trim()}
-                              </div>
-                            </li>
-                          ))
-                      ) : null}
+                  {/* Display description - always as paragraph, above responsibilities */}
+                  {exp.description && (
+                    <div className="bg-base-100/20 rounded-lg p-3 mt-4">
+                      <p className="text-base text-base-content/90 leading-relaxed">
+                        {exp.description}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Display responsibilities array */}
+                  {exp.responsibilities && exp.responsibilities.length > 0 && (
+                    <ul className="list bg-base-100/20 rounded-lg mt-3 p-2">
+                      {exp.responsibilities.map((resp, rIndex) => (
+                        <li key={rIndex} className="list-row py-1.5">
+                          <div className="text-primary/70 text-sm">•</div>
+                          <div className="text-sm text-base-content/90 list-col-grow pl-2">
+                            {resp ?? ''}
+                            {/* Field-specific suggestions for this responsibility */}
+                            <SuggestionManager 
+                              section="experience" 
+                              targetId={exp.id} 
+                              targetField={`responsibilities[${rIndex}]`} 
+                              className="mt-1" 
+                            />
+                          </div>
+                        </li>
+                      ))}
                     </ul>
+                  )}
+
+                  {/* Display tech stack */}
+                  {exp.techStack && exp.techStack.length > 0 && (
+                    <div className="mt-3">
+                      <h4 className="text-sm font-medium text-base-content mb-2">Technologies:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {exp.techStack.map((tech, tIndex) => (
+                          <span 
+                            key={tIndex} 
+                            className="px-3 py-1 text-xs bg-secondary/20 text-secondary border border-secondary/30 rounded-full"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   )}
                   
                   {/* Display Projects */}
@@ -464,7 +449,7 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                       <h4 className="text-sm font-medium text-base-content mb-2">Projects:</h4>
                       <div className="space-y-3">
                         {exp.projects.map((project, pIndex) => (
-                          <div key={pIndex} className="p-3 bg-base-100/40 rounded-lg border border-base-200/50">
+                          <div key={pIndex} className="p-3 bg-base-100/40 rounded-lg border border-base-200/50 shadow-md">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <h5 className="font-medium text-sm text-primary">{project.name}</h5>
@@ -475,7 +460,7 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                                 )}
                                 <div className="flex flex-wrap gap-2 mt-2 text-xs text-muted-foreground">
                                   {project.role && (
-                                    <span className="px-2 py-1 bg-primary/10 text-primary rounded-full">
+                                    <span className="text-primary">
                                       Role: {project.role}
                                     </span>
                                   )}
@@ -523,7 +508,7 @@ export const ExperienceDisplay = React.forwardRef<ExperienceDisplayRef, Experien
                   />
                 </>
               )}
-            </motion.div>
+            </Card>
           ))}
         </AnimatePresence>
       </div>

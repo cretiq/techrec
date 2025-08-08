@@ -160,6 +160,7 @@ export async function GET(request: Request) {
           current: exp.current,
           responsibilities: exp.responsibilities,
           achievements: exp.achievements,
+          techStack: exp.techStack || [], // Include tech stack from the database
           projects: exp.projects || [], // Include projects from the database
         })),
         

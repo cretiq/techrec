@@ -16,12 +16,12 @@ const cardVariants = {
   outlined: `${cardBase} bg-transparent border-2 border-base-300`,
   elevated: `${cardBase} bg-base-100 border border-base-300/50 shadow-md`,
   floating: `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
-  gradient: `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
+  gradient: `${cardBase} bg-gradient-to-br from-blue-50 to-purple-50 border border-base-100`,
   gradientMuted: `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
   
   // Interactive variants with built-in hover effects
   'default-interactive': `${cardBase} bg-base-200 border border-base-300 shadow-sm`,
-  'gradient-interactive': `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
+  'gradient-interactive': `${cardBase} bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200/50`,
   'gradientMuted-interactive': `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
   'elevated-interactive': `${cardBase} bg-base-100 border border-base-300/50 shadow-md`,
   'glass-interactive': `${cardBase} bg-base-200/60 backdrop-blur-lg border border-brand-sharp shadow-xs`,
