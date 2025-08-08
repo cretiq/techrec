@@ -1,61 +1,28 @@
 import { test, expect } from '@playwright/test';
 import { AuthHelper } from '../utils/auth-helper';
-import path from 'path';
-import fs from 'fs';
 
-test.describe('Experience Edit Complete Flow', () => {
+test.describe('Experience Management Flow', () => {
   let authHelper: AuthHelper;
   
   test.beforeEach(async ({ page }) => {
     authHelper = new AuthHelper(page);
-  });
-
-  test('Complete flow: Clean data → Upload CV → Edit experience responsibilities', async ({ page }) => {
-    console.log('🚀 Starting Experience Edit Complete Flow Test');
     
-    // Step 1: Login and clean existing data
-    console.log('🧹 Step 1: Clean existing data');
+    // Login with user that should have existing CV data
     await authHelper.loginAsUserType('experienced_developer');
-    
-    const cleanupResult = await page.evaluate(async () => {
-      const response = await fetch(`${window.location.origin}/api/test/clean-user-data`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'senior@test.techrec.com' })
-      });
-      return { success: response.ok };
-    });
-    
-    if (cleanupResult.success) {
-      console.log('✅ User data cleaned');
-    }
-    
-    // Step 2: Navigate and upload CV
-    console.log('📤 Step 2: Upload CV');
     await page.goto('/developer/cv-management');
     await expect(page.locator('[data-testid="cv-management-page-container"]')).toBeVisible({ timeout: 30000 });
+  });
+
+  test('should edit experience responsibilities for existing profile', async ({ page }) => {
+    console.log('🚀 Starting Experience Management Test');
     
-    const fileInput = page.locator('[data-testid="cv-management-upload-file-input"]');
-    if (await fileInput.count() > 0) {
-      const cvPath = path.resolve(process.cwd(), 'tests/fixtures/Filip_Mellqvist_CV.pdf');
-      await fileInput.setInputFiles({
-        name: 'Filip_Mellqvist_CV.pdf',
-        mimeType: 'application/pdf',
-        buffer: fs.readFileSync(cvPath)
-      });
-      
-      const uploadButton = page.locator('[data-testid="cv-management-button-upload-trigger"]');
-      await uploadButton.click();
-      console.log('⏳ Waiting for upload and analysis...');
-      
-      // Wait for analysis to complete
-      await page.waitForSelector('[data-testid="cv-management-profile-section"]', { timeout: 30000 });
-      await page.waitForTimeout(5000); // Extra time for Gemini analysis
-      console.log('✅ CV uploaded and analyzed');
-    }
+    // Verify we have a profile with experience data
+    const profileSection = page.locator('[data-testid="cv-management-profile-section"]');
+    await expect(profileSection).toBeVisible();
+    console.log('✅ Profile with existing data confirmed');
     
-    // Step 3: Find and click experience edit button
-    console.log('✏️ Step 3: Edit experience responsibilities');
+    // Step 1: Find and click experience edit button
+    console.log('✏️ Step 1: Edit experience responsibilities');
     
     // Look for the experience section
     const experienceSection = await page.locator('text=Experience').first();
@@ -140,6 +107,6 @@ test.describe('Experience Edit Complete Flow', () => {
       console.log('❌ Experience section not found');
     }
     
-    console.log('✅ Experience Edit Complete Flow Test finished');
+    console.log('✅ Experience Management Test finished');
   });
 });

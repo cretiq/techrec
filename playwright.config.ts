@@ -6,6 +6,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   
+  /* Ignore Jest test files in Playwright */
+  testIgnore: ['**/api-protection/**/*.test.ts', '**/smoke/**/*.test.ts'],
+  
   /* Run tests in files in parallel */
   fullyParallel: true,
   
