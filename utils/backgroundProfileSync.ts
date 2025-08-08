@@ -83,6 +83,61 @@ export function transformSkills(cvSkills: Skill[] | null | undefined): ProfileUp
 }
 
 /**
+ * Transform CV experience projects to database format
+ */
+export function transformExperienceProjects(projects: any[] | null | undefined): any[] {
+  debugLog('Transforming experience projects', projects);
+  
+  if (!projects || !Array.isArray(projects)) {
+    debugLog('No experience projects to transform or invalid format');
+    return [];
+  }
+
+  const transformed = projects
+    .filter(project => project.name && project.name.trim() !== '')
+    .map(project => ({
+      name: project.name!,
+      description: project.description || '',
+      technologies: project.technologies || [],
+      teamSize: project.teamSize || null,
+      role: project.role || null,
+    }));
+
+  debugLog(`Transformed ${transformed.length} experience projects`, transformed);
+  return transformed;
+}
+
+/**
+ * Transform CV personal projects to database format
+ */
+export function transformPersonalProjects(projects: any[] | null | undefined): any[] {
+  debugLog('Transforming personal projects', projects);
+  
+  if (!projects || !Array.isArray(projects)) {
+    debugLog('No personal projects to transform or invalid format');
+    return [];
+  }
+
+  const transformed = projects
+    .filter(project => project.name && project.name.trim() !== '')
+    .map(project => ({
+      name: project.name!,
+      description: project.description || '',
+      technologies: project.technologies || [],
+      repository: project.githubUrl || null,
+      liveUrl: project.liveUrl || null,
+      status: project.status || 'IN_PROGRESS', // Use schema enum value
+      startDate: new Date(), // Default to current date  
+      teamSize: project.teamSize || null,
+      role: project.role || null,
+      highlights: project.highlights || [],
+    }));
+
+  debugLog(`Transformed ${transformed.length} personal projects`, transformed);
+  return transformed;
+}
+
+/**
  * Transform CV experience to profile experience format
  */
 export function transformExperience(cvExperience: ExperienceItem[] | null | undefined): ProfileUpdatePayload['experience'] {
@@ -113,6 +168,7 @@ export function transformExperience(cvExperience: ExperienceItem[] | null | unde
         achievements: exp.achievements || [],
         teamSize: exp.teamSize || null,
         techStack: exp.techStack || [],
+        projects: transformExperienceProjects(exp.projects), // Transform nested projects
       };
     });
 
@@ -184,6 +240,7 @@ function transformCvToProfileData(cvAnalysis: ProfileAnalysisData, existingProfi
     experienceCount: cvAnalysis.experience?.length || 0,
     educationCount: cvAnalysis.education?.length || 0,
     achievementsCount: cvAnalysis.achievements?.length || 0,
+    personalProjectsCount: (cvAnalysis as any).personalProjects?.length || 0,
   });
 
   // Use existing profile data as base, override with CV data
@@ -197,6 +254,7 @@ function transformCvToProfileData(cvAnalysis: ProfileAnalysisData, existingProfi
     experience: transformExperience(cvAnalysis.experience),
     education: transformEducation(cvAnalysis.education),
     achievements: transformAchievements(cvAnalysis.achievements),
+    personalProjects: transformPersonalProjects((cvAnalysis as any).personalProjects),
     customRoles: existingProfile?.customRoles || [], // Preserve existing custom roles
   };
 
@@ -207,6 +265,7 @@ function transformCvToProfileData(cvAnalysis: ProfileAnalysisData, existingProfi
     experienceCount: payload.experience?.length || 0,
     educationCount: payload.education?.length || 0,
     achievementsCount: payload.achievements?.length || 0,
+    personalProjectsCount: payload.personalProjects?.length || 0,
   });
 
   return payload;
@@ -373,23 +432,53 @@ async function updateProfileDirectly(developerId: string, payload: ProfileUpdate
             return {
               ...exp,
               startDate: isNaN(startDate.getTime()) ? new Date() : startDate,
-              endDate: endDate && isNaN(endDate.getTime()) ? null : endDate
+              endDate: endDate && isNaN(endDate.getTime()) ? null : endDate,
+              projects: {
+                create: exp.projects || []
+              }
             };
           }) || []
         },
         education: {
           deleteMany: {},
-          create: payload.education?.map(edu => ({
-            ...edu,
-            startDate: new Date(edu.startDate),
-            endDate: edu.endDate ? new Date(edu.endDate) : null
-          })) || []
+          create: payload.education?.map(edu => {
+            // Safely parse dates, handling invalid date strings
+            const startDate = edu.startDate ? new Date(edu.startDate) : new Date();
+            const endDate = edu.endDate && edu.endDate !== 'Present' && edu.endDate.trim() !== '' 
+              ? new Date(edu.endDate) 
+              : null;
+            
+            return {
+              ...edu,
+              startDate: isNaN(startDate.getTime()) ? new Date() : startDate,
+              endDate: endDate && isNaN(endDate.getTime()) ? null : endDate
+            };
+          }) || []
         },
         achievements: {
           deleteMany: {},
-          create: payload.achievements?.map(ach => ({
-            ...ach,
-            date: new Date(ach.date)
+          create: payload.achievements?.map(ach => {
+            // Safely parse achievement date
+            const achievementDate = ach.date ? new Date(ach.date) : new Date();
+            return {
+              ...ach,
+              date: isNaN(achievementDate.getTime()) ? new Date() : achievementDate
+            };
+          }) || []
+        },
+        personalProjects: {
+          deleteMany: {},
+          create: payload.personalProjects?.map(project => ({
+            name: project.name,
+            description: project.description,
+            technologies: project.technologies,
+            repository: project.repository,
+            liveUrl: project.liveUrl,
+            status: project.status as any, // Cast to enum
+            startDate: project.startDate,
+            teamSize: project.teamSize,
+            role: project.role,
+            highlights: project.highlights,
           })) || []
         }
       },

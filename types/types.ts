@@ -29,6 +29,17 @@ export interface InternalSkill {
 }
 
 /**
+ * Represents a project within a professional experience entry.
+ */
+export interface InternalExperienceProject {
+  name: string;
+  description: string;
+  technologies: string[];
+  teamSize: number | null;
+  role: string | null;
+}
+
+/**
  * Represents a professional experience entry for a developer.
  */
 export interface InternalExperience {
@@ -44,6 +55,7 @@ export interface InternalExperience {
   achievements: string[];
   teamSize: number | null;
   techStack: string[];
+  projects: InternalExperienceProject[];
 }
 
 /**
@@ -197,7 +209,14 @@ export const ProfileUpdateSchema = z.object({
     responsibilities: z.array(z.string()),
     achievements: z.array(z.string()),
     teamSize: z.number().nullable(),
-    techStack: z.array(z.string())
+    techStack: z.array(z.string()),
+    projects: z.array(z.object({
+      name: z.string(),
+      description: z.string(),
+      technologies: z.array(z.string()),
+      teamSize: z.number().nullable(),
+      role: z.string().nullable()
+    })).optional().default([])
   })).optional().default([]),
   education: z.array(z.object({
     id: z.string().optional(),
@@ -218,6 +237,19 @@ export const ProfileUpdateSchema = z.object({
     date: z.string(),
     url: z.string().nullable(),
     issuer: z.string().nullable()
+  })).optional().default([]),
+  personalProjects: z.array(z.object({
+    id: z.string().optional(),
+    name: z.string(),
+    description: z.string(),
+    technologies: z.array(z.string()),
+    repository: z.string().nullable(),
+    liveUrl: z.string().nullable(),
+    status: z.string(),
+    startDate: z.string(),
+    teamSize: z.number().nullable(),
+    role: z.string().nullable(),
+    highlights: z.array(z.string())
   })).optional().default([]),
   customRoles: z.array(z.object({
     id: z.string().optional(),

@@ -390,6 +390,16 @@ Return JSON with this exact structure:
       "gpa": "string | null"
     }
   ],
+  "personalProjects": [
+    {
+      "name": "string",
+      "description": "string", 
+      "technologies": ["string"],
+      "githubUrl": "string | null",
+      "liveUrl": "string | null",
+      "status": "completed | in-progress | archived"
+    }
+  ],
   "achievements": [
     {
       "title": "string",
@@ -409,13 +419,20 @@ Return JSON with this exact structure:
 
 IMPORTANT EXTRACTION RULES:
 1. If experience mentions "client projects" or "following projects", extract those as nested "projects" array within that experience
-2. Only use "achievements" for certifications, awards, publications, or other standalone accomplishments
-3. Preserve project-to-company relationships - don't separate them
-4. Extract all technical skills mentioned, categorize appropriately  
-5. Calculate total experience accurately from date ranges
-6. Set isJuniorDeveloper to true if total experience < 3 years
-7. Use null for missing information, don't guess
-8. Be precise with date formats (YYYY-MM)
+2. Extract "personalProjects" for individual portfolio projects (personal apps, open source, side projects) - these are SEPARATE from work experience projects
+3. Only use "achievements" for certifications, awards, publications, or other standalone accomplishments
+4. Preserve project-to-company relationships - don't separate them
+5. Extract all technical skills mentioned, categorize appropriately  
+6. Calculate total experience accurately from date ranges
+7. Set isJuniorDeveloper to true if total experience < 3 years
+8. Use null for missing information, don't guess
+9. Be precise with date formats (YYYY-MM)
+
+PROJECT EXTRACTION GUIDELINES:
+- "experience.projects[]" = Client projects done DURING employment (nested within work experience)
+- "personalProjects[]" = Individual portfolio projects, side projects, open source contributions (independent of work experience)
+- Look for sections like "Projects", "Portfolio", "Personal Projects", "Side Projects", "Open Source" for personalProjects
+- Personal projects often have GitHub repositories, live demo URLs, and are showcased independently
 
 CRITICAL: Return ONLY the raw JSON object, no markdown formatting, no code blocks, no explanatory text. Just the pure JSON structure starting with { and ending with }.
 `;
