@@ -19,6 +19,8 @@ interface AboutProps {
   suggestions?: CvImprovementSuggestion[]; // Use the specific type
   onAcceptSuggestion?: (suggestion: CvImprovementSuggestion) => void;
   onRejectSuggestion?: (suggestion: CvImprovementSuggestion) => void;
+  isEditing?: boolean;
+  onEditingChange?: (editing: boolean) => void;
 }
 
 // Helper function to find suggestions for a specific path
@@ -36,10 +38,16 @@ export function AboutDisplay({
   onChange, 
   suggestions, 
   onAcceptSuggestion,
-  onRejectSuggestion
+  onRejectSuggestion,
+  isEditing: externalIsEditing,
+  onEditingChange
 }: AboutProps) {
   console.log('[AboutDisplay] Rendering with data (length):', data?.length);
-  const [isEditing, setIsEditing] = useState(false);
+  const [internalIsEditing, setInternalIsEditing] = useState(false);
+  
+  // Use external editing state if provided, otherwise use internal state
+  const isEditing = externalIsEditing !== undefined ? externalIsEditing : internalIsEditing;
+  const setIsEditing = onEditingChange || setInternalIsEditing;
   const [editData, setEditData] = useState<string>(data || '');
   const highlightClasses = useHighlightClasses('about');
 

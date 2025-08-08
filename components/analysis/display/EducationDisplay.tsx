@@ -20,6 +20,8 @@ interface EducationProps {
   suggestions?: CvImprovementSuggestion[];
   onAcceptSuggestion?: (suggestion: CvImprovementSuggestion) => void;
   onRejectSuggestion?: (suggestion: CvImprovementSuggestion) => void;
+  isEditing?: boolean;
+  onEditingChange?: (editing: boolean) => void;
 }
 
 // Use the same date formatter as Experience
@@ -65,8 +67,20 @@ const createPath = (base: string, index: number, field?: string): string => {
 
 // Removed RenderWithSuggestion helper component
 
-export function EducationDisplay({ data, onChange, suggestions, onAcceptSuggestion, onRejectSuggestion }: EducationProps) {
-  const [isEditing, setIsEditing] = useState(false);
+export function EducationDisplay({ 
+  data, 
+  onChange, 
+  suggestions, 
+  onAcceptSuggestion, 
+  onRejectSuggestion,
+  isEditing: externalIsEditing,
+  onEditingChange
+}: EducationProps) {
+  const [internalIsEditing, setInternalIsEditing] = useState(false);
+  
+  // Use external editing state if provided, otherwise use internal state
+  const isEditing = externalIsEditing !== undefined ? externalIsEditing : internalIsEditing;
+  const setIsEditing = onEditingChange || setInternalIsEditing;
   const [editData, setEditData] = useState<CvEducationItem[]>(data || []);
 
   React.useEffect(() => {

@@ -24,6 +24,7 @@ import { AboutDisplay } from './display/AboutDisplay';
 import { SkillsDisplay } from './display/SkillsDisplay';
 import { ExperienceDisplay, type ExperienceDisplayRef } from './display/ExperienceDisplay';
 import { EducationDisplay } from './display/EducationDisplay';
+import { PersonalProjectsDisplay } from './display/PersonalProjectsDisplay';
 import { AIAssistanceButton } from './AIAssistanceButton';
 // Accordion imports removed - bypassed cloneElement issue
 import { SuggestionList } from './display/SuggestionList';
@@ -35,7 +36,8 @@ import {
     ContactInfoData, 
     Skill, 
     ExperienceItem, 
-    EducationItem, 
+    EducationItem,
+    PersonalProjectItem,
     CvImprovementSuggestion 
 } from '@/types/cv';
 // Import Redux hooks, selectors, actions, and thunks
@@ -145,6 +147,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
   const [isSaving, setIsSaving] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [skillsEditing, setSkillsEditing] = useState(false);
+  const [aboutEditing, setAboutEditing] = useState(false);
+  const [educationEditing, setEducationEditing] = useState(false);
   // Accordion state removed - sections now always visible after bypassing cloneElement issues
 
   // Calculate unsaved changes by comparing current data with original data from store
@@ -355,7 +359,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
               <div className="w-full space-y-6">
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Direct render */}
                 {analysisData && (
-                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
+                  <Card id="contact-info" variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between group mb-4 gap-4">
                       {/* Name field on the left */}
                       <div className="flex-1">
@@ -403,16 +407,26 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - About section */}
                 {analysisData.about !== undefined && (
-                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
+                  <Card id="about" variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
-                      <h2 className="text-2xl font-semibold text-base-content">About / Summary</h2>
-                      <AIAssistanceButton
-                        section="about"
-                        currentData={analysisData.about}
-                        isEmpty={!analysisData.about || analysisData.about.trim() === ''}
-                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'about', value: improvedData }))}
-                        className="ml-4"
-                      />
+                      <h2 className="text-2xl font-semibold text-base-content">About</h2>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="elevated" 
+                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
+                          onClick={() => setAboutEditing(true)}
+                          data-testid="about-edit-button"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </Button>
+                        <AIAssistanceButton
+                          section="about"
+                          currentData={analysisData.about}
+                          isEmpty={!analysisData.about || analysisData.about.trim() === ''}
+                          onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'about', value: improvedData }))}
+                          className="ml-2"
+                        />
+                      </div>
                     </div>
                     <div>
                       <AboutDisplay 
@@ -422,6 +436,8 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                         suggestions={suggestions} 
                         onAcceptSuggestion={handleAcceptSuggestion}
                         onRejectSuggestion={handleRejectSuggestion}
+                        isEditing={aboutEditing}
+                        onEditingChange={setAboutEditing}
                       />
                       
                       <SuggestionManager section="about" className="mt-4" />
@@ -430,26 +446,16 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Skills section */}
                 {analysisData.skills && analysisData.skills.length > 0 && (
-                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
+                  <Card id="skills" variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Skills</h2>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="elevated" 
-                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
-                          onClick={() => setSkillsEditing(true)}
-                          data-testid="skills-edit-button"
-                        >
-                          <Edit className="h-5 w-5" />
-                        </Button>
-                        <AIAssistanceButton
-                          section="skills"
-                          currentData={analysisData.skills}
-                          isEmpty={!analysisData.skills || analysisData.skills.length === 0}
-                          onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'skills', value: improvedData }))}
-                          className="ml-2"
-                        />
-                      </div>
+                      <AIAssistanceButton
+                        section="skills"
+                        currentData={analysisData.skills}
+                        isEmpty={!analysisData.skills || analysisData.skills.length === 0}
+                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'skills', value: improvedData }))}
+                        className="ml-4"
+                      />
                     </div>
                     <div>
                       <SkillsDisplay 
@@ -469,7 +475,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Experience section */}
                 {analysisData.experience && analysisData.experience.length > 0 && (
-                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
+                  <Card id="experience" variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Work Experience</h2>
                       <div className="flex gap-2">
@@ -505,16 +511,26 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Education section */}
                 {analysisData.education && analysisData.education.length > 0 && (
-                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
+                  <Card id="education" variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Education</h2>
-                      <AIAssistanceButton
-                        section="education"
-                        currentData={analysisData.education}
-                        isEmpty={!analysisData.education || analysisData.education.length === 0}
-                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'education', value: improvedData }))}
-                        className="ml-4"
-                      />
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="elevated" 
+                          className="h-12 w-12 p-0 shadow-md hover:shadow-lg flex items-center justify-center"
+                          onClick={() => setEducationEditing(true)}
+                          data-testid="education-edit-button"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </Button>
+                        <AIAssistanceButton
+                          section="education"
+                          currentData={analysisData.education}
+                          isEmpty={!analysisData.education || analysisData.education.length === 0}
+                          onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'education', value: improvedData }))}
+                          className="ml-2"
+                        />
+                      </div>
                     </div>
                     <div>
                       <EducationDisplay 
@@ -524,9 +540,38 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                         suggestions={suggestions} 
                         onAcceptSuggestion={handleAcceptSuggestion}
                         onRejectSuggestion={handleRejectSuggestion}
+                        isEditing={educationEditing}
+                        onEditingChange={setEducationEditing}
                       />
                       
                       <SuggestionManager section="education" className="mt-4" />
+                    </div>
+                  </Card>
+                )}
+                {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Personal Projects section */}
+                {analysisData.personalProjects && analysisData.personalProjects.length > 0 && (
+                  <Card id="personal-projects" variant="gradient" className="rounded-2xl p-6 mb-4">
+                    <div className="flex items-start justify-between mb-4">
+                      <h2 className="text-2xl font-semibold text-base-content">Personal Projects</h2>
+                      <AIAssistanceButton
+                        section="personalProjects"
+                        currentData={analysisData.personalProjects}
+                        isEmpty={!analysisData.personalProjects || analysisData.personalProjects.length === 0}
+                        onImprovement={(improvedData) => dispatch(updateAnalysisData({ path: 'personalProjects', value: improvedData }))}
+                        className="ml-4"
+                      />
+                    </div>
+                    <div>
+                      <PersonalProjectsDisplay 
+                        key="personal-projects-stable"
+                        data={analysisData.personalProjects}
+                        onChange={(newData) => dispatch(updateAnalysisData({ path: 'personalProjects', value: newData }))} 
+                        suggestions={suggestions} 
+                        onAcceptSuggestion={handleAcceptSuggestion}
+                        onRejectSuggestion={handleRejectSuggestion}
+                      />
+                      
+                      <SuggestionManager section="personalProjects" className="mt-4" />
                     </div>
                   </Card>
                 )}
