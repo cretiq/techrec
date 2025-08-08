@@ -59,7 +59,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
   const SuggestionIcon = suggestionTypeIconMap[suggestionType] || Lightbulb; // Default icon
 
   return (
-    <Card className={cn("w-full flex flex-col transition-opacity duration-300", className, isHandled ? 'opacity-60' : 'opacity-100')}>
+    <Card className={cn("w-full flex flex-col transition-opacity duration-100", className, isHandled ? 'opacity-60' : 'opacity-100')}>
       <CardHeader>
         <div className="flex justify-between items-start mb-2">
           <div className='flex items-center gap-2'>

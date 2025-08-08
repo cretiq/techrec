@@ -73,11 +73,7 @@ export interface ButtonProps
   /** Visual style variant. Use '-interactive' suffix for built-in hover effects */
   variant?: ButtonVariant
   size?: "sm" | "default" | "lg" | "xl" | "icon"
-  /** @deprecated Use 'variant-interactive' instead */
-  hoverable?: boolean
   animated?: boolean
-  /** @deprecated Use 'variant-interactive' instead */
-  interactive?: boolean
 }
 
 const sizeVariants = {
@@ -97,9 +93,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     loading = false, 
     leftIcon,
     rightIcon,
-    hoverable = false,
     animated = false,
-    interactive = false,
     children, 
     disabled, 
     ...props 
@@ -110,17 +104,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const showSpinner = loading && !hasIcons
     const animateExistingIcons = loading && hasIcons
     
-    // Determine if this is an interactive variant or needs hover effects applied
+    // Apply hover effects for interactive variants
     const isInteractiveVariant = variant.includes('-interactive')
-    const needsHoverEffects = (hoverable || interactive) && !isInteractiveVariant
     
     const buttonClasses = cn(
       buttonVariants[variant],
       sizeVariants[size],
-      // Apply hover effects for interactive variants or legacy props
+      // Apply hover effects for interactive variants
       isInteractiveVariant && getButtonHoverEffect(variant.replace('-interactive', '')),
-      needsHoverEffects && hoverable && getButtonHoverEffect('default'),
-      needsHoverEffects && interactive && getButtonHoverEffect('interactive'),
       disabled && "opacity-50 cursor-not-allowed",
       className
     )
@@ -132,9 +123,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           className={buttonClasses}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          whileHover={hoverable ? { y: -2, transition: { duration: 0.2 } } : undefined}
-          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.1, ease: "easeOut" }}
+          whileHover={undefined}
+          whileTap={undefined}
           disabled={disabled || loading}
           {...props}
         >

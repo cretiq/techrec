@@ -19,6 +19,7 @@ const accordionVariants = {
   elevated: `${accordionBase} bg-base-100 border border-base-300/50 shadow-md`,
   floating: `${accordionBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
   gradient: `${accordionBase} bg-gradient-to-br from-base-100 to-base-200 border border-base-300/50`,
+  gradientMuted: `${accordionBase} bg-gradient-to-br from-base-100/70 to-base-200/40 border border-base-300/30`,
   
   // Interactive variants with built-in hover effects
   'default-interactive': `${accordionBase} bg-base-100 border border-base-300 shadow-sm`,
@@ -30,6 +31,7 @@ const accordionVariants = {
   'elevated-interactive': `${accordionBase} bg-base-100 border border-base-300/50 shadow-md`,
   'floating-interactive': `${accordionBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
   'gradient-interactive': `${accordionBase} bg-gradient-to-br from-base-100 to-base-200 border border-base-300/50`,
+  'gradientMuted-interactive': `${accordionBase} bg-gradient-to-br from-base-100/70 to-base-200/40 border border-base-300/30`,
 }
 
 interface AccordionProps {
@@ -47,11 +49,7 @@ interface AccordionItemProps {
   id?: string
   /** Visual style variant. Use '-interactive' suffix for built-in hover effects */
   variant?: keyof typeof accordionVariants
-  /** @deprecated Use 'variant-interactive' instead */
-  hoverable?: boolean
   animated?: boolean
-  /** @deprecated Use 'variant-interactive' instead */
-  interactive?: boolean
 }
 
 interface AccordionTriggerProps {
@@ -114,24 +112,19 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps & {
     value, 
     id,
     variant = "default", 
-    hoverable = false,
     animated = false,
-    interactive = false,
     type,
     isOpen = false,
     onToggle,
     ...props 
   }, ref) => {
-    // Determine if this is an interactive variant or needs hover effects applied
+    // Apply hover effects for interactive variants
     const isInteractiveVariant = variant.includes('-interactive')
-    const needsHoverEffects = (hoverable || interactive) && !isInteractiveVariant
     
     const accordionClasses = cn(
       accordionVariants[variant],
-      // Apply hover effects for interactive variants or legacy props
+      // Apply hover effects for interactive variants
       isInteractiveVariant && getAccordionHoverEffect(variant.replace('-interactive', '')),
-      needsHoverEffects && hoverable && getAccordionHoverEffect('default'),
-      needsHoverEffects && interactive && getAccordionHoverEffect('interactive'),
       "overflow-hidden",
       className
     )
@@ -148,8 +141,8 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps & {
           className={accordionClasses}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          whileHover={hoverable ? { y: -2, transition: { duration: 0.2 } } : undefined}
+          transition={{ duration: 0.1, ease: "easeOut" }}
+          whileHover={undefined}
           {...props}
         >
           {React.Children.map(children, (child) => {

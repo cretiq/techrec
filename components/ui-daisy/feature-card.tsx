@@ -84,7 +84,7 @@ const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
             glowColorMap[glowColor]
           )} />
         )}
-        <div className="relative card bg-base-100 rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+        <div className="relative card bg-base-100 rounded-2xl p-8 hover:shadow-2xl transition-all duration-100 transform">
           {icon && (
             <div className={cn(
               "w-14 h-14 rounded-xl flex items-center justify-center mb-6 bg-gradient-to-br",

@@ -355,7 +355,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
               <div className="w-full space-y-6">
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Direct render */}
                 {analysisData && (
-                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
+                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between group mb-4 gap-4">
                       {/* Name field on the left */}
                       <div className="flex-1">
@@ -373,7 +373,6 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                           }}
                           variant="elevated"
                           inputSize="md"
-                          hoverable
                           leftIcon={<User className="h-4 w-4" />}
                         />
                       </div>
@@ -404,7 +403,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - About section */}
                 {analysisData.about !== undefined && (
-                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
+                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">About / Summary</h2>
                       <AIAssistanceButton
@@ -431,7 +430,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Skills section */}
                 {analysisData.skills && analysisData.skills.length > 0 && (
-                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
+                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Skills</h2>
                       <div className="flex gap-2">
@@ -470,7 +469,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Experience section */}
                 {analysisData.experience && analysisData.experience.length > 0 && (
-                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
+                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Work Experience</h2>
                       <div className="flex gap-2">
@@ -506,7 +505,7 @@ export function AnalysisResultDisplay({ originalMimeType }: AnalysisResultProps)
                 )}
                 {/* BYPASS ACCORDION CLONEELEMENT ISSUE - Education section */}
                 {analysisData.education && analysisData.education.length > 0 && (
-                  <Card variant="gradient-interactive" className="rounded-2xl p-6 mb-4">
+                  <Card variant="gradient" className="rounded-2xl p-6 mb-4">
                     <div className="flex items-start justify-between mb-4">
                       <h2 className="text-2xl font-semibold text-base-content">Education</h2>
                       <AIAssistanceButton

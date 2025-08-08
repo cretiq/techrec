@@ -17,10 +17,12 @@ const cardVariants = {
   elevated: `${cardBase} bg-base-100 border border-base-300/50 shadow-md`,
   floating: `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
   gradient: `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
+  gradientMuted: `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
   
   // Interactive variants with built-in hover effects
   'default-interactive': `${cardBase} bg-base-200 border border-base-300 shadow-sm`,
   'gradient-interactive': `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
+  'gradientMuted-interactive': `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
   'elevated-interactive': `${cardBase} bg-base-100 border border-base-300/50 shadow-md`,
   'glass-interactive': `${cardBase} bg-base-200/60 backdrop-blur-lg border border-brand-sharp shadow-xs`,
   'outlined-interactive': `${cardBase} bg-transparent border-2 border-base-300`,
@@ -33,8 +35,6 @@ type CardVariant = keyof typeof cardVariants
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Visual style variant. Use '-interactive' suffix for built-in hover effects */
   variant?: CardVariant
-  /** @deprecated Use 'variant-interactive' instead */
-  hoverable?: boolean
   /** Makes the card compact (DaisyUI) */
   compact?: boolean
   /** Shows border (DaisyUI) */
@@ -45,34 +45,29 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   animated?: boolean
   /** Makes card clickable with active state */
   clickable?: boolean
-  /** @deprecated Use 'variant-interactive' instead */
-  interactive?: boolean
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(({ 
   className, 
   variant = "default", 
-  hoverable = false, 
   compact = false, 
   bordered = true, 
   imageFull = false,
   animated = false,
   clickable = false,
-  interactive = false,
   children,
   ...props 
 }, ref) => {
-  // Determine if this is an interactive variant or needs hover effects applied
+  // Apply hover effects for interactive variants or clickable cards
   const isInteractiveVariant = variant.includes('-interactive')
-  const needsHoverEffects = (hoverable || interactive) && !isInteractiveVariant
   
   const cardClasses = cn(
     cardVariants[variant],
-    // Apply hover effects for interactive variants or legacy props
+    // Apply hover effects for interactive variants
     isInteractiveVariant && getHoverEffect('card', variant.replace('-interactive', '')),
-    needsHoverEffects && hoverable && getHoverEffect('card', 'default'),
-    needsHoverEffects && interactive && getHoverEffect('card', 'interactive'),
-    clickable && "cursor-pointer active:scale-[0.98] transform-gpu",
+    // Apply interactive effects for clickable cards
+    clickable && !isInteractiveVariant && getHoverEffect('card', 'interactive'),
+    clickable && "cursor-pointer",
     className
   )
 
@@ -83,8 +78,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(({
         className={cardClasses}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        whileHover={hoverable ? { y: -4, transition: { duration: 0.2 } } : undefined}
+        transition={{ duration: 0.1, ease: "easeOut" }}
+        whileHover={undefined}
         {...props}
       >
         {children}

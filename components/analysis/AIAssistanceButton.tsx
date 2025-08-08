@@ -156,17 +156,11 @@ export function AIAssistanceButton({
   
   return (
     <Button
-      variant="gradient"
+      variant="default-interactive"
       size="lg"
-      hoverable
       onClick={handleAIAssistance}
       disabled={isProcessing || isContactInfoSection}
       data-testid={`ai-assistance-button-${section}`}
-      className={cn(
-        "shadow-md hover:shadow-lg transition-all duration-200",
-        isContactInfoSection ? 'opacity-50 cursor-not-allowed' : '',
-        className
-      )}
     >
       {isProcessing ? (
         <>

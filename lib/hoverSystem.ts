@@ -5,7 +5,7 @@
 
 export const HOVER_SYSTEM = {
   // Standard transition for all interactive elements
-  transition: "transition-all duration-200 ease-smooth",
+  transition: "transition-all duration-100 ease-smooth",
   
   // Core hover effect building blocks
   effects: {
@@ -27,26 +27,28 @@ export const HOVER_SYSTEM = {
     card: {
       default: "hover:shadow-md hover:bg-base-100/90",
       gradient: "hover:shadow-md hover:from-blue-50 hover:to-purple-100 dark:hover:from-blue-900/50 dark:hover:to-purple-900/50",
-      elevated: "hover:shadow-lg hover:-translate-y-0.5 hover:bg-base-50 dark:hover:bg-base-200",
+      gradientMuted: "hover:shadow-md hover:from-blue-50/80 hover:to-purple-100/60",
+      elevated: "hover:shadow-lg hover:bg-base-50 dark:hover:bg-base-200",
       glass: "hover:bg-base-200/80 hover:backdrop-blur-lg hover:shadow-md",
       outlined: "hover:border-primary/50 hover:bg-base-100/50 hover:shadow-sm",
-      floating: "hover:shadow-xl hover:-translate-y-1 hover:bg-base-100",
-      interactive: "hover:scale-[1.01] hover:shadow-md cursor-pointer",
+      floating: "hover:shadow-xl hover:bg-base-100",
+      interactive: "hover:shadow-md cursor-pointer",
     },
     button: {
-      default: "hover:shadow-md hover:-translate-y-0.5 hover:bg-base-200",
-      elevated: "hover:shadow-lg hover:-translate-y-0.5 hover:bg-base-50",
-      gradient: "hover:shadow-lg hover:scale-[1.02] hover:from-base-50 hover:to-base-100",
+      default: "hover:shadow-md hover:bg-base-200",
+      elevated: "hover:shadow-md hover:bg-base-50",
+      gradient: "hover:shadow-md hover:from-base-50 hover:to-base-100",
+      gradientMuted: "hover:shadow-md hover:from-blue-50/80 hover:to-purple-100/60",
       outlined: "hover:bg-primary hover:text-primary-content hover:border-primary hover:shadow-sm",
       ghost: "hover:bg-base-200/80 hover:shadow-sm",
-      primary: "hover:shadow-md hover:scale-[1.02]",
-      secondary: "hover:shadow-md hover:scale-[1.02]",
-      success: "hover:shadow-md hover:scale-[1.02]",
-      warning: "hover:shadow-md hover:scale-[1.02]",
-      error: "hover:shadow-md hover:scale-[1.02]",
-      info: "hover:shadow-md hover:scale-[1.02]",
-      linkedin: "hover:shadow-lg hover:-translate-y-0.5 hover:from-[#005885] hover:to-[#004165]",
-      interactive: "hover:scale-[1.02] hover:shadow-md",
+      primary: "hover:shadow-md",
+      secondary: "hover:shadow-md",
+      success: "hover:shadow-md",
+      warning: "hover:shadow-md",
+      error: "hover:shadow-md",
+      info: "hover:shadow-md",
+      linkedin: "hover:shadow-md hover:from-[#005885] hover:to-[#004165]",
+      interactive: "hover:shadow-md",
     },
     accordion: {
       default: "hover:shadow-md hover:bg-base-100/90",
@@ -55,10 +57,11 @@ export const HOVER_SYSTEM = {
       hybrid: "hover:bg-base-100/90 hover:shadow-sm",
       solid: "hover:bg-base-100/90 hover:shadow-md",
       outlined: "hover:border-primary/50 hover:bg-base-100/50 hover:shadow-sm",
-      elevated: "hover:shadow-lg hover:-translate-y-0.5 hover:bg-base-50",
-      floating: "hover:shadow-xl hover:-translate-y-0.5 hover:bg-base-100",
+      elevated: "hover:shadow-lg hover:bg-base-50",
+      floating: "hover:shadow-xl hover:bg-base-100",
       gradient: "hover:shadow-md hover:from-base-50 hover:to-base-100",
-      interactive: "hover:scale-[1.005] hover:shadow-md cursor-pointer",
+      gradientMuted: "hover:shadow-md hover:from-blue-50/80 hover:to-purple-100/60",
+      interactive: "hover:shadow-md cursor-pointer",
     },
   },
   
