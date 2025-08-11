@@ -16,6 +16,10 @@
   - [Feature Request #24: Comprehensive AI Project Brainstorming System](#feature-request-24-comprehensive-ai-project-brainstorming-system)
   - [Feature Request #25: Conditional Navigation Based on Authentication Status](#feature-request-25-conditional-navigation-based-authentication-status)
   - [Feature Request #28: AI-Powered Job Description Scraping for Enhanced Content Generation](#feature-request-28-ai-powered-job-description-scraping-for-enhanced-content-generation)
+  - [Feature Request #29: Comprehensive CV Extraction Integration with Advanced Editing Capabilities](#feature-request-29-comprehensive-cv-extraction-integration-with-advanced-editing-capabilities)
+  - [Feature Request #30: Simple CV Text Extraction Verification System](#feature-request-30-simple-cv-text-extraction-verification-system)
+  - [Feature Request #31: MVP CV Upload with Plain Text Analysis](#feature-request-31-mvp-cv-upload-with-plain-text-analysis)
+  - [Feature Request #32: Points-Based Rate Limiting System](#feature-request-32-points-based-rate-limiting-system)
 - [📋 Recently Completed Features](#-recently-completed-features)
   - [Feature Request #26: "How to" Navigation & Dual Guide System](#feature-request-26-how-to-navigation--dual-guide-system)
   - [Feature Request #27: Psychology-Driven Landing Page Conversion System](#feature-request-27-psychology-driven-landing-page-conversion-system)
@@ -52,13 +56,14 @@
 - **AI-Powered Project Portfolio Enhancement System** → **Moved to Feature Request #23**
 - **Comprehensive AI Project Brainstorming System** → **Moved to Feature Request #24**
 - **Conditional Navigation Based on Authentication Status** → **Moved to Feature Request #25**
+- **Comprehensive CV Extraction Integration with Advanced Editing Capabilities** → **Moved to Feature Request #29**
 - ✅ Create a GitHub-like commit grid/graph for great visualization over applications → **Moved to Feature Request #16**
 - ✅ Style-first button system refactoring (replace feature-specific buttons with reusable style variants) → **Moved to Feature Request #18**
 - **Comprehensive Documentation Architecture & Markdown File Organization** → **Moved to Feature Request #15**
 - **Role Card Consistency Between Saved Roles and Search Results** → **Moved to Feature Request #19**
 - **Instant Navigation Response with Loading States** → **Moved to Feature Request #20**
 - **Admin CV Deletion Feature for GamificationAdminClient** → **Moved to Feature Request #22**
-- 
+- **Simple CV Text Extraction Verification System** → **Moved to Feature Request #30**
 - ✅ Smart application routing and Easy Apply detection → **Moved to Feature Request #2**
 - ✅ Enhanced company filtering (descriptions, specialties, names, industries) → **Moved to Feature Request #3**
 - ✅ Multiple RapidAPI endpoint selection (7 days, 24h, hourly) → **Moved to Feature Request #4**
@@ -136,7 +141,385 @@
 - [ ] Updates to the frontend loading indicators in `app/developer/writing-help/page.tsx`.
 - [x] Redis for caching scraped content.
 
+### Feature Request #29: Comprehensive CV Extraction Integration with Advanced Editing Capabilities
 
+**Status:** Planning Phase
+**Priority:** High
+**Risk Level:** High (Complex integration with multiple system layers)
+
+**Goal:** Integrate the comprehensive CV extraction and organization capabilities from `/developer/cv-extraction` directly into the existing `/developer/cv-management` page with full CRUD operations, undo/redo functionality, experience merging, and complete CV data capture including unstructured text that doesn't fit the expected JSON schema.
+
+**User Story:** As a developer, when I upload and analyze my CV, I want to see ALL the information from my CV (including text that doesn't fit standard categories), be able to edit/delete any field, merge experiences, undo/redo changes, and reorganize my data with drag-and-drop - all within the same unified interface without navigating to a separate page.
+
+**Success Metrics:**
+- 100% of CV text captured (including unstructured content)
+- <2s response time for all editing operations
+- Zero data loss during complex operations (merge, delete, reorder)
+- 95%+ user satisfaction with unified interface
+- 50%+ reduction in time to organize CV data
+- 100% reversibility of all operations through undo/redo
+
+**Critical Requirements Identified Through Gap Analysis:**
+
+### 1. Complete CV Data Capture Enhancement
+
+**CRITICAL NEW REQUIREMENT:** Restructure Gemini prompt to capture ALL CV content:
+
+```typescript
+interface EnhancedCVAnalysisResponse {
+  // Structured data (existing)
+  contactInfo: ContactInfo;
+  about: string;
+  skills: Skill[];
+  experience: Experience[];
+  education: Education[];
+  achievements: Achievement[];
+  personalProjects: PersonalProject[];
+  
+  // NEW: Unstructured content capture
+  unstructuredContent: {
+    category: 'additional_info' | 'uncategorized' | 'parsing_overflow';
+    text: string;
+    sourceSection?: string; // Where in CV this was found
+    confidence: number; // How confident we are about categorization
+  }[];
+  
+  // NEW: Extraction metadata
+  extractionMetadata: {
+    totalTextExtracted: number;
+    structuredPercentage: number;
+    unstructuredPercentage: number;
+    parsingWarnings: string[];
+  };
+}
+```
+
+### 2. Comprehensive Undo/Redo System
+
+**Redux State Enhancement:**
+```typescript
+interface EnhancedAnalysisState {
+  // Existing state...
+  
+  // NEW: Undo/Redo Stack
+  history: {
+    past: AnalysisSnapshot[];
+    present: AnalysisData;
+    future: AnalysisSnapshot[];
+    maxHistorySize: number; // Default: 50
+  };
+  
+  // NEW: Change tracking
+  changeLog: {
+    id: string;
+    timestamp: Date;
+    operation: 'edit' | 'delete' | 'merge' | 'reorder' | 'nest' | 'unnest';
+    field: string;
+    previousValue: any;
+    newValue: any;
+    userId: string;
+  }[];
+}
+```
+
+**Undo/Redo Actions:**
+```typescript
+// New Redux actions
+const undo = createAction('analysis/undo');
+const redo = createAction('analysis/redo');
+const checkpoint = createAction('analysis/checkpoint');
+const clearHistory = createAction('analysis/clearHistory');
+```
+
+### 3. Field-Level CRUD Operations
+
+**Delete Operations for All Field Types:**
+```typescript
+// API Endpoints for field deletion
+POST /api/developer/me/profile/delete-field
+{
+  fieldPath: string; // e.g., "skills.2", "experience.0.responsibilities.3"
+  confirmDelete: boolean;
+  createCheckpoint: boolean; // For undo
+}
+
+// Soft delete with recovery option
+POST /api/developer/me/profile/soft-delete
+{
+  fieldPath: string;
+  ttl: number; // Time to live before permanent deletion
+}
+```
+
+### 4. Advanced Experience Merging
+
+**Merge Conflict Resolution UI:**
+```typescript
+interface MergePreview {
+  source: Experience[];
+  target: Experience;
+  conflicts: {
+    field: string;
+    sourceValue: any;
+    targetValue: any;
+    resolution: 'keep_source' | 'keep_target' | 'combine' | 'custom';
+    customValue?: any;
+  }[];
+  preview: Experience; // Live preview of merge result
+}
+```
+
+### 5. Database Schema Enhancements
+
+```prisma
+// Audit trail for all operations
+model CVEditHistory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  developerId String   @db.ObjectId
+  cvId        String   @db.ObjectId
+  operation   String   // edit, delete, merge, reorder, etc.
+  fieldPath   String   // JSON path to field
+  oldValue    Json?
+  newValue    Json?
+  timestamp   DateTime @default(now())
+  undone      Boolean  @default(false)
+  
+  @@index([developerId, timestamp])
+  @@index([cvId, timestamp])
+}
+
+// Unstructured content storage
+model CVUnstructuredContent {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  cvId        String   @db.ObjectId
+  category    String
+  text        String
+  source      String?
+  confidence  Float
+  incorporated Boolean @default(false) // Has user incorporated this into structured data
+  
+  @@index([cvId, category])
+}
+```
+
+### 6. Cache Strategy Enhancement
+
+**Multi-Layer Caching Architecture:**
+```typescript
+// Redis cache keys structure
+const cacheKeys = {
+  // L1: Session cache (5 min TTL)
+  session: `cv:session:${userId}:${sessionId}`,
+  
+  // L2: Operation cache (1 hour TTL)  
+  operations: `cv:ops:${userId}:${cvId}`,
+  undoStack: `cv:undo:${userId}:${cvId}`,
+  
+  // L3: Data cache (24 hour TTL)
+  analysis: `cv:analysis:${cvId}`,
+  versions: `cv:versions:${cvId}`,
+  
+  // Cache invalidation patterns
+  invalidatePattern: `cv:*:${cvId}*`
+};
+
+// Cache warming strategy
+const warmCache = async (cvId: string) => {
+  await Promise.all([
+    cacheAnalysisData(cvId),
+    cacheVersionHistory(cvId),
+    cacheUndoStack(cvId)
+  ]);
+};
+```
+
+### 7. UI/UX Enhancements
+
+**Comprehensive Control Bar:**
+```tsx
+<CVControlBar>
+  <UndoRedoControls />
+  <SaveIndicator autoSave={true} />
+  <ModeSelector />
+  <BulkOperations />
+  <VersionComparison />
+  <ExportOptions />
+</CVControlBar>
+```
+
+**Field-Level Controls:**
+```tsx
+<FieldWrapper>
+  <EditableField onEdit={} onDelete={} />
+  <FieldActions>
+    <DeleteButton confirmRequired={true} />
+    <DuplicateButton />
+    <MoveButton />
+    <HistoryButton /> {/* Shows field edit history */}
+  </FieldActions>
+</FieldWrapper>
+```
+
+### 8. Performance Optimizations
+
+**Optimistic Updates:**
+```typescript
+// All operations update UI immediately, rollback on failure
+const optimisticUpdate = (operation: Operation) => {
+  // 1. Update UI immediately
+  dispatch(applyOptimisticUpdate(operation));
+  
+  // 2. Send to server
+  api.execute(operation)
+    .then(result => dispatch(confirmUpdate(result)))
+    .catch(error => {
+      dispatch(rollbackUpdate(operation));
+      showError(error);
+    });
+};
+```
+
+**Differential Sync:**
+```typescript
+// Only sync changed fields
+const deltaSync = {
+  calculate: (original: Data, current: Data) => diff(original, current),
+  apply: (base: Data, delta: Delta) => patch(base, delta),
+  compress: (deltas: Delta[]) => compress(deltas)
+};
+```
+
+### 9. Error Recovery & Data Integrity
+
+**Transaction Management:**
+```typescript
+// All complex operations wrapped in transactions
+const executeTransaction = async (operations: Operation[]) => {
+  const transaction = await startTransaction();
+  
+  try {
+    for (const op of operations) {
+      await transaction.execute(op);
+    }
+    await transaction.commit();
+  } catch (error) {
+    await transaction.rollback();
+    throw new TransactionError(error);
+  }
+};
+```
+
+**Data Integrity Checks:**
+```typescript
+// Validation at every layer
+const integrityChecks = {
+  preOperation: validateDataConsistency,
+  postOperation: verifyDataIntegrity,
+  periodic: scheduleIntegrityAudit,
+  recovery: autoRepairCorruptedData
+};
+```
+
+### Technical Implementation Plan (Enhanced):
+
+**Phase 0: Foundation & Infrastructure (Week 1)**
+- [ ] Enhance Gemini prompt for complete text capture
+- [ ] Design undo/redo state architecture
+- [ ] Create audit trail database schema
+- [ ] Setup multi-layer cache infrastructure
+
+**Phase 1: Core Editing Capabilities (Week 2)**
+- [ ] Implement field-level CRUD operations
+- [ ] Build undo/redo system with Redux
+- [ ] Create optimistic update framework
+- [ ] Add transaction management
+
+**Phase 2: Experience Management (Week 3)**
+- [ ] Enhanced drag-and-drop with preview
+- [ ] Merge conflict resolution UI
+- [ ] Bulk operations support
+- [ ] Nesting/unnesting with validation
+
+**Phase 3: Version & History (Week 4)**
+- [ ] Version comparison with diff view
+- [ ] Edit history timeline
+- [ ] Checkpoint management
+- [ ] Recovery mechanisms
+
+**Phase 4: Unstructured Content (Week 5)**
+- [ ] Unstructured content display UI
+- [ ] Incorporation workflow
+- [ ] Smart categorization suggestions
+- [ ] Manual text addition support
+
+**Phase 5: Performance & Polish (Week 6)**
+- [ ] Differential sync implementation
+- [ ] Cache warming strategies
+- [ ] Error boundary implementation
+- [ ] Comprehensive testing
+
+**Acceptance Criteria:**
+
+**Data Capture:**
+- [ ] 100% of CV text captured including unstructured content
+- [ ] Unstructured content displayed with incorporation options
+- [ ] Smart suggestions for categorizing unstructured text
+- [ ] Manual text addition for missing information
+
+**Editing Capabilities:**
+- [ ] Delete any field with confirmation
+- [ ] Edit inline with validation
+- [ ] Merge experiences with conflict resolution
+- [ ] Bulk operations for multiple items
+
+**Undo/Redo:**
+- [ ] Full undo/redo stack (50 operations)
+- [ ] Visual indicators for undo/redo availability
+- [ ] Checkpoint creation for major operations
+- [ ] History timeline view
+
+**Performance:**
+- [ ] <100ms response for UI operations (optimistic)
+- [ ] <2s for complex operations (merge, bulk)
+- [ ] <500ms for undo/redo
+- [ ] No UI freezing during operations
+
+**Data Integrity:**
+- [ ] Zero data loss guaranteed
+- [ ] Automatic recovery from failures
+- [ ] Transaction rollback on errors
+- [ ] Audit trail for all operations
+
+**Questions to Resolve:**
+
+- [ ] Should we implement collaborative editing for team accounts?
+- [ ] What's the retention period for deleted data?
+- [ ] Should undo history persist across sessions?
+- [ ] How to handle conflicts in offline mode?
+- [ ] Should we add AI suggestions for unstructured content categorization?
+- [ ] What's the maximum file size for CV uploads?
+- [ ] Should we support batch CV processing?
+- [ ] How to handle version branching and merging?
+
+**Dependencies:**
+
+- [ ] Enhanced Gemini prompt engineering
+- [ ] Redis infrastructure upgrade for multi-layer caching
+- [ ] Database schema migrations for audit trail
+- [ ] Redux middleware for undo/redo
+- [ ] Transaction support in MongoDB
+- [ ] Differential sync library
+- [ ] Conflict resolution UI components
+- [ ] WebSocket support for real-time sync (optional)
+
+**Risk Mitigation:**
+
+- **Data Loss Risk**: Implement automatic backups before operations
+- **Performance Risk**: Use Web Workers for heavy computations
+- **Complexity Risk**: Incremental rollout with feature flags
+- **User Confusion**: Comprehensive onboarding and tooltips
+- **Cache Inconsistency**: Implement cache versioning
+- **Browser Compatibility**: Progressive enhancement approach
 
 ### Feature Request #23: AI-Powered Project Portfolio Enhancement System
 
@@ -1370,6 +1753,718 @@ Based on the answered questions, comprehensive research must be conducted on:
 ---
 
 
+
+### Feature Request #30: Simple CV Text Extraction Verification System
+
+**Status:** Planning Phase
+**Priority:** Medium  
+**Risk Level:** Low (Simple implementation, no complex integration)
+
+**Goal:** Create a simple, transparent CV text extraction system alongside the existing complex analysis workflow to verify exactly what text Gemini reads from uploaded CVs without any processing, structuring, or database operations.
+
+**User Story:** As a developer debugging CV upload issues or wanting to verify text extraction quality, I want to upload my CV and see exactly what raw text Gemini reads from the document - with no analysis, no JSON structure, no database sync - just pure text extraction so I can understand if parsing issues are in the text extraction or the analysis processing stage.
+
+**Success Metrics:**
+- 100% text extraction transparency (exactly what Gemini sees)
+- <5s response time for text extraction (faster than analysis)  
+- Zero processing overhead (no JSON parsing, no database operations)
+- Clear debugging information (extraction duration, character count, file metadata)
+- Side-by-side comparison capability with existing analysis system
+
+**Technical Implementation Plan:**
+
+#### 1. **Simple Text Extraction Service** (`utils/textExtractionService.ts`)
+```typescript
+export class SimpleTextExtractionService {
+  async extractTextOnly(filePath: string): Promise<{
+    success: boolean;
+    extractedText?: string;
+    extractionDuration: number;
+    characterCount?: number;
+    wordCount?: number;
+    error?: string;
+  }>;
+}
+```
+**Key Features:**
+- Ultra-simple Gemini prompt: "Read this document and return all text exactly as you see it, preserving formatting where possible"
+- No JSON parsing - return raw text response
+- Include extraction metrics (duration, counts)
+- Debug logging integration with existing debug system
+
+#### 2. **Simple Text Extraction API Route** (`app/api/cv/extract-text/route.ts`)
+```typescript
+POST /api/cv/extract-text
+// Request: FormData with file
+// Response: { success, extractedText, metadata, extractionDuration }
+```
+**Workflow:**
+- File validation (same as existing upload)
+- S3 upload (reuse existing S3 operations)
+- Direct Gemini text extraction (no parsing, no structure)
+- Return raw text + metadata
+- No database operations, no profile sync
+
+#### 3. **Text Extraction Display Component** (`components/cv/TextExtractionDisplay.tsx`)
+**Features:**
+- Clean, simple interface showing:
+  - Original filename and file metadata
+  - Extraction duration and performance metrics
+  - Character/word count statistics  
+  - Raw extracted text in scrollable, monospace container
+  - Copy-to-clipboard functionality
+  - Download as .txt file option
+
+#### 4. **UI Integration Options**
+
+**Option A: Toggle Mode in Existing Upload**
+- Add "Extraction Mode" toggle in existing CV upload dialog
+- Route to `/api/cv/extract-text` vs `/api/cv/upload` based on toggle
+- Show TextExtractionDisplay vs AnalysisResultDisplay based on mode
+
+**Option B: Separate Debug Page** 
+- Create `/cv/text-extract` page for debugging purposes
+- Independent upload widget specifically for text extraction
+- No interference with existing CV analysis workflow
+
+#### 5. **Debug Integration** 
+- Extend existing debug system (`DirectUploadDebugLogger`)
+- Create text extraction debug files alongside existing debug files
+- Include extraction-specific metrics (text quality, extraction duration)
+
+**File Structure:**
+```
+📁 New Files:
+├── app/api/cv/extract-text/route.ts           # Simple extraction API
+├── utils/textExtractionService.ts             # Gemini text-only service  
+├── components/cv/TextExtractionDisplay.tsx    # Simple text display
+├── components/cv/TextExtractionUpload.tsx     # Upload for extraction mode
+├── app/cv/text-extract/page.tsx              # Optional: Separate debug page
+
+📁 Modified Files:
+├── components/cv/CVUploadDialog.tsx           # Add mode toggle (Option A)
+├── app/cv/page.tsx                           # Add extraction route (Option A)
+└── types/cv.ts                               # Add extraction types
+```
+
+**Acceptance Criteria:**
+
+**Core Functionality:**
+- [ ] **Text-Only Extraction**: Ultra-simple Gemini prompt returns raw text exactly as read
+- [ ] **No Processing**: Zero JSON parsing, no structure analysis, no database operations  
+- [ ] **Performance**: <5s extraction time (faster than analysis workflow)
+- [ ] **Transparency**: Complete visibility into what Gemini actually reads from CV
+- [ ] **Debug Integration**: Logging integrated with existing debug system
+- [ ] **File Support**: Same file types as existing system (PDF, DOCX, TXT)
+
+**User Experience:**
+- [ ] **Simple Interface**: Clean display of extracted text with metadata
+- [ ] **Copy Functionality**: One-click copy of extracted text to clipboard
+- [ ] **Download Option**: Export extracted text as .txt file
+- [ ] **Performance Metrics**: Show extraction duration and text statistics
+- [ ] **Error Handling**: Clear error messages for failed extractions
+- [ ] **Mobile Responsive**: Works on all device sizes
+
+**Technical Requirements:**
+- [ ] **API Consistency**: Follow existing API patterns and authentication
+- [ ] **S3 Integration**: Reuse existing S3 operations for file storage
+- [ ] **Debug Logging**: Extend existing debug system with extraction metrics
+- [ ] **Error Boundaries**: Proper error handling and fallback states
+- [ ] **Type Safety**: Full TypeScript integration with proper interfaces
+- [ ] **Security**: Same security validations as existing CV upload
+
+**Integration Strategy:**
+- [ ] **Option A Implementation**: Toggle mode in existing CV upload dialog
+- [ ] **Option B Implementation**: Separate debug page at `/cv/text-extract`
+- [ ] **Non-Interference**: Zero impact on existing analysis workflow
+- [ ] **Parallel Operation**: Can be used alongside existing analysis system
+- [ ] **Debug Compatibility**: Works with existing debug infrastructure
+
+**Questions to Resolve:**
+
+- [x] **Integration Approach**: ✅ **RESOLVED** - Implement both Option A (toggle) and Option B (separate page) for maximum flexibility
+- [x] **Gemini Prompt Strategy**: ✅ **RESOLVED** - Ultra-simple prompt with no structure requirements
+- [x] **Debug Integration**: ✅ **RESOLVED** - Extend existing debug system with extraction-specific logging  
+- [x] **File Storage**: ✅ **RESOLVED** - Reuse existing S3 operations for consistency
+- [x] **Authentication**: ✅ **RESOLVED** - Same auth requirements as existing CV upload
+- [ ] **UI Placement**: Should extraction mode be prominently featured or hidden as debug tool?
+- [ ] **Caching Strategy**: Should extracted text be cached or re-extracted each time?
+- [ ] **Cleanup Policy**: How long should extracted files be retained in S3?
+
+#### Technical Architecture
+
+**Text Extraction Flow:**
+```
+User uploads CV → S3 storage → Direct Gemini call → Raw text response → Display
+(No parsing, no JSON, no database, no analysis)
+```
+
+**vs. Existing Analysis Flow:**
+```  
+User uploads CV → S3 storage → Gemini analysis → JSON parsing → Database sync → Display
+```
+
+**Key Architectural Differences:**
+- **Extraction**: Raw text output, no structure
+- **Analysis**: Structured JSON output with complex processing
+- **Extraction**: No database operations  
+- **Analysis**: Full profile sync and database operations
+- **Extraction**: <5s response time
+- **Analysis**: 10-15s response time with sync
+- **Extraction**: Pure debugging/verification tool
+- **Analysis**: Full CV management system
+
+This creates a clear separation between "what does Gemini see" (extraction) vs "what can we structure from that" (analysis), making debugging and verification much clearer.
+
+---
+
+### Feature Request #31: MVP CV Upload with Plain Text Analysis
+
+**Status:** Ready for Implementation  
+**Priority:** High  
+**Risk Level:** Low (System-wide replacement, clean removal path)
+
+**Goal:** Replace the complex CV analysis system with a simplified MVP that extracts CV content as formatted text + loose JSON structure, enabling rapid 3-4 day deployment while maintaining cover letter generation and AI suggestions through full-text context.
+
+**User Story:** As a product owner needing rapid MVP deployment, I want to ship a simplified CV system that extracts text content and enables AI-powered suggestions/cover letters by sending full context to AI, allowing us to launch quickly without complex structured analysis while preserving core user value.
+
+**Success Metrics:**
+- 75% reduction in implementation complexity (no validation, parsing, error handling)
+- <5s total processing time (upload + extraction + display)
+- System-wide replacement controlled by single environment toggle
+- Cover letter/outreach quality maintained or improved via full-context AI
+- 3-4 day implementation timeline vs 2+ weeks for structured system
+- Clean removal path when upgrading to production system
+
+**Technical Implementation Plan:**
+
+#### 1. **System-Wide Environment Toggle**
+```typescript
+// .env.local
+ENABLE_MVP_MODE=true  // Controls entire app behavior
+
+// utils/featureFlags.ts
+export const isInMvpMode = () => process.env.ENABLE_MVP_MODE === 'true';
+
+// Routing integration
+const getCvPageRoute = () => isInMvpMode() ? '/developer/cv-management' : '/developer/cv-management';
+// Same route, different behavior
+```
+
+#### 2. **Modify Existing Upload Route**
+```typescript
+// app/api/cv/upload/route.ts - Add MVP branch
+export async function POST(request: Request) {
+  // Reuse ALL existing: auth, validation, S3 upload
+  const { s3Key, cvRecord } = await handleStandardUpload(request);
+  
+  if (isInMvpMode()) {
+    // Simple dual-format extraction
+    const { text, json } = await extractCvContent(s3Key);
+    
+    await prisma.cv.update({
+      where: { id: cvRecord.id },
+      data: {
+        status: 'COMPLETED',
+        mvpContent: text,      // Formatted markdown
+        mvpRawData: json,      // Whatever JSON we got (no validation)
+      }
+    });
+    
+    return NextResponse.json({ success: true, cvId: cvRecord.id });
+  }
+  
+  // Existing complex flow (for future production)
+  return handleStructuredAnalysis(s3Key, cvRecord);
+}
+```
+
+#### 3. **Dual-Format Extraction**
+```typescript
+const MVP_EXTRACTION_PROMPT = `
+Extract this CV in TWO formats:
+
+1. FORMATTED_TEXT:
+Clean markdown with proper headers, lists, and formatting.
+Preserve all sections and content exactly as presented.
+
+2. BASIC_JSON: 
+Best-effort JSON structure (don't worry about errors):
+{
+  "name": "...",
+  "email": "...",
+  "skills": ["..."],
+  "experience": [{"title": "...", "company": "..."}],
+  "education": [...]
+}
+
+Return: 
+===TEXT===
+[markdown content]
+===JSON===
+[json structure]
+`;
+
+// Store whatever we get - no validation
+const result = await geminiExtract(prompt);
+const text = extractBetween(result, '===TEXT===', '===JSON===');
+const json = tryParseJSON(extractAfter(result, '===JSON===')) || {};
+```
+
+#### 4. **Minimal Database Changes**
+```prisma
+model CV {
+  // ... existing fields preserved
+  
+  // START_MVP_FIELDS - Remove this block when upgrading to production
+  mvpContent  String?  @db.String  // Formatted text for display/editing
+  mvpRawData  Json?                // Unvalidated JSON from Gemini
+  // END_MVP_FIELDS
+}
+```
+
+#### 5. **Modify Existing CV Page**
+```typescript
+// app/developer/cv-management/page.tsx - Add MVP mode
+export default function CVManagementPage() {
+  if (isInMvpMode()) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1>CV Management (MVP)</h1>
+        {cvData.mvpContent ? (
+          <MVPDisplay content={cvData.mvpContent} cvId={cvData.id} />
+        ) : (
+          <UploadForm onSuccess={handleUpload} />
+        )}
+      </div>
+    );
+  }
+  
+  // Existing complex UI
+  return <ComplexCVAnalysis />;
+}
+```
+
+#### 6. **Full-Context Cover Letter Generation**
+```typescript
+// app/api/generate-cover-letter/route.ts - Modify existing
+export async function POST(request: Request) {
+  const { cvId, jobDescription } = await request.json();
+  
+  if (isInMvpMode()) {
+    const cv = await prisma.cv.findUnique({ where: { id: cvId } });
+    
+    // BETTER QUALITY: Send full context instead of extracted fields
+    const prompt = `
+Write a cover letter for this position:
+${jobDescription}
+
+Based on this complete developer background:
+${cv.mvpContent}
+
+Focus on most relevant experience and skills for this specific role.
+Professional tone, 3-4 paragraphs.
+`;
+    
+    const letter = await generateWithGemini(prompt);
+    return NextResponse.json({ letter, provider: 'gemini' });
+  }
+  
+  // Existing complex field-extraction logic
+  return generateFromStructuredData(cvId, jobDescription);
+}
+```
+
+#### 7. **Simple CV Suggestions**
+```typescript
+// New endpoint: app/api/cv/suggestions/route.ts
+export async function POST(request: Request) {
+  const { cvId } = await request.json();
+  const cv = await prisma.cv.findUnique({ where: { id: cvId } });
+  
+  const prompt = `
+You are an expert CV writer. Analyze this CV and provide improvement suggestions:
+
+${cv.mvpContent}
+
+Common pitfalls for developers:
+- Generic descriptions instead of quantified achievements
+- Missing technical keywords for ATS
+- Poor formatting and structure
+- Lack of specific project details
+- No demonstration of impact/results
+
+Provide:
+1. Overall assessment (2-3 sentences)
+2. Top 5 specific improvements with examples
+3. Missing sections or keywords
+4. ATS optimization suggestions
+
+Format as actionable bullet points.
+`;
+  
+  const suggestions = await generateWithGemini(prompt);
+  return NextResponse.json({ suggestions });
+}
+```
+
+#### 8. **Simple Text Editor**
+```typescript
+// Component: Simple editor with auto-save
+function MVPEditor({ initialContent, cvId }) {
+  const [content, setContent] = useState(initialContent);
+  const [saving, setSaving] = useState(false);
+  
+  // Auto-save with debounce
+  const debouncedSave = useMemo(
+    () => debounce(async (text) => {
+      setSaving(true);
+      await fetch('/api/cv/save-text', {
+        method: 'POST',
+        body: JSON.stringify({ cvId, content: text })
+      });
+      setSaving(false);
+    }, 2000),
+    [cvId]
+  );
+  
+  useEffect(() => {
+    if (content !== initialContent) {
+      debouncedSave(content);
+    }
+  }, [content]);
+  
+  return (
+    <div>
+      <textarea 
+        value={content}
+        onChange={e => setContent(e.target.value)}
+        className="w-full h-96 p-4 border rounded"
+      />
+      {saving && <span>Saving...</span>}
+    </div>
+  );
+}
+```
+
+**File Structure - Minimal Changes:**
+```
+📁 New Files:
+├── app/api/cv/suggestions/route.ts    # CV improvement suggestions
+├── app/api/cv/save-text/route.ts     # Simple text saving
+
+📁 Modified Files (MVP branches only):
+├── app/api/cv/upload/route.ts         # Add MVP extraction branch  
+├── app/api/generate-cover-letter/route.ts # Add full-text branch
+├── app/developer/cv-management/page.tsx   # Add MVP display mode
+├── prisma/schema.prisma               # Add 2 MVP fields
+├── utils/featureFlags.ts              # Environment toggle
+└── types/cv.ts                        # MVP types
+```
+
+**Acceptance Criteria:**
+
+**Core Functionality:**
+- [ ] **System Toggle**: `ENABLE_MVP_MODE` controls entire app behavior
+- [ ] **Text Extraction**: Gemini returns clean markdown + loose JSON
+- [ ] **No Validation**: Store whatever JSON we get, no parsing errors
+- [ ] **Cover Letters Work**: Full-text prompts generate quality letters
+- [ ] **Suggestions Work**: CV analysis provides actionable feedback
+- [ ] **Edit Capability**: Simple textarea editor with auto-save
+
+**User Experience:**
+- [ ] **Fast Processing**: <5s from upload to display  
+- [ ] **Clean Interface**: Same page/components, simpler behavior
+- [ ] **No Complex UI**: Remove analysis displays, keep text editor
+- [ ] **Error Recovery**: Basic extraction fallback if Gemini fails
+
+**Technical Requirements:**
+- [ ] **Reuse Infrastructure**: Same auth, S3, components, routes
+- [ ] **No Redux**: Skip complex state management for MVP
+- [ ] **Clear Removal Path**: 2 marked database fields + conditional code
+- [ ] **Backward Compatibility**: Existing users see same interface
+
+**Questions Resolved:**
+
+- [x] **Navigation**: ✅ Same pages, different behavior based on environment flag
+- [x] **Cover Letter Compatibility**: ✅ Full-text approach works and improves quality  
+- [x] **JSON Structure**: ✅ Ask for JSON but don't validate - store whatever we get
+- [x] **State Management**: ✅ Skip Redux, use simple local state + auto-save
+- [x] **Database Design**: ✅ 2 fields in existing table with clear removal comments
+- [x] **Rate Limiting**: ✅ Separate feature request for points-based system
+- [x] **Implementation Time**: ✅ 3-4 days with this simplified approach
+
+#### Technical Architecture
+
+**MVP Flow (Simplified):**
+```
+Upload → S3 → Gemini (dual format) → Store text + JSON → Display
+                                             ↓
+                                    Edit with auto-save
+```
+
+**Cover Letter Flow (Improved):**
+```
+Full CV Text + Job Description → Gemini → Better Quality Letter
+(vs complex field extraction → limited context → generic letter)
+```
+
+**Clean Removal Strategy:**
+1. Set `ENABLE_MVP_MODE=false` 
+2. Run migration to convert MVP text to structured analysis
+3. Drop `mvpContent` and `mvpRawData` fields
+4. Remove conditional MVP code blocks
+5. System returns to full structured analysis
+
+**Why This Approach Works:**
+✅ **Genuinely Simple**: 75% less code than structured system  
+✅ **Better Quality**: Cover letters get full context vs cherry-picked fields  
+✅ **Fast Implementation**: 3-4 days vs 2+ weeks  
+✅ **Clean Upgrade Path**: Clear migration strategy to production system  
+✅ **No Breaking Changes**: Same user interface, streamlined backend  
+✅ **Cost Effective**: Full-text AI calls are cheap, quality improvement worth it
+
+---
+
+### Feature Request #32: Points-Based Rate Limiting System
+
+**Status:** Planning Phase  
+**Priority:** Medium  
+**Risk Level:** Low (Standard rate limiting implementation)
+
+**Goal:** Implement a points-based rate limiting system where each user has a pool of points that are deducted for AI operations (CV suggestions, cover letters, outreach messages), preventing abuse while providing fair usage limits.
+
+**User Story:** As a system administrator, I want to prevent AI API abuse while allowing fair usage by implementing a points-based system where each user gets a daily/weekly allocation of points that are consumed by AI operations, so that we can control costs and prevent spam while maintaining good user experience.
+
+**Success Metrics:**
+- 95% reduction in AI API abuse incidents
+- <100ms overhead for rate limit checks
+- Transparent point consumption for users
+- Configurable point allocations per subscription tier
+- Clear upgrade path when points are exhausted
+
+**Technical Implementation Plan:**
+
+#### 1. **Points Tracking Database**
+```prisma
+model PointsAllocation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId @unique
+  user        User     @relation(fields: [userId], references: [id])
+  
+  dailyPoints    Int @default(10)    # Daily allocation
+  pointsUsed     Int @default(0)     # Used today
+  lastResetDate  DateTime @default(now())
+  
+  # Subscription-based limits
+  subscriptionTier String @default("free")  # free, pro, premium
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PointsTransaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  operation   String   # "cv-suggestions", "cover-letter", "outreach"
+  pointsCost  Int      # Points consumed
+  timestamp   DateTime @default(now())
+  metadata    Json?    # Additional context
+}
+```
+
+#### 2. **Points Manager Service**
+```typescript
+class PointsManager {
+  // Point costs for different operations
+  static COSTS = {
+    'cv-suggestions': 2,
+    'cover-letter': 3,
+    'outreach-message': 2,
+    'cv-analysis': 1
+  } as const;
+  
+  // Subscription tier allocations
+  static DAILY_LIMITS = {
+    'free': 10,
+    'pro': 50,
+    'premium': 200
+  } as const;
+  
+  async checkAndConsumePoints(userId: string, operation: string): Promise<{
+    allowed: boolean;
+    pointsUsed?: number;
+    pointsRemaining?: number;
+    resetTime?: Date;
+  }> {
+    const cost = PointsManager.COSTS[operation] || 1;
+    
+    return await prisma.$transaction(async (tx) => {
+      // Get or create allocation
+      let allocation = await tx.pointsAllocation.findUnique({
+        where: { userId }
+      });
+      
+      if (!allocation) {
+        allocation = await tx.pointsAllocation.create({
+          data: { userId, subscriptionTier: 'free' }
+        });
+      }
+      
+      // Check if need to reset (new day)
+      const now = new Date();
+      const lastReset = new Date(allocation.lastResetDate);
+      if (now.toDateString() !== lastReset.toDateString()) {
+        allocation = await tx.pointsAllocation.update({
+          where: { userId },
+          data: {
+            pointsUsed: 0,
+            lastResetDate: now
+          }
+        });
+      }
+      
+      const dailyLimit = PointsManager.DAILY_LIMITS[allocation.subscriptionTier] || 10;
+      const remainingPoints = dailyLimit - allocation.pointsUsed;
+      
+      if (remainingPoints < cost) {
+        return {
+          allowed: false,
+          pointsRemaining: remainingPoints,
+          resetTime: new Date(now.getTime() + 24 * 60 * 60 * 1000) // Tomorrow
+        };
+      }
+      
+      // Consume points
+      await tx.pointsAllocation.update({
+        where: { userId },
+        data: { pointsUsed: allocation.pointsUsed + cost }
+      });
+      
+      // Log transaction
+      await tx.pointsTransaction.create({
+        data: {
+          userId,
+          operation,
+          pointsCost: cost,
+          metadata: { dailyLimit, previousUsed: allocation.pointsUsed }
+        }
+      });
+      
+      return {
+        allowed: true,
+        pointsUsed: cost,
+        pointsRemaining: remainingPoints - cost
+      };
+    });
+  }
+}
+```
+
+#### 3. **Middleware Integration**
+```typescript
+// middleware/rateLimiter.ts
+export async function withPointsLimit(
+  userId: string,
+  operation: string,
+  handler: () => Promise<any>
+) {
+  const pointsCheck = await PointsManager.checkAndConsumePoints(userId, operation);
+  
+  if (!pointsCheck.allowed) {
+    throw new Error(`Daily points limit reached. Resets at ${pointsCheck.resetTime}`);
+  }
+  
+  try {
+    const result = await handler();
+    return {
+      ...result,
+      pointsUsed: pointsCheck.pointsUsed,
+      pointsRemaining: pointsCheck.pointsRemaining
+    };
+  } catch (error) {
+    // Refund points on operation failure
+    await PointsManager.refundPoints(userId, operation);
+    throw error;
+  }
+}
+
+// Usage in API routes:
+export async function POST(request: Request) {
+  const session = await getSession(request);
+  
+  return withPointsLimit(session.user.id, 'cover-letter', async () => {
+    return generateCoverLetter(data);
+  });
+}
+```
+
+#### 4. **User Interface Components**
+```typescript
+function PointsDisplay({ userId }: { userId: string }) {
+  const { data: points } = useQuery({
+    queryKey: ['points', userId],
+    queryFn: () => fetch(`/api/user/points`).then(r => r.json())
+  });
+  
+  if (!points) return null;
+  
+  const percentage = (points.remaining / points.dailyLimit) * 100;
+  
+  return (
+    <div className="flex items-center gap-2">
+      <div className="w-16 h-2 bg-gray-200 rounded">
+        <div 
+          className="h-full bg-blue-500 rounded"
+          style={{ width: `${percentage}%` }}
+        />
+      </div>
+      <span className="text-sm text-gray-600">
+        {points.remaining} / {points.dailyLimit} points
+      </span>
+    </div>
+  );
+}
+
+function UpgradePrompt({ show }: { show: boolean }) {
+  if (!show) return null;
+  
+  return (
+    <Alert variant="warning">
+      <p>Daily points exhausted. Upgrade for more AI operations!</p>
+      <Button variant="primary" size="sm">Upgrade Plan</Button>
+    </Alert>
+  );
+}
+```
+
+**File Structure:**
+```
+📁 New Files:
+├── lib/points/PointsManager.ts           # Core points logic
+├── middleware/rateLimiter.ts             # Points middleware  
+├── app/api/user/points/route.ts          # Get user points status
+├── components/points/PointsDisplay.tsx   # UI component
+
+📁 Modified Files:
+├── prisma/schema.prisma                  # Points tables
+├── app/api/cv/suggestions/route.ts       # Add rate limiting
+├── app/api/generate-cover-letter/route.ts # Add rate limiting
+├── app/api/generate-outreach/route.ts    # Add rate limiting
+```
+
+**Acceptance Criteria:**
+- [ ] **Point Deduction**: All AI operations consume appropriate points
+- [ ] **Daily Reset**: Points reset at midnight user time
+- [ ] **Subscription Tiers**: Different limits for free/pro/premium users  
+- [ ] **Transaction Logging**: All point usage tracked for analytics
+- [ ] **UI Integration**: Points display in relevant components
+- [ ] **Graceful Degradation**: Clear messaging when limits reached
+- [ ] **Refund on Failure**: Points refunded if AI operation fails
+
+This points system provides cost control while maintaining user experience, with clear upgrade incentives for power users.
+
+---
 
 ## 📋 Recently Completed Features
 
