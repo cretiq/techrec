@@ -3,6 +3,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Lightbulb } from 'lucide-react';
 import { AppDispatch } from '@/lib/store';
 import { 
   selectSuggestions, 
@@ -180,9 +181,32 @@ export function SuggestionManager({
     }));
   }, [dispatch, section, isSectionVisible]);
 
-  // Don't render if no suggestions for this section or globally hidden
-  if (!isGloballyVisible || sectionSuggestions.length === 0) {
+  // Don't render if globally hidden
+  if (!isGloballyVisible) {
     return null;
+  }
+
+  // Show empty state if no suggestions but still maintain height
+  if (sectionSuggestions.length === 0) {
+    return (
+      <div className="h-full flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center gap-4 text-center pt-8"
+        >
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+            <Lightbulb className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-lg font-medium text-foreground">No suggestions yet</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Click "Enhance CV" above to get AI-powered improvement suggestions for your resume.
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    );
   }
 
   // Show error state
@@ -228,12 +252,14 @@ export function SuggestionManager({
   if (isMvpSuggestion && isSectionVisible) {
     const mvpSuggestion = sectionSuggestions[0];
     return (
-      <MvpSuggestionDisplay
-        suggestions={mvpSuggestion.suggestedContent}
-        analysisTime={(mvpSuggestion as any).analysisTime}
-        fromCache={(mvpSuggestion as any).fromCache}
-        className={className}
-      />
+      <div className="h-full flex flex-col">
+        <MvpSuggestionDisplay
+          suggestions={mvpSuggestion.suggestedContent}
+          analysisTime={(mvpSuggestion as any).analysisTime}
+          fromCache={(mvpSuggestion as any).fromCache}
+          className={`flex-1 ${className || ''}`}
+        />
+      </div>
     );
   }
 

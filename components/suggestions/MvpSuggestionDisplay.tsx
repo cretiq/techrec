@@ -99,17 +99,16 @@ export function MvpSuggestionDisplay({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={className}
+      className={`h-full flex flex-col ${className || ''}`}
     >
-
-      {/* Direct suggestion text - larger font */}
-      <div className="prose prose-lg max-w-none">
+      {/* Direct suggestion text - larger font, fills available height */}
+      <div className="prose prose-lg max-w-none flex-1 overflow-y-auto">
         <ReactMarkdown 
           remarkPlugins={[remarkGfm]}
           components={{
-            h1: ({ children }) => <h1 className="text-3xl font-bold text-foreground mb-6 mt-8 first:mt-0">{children}</h1>,
-            h2: ({ children }) => <h2 className="text-2xl font-semibold text-foreground mb-5 mt-7 first:mt-0">{children}</h2>,
-            h3: ({ children }) => <h3 className="text-xl font-medium text-foreground mb-4 mt-6 first:mt-0">{children}</h3>,
+            h1: ({ children }) => <h1 className="text-3xl font-bold text-foreground mb-6 mt-0">{children}</h1>,
+            h2: ({ children }) => <h2 className="text-2xl font-semibold text-foreground mb-5 mt-0 first:mt-0">{children}</h2>,
+            h3: ({ children }) => <h3 className="text-xl font-medium text-foreground mb-4 mt-0 first:mt-0">{children}</h3>,
             p: ({ children }) => <p className="text-foreground mb-5 leading-relaxed text-lg">{children}</p>,
             ul: ({ children }) => <ul className="text-foreground mb-6 pl-6 space-y-2 text-lg">{children}</ul>,
             ol: ({ children }) => <ol className="text-foreground mb-6 pl-6 space-y-2 text-lg">{children}</ol>,

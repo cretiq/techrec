@@ -6,6 +6,7 @@ import { getProfileByUserId } from '@/utils/profile';
 import { prisma } from '@/prisma/prisma';
 import { ProfileUpdateSchema } from '@/types/types';
 import { SkillLevel } from '@prisma/client';
+import { deleteFileFromS3 } from '@/utils/s3Storage';
 
 /**
  * GET handler to fetch the current authenticated user's profile.
@@ -239,7 +240,7 @@ export async function DELETE() {
                 select: { id: true, s3Key: true, filename: true }
             });
 
-            // Delete all related data
+            // Delete all CV-related data atomically
             const deletionCounts = {
                 cvs: await tx.cV.deleteMany({ where: { developerId } }),
                 skills: await tx.developerSkill.deleteMany({ where: { developerId } }),
@@ -247,9 +248,13 @@ export async function DELETE() {
                 education: await tx.education.deleteMany({ where: { developerId } }),
                 achievements: await tx.achievement.deleteMany({ where: { developerId } }),
                 contactInfo: await tx.contactInfo.deleteMany({ where: { developerId } }),
-                experienceProjects: await tx.experienceProject.deleteMany({ 
-                    where: { experienceId: { in: [] } } // This will be handled by cascade
-                })
+                
+                // Add missing CV-derived data deletion
+                personalProjects: await tx.personalProject.deleteMany({ where: { developerId } }),
+                personalProjectPortfolios: await tx.personalProjectPortfolio.deleteMany({ where: { developerId } }),
+                
+                // ExperienceProject will be auto-deleted by CASCADE relationship
+                // No need for manual deletion as the broken line 250-252 attempted
             };
 
             // Reset basic profile fields (keep required name field)
@@ -259,24 +264,36 @@ export async function DELETE() {
                     title: null,
                     profileEmail: null,
                     about: null,
-                    // Keep gamification data intact
+                    // Keep gamification data intact (XP, points, badges, streak)
                 }
             });
 
             return { cvs, deletionCounts };
         });
 
-        console.log(`[API /profile/me] Profile data cleared successfully for user ID: ${developerId}`, {
-            deletedCounts: result.deletionCounts,
-            cvsFound: result.cvs.length
-        });
+        // DELETE S3 FILES after successful database transaction
+        const s3DeletionResults = [];
+        for (const cv of result.cvs) {
+            if (cv.s3Key) {
+                try {
+                    await deleteFileFromS3(cv.s3Key);
+                    s3DeletionResults.push({ key: cv.s3Key, status: 'deleted' });
+                    console.log(`✅ [API /profile/me] S3 file deleted: ${cv.s3Key}`);
+                } catch (s3Error) {
+                    s3DeletionResults.push({ key: cv.s3Key, status: 'failed', error: s3Error.message });
+                    console.error(`❌ [API /profile/me] Failed to delete S3 file ${cv.s3Key}:`, s3Error);
+                }
+            }
+        }
 
-        // Note: S3 file deletion could be added here if needed
-        // For now, we're just clearing the database records
+        console.log(`[API /profile/me] Profile data cleared successfully for user ID: ${developerId}`, {
+            database: result.deletionCounts,
+            s3Files: s3DeletionResults
+        });
         
         return NextResponse.json({ 
             success: true,
-            message: 'All profile data cleared successfully',
+            message: 'All profile data and files cleared successfully',
             deletedCounts: {
                 cvs: result.deletionCounts.cvs.count,
                 skills: result.deletionCounts.skills.count,
@@ -284,12 +301,15 @@ export async function DELETE() {
                 education: result.deletionCounts.education.count,
                 achievements: result.deletionCounts.achievements.count,
                 contactInfo: result.deletionCounts.contactInfo.count,
-            }
+                personalProjects: result.deletionCounts.personalProjects.count,
+                personalProjectPortfolios: result.deletionCounts.personalProjectPortfolios.count,
+            },
+            s3FilesDeleted: s3DeletionResults.filter(r => r.status === 'deleted').length,
+            s3FilesFailed: s3DeletionResults.filter(r => r.status === 'failed').length
         });
 
     } catch (error) {
         console.error('[API /profile/me] DELETE Error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to clear profile data';
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to clear profile data' }, { status: 500 });
     }
 } 
