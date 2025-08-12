@@ -23,6 +23,7 @@ import {
   clearRecentlyUpdatedPaths
 } from '@/lib/features/analysisSlice';
 import { SuggestionOverlay } from './SuggestionOverlay';
+import { MvpSuggestionDisplay } from './MvpSuggestionDisplay';
 import { useToast } from '@/components/ui-daisy/use-toast';
 
 interface SuggestionManagerProps {
@@ -64,11 +65,16 @@ export function SuggestionManager({
     const matchesField = !targetField || (suggestion as any).targetField === targetField;
     return matchesSection && matchesTarget && matchesField;
   });
+
+  // Check if this is an MVP suggestion (text-based)
+  const isMvpSuggestion = section === 'overall' && sectionSuggestions.length > 0 && 
+    sectionSuggestions[0] && (sectionSuggestions[0] as any).type === 'text';
   
   // Debug logging for suggestion filtering
   console.log(`🔍 [SuggestionManager] Filtering for section: "${section}", targetId: "${targetId || 'none'}", targetField: "${targetField || 'none'}"`);
   console.log(`📊 [SuggestionManager] Total suggestions: ${suggestions.length}`);
   console.log(`📊 [SuggestionManager] Filtered suggestions: ${sectionSuggestions.length}`);
+  console.log(`🏷️ [SuggestionManager] Is MVP suggestion: ${isMvpSuggestion}`);
   if (suggestions.length > 0 && sectionSuggestions.length === 0) {
     console.log('⚠️ [SuggestionManager] No matches! Available sections:', 
       [...new Set(suggestions.map(s => s.section))].join(', '));
@@ -218,6 +224,19 @@ export function SuggestionManager({
     );
   }
 
+  // Handle MVP suggestions differently
+  if (isMvpSuggestion && isSectionVisible) {
+    const mvpSuggestion = sectionSuggestions[0];
+    return (
+      <MvpSuggestionDisplay
+        suggestions={mvpSuggestion.suggestedContent}
+        analysisTime={(mvpSuggestion as any).analysisTime}
+        fromCache={(mvpSuggestion as any).fromCache}
+        className={className}
+      />
+    );
+  }
+
   return (
     <AnimatePresence>
       {isSectionVisible && (
@@ -247,7 +266,7 @@ export function useSuggestionsFetcher() {
     try {
       dispatch({ type: 'suggestions/setLoading', payload: true });
 
-      const response = await fetch('/api/cv-improvement', {
+      const response = await fetch('/api/cv-improvement-mvp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -262,17 +281,34 @@ export function useSuggestionsFetcher() {
 
       const result = await response.json();
       
-      // Dispatch the suggestions to Redux
-      dispatch({ type: 'suggestions/setSuggestions', payload: result });
+      // For MVP, the suggestions are plain text, so we need to format them differently
+      const formattedResult = {
+        suggestions: [{
+          id: 'mvp-suggestions-' + Date.now(),
+          section: 'overall',
+          title: 'Resume Improvement Suggestions',
+          suggestedContent: result.suggestions,
+          confidence: 0.9,
+          type: 'text',
+          analysisTime: result.analysisTime,
+          fromCache: result.fromCache
+        }],
+        fromCache: result.fromCache,
+        analysisTime: result.analysisTime,
+        debugSessionId: result.debugSessionId
+      };
+      
+      // Dispatch the formatted suggestions to Redux
+      dispatch({ type: 'suggestions/setSuggestions', payload: formattedResult });
 
       // Show success toast
       const fromCache = result.fromCache ? " (cached)" : "";
       toast({
         title: "AI Suggestions Generated!",
-        description: `Found ${result.suggestions?.length || 0} improvement suggestions${fromCache}.`,
+        description: `Resume improvement suggestions ready${fromCache}.`,
       });
 
-      return result;
+      return formattedResult;
       
     } catch (error: any) {
       console.error('Error fetching suggestions:', error);

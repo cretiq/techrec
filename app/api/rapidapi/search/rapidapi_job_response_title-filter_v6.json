@@ -1,0 +1,894 @@
+[
+    {
+      "id": "1843795783",
+      "date_posted": "2025-08-05T06:42:37.312",
+      "date_created": "2025-08-05T07:03:37.397575",
+      "title": "Full Stack .NET Developer (REMOTE)",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": null,
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressRegion": "",
+            "addressCountry": "",
+            "addressLocality": "United States"
+          }
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/full-stack-net-developer-remote-at-lensa-4280106150",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_100_100/B4DZaKylu7GsAQ-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=vxuqQreX_wx1J2lugCeUKuGGZtbGyjhRRFeWyrBMnFQ",
+      "cities_derived": null,
+      "counties_derived": null,
+      "regions_derived": null,
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        39.7837304
+      ],
+      "lngs_derived": [
+        -100.445882
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": true,
+      "external_apply_url": "https://lensa.com/cgw/f7650e1130574d9e9e60b58a3fdf75c1tjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843795757",
+      "date_posted": "2025-08-05T06:42:36.259",
+      "date_created": "2025-08-05T07:03:36.350019",
+      "title": "JavaScript Fullstack Developer",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": null,
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressRegion": "",
+            "addressCountry": "",
+            "addressLocality": "United States"
+          }
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/javascript-fullstack-developer-at-lensa-4280104278",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_100_100/B4DZaKylu7GsAQ-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=vxuqQreX_wx1J2lugCeUKuGGZtbGyjhRRFeWyrBMnFQ",
+      "cities_derived": null,
+      "counties_derived": null,
+      "regions_derived": null,
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        39.7837304
+      ],
+      "lngs_derived": [
+        -100.445882
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": true,
+      "external_apply_url": "https://lensa.com/cgw/f19cdd1f4f5f4257a8a69043b132d1bftjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843797314",
+      "date_posted": "2025-08-05T06:42:28",
+      "date_created": "2025-08-05T07:04:41.518501",
+      "title": "Sr .Net Software Engineer - 100% Remote WOrk",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": "2025-09-04T06:42:28",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Malvern",
+            "addressRegion": "PA",
+            "streetAddress": null
+          },
+          "latitude": 40.033436,
+          "longitude": -75.51271
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "Malvern, Pennsylvania, United States"
+        }
+      ],
+      "salary_raw": null,
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/sr-net-software-engineer-100%25-remote-work-at-lensa-4280103251",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+      "cities_derived": [
+        "Malvern"
+      ],
+      "counties_derived": [
+        "Chester County"
+      ],
+      "regions_derived": [
+        "Pennsylvania"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Malvern, Pennsylvania, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.036202
+      ],
+      "lngs_derived": [
+        -75.5138959
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": null,
+      "external_apply_url": "https://lensa.com/cgw/2ec13523231e4982b7435c8c720c2e5dtjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843798671",
+      "date_posted": "2025-08-05T06:42:23",
+      "date_created": "2025-08-05T07:05:26.587137",
+      "title": ".NET Developer x2- CLT, Minne, Chandler, Dallas",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": "2025-09-04T06:42:23",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Chandler",
+            "addressRegion": "AZ",
+            "streetAddress": null
+          },
+          "latitude": 33.302284,
+          "longitude": -111.8401
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/net-developer-x2-clt-minne-chandler-dallas-at-lensa-4280100900",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+      "cities_derived": [
+        "Chandler"
+      ],
+      "counties_derived": [
+        "Maricopa County"
+      ],
+      "regions_derived": [
+        "Arizona"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Chandler, Arizona, United States"
+      ],
+      "timezones_derived": [
+        "America/Phoenix"
+      ],
+      "lats_derived": [
+        33.3062031
+      ],
+      "lngs_derived": [
+        -111.841185
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": null,
+      "external_apply_url": "https://lensa.com/cgw/baa76fb25f244f12814c591be48066eftjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843797025",
+      "date_posted": "2025-08-05T06:42:19",
+      "date_created": "2025-08-05T07:04:31.786264",
+      "title": "Senior .Net Engineer (120/HR) - REMOTE WORK",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": "2025-09-04T06:42:19",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "streetAddress": null
+          },
+          "latitude": 40.713047,
+          "longitude": -74.00723
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "New York, New York, United States"
+        }
+      ],
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 80,
+          "maxValue": 90,
+          "unitText": "HOUR"
+        }
+      },
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-net-engineer-120-hr-remote-work-at-lensa-4280107028",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+      "cities_derived": [
+        "New York"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.7127281
+      ],
+      "lngs_derived": [
+        -74.0060152
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": null,
+      "external_apply_url": "https://lensa.com/cgw/4668fa0dcf9c44cdbcc47e3987f5249dtjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843797324",
+      "date_posted": "2025-08-05T06:42:16",
+      "date_created": "2025-08-05T07:04:41.827632",
+      "title": "Full Stack C# .Net Developer - MO",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": "2025-09-04T06:42:16",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "St Louis",
+            "addressRegion": "MO",
+            "streetAddress": null
+          },
+          "latitude": 38.635357,
+          "longitude": -90.20099
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/full-stack-c%23-net-developer-mo-at-lensa-4280100973",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+      "cities_derived": [
+        "St. Louis"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "Missouri"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "St. Louis, Missouri, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        38.6280278
+      ],
+      "lngs_derived": [
+        -90.1910154
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": null,
+      "external_apply_url": "https://lensa.com/cgw/b0ae60228d2244cb870218dbf821d766tjo1?jpsi=directemployers_no_redirect&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843797068",
+      "date_posted": "2025-08-05T06:42:14",
+      "date_created": "2025-08-05T07:04:33.279033",
+      "title": "Software Developer - .NET",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": "2025-09-04T06:42:14",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Montvale",
+            "addressRegion": "NJ",
+            "streetAddress": null
+          },
+          "latitude": 41.04014,
+          "longitude": -74.03271
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/software-developer-net-at-lensa-4280104369",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+      "cities_derived": [
+        "Montvale"
+      ],
+      "counties_derived": [
+        "Bergen County"
+      ],
+      "regions_derived": [
+        "New Jersey"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Montvale, New Jersey, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        41.0467635
+      ],
+      "lngs_derived": [
+        -74.0229173
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": null,
+      "external_apply_url": "https://lensa.com/cgw/3ce10c2a9d584aa79deb4e948d1ac5dctjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843797359",
+      "date_posted": "2025-08-05T06:42:14",
+      "date_created": "2025-08-05T07:04:43.379006",
+      "title": "C# / .Net Developer",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": "2025-09-04T06:42:14",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "streetAddress": null
+          },
+          "latitude": 40.713047,
+          "longitude": -74.00723
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/c%23-net-developer-at-lensa-4280103408",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+      "cities_derived": [
+        "New York"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.7127281
+      ],
+      "lngs_derived": [
+        -74.0060152
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": null,
+      "external_apply_url": "https://lensa.com/cgw/79dd31ec7cb1466a979cb3df9c76a090tjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843798289",
+      "date_posted": "2025-08-05T06:42:14",
+      "date_created": "2025-08-05T07:05:14.753717",
+      "title": "Sr .Net Developer | Contract | King of Prussia, PA",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": "2025-09-04T06:42:14",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "King of Prussia",
+            "addressRegion": "PA",
+            "streetAddress": null
+          },
+          "latitude": 40.08832,
+          "longitude": -75.382126
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/sr-net-developer-contract-king-of-prussia-pa-at-lensa-4280101849",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+      "cities_derived": [
+        "King of Prussia"
+      ],
+      "counties_derived": [
+        "Montgomery County"
+      ],
+      "regions_derived": [
+        "Pennsylvania"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "King of Prussia, Pennsylvania, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.099
+      ],
+      "lngs_derived": [
+        -75.381312
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 414,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 124254,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": null,
+      "external_apply_url": "https://lensa.com/cgw/b0e3d943e453466e81838f4a184d6a40tjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1843781193",
+      "date_posted": "2025-08-05T06:19:06",
+      "date_created": "2025-08-05T06:33:47.067011",
+      "title": "Full-Stack Software Developer (.NET or React)",
+      "organization": "Celltrio",
+      "organization_url": "https://www.linkedin.com/company/celltrio",
+      "date_validthrough": "2026-02-01T06:19:06",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Fremont",
+            "addressRegion": "CA",
+            "streetAddress": null
+          },
+          "latitude": 37.5502,
+          "longitude": -121.98083
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/full-stack-software-developer-net-or-react-at-celltrio-4277794891",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQHpT7Ke-nCb8g/company-logo_200_200/company-logo_200_200/0/1630660767228/celltrio_logo?e=2147483647&v=beta&t=i5ZIlE7VoW_uXJr-fQBqVL32zLkyzQ8WzSmV1pLFbqA",
+      "cities_derived": [
+        "Fremont"
+      ],
+      "counties_derived": [
+        "Alameda County"
+      ],
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Fremont, California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        37.5482697
+      ],
+      "lngs_derived": [
+        -121.988571
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 26,
+      "linkedin_org_url": "http://www.celltrio.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Accelerating Research, Drug Discovery, and Scientific Breakthroughs",
+      "linkedin_org_industry": "Biotechnology Research",
+      "linkedin_org_followers": 2399,
+      "linkedin_org_headquarters": "Fremont, CA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2018",
+      "linkedin_org_specialties": [
+        "Drug Discovery",
+        "Cell Biology",
+        "Cell Line Automation",
+        "Cell Harvesting",
+        "Cell Culture",
+        "Biologics",
+        "and Software Automation"
+      ],
+      "linkedin_org_locations": [
+        "47777 Warm Springs Blvd, Fremont, CA 94539, Fremont, CA 94539, US"
+      ],
+      "linkedin_org_description": "Celltrio delivers the fastest path to cell culturing system automation by utilizing the power of modularity to automate manual processes from raw cell division to harvesting cultured cells. Customer processes and protocols determine which, and how many, of the proven standard task module machines, robots and software to combine into just the right cell culturing lab automation solution for today, with a plan for easy expansion in the future.\n\nCelltrio is the only company that has developed a complete, proven range of stand-alone manual cell storage, culturing and harvesting machines with the built-in ability to be automated by Celltrio developed robots. Labs can start small with one or more task module machines and scale with more machines and robotic and software automation over time. Or as we have done, we can work with your company to design a complete, scale-able, repeatable automated cell culturing process that will reduce drug or novel cell development time-to-market, reduce equipment, training, labor and total costs, and  increase precision and quality at every step of the process by among many things, reducing human and system errors.\n\nPlease visit our website at www.celltrio.com for the complete story and specifics on both our modular cell culturing automation and our cryogenic freezer solutions.\n\nFor the fastest connection, email us at info@celltrio.com. Leave us a message and we will get back to your right away. \n",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "celltrio",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    }
+  ]

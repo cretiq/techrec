@@ -14,6 +14,8 @@ import { clearCachePattern } from '@/lib/redis'; // Import cache invalidation
 import { CvUploadDebugLogger } from '@/utils/cvUploadDebugLogger'; // Import CV upload debug logger
 import { DirectGeminiUploadService, directGeminiUpload } from '@/utils/directGeminiUpload'; // Import direct Gemini upload service
 import { DirectUploadDebugLogger } from '@/utils/directUploadDebugLogger'; // Import direct upload debug logger
+import { isInMvpMode, logFeatureFlags } from '@/utils/featureFlags'; // Import feature flags
+import { extractMvpCvContent, MvpExtractionResult } from '@/utils/mvpCvExtraction'; // Import MVP extraction service
 
 const prisma = new PrismaClient(); // Instantiate Prisma client
 
@@ -30,6 +32,37 @@ function calculateImprovementScore(analysisResult: any): number {
   score += (analysisResult.experience?.length || 0) * 5;
   score += (analysisResult.education?.length || 0) * 3;
   score += (analysisResult.achievements?.length || 0) * 2;
+  return Math.min(100, Math.max(0, score)); // Clamp between 0-100
+}
+
+// Helper function to calculate MVP improvement score (simplified)
+function calculateMvpImprovementScore(mvpResult: MvpExtractionResult): number {
+  let score = 0;
+  
+  // Base score for successful extraction
+  if (mvpResult.success) score += 20;
+  
+  // Content length scoring
+  const textLength = mvpResult.formattedText?.length || 0;
+  if (textLength > 500) score += 15;
+  if (textLength > 1500) score += 10;
+  
+  // Word count scoring  
+  const wordCount = mvpResult.wordCount || 0;
+  if (wordCount > 100) score += 10;
+  if (wordCount > 300) score += 10;
+  
+  // JSON structure scoring
+  if (mvpResult.basicJson) {
+    const json = mvpResult.basicJson;
+    if (json.name) score += 8;
+    if (json.email) score += 5;
+    if (json.skills && json.skills.length > 0) score += 10;
+    if (json.experience && json.experience.length > 0) score += 12;
+    if (json.education && json.education.length > 0) score += 8;
+    if (json.about) score += 7;
+  }
+  
   return Math.min(100, Math.max(0, score)); // Clamp between 0-100
 }
 
@@ -164,8 +197,90 @@ export async function POST(request: Request) {
     cvId = newCV.id;
     console.log('[Upload Route] Created CV record:', newCV);
 
-    // --- Analysis Process (Run synchronously for now) ---
-    // For production, this should be moved to a background job
+    // Log current feature flags for debugging
+    logFeatureFlags();
+
+    // --- MVP MODE: Simplified Extraction ---
+    if (isInMvpMode()) {
+      console.log(`🚀 [MVP-MODE] Starting simplified extraction for CV ID: ${newCV.id}...`);
+      
+      try {
+        // Create temporary file for MVP extraction
+        const tempDir = '/tmp';
+        const tempFilePath = `${tempDir}/${uniqueFilename}`;
+        const fs = require('fs');
+        fs.writeFileSync(tempFilePath, fileBuffer);
+        
+        console.log(`🚀 [MVP-MODE] Starting dual-format extraction...`);
+        const extractionStartTime = Date.now();
+        
+        // Use MVP extraction service
+        const mvpResult = await extractMvpCvContent(tempFilePath, file.name);
+        
+        // Clean up temp file
+        fs.unlinkSync(tempFilePath);
+        
+        if (!mvpResult.success) {
+          throw new Error(`MVP extraction failed: ${mvpResult.error}`);
+        }
+        
+        console.log(`🚀 [MVP-MODE] Extraction completed successfully`, {
+          duration: mvpResult.extractionDuration,
+          textLength: mvpResult.formattedText?.length || 0,
+          jsonKeys: mvpResult.basicJson ? Object.keys(mvpResult.basicJson) : [],
+          wordCount: mvpResult.wordCount
+        });
+        
+        // Calculate simple improvement score based on extracted content
+        const improvementScore = calculateMvpImprovementScore(mvpResult);
+        
+        // Update CV record with MVP data
+        const cvUpdateData = {
+          status: AnalysisStatus.COMPLETED,
+          mvpContent: mvpResult.formattedText || '',
+          mvpRawData: mvpResult.basicJson || {},
+          improvementScore: improvementScore,
+          extractedText: `MVP Mode - Processed in ${mvpResult.extractionDuration}ms`,
+        };
+        
+        await updateCV(newCV.id, cvUpdateData);
+        
+        console.log(`🚀 [MVP-MODE] CV updated successfully`, {
+          cvId: newCV.id,
+          status: AnalysisStatus.COMPLETED,
+          improvementScore,
+          contentLength: mvpResult.formattedText?.length || 0
+        });
+        
+        // Return success response immediately (no profile sync in MVP mode)
+        const finalCV = await prisma.cV.findUnique({ where: { id: newCV.id } });
+        
+        return NextResponse.json({
+          message: 'CV uploaded and processed successfully (MVP mode)',
+          cvId: finalCV?.id ?? newCV.id,
+          s3Key: finalCV?.s3Key ?? newCV.s3Key,
+          filename: finalCV?.originalName ?? newCV.originalName,
+          status: finalCV?.status ?? AnalysisStatus.COMPLETED,
+          improvementScore: finalCV?.improvementScore ?? improvementScore,
+          mode: 'mvp'
+        }, { status: 201 });
+        
+      } catch (mvpError) {
+        console.error(`🚀 [MVP-MODE] Failed for CV ID: ${newCV.id}`, mvpError);
+        
+        // Update CV status to FAILED
+        await updateCV(newCV.id, { status: AnalysisStatus.FAILED });
+        
+        return NextResponse.json({
+          error: 'MVP extraction failed. Please try again.',
+          mode: 'mvp',
+          details: mvpError instanceof Error ? mvpError.message : String(mvpError)
+        }, { status: 500 });
+      }
+    }
+
+    // --- COMPLEX ANALYSIS MODE (Original System) ---
+    // Only run if not in MVP mode
     try {
       console.log(`Starting analysis process for CV ID: ${newCV.id}...`);
       

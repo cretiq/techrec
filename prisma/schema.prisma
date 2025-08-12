@@ -607,6 +607,10 @@ model CV {
   // Improvement score field
   improvementScore Float?       
 
+  // MVP Mode Fields - Simplified CV processing
+  mvpContent   String?   // Formatted markdown text content (MVP mode)
+  mvpRawData   Json?     // Unvalidated JSON structure (MVP mode)
+  
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

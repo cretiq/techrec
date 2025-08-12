@@ -1,0 +1,1762 @@
+[
+    {
+      "id": "1843294902",
+      "date_posted": "2025-08-04T12:37:47",
+      "date_created": "2025-08-04T13:03:18.9582",
+      "title": "Back End Developer",
+      "organization": "Revature",
+      "organization_url": "https://www.linkedin.com/company/revature",
+      "date_validthrough": "2025-09-03T12:37:46",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Delaware",
+            "addressRegion": "United States",
+            "streetAddress": null
+          },
+          "latitude": 39.008762,
+          "longitude": -75.46864
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/back-end-developer-at-revature-4279268978",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFn5FbnFwixKA/company-logo_200_200/company-logo_200_200/0/1735914201598/revature_logo?e=2147483647&v=beta&t=nhwwHzbHZ16AXh9NqztTNCuDgBVlfpQVY__bgsYfT9c",
+      "cities_derived": null,
+      "counties_derived": null,
+      "regions_derived": [
+        "Delaware"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Delaware, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.6920451
+      ],
+      "lngs_derived": [
+        -75.4013315
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 1496,
+      "linkedin_org_url": "https://revature.com",
+      "linkedin_org_size": "1,001-5,000 employees",
+      "linkedin_org_slogan": "We Turn Potential into Productivity.",
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 331950,
+      "linkedin_org_headquarters": "Reston, VA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2003",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "11730 Plaza America Dr, Reston, VA 20190, US"
+      ],
+      "linkedin_org_description": "Revature is bridging the IT skills gap and accelerating technology workforces for mid-to-large organizations worldwide – from Fortune 500 companies to the federal government and leading system integrators. \n\nOur Total Talent Solution empowers customers to cultivate the right technology talent through a combination of its Emerging Talent Programs and Digital Academies. \n\nThe company takes a human-centric approach to building a skills-first technology workforce for enterprises with an emphasis on continuous learning. By offering both interpersonal skills and technical skills, including in areas like AI and ML, data and analytics, cloud computing, cybersecurity, enterprise platforms and application development, Revature delivers day-one productive talent 70% faster while reducing customer costs by up to 30% compared to traditional methods. \n\nRevature is headquartered in Reston, Virginia and Chennai, India. ",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "revature",
+      "no_jb_schema": null,
+      "external_apply_url": "https://www.revature.com/entry-level-software-engineer?utm_source=linkedin&sourcedBy=BalaLP"
+    },
+    {
+      "id": "1843303580",
+      "date_posted": "2025-08-04T12:37:46.444",
+      "date_created": "2025-08-04T13:28:46.560556",
+      "title": "Medical Supply Sales Representative",
+      "organization": "Medline Industries, LP",
+      "organization_url": "https://www.linkedin.com/company/medline-industries",
+      "date_validthrough": null,
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressRegion": "",
+            "addressCountry": "",
+            "addressLocality": "United States"
+          }
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/medical-supply-sales-representative-at-medline-industries-lp-4277391368",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4D0BAQFh3V0QBYolZQ/company-logo_100_100/company-logo_100_100/0/1630461457751/medline_industries_logo?e=2147483647&v=beta&t=LM31ujtHgmrirAxnF6ZMDfsLy0VQ7BSYY0rLJFCpmvA",
+      "cities_derived": null,
+      "counties_derived": null,
+      "regions_derived": null,
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        39.7837304
+      ],
+      "lngs_derived": [
+        -100.445882
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 17394,
+      "linkedin_org_url": "http://www.medline.com",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": "Medline is the largest provider of medical-surgical products and supply chain solutions serving all points of care. ",
+      "linkedin_org_industry": "Medical Equipment Manufacturing",
+      "linkedin_org_followers": 374478,
+      "linkedin_org_headquarters": "Northfield, IL",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Manufacturing and distribution of medical supplies",
+        "Medical Devices",
+        "and Supply Chain"
+      ],
+      "linkedin_org_locations": [
+        "Three Lakes Drive, Northfield, IL 60093, US",
+        "Pune, IN",
+        "One Medline Place, Mundelein, IL 60060, US",
+        "Nuevo Laredo, MX",
+        "Mexicali, MX",
+        "Mississauga, Ontario, CA",
+        "Quebec City, Quebec, CA",
+        "Arnhem, NL",
+        "Tokyo, JP",
+        "Marsden Park, New South Wales, AU",
+        "Veracruz, PA",
+        "Shanghai, CN",
+        "Genève, CH",
+        "Florence, IT",
+        "Machelen, BE",
+        "Madrid, ES",
+        "Warrington, GB",
+        "Voisins-le-Bretonneux, FR",
+        "Waukegan, IL, US",
+        "Libertyville, IL, US",
+        "Dubuque, IA, US",
+        "Williamston, MI, US",
+        "Dubai, AE",
+        "Riyadh, SA",
+        "Cairo, EG"
+      ],
+      "linkedin_org_description": "Medline is the largest provider of medical-surgical products and supply chain solutions serving all points of care. Through its unique offering of world-class products, supply chain resilience and clinical practice expertise, Medline delivers improved clinical, financial and operational outcomes. Headquartered in Northfield, Illinois, the company employs 43,000 people worldwide and operates in over 100 countries and territories. To learn more about how Medline makes healthcare run better, visit www.medline.com.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "medline-industries",
+      "no_jb_schema": true,
+      "external_apply_url": "https://medline.wd5.myworkdayjobs.com/Medline/job/REMOTE--Oregon/Medical-Supply-Sales-Representative_R2512191?source=LinkedIn"
+    },
+    {
+      "id": "1843294914",
+      "date_posted": "2025-08-04T12:37:42",
+      "date_created": "2025-08-04T13:03:19.617279",
+      "title": "Back End Developer",
+      "organization": "Revature",
+      "organization_url": "https://www.linkedin.com/company/revature",
+      "date_validthrough": "2025-09-03T12:37:41",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Quantico",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 38.521523,
+          "longitude": -77.2906
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/back-end-developer-at-revature-4279272546",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFn5FbnFwixKA/company-logo_200_200/company-logo_200_200/0/1735914201598/revature_logo?e=2147483647&v=beta&t=nhwwHzbHZ16AXh9NqztTNCuDgBVlfpQVY__bgsYfT9c",
+      "cities_derived": [
+        "Quantico"
+      ],
+      "counties_derived": [
+        "Prince William County"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Quantico, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.5218802
+      ],
+      "lngs_derived": [
+        -77.2911023
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 1496,
+      "linkedin_org_url": "https://revature.com",
+      "linkedin_org_size": "1,001-5,000 employees",
+      "linkedin_org_slogan": "We Turn Potential into Productivity.",
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 331950,
+      "linkedin_org_headquarters": "Reston, VA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2003",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "11730 Plaza America Dr, Reston, VA 20190, US"
+      ],
+      "linkedin_org_description": "Revature is bridging the IT skills gap and accelerating technology workforces for mid-to-large organizations worldwide – from Fortune 500 companies to the federal government and leading system integrators. \n\nOur Total Talent Solution empowers customers to cultivate the right technology talent through a combination of its Emerging Talent Programs and Digital Academies. \n\nThe company takes a human-centric approach to building a skills-first technology workforce for enterprises with an emphasis on continuous learning. By offering both interpersonal skills and technical skills, including in areas like AI and ML, data and analytics, cloud computing, cybersecurity, enterprise platforms and application development, Revature delivers day-one productive talent 70% faster while reducing customer costs by up to 30% compared to traditional methods. \n\nRevature is headquartered in Reston, Virginia and Chennai, India. ",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "revature",
+      "no_jb_schema": null,
+      "external_apply_url": "https://www.revature.com/entry-level-software-engineer?utm_source=linkedin&sourcedBy=BalaLP"
+    },
+    {
+      "id": "1843294677",
+      "date_posted": "2025-08-04T12:35:34",
+      "date_created": "2025-08-04T13:03:07.64903",
+      "title": "Software Engineer",
+      "organization": "Goliath Partners",
+      "organization_url": "https://www.linkedin.com/company/goliath-partners-inc",
+      "date_validthrough": "2025-09-03T12:35:34",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "California",
+            "addressRegion": "United States",
+            "streetAddress": null
+          },
+          "latitude": 37.25467,
+          "longitude": -119.61727
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "California, United States"
+        }
+      ],
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/software-engineer-at-goliath-partners-4279610654",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQEGxoU_V_HCSw/company-logo_200_200/company-logo_200_200/0/1675096738538/goliath_partners_inc_logo?e=2147483647&v=beta&t=CVvrXzScDTkVTmN2Mb0D5ABjYElcMXHOBO-lPGIYPM0",
+      "cities_derived": null,
+      "counties_derived": null,
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        36.7014631
+      ],
+      "lngs_derived": [
+        -118.755997
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 10,
+      "linkedin_org_url": "www.goliathpartners.com",
+      "linkedin_org_size": "2-10 employees",
+      "linkedin_org_slogan": "Driving innovative talent solutions within trading & financial technology",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": 83512,
+      "linkedin_org_headquarters": "Miami, Florida",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2023",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "Miami, Florida, US"
+      ],
+      "linkedin_org_description": "Driving innovative talent solutions within trading & financial technology that delivers specialized C++ professionals across de-fi, equities, options, fixed income and crypto.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "goliath-partners-inc",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1843308875",
+      "date_posted": "2025-08-04T12:35:07",
+      "date_created": "2025-08-04T13:38:41.992513",
+      "title": "Lead Solution Engineer",
+      "organization": "Mavenoid",
+      "organization_url": "https://www.linkedin.com/company/mavenoid",
+      "date_validthrough": "2025-08-24T01:00:43",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "SE",
+            "addressLocality": "Stockholm",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 59.32512,
+          "longitude": 18.071093
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "Stockholm, Stockholms län, Sverige"
+        }
+      ],
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://se.linkedin.com/jobs/view/lead-solution-engineer-at-mavenoid-4279609717",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "se.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQGYUZngCEC7_A/company-logo_200_200/company-logo_200_200/0/1686689312775/mavenoid_logo?e=2147483647&v=beta&t=tHOxi94ne65vtAPIYgIBOJrVST3-lh_UaNiJJzakEm8",
+      "cities_derived": [
+        "Stockholm"
+      ],
+      "counties_derived": [
+        "Stockholm County"
+      ],
+      "regions_derived": null,
+      "countries_derived": [
+        "Sweden"
+      ],
+      "locations_derived": [
+        "Stockholm, Sweden"
+      ],
+      "timezones_derived": [
+        "Europe/Stockholm"
+      ],
+      "lats_derived": [
+        59.3251172
+      ],
+      "lngs_derived": [
+        18.0710935
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 71,
+      "linkedin_org_url": "https://www.mavenoid.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Genius product support. Brilliant ROI.",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "Stockholm",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2017",
+      "linkedin_org_specialties": [
+        "customer service automation",
+        "technical support automation",
+        "troubleshooting",
+        "AI",
+        "machine learning",
+        "chatbots",
+        "virtual agents",
+        "virtual support agents",
+        "customer experience",
+        "customer support",
+        "customer service",
+        "technical support",
+        "support automation",
+        "remote support",
+        "and product support"
+      ],
+      "linkedin_org_locations": [
+        "Nybrogatan 8, Stockholm, 114 34, SE",
+        "33 Irving Pl, New York, NY 10003, US"
+      ],
+      "linkedin_org_description": "Mavenoid is the Intelligent Support Platform specifically designed for products and devices. Mavenoid’s purpose-built technology delivers best-in-class customer support with intelligent troubleshooting and personalized remote support that delivers resolution rates of 58% and up. With Mavenoid, product manufacturers and sellers provide genius level customer support and realize brilliant ROI.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mellannivå",
+      "directapply": false,
+      "linkedin_org_slug": "mavenoid",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobs.eu.lever.co/mavenoid/2cf77460-7b42-47ee-834b-57d87f73fe02/apply?lever-source=LinkedIn"
+    },
+    {
+      "id": "1843280052",
+      "date_posted": "2025-08-04T12:33:14",
+      "date_created": "2025-08-04T12:33:51.003853",
+      "title": "Communications Manager - Beeck Center for Social Impact + Innovation",
+      "organization": "Georgetown University",
+      "organization_url": "https://www.linkedin.com/school/georgetown-university",
+      "date_validthrough": "2025-09-03T12:33:14",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "First",
+            "addressRegion": "WV",
+            "streetAddress": null
+          },
+          "latitude": 39.554615,
+          "longitude": -79.79936
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/communications-manager-beeck-center-for-social-impact-%2B-innovation-at-georgetown-university-4277389559",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQEnN4XznomLJw/company-logo_200_200/company-logo_200_200/0/1631309453384?e=2147483647&v=beta&t=MlY9VdWAm9xVBkM8u4QhOloPYpyXEtq0RcNyZ7yu8MI",
+      "cities_derived": [
+        "Weston"
+      ],
+      "counties_derived": [
+        "Lewis County"
+      ],
+      "regions_derived": [
+        "West Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Weston, West Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        39.037613
+      ],
+      "lngs_derived": [
+        -80.466352
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": null,
+      "linkedin_org_url": null,
+      "linkedin_org_size": null,
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": null,
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": null,
+      "linkedin_org_type": null,
+      "linkedin_org_foundeddate": null,
+      "linkedin_org_specialties": null,
+      "linkedin_org_locations": null,
+      "linkedin_org_description": null,
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "georgetown-university",
+      "no_jb_schema": null,
+      "external_apply_url": "https://georgetown.wd1.myworkdayjobs.com/Georgetown_Admin_Careers/job/500-First-St-NW-1st-Floor/Communications-Manager---Beeck-Center-for-Social-Impact---Innovation_JR22795"
+    },
+    {
+      "id": "1843280256",
+      "date_posted": "2025-08-04T12:33:14",
+      "date_created": "2025-08-04T12:34:04.191092",
+      "title": "Data Research Analyst, Center for Security and Emerging Technology - Walsh School of Foreign Service - Georgetown University",
+      "organization": "Georgetown University",
+      "organization_url": "https://www.linkedin.com/school/georgetown-university",
+      "date_validthrough": "2025-09-03T12:33:14",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "First",
+            "addressRegion": "WV",
+            "streetAddress": null
+          },
+          "latitude": 39.554615,
+          "longitude": -79.79936
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 66783,
+          "maxValue": 126720.23,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/data-research-analyst-center-for-security-and-emerging-technology-walsh-school-of-foreign-service-georgetown-university-at-georgetown-university-4277394046",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQEnN4XznomLJw/company-logo_200_200/company-logo_200_200/0/1631309453384?e=2147483647&v=beta&t=MlY9VdWAm9xVBkM8u4QhOloPYpyXEtq0RcNyZ7yu8MI",
+      "cities_derived": [
+        "Weston"
+      ],
+      "counties_derived": [
+        "Lewis County"
+      ],
+      "regions_derived": [
+        "West Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Weston, West Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        39.037613
+      ],
+      "lngs_derived": [
+        -80.466352
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": null,
+      "linkedin_org_url": null,
+      "linkedin_org_size": null,
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": null,
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": null,
+      "linkedin_org_type": null,
+      "linkedin_org_foundeddate": null,
+      "linkedin_org_specialties": null,
+      "linkedin_org_locations": null,
+      "linkedin_org_description": null,
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "georgetown-university",
+      "no_jb_schema": null,
+      "external_apply_url": "https://georgetown.wd1.myworkdayjobs.com/Georgetown_Admin_Careers/job/500-First-St-NW-7th-Floor/Data-Research-Analyst--Center-for-Security-and-Emerging-Technology---Walsh-School-of-Foreign-Service---Georgetown-University_JR17287"
+    },
+    {
+      "id": "1843283496",
+      "date_posted": "2025-08-04T12:32:36",
+      "date_created": "2025-08-04T12:36:32.88796",
+      "title": "Senior Software Engineer – Consumer & Commercial Lending",
+      "organization": "Jobright.ai",
+      "organization_url": "https://www.linkedin.com/company/jobright-ai",
+      "date_validthrough": "2025-09-03T12:32:36",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "United States",
+            "streetAddress": null
+          },
+          "latitude": 42.939243,
+          "longitude": -75.620056
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-%E2%80%93-consumer-commercial-lending-at-jobright-ai-4279268936",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQENJWU02sl4ZA/company-logo_200_200/company-logo_200_200/0/1701315479200/jobright_ai_logo?e=2147483647&v=beta&t=cDt-o-0-sYO_OUsvUeQMrlHGJzIfqlSelOExKlK1FTA",
+      "cities_derived": [
+        "New York"
+      ],
+      "counties_derived": [
+        "Richmond County"
+      ],
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.68295
+      ],
+      "lngs_derived": [
+        -73.9708
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 31,
+      "linkedin_org_url": "https://jobright.ai",
+      "linkedin_org_size": "2-10 employees",
+      "linkedin_org_slogan": "The first AI that hunts jobs for you.",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 36419,
+      "linkedin_org_headquarters": "Santa Clara, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2023",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "3120 Scott Blvd, Santa Clara, California 95054, US"
+      ],
+      "linkedin_org_description": "Jobright is your personal AI job search agent that transforms the way you do job search from solo, time-consuming efforts to a fast, expert-guided journey, simplifying every job search step and accelerating your route to the best job outcomes.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobright-ai",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobright.ai/jobs/info/68905284f5ee707a15db63d5?utm_source=1124&utm_campaign=68905284f5ee707a15db63d5&tob=true"
+    },
+    {
+      "id": "1843283365",
+      "date_posted": "2025-08-04T12:32:14",
+      "date_created": "2025-08-04T12:36:26.404183",
+      "title": "Assistant Property Manager",
+      "organization": "Brookfield Properties",
+      "organization_url": "https://www.linkedin.com/company/brookfieldproperties",
+      "date_validthrough": "2025-09-03T12:32:14",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Alexandria",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 38.804665,
+          "longitude": -77.04362
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/assistant-property-manager-at-brookfield-properties-4279272483",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQF2u1kiy4LF3A/company-logo_200_200/company-logo_200_200/0/1630643856700/brookfieldproperties_logo?e=2147483647&v=beta&t=7MRM7dsxt3ziS7fEtM5YnDAl3Qvb25gK2SVV1AhwLws",
+      "cities_derived": [
+        "Alexandria"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Alexandria, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.8051095
+      ],
+      "lngs_derived": [
+        -77.0470229
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 9395,
+      "linkedin_org_url": "https://www.brookfieldproperties.com/",
+      "linkedin_org_size": "5,001-10,000 employees",
+      "linkedin_org_slogan": "Our success starts with our people. People like you.",
+      "linkedin_org_industry": "Real Estate",
+      "linkedin_org_followers": 334005,
+      "linkedin_org_headquarters": "New York, NY",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "1924",
+      "linkedin_org_specialties": [
+        "Logistics",
+        "Office",
+        "Retail",
+        "Hospitality",
+        "Multifamily",
+        "Development",
+        "and Flex"
+      ],
+      "linkedin_org_locations": [
+        "250 Vesey Street, New York, NY 10281, US",
+        "181 Bay St, Toronto, Ontario M5J 2T3, CA",
+        "350 N Orleans St, Chicago, Illinois 60654, US",
+        "10 Carrington St, Sydney, New South Wales 2000, AU",
+        "Ala B, 11º andar, Morumbi – CEP 04794-000, São Paulo, SP, BR",
+        "736 South 1st Zhongshan Road, Huangpu District 200023, Shanghai, CN",
+        "Linkstraβe 2, Berlin, 10785, DE",
+        "Tower 5A, IT/ITES SEZ, Sector 48, Gurugram, Haryana 122018, IN",
+        "Al Mustaqbal Street, Level 16, Dubai , AE",
+        "Level 26 Canary Wharf, London, E14 5AB, GB"
+      ],
+      "linkedin_org_description": "Brookfield Properties develops and operates real estate investments on behalf of Brookfield Asset Management — one of the largest alternative asset managers in the world. From office to retail, logistics to multifamily, and hospitality to development, we work across sectors to bring high-quality, sustainable real estate to life around the globe every day.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Not Applicable",
+      "directapply": false,
+      "linkedin_org_slug": "brookfieldproperties",
+      "no_jb_schema": null,
+      "external_apply_url": "https://brookfield.wd5.myworkdayjobs.com/brookfieldproperties/job/Alexandria-Virginia/Assistant-Property-Manager_R2044979"
+    },
+    {
+      "id": "1843285598",
+      "date_posted": "2025-08-04T12:32:11",
+      "date_created": "2025-08-04T12:38:26.894652",
+      "title": "Full-Stack Developer (Go + React)",
+      "organization": "WE RULE",
+      "organization_url": "https://www.linkedin.com/company/we-rule",
+      "date_validthrough": "2025-09-03T12:32:11",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Metropolregion Berlin/Brandenburg",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 52.560253,
+          "longitude": 13.296672
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://de.linkedin.com/jobs/view/full-stack-developer-go-%2B-react-at-we-rule-4279607738",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "de.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQEWyeVbK7lLQA/company-logo_200_200/company-logo_200_200/0/1673819771551/we_rule_logo?e=2147483647&v=beta&t=uB-Eeh8Y9K0fhunUkDZzT_aEaLzEj9SpgSSAVxvC-wo",
+      "cities_derived": null,
+      "counties_derived": null,
+      "regions_derived": null,
+      "countries_derived": [
+        "Germany"
+      ],
+      "locations_derived": [
+        "Germany"
+      ],
+      "timezones_derived": [
+        "Europe/Berlin"
+      ],
+      "lats_derived": [
+        51.1638175
+      ],
+      "lngs_derived": [
+        10.4478313
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": null,
+      "linkedin_org_url": null,
+      "linkedin_org_size": null,
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": null,
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": null,
+      "linkedin_org_type": null,
+      "linkedin_org_foundeddate": null,
+      "linkedin_org_specialties": null,
+      "linkedin_org_locations": null,
+      "linkedin_org_description": null,
+      "linkedin_org_recruitment_agency_derived": null,
+      "seniority": "Management",
+      "directapply": true,
+      "linkedin_org_slug": null,
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1843283353",
+      "date_posted": "2025-08-04T12:32:10",
+      "date_created": "2025-08-04T12:36:26.098502",
+      "title": "Executive Assistant to CEO & Founding Team at High-Growth Company in the commercial real estate space",
+      "organization": "PREIshare",
+      "organization_url": "https://www.linkedin.com/company/preishare",
+      "date_validthrough": "2025-09-03T12:32:10",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Salt Lake City",
+            "addressRegion": "UT",
+            "streetAddress": null
+          },
+          "latitude": 40.758476,
+          "longitude": -111.888145
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/executive-assistant-to-ceo-founding-team-at-high-growth-company-in-the-commercial-real-estate-space-at-preishare-4279268904",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQGthOSoBJCvGw/company-logo_200_200/B56ZgFIqwNHQAI-/0/1752432817666/preishare_logo?e=2147483647&v=beta&t=LjVUqSJStqzD7RBs6a6EhIxgOpYcMpe273m4CVD6l0c",
+      "cities_derived": [
+        "Salt Lake City"
+      ],
+      "counties_derived": [
+        "Salt Lake County"
+      ],
+      "regions_derived": [
+        "Utah"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Salt Lake City, Utah, United States"
+      ],
+      "timezones_derived": [
+        "America/Denver"
+      ],
+      "lats_derived": [
+        40.7596198
+      ],
+      "lngs_derived": [
+        -111.886797
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": null,
+      "linkedin_org_url": null,
+      "linkedin_org_size": null,
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": null,
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": null,
+      "linkedin_org_type": null,
+      "linkedin_org_foundeddate": null,
+      "linkedin_org_specialties": null,
+      "linkedin_org_locations": null,
+      "linkedin_org_description": null,
+      "linkedin_org_recruitment_agency_derived": null,
+      "seniority": "Entry level",
+      "directapply": true,
+      "linkedin_org_slug": null,
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1843295043",
+      "date_posted": "2025-08-04T12:32:05",
+      "date_created": "2025-08-04T13:03:25.675898",
+      "title": "Senior Software Engineer, Fullstack (USA)",
+      "organization": "Jobright.ai",
+      "organization_url": "https://www.linkedin.com/company/jobright-ai",
+      "date_validthrough": "2025-09-03T12:32:05",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "California",
+            "addressRegion": "United States",
+            "streetAddress": null
+          },
+          "latitude": 37.25467,
+          "longitude": -119.61727
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-fullstack-usa-at-jobright-ai-4279273391",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQENJWU02sl4ZA/company-logo_200_200/company-logo_200_200/0/1701315479200/jobright_ai_logo?e=2147483647&v=beta&t=cDt-o-0-sYO_OUsvUeQMrlHGJzIfqlSelOExKlK1FTA",
+      "cities_derived": null,
+      "counties_derived": null,
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        36.7014631
+      ],
+      "lngs_derived": [
+        -118.755997
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 31,
+      "linkedin_org_url": "https://jobright.ai",
+      "linkedin_org_size": "2-10 employees",
+      "linkedin_org_slogan": "The first AI that hunts jobs for you.",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 36424,
+      "linkedin_org_headquarters": "Santa Clara, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2023",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "3120 Scott Blvd, Santa Clara, California 95054, US"
+      ],
+      "linkedin_org_description": "Jobright is your personal AI job search agent that transforms the way you do job search from solo, time-consuming efforts to a fast, expert-guided journey, simplifying every job search step and accelerating your route to the best job outcomes.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobright-ai",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobright.ai/jobs/info/6881828ff4f06100f3a276e7?utm_source=1124&utm_campaign=6881828ff4f06100f3a276e7&tob=true"
+    },
+    {
+      "id": "1843283201",
+      "date_posted": "2025-08-04T12:31:13",
+      "date_created": "2025-08-04T12:36:18.315827",
+      "title": "Scheduling Senior Coordinator",
+      "organization": "The Ohio State University Wexner Medical Center",
+      "organization_url": "https://www.linkedin.com/company/the-ohio-state-university-wexner-medical-center",
+      "date_validthrough": "2025-09-03T12:31:13",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Columbus",
+            "addressRegion": "OH",
+            "streetAddress": null
+          },
+          "latitude": 39.96276,
+          "longitude": -82.99629
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/scheduling-senior-coordinator-at-the-ohio-state-university-wexner-medical-center-4279608702",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQGWofdsqdp_YA/company-logo_200_200/company-logo_200_200/0/1631326560527?e=2147483647&v=beta&t=NBp6WIINFDIw7FMgAmMnXtgB3AgyozqsNtpVhm0h8ys",
+      "cities_derived": [
+        "Columbus"
+      ],
+      "counties_derived": [
+        "Franklin County"
+      ],
+      "regions_derived": [
+        "Ohio"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Columbus, Ohio, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        39.9622601
+      ],
+      "lngs_derived": [
+        -83.0007065
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 14928,
+      "linkedin_org_url": "http://wexnermedical.osu.edu",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": " Improving lives through innovation in research, education and patient care.",
+      "linkedin_org_industry": "Hospitals and Health Care",
+      "linkedin_org_followers": 103939,
+      "linkedin_org_headquarters": "Columbus, OH",
+      "linkedin_org_type": "Nonprofit",
+      "linkedin_org_foundeddate": "1834",
+      "linkedin_org_specialties": [
+        "Sports Medicine",
+        "Personalized health care",
+        "Research",
+        "Education",
+        "Patient Care",
+        "Cancer",
+        "Critical Care",
+        "Neurosciences",
+        "Labor & Delivery/Women's Health",
+        "Heart",
+        "Transplantation",
+        "Orthopedics",
+        "Emergency Medicine",
+        "Telehealth",
+        "Internal Medicine",
+        "Family Medicine",
+        "Urology",
+        "Otolaryngology",
+        "Surgery",
+        "Plastic Surgery",
+        "Dermatology",
+        "Outpatient Care",
+        "Neurology",
+        "Nutrition",
+        "Radiology",
+        "Opthalmology",
+        "Sleep Medicine",
+        "and Pulmonary Critical Care"
+      ],
+      "linkedin_org_locations": [
+        "410 W. 10th Ave, Columbus, OH 43210, US"
+      ],
+      "linkedin_org_description": "At The Ohio State University Wexner Medical Center you will find more than a job – you can establish a career that allows you to actually change the face of medicine. As central Ohio's only academic medical center, we emphasize learning, development and innovation in order to offer the very best in personalized care to over 1.7 million patients each year.\n\nThere's plenty of opportunity for career growth too, because Ohio State's Wexner Medical Center encompasses seven hospitals, fourteen primary care offices, a walk-in clinic, two After-Hours Care locations and eleven multi-specialty clinics, as well as the College of Medicine, the School of Health and Rehabilitation Sciences, the health sciences library and the Faculty Group Practice. You'll find clinical care offered in virtually every medical specialty and subspecialty and an interdisciplinary team of healthcare experts beyond compare.\n\nOhio State offers great pay, complete benefits, state retirement options, tuition assistance and access to the cultural and sporting resources at one of the nation’s largest universities (learn more at wexnermedical.osu.edu/careers). \n\nOutside of work, you'll discover a great quality of life. Columbus is the nation's 14th largest city with beautiful neighborhoods and a full range of activities and entertainment options. \n\nEverything we do is driven by our strategic plan, which is built on our mission to improve health in Ohio and across the world through innovation in research, education and patient care. To accomplish this, our vision calls us to push the boundaries of discovery and knowledge to solve significant problems and deliver unparalleled care. If this sounds appealing to you and you share our values of inclusiveness, determination, empathy, sincerity, ownership and innovation, Ohio State may be the perfect fit for you. \n\nApply today and let's see what we can do together to change the world through medicine. ",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "the-ohio-state-university-wexner-medical-center",
+      "no_jb_schema": null,
+      "external_apply_url": "https://osu.wd1.myworkdayjobs.com/OSUCareers/job/Medical-Center-Campus/Scheduling-Senior-Coordinator_R134042-2?source=LinkedIn"
+    },
+    {
+      "id": "1843283247",
+      "date_posted": "2025-08-04T12:31:13",
+      "date_created": "2025-08-04T12:36:19.690515",
+      "title": "Scheduling Coordinator 1",
+      "organization": "The Ohio State University Wexner Medical Center",
+      "organization_url": "https://www.linkedin.com/company/the-ohio-state-university-wexner-medical-center",
+      "date_validthrough": "2025-09-03T12:31:13",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Columbus",
+            "addressRegion": "OH",
+            "streetAddress": null
+          },
+          "latitude": 39.96276,
+          "longitude": -82.99629
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/scheduling-coordinator-1-at-the-ohio-state-university-wexner-medical-center-4279613275",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQGWofdsqdp_YA/company-logo_200_200/company-logo_200_200/0/1631326560527?e=2147483647&v=beta&t=NBp6WIINFDIw7FMgAmMnXtgB3AgyozqsNtpVhm0h8ys",
+      "cities_derived": [
+        "Columbus"
+      ],
+      "counties_derived": [
+        "Franklin County"
+      ],
+      "regions_derived": [
+        "Ohio"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Columbus, Ohio, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        39.9622601
+      ],
+      "lngs_derived": [
+        -83.0007065
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 14928,
+      "linkedin_org_url": "http://wexnermedical.osu.edu",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": " Improving lives through innovation in research, education and patient care.",
+      "linkedin_org_industry": "Hospitals and Health Care",
+      "linkedin_org_followers": 103939,
+      "linkedin_org_headquarters": "Columbus, OH",
+      "linkedin_org_type": "Nonprofit",
+      "linkedin_org_foundeddate": "1834",
+      "linkedin_org_specialties": [
+        "Sports Medicine",
+        "Personalized health care",
+        "Research",
+        "Education",
+        "Patient Care",
+        "Cancer",
+        "Critical Care",
+        "Neurosciences",
+        "Labor & Delivery/Women's Health",
+        "Heart",
+        "Transplantation",
+        "Orthopedics",
+        "Emergency Medicine",
+        "Telehealth",
+        "Internal Medicine",
+        "Family Medicine",
+        "Urology",
+        "Otolaryngology",
+        "Surgery",
+        "Plastic Surgery",
+        "Dermatology",
+        "Outpatient Care",
+        "Neurology",
+        "Nutrition",
+        "Radiology",
+        "Opthalmology",
+        "Sleep Medicine",
+        "and Pulmonary Critical Care"
+      ],
+      "linkedin_org_locations": [
+        "410 W. 10th Ave, Columbus, OH 43210, US"
+      ],
+      "linkedin_org_description": "At The Ohio State University Wexner Medical Center you will find more than a job – you can establish a career that allows you to actually change the face of medicine. As central Ohio's only academic medical center, we emphasize learning, development and innovation in order to offer the very best in personalized care to over 1.7 million patients each year.\n\nThere's plenty of opportunity for career growth too, because Ohio State's Wexner Medical Center encompasses seven hospitals, fourteen primary care offices, a walk-in clinic, two After-Hours Care locations and eleven multi-specialty clinics, as well as the College of Medicine, the School of Health and Rehabilitation Sciences, the health sciences library and the Faculty Group Practice. You'll find clinical care offered in virtually every medical specialty and subspecialty and an interdisciplinary team of healthcare experts beyond compare.\n\nOhio State offers great pay, complete benefits, state retirement options, tuition assistance and access to the cultural and sporting resources at one of the nation’s largest universities (learn more at wexnermedical.osu.edu/careers). \n\nOutside of work, you'll discover a great quality of life. Columbus is the nation's 14th largest city with beautiful neighborhoods and a full range of activities and entertainment options. \n\nEverything we do is driven by our strategic plan, which is built on our mission to improve health in Ohio and across the world through innovation in research, education and patient care. To accomplish this, our vision calls us to push the boundaries of discovery and knowledge to solve significant problems and deliver unparalleled care. If this sounds appealing to you and you share our values of inclusiveness, determination, empathy, sincerity, ownership and innovation, Ohio State may be the perfect fit for you. \n\nApply today and let's see what we can do together to change the world through medicine. ",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "the-ohio-state-university-wexner-medical-center",
+      "no_jb_schema": null,
+      "external_apply_url": "https://osu.wd1.myworkdayjobs.com/OSUCareers/job/Medical-Center-Campus/Scheduling-Coordinator-1_R133916-1?source=LinkedIn"
+    },
+    {
+      "id": "1843286663",
+      "date_posted": "2025-08-04T12:30:54",
+      "date_created": "2025-08-04T12:39:27.606808",
+      "title": "Softwareentwickler:in (d/m/w) mit Cloud Fokus (AWS,NodeJS, DevOps) (80-100%)",
+      "organization": "Haufe Group",
+      "organization_url": "https://www.linkedin.com/company/haufe-group",
+      "date_validthrough": "2025-09-03T12:30:54",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Freiburg im Breisgau",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 47.997185,
+          "longitude": 7.853767
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://de.linkedin.com/jobs/view/softwareentwickler-in-d-m-w-mit-cloud-fokus-aws-nodejs-devops-80-100%25-at-haufe-group-4279609632",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "de.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQHQN8sHppWnMw/company-logo_200_200/company-logo_200_200/0/1712737056320/haufe_group_logo?e=2147483647&v=beta&t=NUZGXKMo0T7DBPHLx-1D_GW6khtNVuHnRAnfLyiEurA",
+      "cities_derived": [
+        "Freiburg im Breisgau"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "Baden-Württemberg"
+      ],
+      "countries_derived": [
+        "Germany"
+      ],
+      "locations_derived": [
+        "Freiburg im Breisgau, Baden-Württemberg, Germany"
+      ],
+      "timezones_derived": [
+        "Europe/Berlin"
+      ],
+      "lats_derived": [
+        47.9960901
+      ],
+      "lngs_derived": [
+        7.8494005
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 1356,
+      "linkedin_org_url": "https://www.haufegroup.com",
+      "linkedin_org_size": "1,001-5,000 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 39746,
+      "linkedin_org_headquarters": "Freiburg, Deutschland",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Software",
+        "Online-Datenbanken und SaaS-Lösungen",
+        "Fachliteratur für Recht",
+        "Wirtschaft und Steuern",
+        "Anwendungs-Software für Buchhaltung",
+        "Warenwirtschaft und Faktura",
+        "Weiterbildungen",
+        "Seminare und eLearning für betriebliche Themenfelder",
+        "Medien",
+        "and HR Lösungen"
+      ],
+      "linkedin_org_locations": [
+        "Munzinger Straße 9, Freiburg, Deutschland 79111, DE",
+        "Torre Mapfre, Carrer de la Marina 18, Planta 5, Barcelona, Provincia de Barcelona 08039 , ES",
+        "Piața Consiliul Europei 2, Timişoara, Timiş 300627, RO",
+        "Edisonstraße 63, Berlin, BE 12459, DE",
+        "Hanauer Landstraße 182 e, Frankfurt, Hessen 60314, DE",
+        "Fraunhoferstraße 5, Planegg, Bavaria 82152, DE",
+        "Im Kreuz 9, Würzburg, Bavaria 97076, DE",
+        "Drostestraße 14 / 16, Hannover, Lower Saxony 30161, DE",
+        "Hallerstraße 76, Hamburg, HH 20146, DE"
+      ],
+      "linkedin_org_description": "Haufe Group is a leading B2B provider of integrated business and workplace solutions. The family business supports people and companies in their business development and in successfully shaping transformation processes. With content, software and training.  \n\n \n\nThe family-owned company based in Freiburg im Breisgau, Germany, is broadly positioned to support customers on their own path into the future with a wide range of solutions. Haufe Group was founded in 1951 and currently employs around 2,700 people at 12 locations. The Haufe Group’s best-known brands include Haufe, Haufe Akademie and Lexware, and over one million customers from the DACH region rely on the services of Haufe Group – from solo freelancers to all DAX 40 companies. \n\n \n\nTransformation is the driving force behind Haufe Group’s corporate development. To consistently expand its culture of innovation, the corporate group establishes forward-looking methods of work, utilizes new technologies to create modern products and solutions and invests in pioneering start-ups and future fields of activity. This is how Haufe Group shapes the working world of tomorrow for its customers. ",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Management",
+      "directapply": false,
+      "linkedin_org_slug": "haufe-group",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobs.haufegroup.com/stelle/softwareentwicklerin-d-m-w-mit-clou/ffba8a8a-f89a-494b-8e1c-065444d00b07?utm_source=linkedin"
+    },
+    {
+      "id": "1843281929",
+      "date_posted": "2025-08-04T12:30:49",
+      "date_created": "2025-08-04T12:35:31.150872",
+      "title": "Associate Cloud Consultant, AWS Professional Services",
+      "organization": "Jobright.ai",
+      "organization_url": "https://www.linkedin.com/company/jobright-ai",
+      "date_validthrough": "2025-09-03T12:30:49",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Seattle",
+            "addressRegion": "WA",
+            "streetAddress": null
+          },
+          "latitude": 47.60323,
+          "longitude": -122.33028
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/associate-cloud-consultant-aws-professional-services-at-jobright-ai-4279275029",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQENJWU02sl4ZA/company-logo_200_200/company-logo_200_200/0/1701315479200/jobright_ai_logo?e=2147483647&v=beta&t=cDt-o-0-sYO_OUsvUeQMrlHGJzIfqlSelOExKlK1FTA",
+      "cities_derived": [
+        "Seattle"
+      ],
+      "counties_derived": [
+        "King County"
+      ],
+      "regions_derived": [
+        "Washington"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Seattle, Washington, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        47.6038321
+      ],
+      "lngs_derived": [
+        -122.330062
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 31,
+      "linkedin_org_url": "https://jobright.ai",
+      "linkedin_org_size": "2-10 employees",
+      "linkedin_org_slogan": "The first AI that hunts jobs for you.",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 36419,
+      "linkedin_org_headquarters": "Santa Clara, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2023",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "3120 Scott Blvd, Santa Clara, California 95054, US"
+      ],
+      "linkedin_org_description": "Jobright is your personal AI job search agent that transforms the way you do job search from solo, time-consuming efforts to a fast, expert-guided journey, simplifying every job search step and accelerating your route to the best job outcomes.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "jobright-ai",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobright.ai/jobs/info/68826b156fcd973d15ad8f95?utm_source=1124&utm_campaign=68826b156fcd973d15ad8f95&tob=true"
+    },
+    {
+      "id": "1843280174",
+      "date_posted": "2025-08-04T12:30:29",
+      "date_created": "2025-08-04T12:33:59.661303",
+      "title": "Training Coordinator",
+      "organization": "Koniag Government Services",
+      "organization_url": "https://www.linkedin.com/company/koniag-government-services",
+      "date_validthrough": "2025-09-03T12:30:29",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Washington",
+            "addressRegion": "DC",
+            "streetAddress": null
+          },
+          "latitude": 38.892063,
+          "longitude": -77.01991
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/training-coordinator-at-koniag-government-services-4279268725",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQFnqsBa4LRCAg/company-logo_200_200/company-logo_200_200/0/1630591686194/koniag_government_services_logo?e=2147483647&v=beta&t=A2Wkg5JgcSPa2Nup4eZ8a9Hq6XhHI6mgKFxt59SvMbw",
+      "cities_derived": [
+        "Washington"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "District of Columbia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Washington, District of Columbia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.8950368
+      ],
+      "lngs_derived": [
+        -77.0365427
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 1428,
+      "linkedin_org_url": "http://www.koniag-gs.com/",
+      "linkedin_org_size": "1,001-5,000 employees",
+      "linkedin_org_slogan": "Community Mission. Solution Oriented. Exceptional People.",
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 29903,
+      "linkedin_org_headquarters": "Chantilly, Virginia",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "1975",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "4840 Westfields Blvd, Ste 200, Chantilly, Virginia 20151, US"
+      ],
+      "linkedin_org_description": "Koniag Government Services (KGS) is an Alaska Native Corporation comprised of multiple wholly owned subsidiary companies that deliver Enterprise Solutions, Professional Services, and Operations Management to Federal Government agencies. With an agile employee and corporate culture, KGS applies its proven technical, professional, and operational expertise to enable successful mission outcomes for Defense and Civilian agencies through forward-leaning, solution-oriented business partnerships and a commitment to exceptional service delivery.\n Our commitment to quality delivery is demonstrated by our independently accredited CMMI/Dev Level3, CMMI/Svc Level3, ISO 9001:2015 Quality Management System, and ISO 20001:2011 Service Management System. KGS is headquartered in Chantilly, VA with offices all over the country.\n\nKGS is seeking qualified candidates for our open positions, but we will only extend an offer of employment after a candidate applies through the link in our job posting. If you receive a job offer via email only and have not been interviewed by the KGS hiring manager, feel free to contact KGSrecruiting@koniag-gs.com to verify its validity.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "koniag-government-services",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobs.dayforcehcm.com/en-US/kgs/CANDIDATEPORTAL/jobs/698?source=LinkedIn"
+    },
+    {
+      "id": "1843285471",
+      "date_posted": "2025-08-04T12:30:14",
+      "date_created": "2025-08-04T12:38:19.78906",
+      "title": "Senior Full Stack Entwickler:in Java, TypeScript, React (d/m/w) - Remote",
+      "organization": "Haufe Group",
+      "organization_url": "https://www.linkedin.com/company/haufe-group",
+      "date_validthrough": "2025-09-03T12:30:14",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Freiburg im Breisgau",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 47.997185,
+          "longitude": 7.853767
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://de.linkedin.com/jobs/view/senior-full-stack-entwickler-in-java-typescript-react-d-m-w-remote-at-haufe-group-4279606904",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "de.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQHQN8sHppWnMw/company-logo_200_200/company-logo_200_200/0/1712737056320/haufe_group_logo?e=2147483647&v=beta&t=NUZGXKMo0T7DBPHLx-1D_GW6khtNVuHnRAnfLyiEurA",
+      "cities_derived": [
+        "Freiburg im Breisgau"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "Baden-Württemberg"
+      ],
+      "countries_derived": [
+        "Germany"
+      ],
+      "locations_derived": [
+        "Freiburg im Breisgau, Baden-Württemberg, Germany"
+      ],
+      "timezones_derived": [
+        "Europe/Berlin"
+      ],
+      "lats_derived": [
+        47.9960901
+      ],
+      "lngs_derived": [
+        7.8494005
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 1356,
+      "linkedin_org_url": "https://www.haufegroup.com",
+      "linkedin_org_size": "1,001-5,000 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 39746,
+      "linkedin_org_headquarters": "Freiburg, Deutschland",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Software",
+        "Online-Datenbanken und SaaS-Lösungen",
+        "Fachliteratur für Recht",
+        "Wirtschaft und Steuern",
+        "Anwendungs-Software für Buchhaltung",
+        "Warenwirtschaft und Faktura",
+        "Weiterbildungen",
+        "Seminare und eLearning für betriebliche Themenfelder",
+        "Medien",
+        "and HR Lösungen"
+      ],
+      "linkedin_org_locations": [
+        "Munzinger Straße 9, Freiburg, Deutschland 79111, DE",
+        "Torre Mapfre, Carrer de la Marina 18, Planta 5, Barcelona, Provincia de Barcelona 08039 , ES",
+        "Piața Consiliul Europei 2, Timişoara, Timiş 300627, RO",
+        "Edisonstraße 63, Berlin, BE 12459, DE",
+        "Hanauer Landstraße 182 e, Frankfurt, Hessen 60314, DE",
+        "Fraunhoferstraße 5, Planegg, Bavaria 82152, DE",
+        "Im Kreuz 9, Würzburg, Bavaria 97076, DE",
+        "Drostestraße 14 / 16, Hannover, Lower Saxony 30161, DE",
+        "Hallerstraße 76, Hamburg, HH 20146, DE"
+      ],
+      "linkedin_org_description": "Haufe Group is a leading B2B provider of integrated business and workplace solutions. The family business supports people and companies in their business development and in successfully shaping transformation processes. With content, software and training.  \n\n \n\nThe family-owned company based in Freiburg im Breisgau, Germany, is broadly positioned to support customers on their own path into the future with a wide range of solutions. Haufe Group was founded in 1951 and currently employs around 2,700 people at 12 locations. The Haufe Group’s best-known brands include Haufe, Haufe Akademie and Lexware, and over one million customers from the DACH region rely on the services of Haufe Group – from solo freelancers to all DAX 40 companies. \n\n \n\nTransformation is the driving force behind Haufe Group’s corporate development. To consistently expand its culture of innovation, the corporate group establishes forward-looking methods of work, utilizes new technologies to create modern products and solutions and invests in pioneering start-ups and future fields of activity. This is how Haufe Group shapes the working world of tomorrow for its customers. ",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Management",
+      "directapply": false,
+      "linkedin_org_slug": "haufe-group",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobs.haufegroup.com/stelle/senior-full-stack-entwicklerin-java/13c67b7a-b672-4249-bf7c-3433238c675d?utm_source=linkedin"
+    },
+    {
+      "id": "1843285478",
+      "date_posted": "2025-08-04T12:30:11",
+      "date_created": "2025-08-04T12:38:20.183295",
+      "title": "Fullstack Entwickler:in - Digital Banking (d/m/w)",
+      "organization": "Haufe Group",
+      "organization_url": "https://www.linkedin.com/company/haufe-group",
+      "date_validthrough": "2025-09-03T12:30:11",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Freiburg im Breisgau",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 47.997185,
+          "longitude": 7.853767
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://de.linkedin.com/jobs/view/fullstack-entwickler-in-digital-banking-d-m-w-at-haufe-group-4279609613",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "de.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQHQN8sHppWnMw/company-logo_200_200/company-logo_200_200/0/1712737056320/haufe_group_logo?e=2147483647&v=beta&t=NUZGXKMo0T7DBPHLx-1D_GW6khtNVuHnRAnfLyiEurA",
+      "cities_derived": [
+        "Freiburg im Breisgau"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "Baden-Württemberg"
+      ],
+      "countries_derived": [
+        "Germany"
+      ],
+      "locations_derived": [
+        "Freiburg im Breisgau, Baden-Württemberg, Germany"
+      ],
+      "timezones_derived": [
+        "Europe/Berlin"
+      ],
+      "lats_derived": [
+        47.9960901
+      ],
+      "lngs_derived": [
+        7.8494005
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 1356,
+      "linkedin_org_url": "https://www.haufegroup.com",
+      "linkedin_org_size": "1,001-5,000 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 39746,
+      "linkedin_org_headquarters": "Freiburg, Deutschland",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Software",
+        "Online-Datenbanken und SaaS-Lösungen",
+        "Fachliteratur für Recht",
+        "Wirtschaft und Steuern",
+        "Anwendungs-Software für Buchhaltung",
+        "Warenwirtschaft und Faktura",
+        "Weiterbildungen",
+        "Seminare und eLearning für betriebliche Themenfelder",
+        "Medien",
+        "and HR Lösungen"
+      ],
+      "linkedin_org_locations": [
+        "Munzinger Straße 9, Freiburg, Deutschland 79111, DE",
+        "Torre Mapfre, Carrer de la Marina 18, Planta 5, Barcelona, Provincia de Barcelona 08039 , ES",
+        "Piața Consiliul Europei 2, Timişoara, Timiş 300627, RO",
+        "Edisonstraße 63, Berlin, BE 12459, DE",
+        "Hanauer Landstraße 182 e, Frankfurt, Hessen 60314, DE",
+        "Fraunhoferstraße 5, Planegg, Bavaria 82152, DE",
+        "Im Kreuz 9, Würzburg, Bavaria 97076, DE",
+        "Drostestraße 14 / 16, Hannover, Lower Saxony 30161, DE",
+        "Hallerstraße 76, Hamburg, HH 20146, DE"
+      ],
+      "linkedin_org_description": "Haufe Group is a leading B2B provider of integrated business and workplace solutions. The family business supports people and companies in their business development and in successfully shaping transformation processes. With content, software and training.  \n\n \n\nThe family-owned company based in Freiburg im Breisgau, Germany, is broadly positioned to support customers on their own path into the future with a wide range of solutions. Haufe Group was founded in 1951 and currently employs around 2,700 people at 12 locations. The Haufe Group’s best-known brands include Haufe, Haufe Akademie and Lexware, and over one million customers from the DACH region rely on the services of Haufe Group – from solo freelancers to all DAX 40 companies. \n\n \n\nTransformation is the driving force behind Haufe Group’s corporate development. To consistently expand its culture of innovation, the corporate group establishes forward-looking methods of work, utilizes new technologies to create modern products and solutions and invests in pioneering start-ups and future fields of activity. This is how Haufe Group shapes the working world of tomorrow for its customers. ",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Management",
+      "directapply": false,
+      "linkedin_org_slug": "haufe-group",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobs.haufegroup.com/stelle/fullstack-entwicklerin-digital-bank/37c7602c-0fb3-47e4-8874-dc194b1bb0e6?utm_source=linkedin"
+    },
+    {
+      "id": "1843285402",
+      "date_posted": "2025-08-04T12:30:10",
+      "date_created": "2025-08-04T12:38:13.473364",
+      "title": "Software Engineer AWS & TypeScript (d/m/w) – Event-Driven Architectures",
+      "organization": "Haufe Group",
+      "organization_url": "https://www.linkedin.com/company/haufe-group",
+      "date_validthrough": "2025-09-03T12:30:10",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Freiburg im Breisgau",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 47.997185,
+          "longitude": 7.853767
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://de.linkedin.com/jobs/view/software-engineer-aws-typescript-d-m-w-%E2%80%93-event-driven-architectures-at-haufe-group-4279613253",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "de.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQHQN8sHppWnMw/company-logo_200_200/company-logo_200_200/0/1712737056320/haufe_group_logo?e=2147483647&v=beta&t=NUZGXKMo0T7DBPHLx-1D_GW6khtNVuHnRAnfLyiEurA",
+      "cities_derived": [
+        "Freiburg im Breisgau"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "Baden-Württemberg"
+      ],
+      "countries_derived": [
+        "Germany"
+      ],
+      "locations_derived": [
+        "Freiburg im Breisgau, Baden-Württemberg, Germany"
+      ],
+      "timezones_derived": [
+        "Europe/Berlin"
+      ],
+      "lats_derived": [
+        47.9960901
+      ],
+      "lngs_derived": [
+        7.8494005
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 1356,
+      "linkedin_org_url": "https://www.haufegroup.com",
+      "linkedin_org_size": "1,001-5,000 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 39746,
+      "linkedin_org_headquarters": "Freiburg, Deutschland",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Software",
+        "Online-Datenbanken und SaaS-Lösungen",
+        "Fachliteratur für Recht",
+        "Wirtschaft und Steuern",
+        "Anwendungs-Software für Buchhaltung",
+        "Warenwirtschaft und Faktura",
+        "Weiterbildungen",
+        "Seminare und eLearning für betriebliche Themenfelder",
+        "Medien",
+        "and HR Lösungen"
+      ],
+      "linkedin_org_locations": [
+        "Munzinger Straße 9, Freiburg, Deutschland 79111, DE",
+        "Torre Mapfre, Carrer de la Marina 18, Planta 5, Barcelona, Provincia de Barcelona 08039 , ES",
+        "Piața Consiliul Europei 2, Timişoara, Timiş 300627, RO",
+        "Edisonstraße 63, Berlin, BE 12459, DE",
+        "Hanauer Landstraße 182 e, Frankfurt, Hessen 60314, DE",
+        "Fraunhoferstraße 5, Planegg, Bavaria 82152, DE",
+        "Im Kreuz 9, Würzburg, Bavaria 97076, DE",
+        "Drostestraße 14 / 16, Hannover, Lower Saxony 30161, DE",
+        "Hallerstraße 76, Hamburg, HH 20146, DE"
+      ],
+      "linkedin_org_description": "Haufe Group is a leading B2B provider of integrated business and workplace solutions. The family business supports people and companies in their business development and in successfully shaping transformation processes. With content, software and training.  \n\n \n\nThe family-owned company based in Freiburg im Breisgau, Germany, is broadly positioned to support customers on their own path into the future with a wide range of solutions. Haufe Group was founded in 1951 and currently employs around 2,700 people at 12 locations. The Haufe Group’s best-known brands include Haufe, Haufe Akademie and Lexware, and over one million customers from the DACH region rely on the services of Haufe Group – from solo freelancers to all DAX 40 companies. \n\n \n\nTransformation is the driving force behind Haufe Group’s corporate development. To consistently expand its culture of innovation, the corporate group establishes forward-looking methods of work, utilizes new technologies to create modern products and solutions and invests in pioneering start-ups and future fields of activity. This is how Haufe Group shapes the working world of tomorrow for its customers. ",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Management",
+      "directapply": false,
+      "linkedin_org_slug": "haufe-group",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobs.haufegroup.com/stelle/software-engineer-aws-typescript-d-/a93601f0-70fb-4b9e-8e88-9cdaec6a9c8d?utm_source=linkedin"
+    }
+  ]

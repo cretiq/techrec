@@ -1,0 +1,1923 @@
+[
+    {
+      "id": "1842764855",
+      "date_posted": "2025-08-03T02:01:33",
+      "date_created": "2025-08-03T02:38:12.236356",
+      "title": "Softwareentwickler - C# / .NET (m/w/d)",
+      "organization": "mamgo | Talente 🔗 Jobs",
+      "organization_url": "https://www.linkedin.com/company/mamgo-io",
+      "date_validthrough": "2025-09-02T02:01:33",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Nürnberg",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 49.45052,
+          "longitude": 11.08048
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://de.linkedin.com/jobs/view/softwareentwickler-c%23-net-m-w-d-at-mamgo-talente-%F0%9F%94%97-jobs-4279302654",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "de.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQFTSnQKspNWtw/company-logo_200_200/B4DZXyCVWmG4AM-/0/1743522453329/mamgo_io_logo?e=2147483647&v=beta&t=IG0QV210W8R22zWfM2ADlQX1MAk485j9DwPBTkMK1Pc",
+      "cities_derived": [
+        "Nuremberg"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "Bavaria"
+      ],
+      "countries_derived": [
+        "Germany"
+      ],
+      "locations_derived": [
+        "Nuremberg, Bavaria, Germany"
+      ],
+      "timezones_derived": [
+        "Europe/Berlin"
+      ],
+      "lats_derived": [
+        49.453872
+      ],
+      "lngs_derived": [
+        11.077298
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 12,
+      "linkedin_org_url": "http://www.mamgo.io",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": "Weil großartige Ideen nicht am Mangel guter Kolleg*innen scheitern dürfen.",
+      "linkedin_org_industry": "Technology, Information and Internet",
+      "linkedin_org_followers": 5465,
+      "linkedin_org_headquarters": "Weinheim, Baden-Württemberg",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2020",
+      "linkedin_org_specialties": [
+        "Programmatic Job Advertising",
+        "Performance Job Marketing",
+        "and Online Talent Attraction"
+      ],
+      "linkedin_org_locations": [
+        "Judengasse 4, Weinheim, Baden-Württemberg 69469, DE",
+        "Barcelona, ES"
+      ],
+      "linkedin_org_description": "Hire today for a better tomorrow. Enabling recruiters to hire better candidates faster and more cost effectively. ",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Management",
+      "directapply": false,
+      "linkedin_org_slug": "mamgo-io",
+      "no_jb_schema": null,
+      "external_apply_url": "https://mamgo.io/api/v1/applyclicks/2454074"
+    },
+    {
+      "id": "1842736377",
+      "date_posted": "2025-08-03T00:49:18",
+      "date_created": "2025-08-03T01:03:41.610683",
+      "title": "High-Net-Worth Tax Associate (Trusts & Estates)",
+      "organization": "Macpower Digital Assets Edge formerly MDA Edge",
+      "organization_url": "https://www.linkedin.com/company/mda-edge",
+      "date_validthrough": "2025-08-27T06:26:08",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Austin",
+            "addressRegion": "TX",
+            "streetAddress": null
+          },
+          "latitude": 30.264978,
+          "longitude": -97.7466
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 75000,
+          "maxValue": 90000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/high-net-worth-tax-associate-trusts-estates-at-macpower-digital-assets-edge-formerly-mda-edge-4279304026",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQHoEq7rfCvrfw/company-logo_200_200/company-logo_200_200/0/1686012704444/mda_edge_logo?e=2147483647&v=beta&t=83qyfvrMuGnEHIa3ezitTZIOoJa2XNX0wf3Vm6uThgI",
+      "cities_derived": [
+        "Austin"
+      ],
+      "counties_derived": [
+        "Travis County"
+      ],
+      "regions_derived": [
+        "Texas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Austin, Texas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        30.2711286
+      ],
+      "lngs_derived": [
+        -97.7436995
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 30,
+      "linkedin_org_url": "https://www.MDAEdge.com/",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": "Quality, Commitment, Partnership, Ingenuity",
+      "linkedin_org_industry": "Business Consulting and Services",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "Global",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Workforce Solutions include Contingent Staffing",
+        "Bulk/Project Staffing",
+        "RPO/KPO/BPO and Direct Hire.",
+        "Cloud Computing: Amazon Web Services (AWS)",
+        "Microsoft Azure",
+        "Google Cloud Platform (GCP)",
+        "IBM Cloud",
+        "Oracle Cloud Infrastructure (OCI) etc.",
+        "Enterprise Resource Planning: SAP",
+        "Oracle",
+        "Microsoft Dynamics 365",
+        "NetSuite",
+        "Infor etc.",
+        "Software Developments: JavaScript",
+        "Python",
+        "Java",
+        ".Net",
+        "Ruby",
+        "Swift",
+        "iOS and many more.",
+        "and Database: Oracle",
+        "PostgreSQL",
+        "MySQL",
+        "Microsoft SQL Server including Non-Relational Databases (NoSQL) like MongoDB",
+        "Cassandra",
+        "Redis",
+        "Elasticsearch and many more."
+      ],
+      "linkedin_org_locations": [
+        "Global, US",
+        "Sheridan , WY, US",
+        "Noida, Uttar Pradesh, IN",
+        "India, IN"
+      ],
+      "linkedin_org_description": "Our objective is to establish an exceptional ecosystem by connecting individuals, technology, and prospects through the application of human intelligence.\n\nMDA Edge is a process-oriented company and our expertise lies in providing comprehensive Workforce Solutions, specifically focusing on Contingent Staffing, Bulk/Project Staffing, RPO/KPO/BPO, and Direct Hire services. We cater to a wide range of industries, including Infrastructure Consulting, Engineering Consulting, IT Consulting, Healthcare, Life Sciences, Pharmaceutical Consulting, Consumer Goods, Education, Transportation & Logistics, Media & Entertainment, Telecom, BFSI, Manufacturing, Utilities & Energies, and Corporate Recruitment. Moreover, we have developed a dedicated focus on Government Consulting.\n\nOur company prides itself on a meticulous approach, ensuring that we meet your specific needs. We have established a robust network of highly skilled professionals who are readily available to fulfill your requirements. With a strong commitment to excellence, we consistently deliver exceptional results for clients in India, Denmark, France, Germany, Ireland, Japan, Spain, Thailand, the USA, Canada and Mexico, with ongoing expansion efforts to serve more new regions in the near future.\n\nWe consistently uphold the highest standards of quality by providing resources, time, and materials to design, implement, and support efficient operations for organizations. Our track record of measurable accomplishments demonstrates our commitment to cultivating a balanced work and societal ecosystem.\n\nOur continuous growth, successful customer engagements, and strong customer retention exemplify our achievements. Furthermore, our passion lies in streamlining complex business processes through the application of suitable technology, which has been integral to our success.\n\nWe extend an invitation to join our dynamic workplace, offering rapid growth opportunities, excellent employee benefits, and a positive work-life balance.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Associate",
+      "directapply": true,
+      "linkedin_org_slug": "mda-edge",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842736050",
+      "date_posted": "2025-08-03T00:49:16",
+      "date_created": "2025-08-03T01:03:12.577531",
+      "title": ".NET Architect",
+      "organization": "Macpower Digital Assets Edge formerly MDA Edge",
+      "organization_url": "https://www.linkedin.com/company/mda-edge",
+      "date_validthrough": "2025-08-08T06:11:02",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Las Vegas",
+            "addressRegion": "NV",
+            "streetAddress": null
+          },
+          "latitude": 36.16909,
+          "longitude": -115.14058
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "Las Vegas, Nevada, United States"
+        }
+      ],
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 68,
+          "maxValue": 68,
+          "unitText": "HOUR"
+        }
+      },
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/net-architect-at-macpower-digital-assets-edge-formerly-mda-edge-4279301251",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQHoEq7rfCvrfw/company-logo_200_200/company-logo_200_200/0/1686012704444/mda_edge_logo?e=2147483647&v=beta&t=83qyfvrMuGnEHIa3ezitTZIOoJa2XNX0wf3Vm6uThgI",
+      "cities_derived": [
+        "Las Vegas"
+      ],
+      "counties_derived": [
+        "Clark County"
+      ],
+      "regions_derived": [
+        "Nevada"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Las Vegas, Nevada, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        36.1672719
+      ],
+      "lngs_derived": [
+        -115.1483538
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 30,
+      "linkedin_org_url": "https://www.MDAEdge.com/",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": "Quality, Commitment, Partnership, Ingenuity",
+      "linkedin_org_industry": "Business Consulting and Services",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "Global",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Workforce Solutions include Contingent Staffing",
+        "Bulk/Project Staffing",
+        "RPO/KPO/BPO and Direct Hire.",
+        "Cloud Computing: Amazon Web Services (AWS)",
+        "Microsoft Azure",
+        "Google Cloud Platform (GCP)",
+        "IBM Cloud",
+        "Oracle Cloud Infrastructure (OCI) etc.",
+        "Enterprise Resource Planning: SAP",
+        "Oracle",
+        "Microsoft Dynamics 365",
+        "NetSuite",
+        "Infor etc.",
+        "Software Developments: JavaScript",
+        "Python",
+        "Java",
+        ".Net",
+        "Ruby",
+        "Swift",
+        "iOS and many more.",
+        "and Database: Oracle",
+        "PostgreSQL",
+        "MySQL",
+        "Microsoft SQL Server including Non-Relational Databases (NoSQL) like MongoDB",
+        "Cassandra",
+        "Redis",
+        "Elasticsearch and many more."
+      ],
+      "linkedin_org_locations": [
+        "Global, US",
+        "Sheridan , WY, US",
+        "Noida, Uttar Pradesh, IN",
+        "India, IN"
+      ],
+      "linkedin_org_description": "Our objective is to establish an exceptional ecosystem by connecting individuals, technology, and prospects through the application of human intelligence.\n\nMDA Edge is a process-oriented company and our expertise lies in providing comprehensive Workforce Solutions, specifically focusing on Contingent Staffing, Bulk/Project Staffing, RPO/KPO/BPO, and Direct Hire services. We cater to a wide range of industries, including Infrastructure Consulting, Engineering Consulting, IT Consulting, Healthcare, Life Sciences, Pharmaceutical Consulting, Consumer Goods, Education, Transportation & Logistics, Media & Entertainment, Telecom, BFSI, Manufacturing, Utilities & Energies, and Corporate Recruitment. Moreover, we have developed a dedicated focus on Government Consulting.\n\nOur company prides itself on a meticulous approach, ensuring that we meet your specific needs. We have established a robust network of highly skilled professionals who are readily available to fulfill your requirements. With a strong commitment to excellence, we consistently deliver exceptional results for clients in India, Denmark, France, Germany, Ireland, Japan, Spain, Thailand, the USA, Canada and Mexico, with ongoing expansion efforts to serve more new regions in the near future.\n\nWe consistently uphold the highest standards of quality by providing resources, time, and materials to design, implement, and support efficient operations for organizations. Our track record of measurable accomplishments demonstrates our commitment to cultivating a balanced work and societal ecosystem.\n\nOur continuous growth, successful customer engagements, and strong customer retention exemplify our achievements. Furthermore, our passion lies in streamlining complex business processes through the application of suitable technology, which has been integral to our success.\n\nWe extend an invitation to join our dynamic workplace, offering rapid growth opportunities, excellent employee benefits, and a positive work-life balance.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "mda-edge",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842736054",
+      "date_posted": "2025-08-03T00:49:14",
+      "date_created": "2025-08-03T01:03:12.988283",
+      "title": "Senior EDI Software Engineer {APIs with C# .NET}",
+      "organization": "Macpower Digital Assets Edge formerly MDA Edge",
+      "organization_url": "https://www.linkedin.com/company/mda-edge",
+      "date_validthrough": "2025-08-19T18:10:37",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "San Diego",
+            "addressRegion": "CA",
+            "streetAddress": null
+          },
+          "latitude": 32.71576,
+          "longitude": -117.16382
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "San Diego, California, United States"
+        }
+      ],
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 115000,
+          "maxValue": 140000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-edi-software-engineer-apis-with-c%23-net-at-macpower-digital-assets-edge-formerly-mda-edge-4279305016",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQHoEq7rfCvrfw/company-logo_200_200/company-logo_200_200/0/1686012704444/mda_edge_logo?e=2147483647&v=beta&t=83qyfvrMuGnEHIa3ezitTZIOoJa2XNX0wf3Vm6uThgI",
+      "cities_derived": [
+        "San Diego"
+      ],
+      "counties_derived": [
+        "San Diego County"
+      ],
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "San Diego, California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        32.7174202
+      ],
+      "lngs_derived": [
+        -117.162772
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 30,
+      "linkedin_org_url": "https://www.MDAEdge.com/",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": "Quality, Commitment, Partnership, Ingenuity",
+      "linkedin_org_industry": "Business Consulting and Services",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "Global",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Workforce Solutions include Contingent Staffing",
+        "Bulk/Project Staffing",
+        "RPO/KPO/BPO and Direct Hire.",
+        "Cloud Computing: Amazon Web Services (AWS)",
+        "Microsoft Azure",
+        "Google Cloud Platform (GCP)",
+        "IBM Cloud",
+        "Oracle Cloud Infrastructure (OCI) etc.",
+        "Enterprise Resource Planning: SAP",
+        "Oracle",
+        "Microsoft Dynamics 365",
+        "NetSuite",
+        "Infor etc.",
+        "Software Developments: JavaScript",
+        "Python",
+        "Java",
+        ".Net",
+        "Ruby",
+        "Swift",
+        "iOS and many more.",
+        "and Database: Oracle",
+        "PostgreSQL",
+        "MySQL",
+        "Microsoft SQL Server including Non-Relational Databases (NoSQL) like MongoDB",
+        "Cassandra",
+        "Redis",
+        "Elasticsearch and many more."
+      ],
+      "linkedin_org_locations": [
+        "Global, US",
+        "Sheridan , WY, US",
+        "Noida, Uttar Pradesh, IN",
+        "India, IN"
+      ],
+      "linkedin_org_description": "Our objective is to establish an exceptional ecosystem by connecting individuals, technology, and prospects through the application of human intelligence.\n\nMDA Edge is a process-oriented company and our expertise lies in providing comprehensive Workforce Solutions, specifically focusing on Contingent Staffing, Bulk/Project Staffing, RPO/KPO/BPO, and Direct Hire services. We cater to a wide range of industries, including Infrastructure Consulting, Engineering Consulting, IT Consulting, Healthcare, Life Sciences, Pharmaceutical Consulting, Consumer Goods, Education, Transportation & Logistics, Media & Entertainment, Telecom, BFSI, Manufacturing, Utilities & Energies, and Corporate Recruitment. Moreover, we have developed a dedicated focus on Government Consulting.\n\nOur company prides itself on a meticulous approach, ensuring that we meet your specific needs. We have established a robust network of highly skilled professionals who are readily available to fulfill your requirements. With a strong commitment to excellence, we consistently deliver exceptional results for clients in India, Denmark, France, Germany, Ireland, Japan, Spain, Thailand, the USA, Canada and Mexico, with ongoing expansion efforts to serve more new regions in the near future.\n\nWe consistently uphold the highest standards of quality by providing resources, time, and materials to design, implement, and support efficient operations for organizations. Our track record of measurable accomplishments demonstrates our commitment to cultivating a balanced work and societal ecosystem.\n\nOur continuous growth, successful customer engagements, and strong customer retention exemplify our achievements. Furthermore, our passion lies in streamlining complex business processes through the application of suitable technology, which has been integral to our success.\n\nWe extend an invitation to join our dynamic workplace, offering rapid growth opportunities, excellent employee benefits, and a positive work-life balance.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "mda-edge",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842736052",
+      "date_posted": "2025-08-03T00:44:25",
+      "date_created": "2025-08-03T01:03:12.972827",
+      "title": ". Net developer | W2",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-09-02T00:44:25",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Quincy",
+            "addressRegion": "MA",
+            "streetAddress": null
+          },
+          "latitude": 42.251427,
+          "longitude": -71.00215
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/net-developer-w2-at-jobs-via-dice-4278189069",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Quincy"
+      ],
+      "counties_derived": [
+        "Norfolk County"
+      ],
+      "regions_derived": [
+        "Massachusetts"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Quincy, Massachusetts, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        42.2509914
+      ],
+      "lngs_derived": [
+        -71.0037374
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 10,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/yJNYqWR0hovcSd0g-5vsGNJV_AWPd1ata0M9nToTrz0="
+    },
+    {
+      "id": "1842736055",
+      "date_posted": "2025-08-03T00:44:25",
+      "date_created": "2025-08-03T01:03:12.994256",
+      "title": "Senior Full Stack .NET Developer (Angular Focus)",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-09-02T00:44:25",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "streetAddress": null
+          },
+          "latitude": 40.713047,
+          "longitude": -74.00723
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-full-stack-net-developer-angular-focus-at-jobs-via-dice-4278189071",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "New York"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.7127281
+      ],
+      "lngs_derived": [
+        -74.0060152
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 10,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/RLxNOHKlmfhDEIYnfsvCTEm1xQ-Std0amVTw-WZvY9Y="
+    },
+    {
+      "id": "1842736134",
+      "date_posted": "2025-08-03T00:44:25",
+      "date_created": "2025-08-03T01:03:20.397316",
+      "title": ".Net Architect with Medical Devices",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-09-02T00:44:25",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Merrimack",
+            "addressRegion": "NH",
+            "streetAddress": null
+          },
+          "latitude": 42.866955,
+          "longitude": -71.49544
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/net-architect-with-medical-devices-at-jobs-via-dice-4278185500",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Merrimack"
+      ],
+      "counties_derived": [
+        "Hillsborough County"
+      ],
+      "regions_derived": [
+        "New Hampshire"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Merrimack, New Hampshire, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        42.8665376
+      ],
+      "lngs_derived": [
+        -71.4936642
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 10,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/X5c4OduHHvO23cMlgTRxBJot_tSjRoHdEk-CrLOdteg="
+    },
+    {
+      "id": "1842712770",
+      "date_posted": "2025-08-02T22:53:46",
+      "date_created": "2025-08-02T23:03:13.842665",
+      "title": "Senior .NET Developer",
+      "organization": "TieTalent",
+      "organization_url": "https://www.linkedin.com/company/tietalent",
+      "date_validthrough": "2025-09-01T22:53:46",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "streetAddress": null
+          },
+          "latitude": 40.713047,
+          "longitude": -74.00723
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 104870,
+          "maxValue": 157050,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-net-developer-at-tietalent-4279198255",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQFEl92phgHiqQ/company-logo_200_200/company-logo_200_200/0/1704358607143/tietalent_logo?e=2147483647&v=beta&t=Rb2O2frS_SWKoIPRpIf_fVwffeCMmsnR3xLyQIbkono",
+      "cities_derived": [
+        "New York"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.7127281
+      ],
+      "lngs_derived": [
+        -74.0060152
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 27,
+      "linkedin_org_url": "https://tietalent.com/",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": "Career growth platform for tech, marketing & sales talent | Top companies hiring | Discover global job opportunities 🚀 ",
+      "linkedin_org_industry": "Technology, Information and Internet",
+      "linkedin_org_followers": 97659,
+      "linkedin_org_headquarters": "Renens, Vaud",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2017",
+      "linkedin_org_specialties": [
+        "Recrutement",
+        "Marketplace",
+        "Jobs",
+        "Talent match",
+        "Talent matching services",
+        "recruitment services ",
+        "and Talent Magnet"
+      ],
+      "linkedin_org_locations": [
+        "Chemin du Closel 5, Renens, Vaud 1020, CH",
+        "Epplestraße 5A, Stuttgart, 70597, DE"
+      ],
+      "linkedin_org_description": "TieTalent is the career growth platform designed for tech professionals, connecting talents with top companies worldwide.\n\nBy joining our community, talents gain access to a complete overview of the job market and exclusive career resources. We offer two ways to find your next opportunity:\n\n✅ Let Job Opportunities Discover You – Create your profile, and our intelligent system matches you with job openings that align with your skills and career goals. Companies apply to you, and you decide which opportunities to explore.\n\n🔍 Explore External Job Listings – Discover a broad range of job openings from multiple sources. Think of TieTalent as the \"Kayak\" for jobs: we show you opportunities across various platforms, and when you show interest in an external listing, you’ll be redirected to apply directly through the respective site.\n\nFor companies, TieTalent provides a smart hiring platform that makes finding top tech talent fast and hassle-free. Our AI-powered system, combined with expert insights, connects businesses with 100K+ vetted professionals in IT, tech, AI, marketing, and sales—helping you hire the right talent quickly and efficiently.\n\nSince launching in October 2018, TieTalent has been trusted by hundreds of thousands of tech professionals and thousands of companies—from innovative startups to leading global enterprises.\n\n👉 Join us and be part of the future of tech recruitment.\n\n📜 Imprint & Terms & Conditions: https://tietalent.com/en/terms-and-conditions",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "tietalent",
+      "no_jb_schema": null,
+      "external_apply_url": "https://tietalent.com/en/jobs/p-5326569/new-york-senior-net-developer"
+    },
+    {
+      "id": "1842712725",
+      "date_posted": "2025-08-02T22:53:07",
+      "date_created": "2025-08-02T23:03:09.649537",
+      "title": ".Net Developer",
+      "organization": "E-IT",
+      "organization_url": "https://www.linkedin.com/company/e-it-professionals-corp-",
+      "date_validthrough": "2025-09-01T22:53:07",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Dresher",
+            "addressRegion": "PA",
+            "streetAddress": null
+          },
+          "latitude": 40.142982,
+          "longitude": -75.167755
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/net-developer-at-e-it-4278182049",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4E0BAQHNEUDgO_t-iA/company-logo_200_200/company-logo_200_200/0/1630647996035?e=2147483647&v=beta&t=5Vg69NwtAbEDEOfhcvrjYyAhnRelJTZtQ_cujZdDwwU",
+      "cities_derived": [
+        "Dresher"
+      ],
+      "counties_derived": [
+        "Montgomery County"
+      ],
+      "regions_derived": [
+        "Pennsylvania"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Dresher, Pennsylvania, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.14094
+      ],
+      "lngs_derived": [
+        -75.16684
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 88,
+      "linkedin_org_url": "http://www.eitprofessionals.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Information Technology Staffing and project solutions",
+      "linkedin_org_industry": "Information Technology & Services",
+      "linkedin_org_followers": 47402,
+      "linkedin_org_headquarters": "Livonia, Michigan",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "1999",
+      "linkedin_org_specialties": [
+        "IT Solutions and Services",
+        "Staffing Services",
+        "Software Engineering",
+        "Analytics and Big Data",
+        "and Testing"
+      ],
+      "linkedin_org_locations": [
+        "17199 N Laurel Park Dt, Ste 402, Livonia, Michigan 48152, US"
+      ],
+      "linkedin_org_description": "E-IT Professionals Corp. (EIT) is an award winning consulting IT recruitment management and staffing organization. We are in the business since 1999 with around 320 Information Technology Consultants and revenues approaching $21M overall. We serve clients from various geographies with our dedicated team of professionals in US and India. With our deep domain experience, staffing expertise and efficient processes, we provide placement, temporary staffing and IT solutions to our clients.\n\nEIT presents a unique IT staffing offering which is fully process oriented and efficient, while being flexible to meet your requirements. We are in this business for many years working with hundreds of satisfied customers, earning the tag of THE recruitment partner who understands YOU. We are a prominent Executive Search and Staffing Company, providing a wide range of recruitment solutions for various IT requirements. We take pride in understanding our clients and providing exactly what they are looking for, reducing their staffing lead time to the minimum. That´s why companies across the globe consider us as their recruitment partners who take care for them. EIT has proven track record with multiple clients and a Certified Minority Business Enterprise.\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "e-it-professionals-corp-",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842705438",
+      "date_posted": "2025-08-02T22:05:53",
+      "date_created": "2025-08-02T22:32:56.914092",
+      "title": "Sr. Software Engineer (JavaScript, TypeScript)",
+      "organization": "Vinsys Information Technology Inc",
+      "organization_url": "https://www.linkedin.com/company/vinsys-information-technology-inc",
+      "date_validthrough": "2025-09-01T22:05:52",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Minneapolis",
+            "addressRegion": "MN",
+            "streetAddress": null
+          },
+          "latitude": 44.983112,
+          "longitude": -93.265076
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/sr-software-engineer-javascript-typescript-at-vinsys-information-technology-inc-4279189916",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4D0BAQH9oaVy-N93pg/company-logo_200_200/company-logo_200_200/0/1631304632246?e=2147483647&v=beta&t=OBgJhwirmqut7NAME8oEr8cxwCu2-oZZjmVmEDR2TyQ",
+      "cities_derived": [
+        "Minneapolis"
+      ],
+      "counties_derived": [
+        "Hennepin County"
+      ],
+      "regions_derived": [
+        "Minnesota"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Minneapolis, Minnesota, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        44.9772995
+      ],
+      "lngs_derived": [
+        -93.2654692
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 34,
+      "linkedin_org_url": "http://www.vinsysinfo.com",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 37603,
+      "linkedin_org_headquarters": "Reston, Virginia",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2003",
+      "linkedin_org_specialties": [
+        "Enterprise Solutions",
+        "Business Intelligence and Analytics",
+        "Project and Program Management",
+        "Devops Solutions",
+        "Clouding Computing",
+        "Consulting",
+        "Mobile Development",
+        "and Cyber Security"
+      ],
+      "linkedin_org_locations": [
+        "12020,Sunrise Valley Drive, Suite 100, Reston, Virginia 20191, US"
+      ],
+      "linkedin_org_description": "Vinsys is an information technology firm with international experience delivering engineering and operational solutions to customers in federal and commercial markets. \r\n\r\nVinsys is a USA Federal SBA 8(a) MBE/DBE/EDGE Certified, GSA Schedule IT 70 and  Virginia Department of Minority Business Enterprise(SWAM) certified organization focused on developing sustainable value for their clients over time. \r\nOur core service offerings are enterprise solutions, infrastructure engineering and operations, information management, and application systems engineering.\r\n\r\nVinsys provides a wide variety of value-added integrated IT solutions to customers across a multitude of markets and geographies. Our skilled consultants and professionals help our customers achieve and exceed their business goals by designing, deploying, and implementing optimized and scalable IT solutions that continuously exceed their expectations. Our professionals have provided solutions for companies in many vertical markets such as healthcare, financial services, banking, telecommunications, e-learning, and retail. Our people are exceptionally skilled in many technology disciplines including the Internet, application services, data warehousing, data management, ERP, and configuration management. We are skilled in the latest technologies as well as legacy systems.\r\n\r\nVinsys was founded in November 2003 and is headquartered in Reston, VA, in the heart of the Northern Virginia high-tech corridor. We have regional offices across the United States. The company continues to provide our customers, which range from small-midsize enterprises to Fortune 1000 companies, with top-notch, highly skilled professionals to help them design and deploy their IT projects. Vinsys has developed strategic relationships with global partners to ensure that we provide highest levels of service to our clients.\r\nFor more information about Vinsys, Inc., visit www.Vinsysinfo.com.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "vinsys-information-technology-inc",
+      "no_jb_schema": null,
+      "external_apply_url": "https://www.adzuna.com/details/5334417385?v=268175EA421E95C49E7E8E80D6907B12E9A28985&ccd=5b3556c8580a27647b7d3c53eca56258&r=19934295&frd=316f37008f9c903c340639dd2b7a7c58&utm_source=linkedin7&utm_medium=organic&chnlid=1931&title=Sr. Software Engineer (JavaScript, TypeScript)&a=e"
+    },
+    {
+      "id": "1842705568",
+      "date_posted": "2025-08-02T22:05:52",
+      "date_created": "2025-08-02T22:33:19.200871",
+      "title": "Sr. Software Engineer (JavaScript, TypeScript)",
+      "organization": "Vinsys Information Technology Inc",
+      "organization_url": "https://www.linkedin.com/company/vinsys-information-technology-inc",
+      "date_validthrough": "2025-09-01T22:05:52",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Minneapolis",
+            "addressRegion": "MN",
+            "streetAddress": null
+          },
+          "latitude": 44.983112,
+          "longitude": -93.265076
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/sr-software-engineer-javascript-typescript-at-vinsys-information-technology-inc-4279190851",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C4D0BAQH9oaVy-N93pg/company-logo_200_200/company-logo_200_200/0/1631304632246?e=2147483647&v=beta&t=OBgJhwirmqut7NAME8oEr8cxwCu2-oZZjmVmEDR2TyQ",
+      "cities_derived": [
+        "Minneapolis"
+      ],
+      "counties_derived": [
+        "Hennepin County"
+      ],
+      "regions_derived": [
+        "Minnesota"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Minneapolis, Minnesota, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        44.9772995
+      ],
+      "lngs_derived": [
+        -93.2654692
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 34,
+      "linkedin_org_url": "http://www.vinsysinfo.com",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 37603,
+      "linkedin_org_headquarters": "Reston, Virginia",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2003",
+      "linkedin_org_specialties": [
+        "Enterprise Solutions",
+        "Business Intelligence and Analytics",
+        "Project and Program Management",
+        "Devops Solutions",
+        "Clouding Computing",
+        "Consulting",
+        "Mobile Development",
+        "and Cyber Security"
+      ],
+      "linkedin_org_locations": [
+        "12020,Sunrise Valley Drive, Suite 100, Reston, Virginia 20191, US"
+      ],
+      "linkedin_org_description": "Vinsys is an information technology firm with international experience delivering engineering and operational solutions to customers in federal and commercial markets. \r\n\r\nVinsys is a USA Federal SBA 8(a) MBE/DBE/EDGE Certified, GSA Schedule IT 70 and  Virginia Department of Minority Business Enterprise(SWAM) certified organization focused on developing sustainable value for their clients over time. \r\nOur core service offerings are enterprise solutions, infrastructure engineering and operations, information management, and application systems engineering.\r\n\r\nVinsys provides a wide variety of value-added integrated IT solutions to customers across a multitude of markets and geographies. Our skilled consultants and professionals help our customers achieve and exceed their business goals by designing, deploying, and implementing optimized and scalable IT solutions that continuously exceed their expectations. Our professionals have provided solutions for companies in many vertical markets such as healthcare, financial services, banking, telecommunications, e-learning, and retail. Our people are exceptionally skilled in many technology disciplines including the Internet, application services, data warehousing, data management, ERP, and configuration management. We are skilled in the latest technologies as well as legacy systems.\r\n\r\nVinsys was founded in November 2003 and is headquartered in Reston, VA, in the heart of the Northern Virginia high-tech corridor. We have regional offices across the United States. The company continues to provide our customers, which range from small-midsize enterprises to Fortune 1000 companies, with top-notch, highly skilled professionals to help them design and deploy their IT projects. Vinsys has developed strategic relationships with global partners to ensure that we provide highest levels of service to our clients.\r\nFor more information about Vinsys, Inc., visit www.Vinsysinfo.com.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "vinsys-information-technology-inc",
+      "no_jb_schema": null,
+      "external_apply_url": "https://www.adzuna.com/details/5334417384?v=977E357096DB26A8FF6351121317A17A9C2BFA72&r=19934295&frd=1f28292437359a68cb433e8448cdeb30&ccd=4a759a02a9b51ee0f0240115ae9668cc&utm_source=linkedin7&utm_medium=organic&chnlid=1931&title=Sr. Software Engineer (JavaScript, TypeScript)&a=e"
+    },
+    {
+      "id": "1842705746",
+      "date_posted": "2025-08-02T22:05:50",
+      "date_created": "2025-08-02T22:33:45.183578",
+      "title": ".NET developer",
+      "organization": "Inherent Technologies",
+      "organization_url": "https://www.linkedin.com/company/inherent-technologies-pvt-ltd",
+      "date_validthrough": "2025-09-01T22:05:49",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Raleigh",
+            "addressRegion": "NC",
+            "streetAddress": null
+          },
+          "latitude": 35.847195,
+          "longitude": -78.694244
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/net-developer-at-inherent-technologies-4279195031",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C510BAQGmEh1ksznr8w/company-logo_200_200/company-logo_200_200/0/1630604464410/inherent_technologies_pvt_ltd_logo?e=2147483647&v=beta&t=-2v0hfl0AUPXDNbetJztt5OIrk7aZgUz4ifC3QU8XzI",
+      "cities_derived": [
+        "Raleigh"
+      ],
+      "counties_derived": [
+        "Wake County"
+      ],
+      "regions_derived": [
+        "North Carolina"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Raleigh, North Carolina, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        35.7803977
+      ],
+      "lngs_derived": [
+        -78.6390989
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 35,
+      "linkedin_org_url": "http://www.inherenttechnologies.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "Information Technology & Services",
+      "linkedin_org_followers": 2520,
+      "linkedin_org_headquarters": "Chandler, ARIZONA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2007",
+      "linkedin_org_specialties": [
+        "Development",
+        "Information Technology",
+        "Staff Augmentation",
+        "and Software Development"
+      ],
+      "linkedin_org_locations": [
+        "6909 West Ray Road, Suite 15/129 (Building C), Chandler, ARIZONA 85226, US",
+        "BAGULEY, MANCHESTER, LANCASHIRE 402122, GB"
+      ],
+      "linkedin_org_description": "Inherent Technologies, LLC is an IT consulting and professional services firm located in Chandler, Arizona (USA). The firm endeavors to provide its clients with a wide breadth of services across the Information Technology spectrum. This includes software design, development and implementation; improving business through custom business solutions.\n\n\nInherent Technologies, LLC. believes that teamwork is the key to success.Together Everyone Achieves More. We have a motivated and well qualified team with relevant experience to handle and provide solutions to a vast variety of applications. \n\nThe Premier Technology Execution Company As the premier technology execution company, we promise you the right expertise and an unrelenting commitment to service. \n\nOur ability to deploy superior technology expertise is rivaled only by our deep commitment to service and reliability. This commitment isn't just something we talk about; it's part of who we are, and it shows in everything we do. \n\nAt Inherent Technologies®, we seek individuals who are not only technologically proficient, but who also care about teaming with other colleagues and clients. We recruit people with true strength of character and integrity, who genuinely share our values, and we treat every assignment as another step toward building long-term relationships. \n",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "inherent-technologies-pvt-ltd",
+      "no_jb_schema": null,
+      "external_apply_url": "https://www.adzuna.com/details/5334417438?v=83AC79C6AA276ED271CDE0825B5D05C7C1BFD205&ccd=8fda6a15acf8538543dbf4a95141aabc&r=19934295&frd=703740993e44664f90f8f4e0916c41f5&utm_source=linkedin7&utm_medium=organic&chnlid=1931&title=.NET developer&a=e"
+    },
+    {
+      "id": "1842692689",
+      "date_posted": "2025-08-02T20:51:47",
+      "date_created": "2025-08-02T21:23:47.382302",
+      "title": "Microsoft Developer (.NET, Azure, Dynamics 365) (m/w/d)",
+      "organization": "TieTalent",
+      "organization_url": "https://www.linkedin.com/company/tietalent",
+      "date_validthrough": "2025-09-01T20:51:47",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Weinsberg",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 49.151638,
+          "longitude": 9.285277
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://de.linkedin.com/jobs/view/microsoft-developer-net-azure-dynamics-365-m-w-d-at-tietalent-4279191077",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "de.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQFEl92phgHiqQ/company-logo_200_200/company-logo_200_200/0/1704358607143/tietalent_logo?e=2147483647&v=beta&t=Rb2O2frS_SWKoIPRpIf_fVwffeCMmsnR3xLyQIbkono",
+      "cities_derived": [
+        "Weinsberg"
+      ],
+      "counties_derived": [
+        "Landkreis Heilbronn"
+      ],
+      "regions_derived": [
+        "Baden-Württemberg"
+      ],
+      "countries_derived": [
+        "Germany"
+      ],
+      "locations_derived": [
+        "Weinsberg, Baden-Württemberg, Germany"
+      ],
+      "timezones_derived": [
+        "Europe/Berlin"
+      ],
+      "lats_derived": [
+        49.1504172
+      ],
+      "lngs_derived": [
+        9.2865471
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 27,
+      "linkedin_org_url": "https://tietalent.com/",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": "Career growth platform for tech, marketing & sales talent | Top companies hiring | Discover global job opportunities 🚀 ",
+      "linkedin_org_industry": "Technology, Information and Internet",
+      "linkedin_org_followers": 97617,
+      "linkedin_org_headquarters": "Renens, Vaud",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2017",
+      "linkedin_org_specialties": [
+        "Recrutement",
+        "Marketplace",
+        "Jobs",
+        "Talent match",
+        "Talent matching services",
+        "recruitment services ",
+        "and Talent Magnet"
+      ],
+      "linkedin_org_locations": [
+        "Chemin du Closel 5, Renens, Vaud 1020, CH",
+        "Epplestraße 5A, Stuttgart, 70597, DE"
+      ],
+      "linkedin_org_description": "TieTalent is the career growth platform designed for tech professionals, connecting talents with top companies worldwide.\n\nBy joining our community, talents gain access to a complete overview of the job market and exclusive career resources. We offer two ways to find your next opportunity:\n\n✅ Let Job Opportunities Discover You – Create your profile, and our intelligent system matches you with job openings that align with your skills and career goals. Companies apply to you, and you decide which opportunities to explore.\n\n🔍 Explore External Job Listings – Discover a broad range of job openings from multiple sources. Think of TieTalent as the \"Kayak\" for jobs: we show you opportunities across various platforms, and when you show interest in an external listing, you’ll be redirected to apply directly through the respective site.\n\nFor companies, TieTalent provides a smart hiring platform that makes finding top tech talent fast and hassle-free. Our AI-powered system, combined with expert insights, connects businesses with 100K+ vetted professionals in IT, tech, AI, marketing, and sales—helping you hire the right talent quickly and efficiently.\n\nSince launching in October 2018, TieTalent has been trusted by hundreds of thousands of tech professionals and thousands of companies—from innovative startups to leading global enterprises.\n\n👉 Join us and be part of the future of tech recruitment.\n\n📜 Imprint & Terms & Conditions: https://tietalent.com/en/terms-and-conditions",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Berufseinstieg",
+      "directapply": false,
+      "linkedin_org_slug": "tietalent",
+      "no_jb_schema": null,
+      "external_apply_url": "https://tietalent.com/en/jobs/p-557252/weinsberg-microsoft-developer-net-azure-dynamics-365-mwd"
+    },
+    {
+      "id": "1842679203",
+      "date_posted": "2025-08-02T20:19:46",
+      "date_created": "2025-08-02T20:32:50.730141",
+      "title": "Senior .NET Engineer",
+      "organization": "Jobot",
+      "organization_url": "https://www.linkedin.com/company/jobot",
+      "date_validthrough": "2025-09-01T20:19:46",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Silver Spring",
+            "addressRegion": "MD",
+            "streetAddress": null
+          },
+          "latitude": 38.99766,
+          "longitude": -77.02702
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "Silver Spring, Maryland, United States"
+        }
+      ],
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 120000,
+          "maxValue": 150000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-net-engineer-at-jobot-4277049855",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFBeHszXin1VA/company-logo_200_200/company-logo_200_200/0/1737157657968/jobot_logo?e=2147483647&v=beta&t=NicMQnujqzx01lzFeWUEoy_NEm1RqfjA_I0QlnQslR8",
+      "cities_derived": [
+        "Silver Spring"
+      ],
+      "counties_derived": [
+        "Montgomery County"
+      ],
+      "regions_derived": [
+        "Maryland"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Silver Spring, Maryland, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.9997621
+      ],
+      "lngs_derived": [
+        -77.02403709829767
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 1407,
+      "linkedin_org_url": "http://Jobot.com",
+      "linkedin_org_size": "501-1,000 employees",
+      "linkedin_org_slogan": "Hire or Be Hired. Jobot can help. Find a good job at: Jobot.com - Employee Owned Since 2024 💙🤖",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": 3276638,
+      "linkedin_org_headquarters": "Newport Beach, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2018",
+      "linkedin_org_specialties": [
+        "technology",
+        "recruiting",
+        "AI",
+        "artificial intelligence",
+        "construction",
+        "IT",
+        "tech recruiting",
+        "staffing",
+        "mortgage",
+        "healthcare",
+        "accountingfinance",
+        "accounting",
+        "jobot",
+        "staffing",
+        "sales",
+        "humanresources",
+        "tech",
+        "and engineering"
+      ],
+      "linkedin_org_locations": [
+        "3101 W Pacific Coast Hwy, Newport Beach, California 92663, US"
+      ],
+      "linkedin_org_description": "Jobot is on a mission to connect good people with good jobs. By combining AI-powered technology with the expertise of Jobot Pros, our experienced recruiters, we help you find career opportunities that align with your goals and values.\n\nFounded in 2018 and employee-owned since 2024, Jobot is committed to fostering a culture of kindness, respect, innovation, and connection.  As an industry leader, we’ve been recognized as a top workplace by Forbes, Fortune, USA Today, and Staffing Industry Analysts (SIA).\n\nReady to find a good job? Create your profile today at Jobot.com. 🤖",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "jobot",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842679204",
+      "date_posted": "2025-08-02T20:19:46",
+      "date_created": "2025-08-02T20:32:50.885795",
+      "title": "Senior .NET Engineer",
+      "organization": "Jobot",
+      "organization_url": "https://www.linkedin.com/company/jobot",
+      "date_validthrough": "2025-09-01T20:19:46",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Germantown",
+            "addressRegion": "MD",
+            "streetAddress": null
+          },
+          "latitude": 39.176945,
+          "longitude": -77.270164
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "Germantown, Maryland, United States"
+        }
+      ],
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 120000,
+          "maxValue": 150000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-net-engineer-at-jobot-4277053371",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFBeHszXin1VA/company-logo_200_200/company-logo_200_200/0/1737157657968/jobot_logo?e=2147483647&v=beta&t=NicMQnujqzx01lzFeWUEoy_NEm1RqfjA_I0QlnQslR8",
+      "cities_derived": [
+        "Germantown"
+      ],
+      "counties_derived": [
+        "Montgomery County"
+      ],
+      "regions_derived": [
+        "Maryland"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Germantown, Maryland, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        39.17130815
+      ],
+      "lngs_derived": [
+        -77.26557848822242
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 1407,
+      "linkedin_org_url": "http://Jobot.com",
+      "linkedin_org_size": "501-1,000 employees",
+      "linkedin_org_slogan": "Hire or Be Hired. Jobot can help. Find a good job at: Jobot.com - Employee Owned Since 2024 💙🤖",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": 3276638,
+      "linkedin_org_headquarters": "Newport Beach, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2018",
+      "linkedin_org_specialties": [
+        "technology",
+        "recruiting",
+        "AI",
+        "artificial intelligence",
+        "construction",
+        "IT",
+        "tech recruiting",
+        "staffing",
+        "mortgage",
+        "healthcare",
+        "accountingfinance",
+        "accounting",
+        "jobot",
+        "staffing",
+        "sales",
+        "humanresources",
+        "tech",
+        "and engineering"
+      ],
+      "linkedin_org_locations": [
+        "3101 W Pacific Coast Hwy, Newport Beach, California 92663, US"
+      ],
+      "linkedin_org_description": "Jobot is on a mission to connect good people with good jobs. By combining AI-powered technology with the expertise of Jobot Pros, our experienced recruiters, we help you find career opportunities that align with your goals and values.\n\nFounded in 2018 and employee-owned since 2024, Jobot is committed to fostering a culture of kindness, respect, innovation, and connection.  As an industry leader, we’ve been recognized as a top workplace by Forbes, Fortune, USA Today, and Staffing Industry Analysts (SIA).\n\nReady to find a good job? Create your profile today at Jobot.com. 🤖",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "jobot",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842679192",
+      "date_posted": "2025-08-02T20:19:45",
+      "date_created": "2025-08-02T20:32:49.45266",
+      "title": "Sr. .NET Engineer (Site Reliability)",
+      "organization": "Jobot",
+      "organization_url": "https://www.linkedin.com/company/jobot",
+      "date_validthrough": "2025-09-01T20:19:45",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Canton",
+            "addressRegion": "OH",
+            "streetAddress": null
+          },
+          "latitude": 40.797386,
+          "longitude": -81.37704
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "Canton, Ohio, United States"
+        }
+      ],
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 160000,
+          "maxValue": 200000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/sr-net-engineer-site-reliability-at-jobot-4277055189",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFBeHszXin1VA/company-logo_200_200/company-logo_200_200/0/1737157657968/jobot_logo?e=2147483647&v=beta&t=NicMQnujqzx01lzFeWUEoy_NEm1RqfjA_I0QlnQslR8",
+      "cities_derived": [
+        "Canton"
+      ],
+      "counties_derived": [
+        "Stark County"
+      ],
+      "regions_derived": [
+        "Ohio"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Canton, Ohio, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.7985464
+      ],
+      "lngs_derived": [
+        -81.3749508
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 1407,
+      "linkedin_org_url": "http://Jobot.com",
+      "linkedin_org_size": "501-1,000 employees",
+      "linkedin_org_slogan": "Hire or Be Hired. Jobot can help. Find a good job at: Jobot.com - Employee Owned Since 2024 💙🤖",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": 3276638,
+      "linkedin_org_headquarters": "Newport Beach, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2018",
+      "linkedin_org_specialties": [
+        "technology",
+        "recruiting",
+        "AI",
+        "artificial intelligence",
+        "construction",
+        "IT",
+        "tech recruiting",
+        "staffing",
+        "mortgage",
+        "healthcare",
+        "accountingfinance",
+        "accounting",
+        "jobot",
+        "staffing",
+        "sales",
+        "humanresources",
+        "tech",
+        "and engineering"
+      ],
+      "linkedin_org_locations": [
+        "3101 W Pacific Coast Hwy, Newport Beach, California 92663, US"
+      ],
+      "linkedin_org_description": "Jobot is on a mission to connect good people with good jobs. By combining AI-powered technology with the expertise of Jobot Pros, our experienced recruiters, we help you find career opportunities that align with your goals and values.\n\nFounded in 2018 and employee-owned since 2024, Jobot is committed to fostering a culture of kindness, respect, innovation, and connection.  As an industry leader, we’ve been recognized as a top workplace by Forbes, Fortune, USA Today, and Staffing Industry Analysts (SIA).\n\nReady to find a good job? Create your profile today at Jobot.com. 🤖",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "jobot",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842679539",
+      "date_posted": "2025-08-02T20:19:45",
+      "date_created": "2025-08-02T20:33:42.967763",
+      "title": "Sr. .NET Engineer (Site Reliability)",
+      "organization": "Jobot",
+      "organization_url": "https://www.linkedin.com/company/jobot",
+      "date_validthrough": "2025-09-01T20:19:45",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Akron",
+            "addressRegion": "OH",
+            "streetAddress": null
+          },
+          "latitude": 41.08482,
+          "longitude": -81.51561
+        }
+      ],
+      "location_type": "TELECOMMUTE",
+      "location_requirements_raw": [
+        {
+          "@type": "Country",
+          "name": "Akron, Ohio, United States"
+        }
+      ],
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 160000,
+          "maxValue": 200000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/sr-net-engineer-site-reliability-at-jobot-4277046939",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFBeHszXin1VA/company-logo_200_200/company-logo_200_200/0/1737157657968/jobot_logo?e=2147483647&v=beta&t=NicMQnujqzx01lzFeWUEoy_NEm1RqfjA_I0QlnQslR8",
+      "cities_derived": [
+        "Akron"
+      ],
+      "counties_derived": [
+        "Summit County"
+      ],
+      "regions_derived": [
+        "Ohio"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Akron, Ohio, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        41.083064
+      ],
+      "lngs_derived": [
+        -81.518485
+      ],
+      "remote_derived": true,
+      "linkedin_org_employees": 1407,
+      "linkedin_org_url": "http://Jobot.com",
+      "linkedin_org_size": "501-1,000 employees",
+      "linkedin_org_slogan": "Hire or Be Hired. Jobot can help. Find a good job at: Jobot.com - Employee Owned Since 2024 💙🤖",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": 3276638,
+      "linkedin_org_headquarters": "Newport Beach, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2018",
+      "linkedin_org_specialties": [
+        "technology",
+        "recruiting",
+        "AI",
+        "artificial intelligence",
+        "construction",
+        "IT",
+        "tech recruiting",
+        "staffing",
+        "mortgage",
+        "healthcare",
+        "accountingfinance",
+        "accounting",
+        "jobot",
+        "staffing",
+        "sales",
+        "humanresources",
+        "tech",
+        "and engineering"
+      ],
+      "linkedin_org_locations": [
+        "3101 W Pacific Coast Hwy, Newport Beach, California 92663, US"
+      ],
+      "linkedin_org_description": "Jobot is on a mission to connect good people with good jobs. By combining AI-powered technology with the expertise of Jobot Pros, our experienced recruiters, we help you find career opportunities that align with your goals and values.\n\nFounded in 2018 and employee-owned since 2024, Jobot is committed to fostering a culture of kindness, respect, innovation, and connection.  As an industry leader, we’ve been recognized as a top workplace by Forbes, Fortune, USA Today, and Staffing Industry Analysts (SIA).\n\nReady to find a good job? Create your profile today at Jobot.com. 🤖",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Not Applicable",
+      "directapply": true,
+      "linkedin_org_slug": "jobot",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842691382",
+      "date_posted": "2025-08-02T18:51:51",
+      "date_created": "2025-08-02T21:22:38.467215",
+      "title": "Web Entwickler - PHP / Laravel / JavaScript (m/w/d)",
+      "organization": "Workwise",
+      "organization_url": "https://www.linkedin.com/company/workwise-gmbh",
+      "date_validthrough": "2025-09-01T18:51:51",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "DE",
+            "addressLocality": "Braunschweig",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 52.307484,
+          "longitude": 10.493452
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://de.linkedin.com/jobs/view/web-entwickler-php-laravel-javascript-m-w-d-at-workwise-4279178543",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "de.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQGjilxeW69Omw/company-logo_200_200/company-logo_200_200/0/1700742152395/workwise_gmbh_logo?e=2147483647&v=beta&t=xIdtwLMrqSHpGcLP5urwEI_yxrYgNlXH9FWOv17DLrU",
+      "cities_derived": [
+        "Brunswick"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "Lower Saxony"
+      ],
+      "countries_derived": [
+        "Germany"
+      ],
+      "locations_derived": [
+        "Brunswick, Lower Saxony, Germany"
+      ],
+      "timezones_derived": [
+        "Europe/Berlin"
+      ],
+      "lats_derived": [
+        52.2646577
+      ],
+      "lngs_derived": [
+        10.5236066
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 181,
+      "linkedin_org_url": "https://www.workwise.io/",
+      "linkedin_org_size": "201-500 employees",
+      "linkedin_org_slogan": "Wir vereinfachen Jobsuche und Recruiting. Denn es sind die Menschen, die ein Unternehmen voranbringen.",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": 18642,
+      "linkedin_org_headquarters": "Karlsruhe, Baden-Württemberg",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Personalvermittlung",
+        "Recruitinglösung",
+        "Personalbeschaffung",
+        "Jobbörse",
+        "Bewerbermanagementsystem",
+        "Candidate Experience",
+        "Employer Branding",
+        "and Recruiting"
+      ],
+      "linkedin_org_locations": [
+        "Erbprinzenstraße 27, Karlsruhe, Baden-Württemberg 76133, DE"
+      ],
+      "linkedin_org_description": "Hey, wir sind Workwise. We fill jobs. 👋🏽\n\nPeople move organizations! Wir sind überzeugt davon, dass eine Organisation nur so gut sein kann, wie das Team das hinter ihr steht. Deshalb haben wir es uns zur Aufgabe gemacht Herausforderungen im Recruiting und bei der Jobsuche aus dem Weg zu räumen 💡\n\nUnsere Mission: Wir bringen Menschen und Unternehmen auf unserer digitalen Plattform zusammen und gestalten die Jobsuche einfach, zugänglich, fair und transparent für alle! \n\n\nDabei bieten wir umfassende Services für beide Seiten: \n\n\nFür Unternehmen...\n\nsind wir der Recruiting-Partner. Mit unserem individuellen Recruiting-Service unterstützen wir bei der Optimierung und Vermarktung der Jobangebote auf 350+ Kanälen. Über die Candidate Search erreichen Unternehmen 840.000+ Kandidat:innen und können diese direkt kontaktieren. Kosten entstehen erst, wenn eine Stelle erfolgreich besetzt wurde. Derzeit hilft Workwise über 2.000 Unternehmen dabei, passende Fachkräfte zu finden. Sei 2.001 und werde zu unserer nächsten Erfolgsgeschichte 🌟 !\n\n\nJobsuchende und Berufstätige...\n\n...begleiten wir persönlich vom Bewerbungsprozess bis hin zur Karriereplanung. Mit unserer intuitiven und modernen Jobplattform kannst du mit nur einem einzigen Profil und ganz ohne Anschreiben alle Bewerbungen durchführen und verwalten. Egal in welcher Phase des Berufslebens – wir unterstützen dich bei allen Themen rund um die Jobsuche und Karriereplanung!\n\n\nDu willst noch mehr über uns erfahren? – Dann schau doch mal auf unserer Webseite vorbei! ⬇️\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Management",
+      "directapply": false,
+      "linkedin_org_slug": "workwise-gmbh",
+      "no_jb_schema": null,
+      "external_apply_url": "https://www.workwise.io/s/6A3gdXg-web-entwickler--php--laravel--javascript-mwd"
+    },
+    {
+      "id": "1842664447",
+      "date_posted": "2025-08-02T18:40:55",
+      "date_created": "2025-08-02T19:03:18.549748",
+      "title": "Typescript Engineer - Frontend Developer - AI Startup - SaaS",
+      "organization": "Adapt.com",
+      "organization_url": "https://www.linkedin.com/company/adaptcom",
+      "date_validthrough": "2025-09-01T18:40:55",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "San Francisco Bay Area",
+            "addressRegion": null,
+            "streetAddress": null
+          },
+          "latitude": 37.39271,
+          "longitude": -122.042
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 180000,
+          "maxValue": 200000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/typescript-engineer-frontend-developer-ai-startup-saas-at-adapt-com-4278170865",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQGWBQcaBano9Q/company-logo_200_200/B56ZgL9cziHcAM-/0/1752547315471?e=2147483647&v=beta&t=xtiaZPOkxnPaT2vqxrpZtsfM2Ij5BIoIIjIjPZKAvqQ",
+      "cities_derived": [
+        "San Francisco"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "San Francisco, California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        37.7792588
+      ],
+      "lngs_derived": [
+        -122.4193286
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": null,
+      "linkedin_org_url": "adapt.com",
+      "linkedin_org_size": "2-10 employees",
+      "linkedin_org_slogan": "Adapt’s artificial intelligence platform analyzes your business, answers questions, and drives smarter decisions.",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 1019,
+      "linkedin_org_headquarters": "San Francisco, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2025",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "1 Letterman Dr, San Francisco, California 94129, US"
+      ],
+      "linkedin_org_description": "Adapt is an artificial-intelligence platform that connects to every corner of your data stack—databases, SaaS tools, tickets, docs, and finance—and turns scattered signals into clear, evidence-backed answers. Ask any business question in plain English and Adapt’s AI agents instantly monitor, analyze, and explain what’s happening, surface anomalies before they snowball, and recommend next steps so teams can make confident, faster decisions.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "adaptcom",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1842664523",
+      "date_posted": "2025-08-02T18:40:06",
+      "date_created": "2025-08-02T19:03:27.443509",
+      "title": ".NET SAP Developer",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-09-01T18:40:06",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "streetAddress": null
+          },
+          "latitude": 40.713047,
+          "longitude": -74.00723
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 120000,
+          "maxValue": 125000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/net-sap-developer-at-jobs-via-dice-4278169975",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "New York"
+      ],
+      "counties_derived": null,
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.7127281
+      ],
+      "lngs_derived": [
+        -74.0060152
+      ],
+      "remote_derived": false,
+      "linkedin_org_employees": 10,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/qKTtk0WA15kVqYF550ULNFq63OIjriayiT4NYGbWESQ="
+    }
+  ]
