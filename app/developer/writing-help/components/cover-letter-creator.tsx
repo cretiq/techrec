@@ -206,12 +206,39 @@ export function CoverLetterCreator({
           description: role.description,
           requirements: role.requirements,
           skills: role.skills.map(skill => typeof skill === 'string' ? skill : skill.name),
+          // Enhanced fields from RapidAPI
+          location: role.location,
+          url: role.url,
+          seniority: (role as any).seniority, // May be present from RapidAPI
+          employmentType: (role as any).employment_type, // From RapidAPI
+          remote: role.remote,
+          directApply: role.applicationInfo?.directApply,
+          // AI-extracted fields (if available from RapidAPI)
+          aiKeySkills: role.ai_key_skills,
+          aiCoreResponsibilities: (role as any).ai_core_responsibilities,
+          aiRequirementsSummary: (role as any).ai_requirements_summary,
+          aiBenefits: (role as any).ai_benefits,
+          aiWorkArrangement: (role as any).ai_work_arrangement,
+          aiWorkingHours: (role as any).ai_working_hours,
+          // Recruiter information
+          recruiterName: role.applicationInfo?.recruiter?.name,
+          recruiterTitle: role.applicationInfo?.recruiter?.title,
+          aiHiringManagerName: role.applicationInfo?.hiringManager?.name,
         },
         companyInfo: {
           name: role.company.name,
           location: role.location,
           remote: role.remote,
-          attractionPoints: companyAttractionPoints
+          attractionPoints: companyAttractionPoints,
+          // Enhanced company fields from RapidAPI
+          industry: role.company.industry,
+          size: role.company.size,
+          headquarters: role.company.headquarters,
+          description: role.company.description,
+          specialties: role.company.specialties,
+          employeeCount: role.company.employeeCount,
+          foundedDate: (role.company as any).foundedDate,
+          linkedinUrl: role.company.linkedinUrl,
         },
         jobSourceInfo: {
           source: jobSource || undefined

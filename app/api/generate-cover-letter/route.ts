@@ -10,6 +10,7 @@ import {
 import { validateLetterOutput, enforceWordCount, sanitizeInput } from "@/utils/coverLetterOutput";
 import { getCache, setCache } from "@/lib/redis";
 import { getGeminiModel } from '@/lib/modelConfig';
+import { CoverLetterDebugLogger } from '@/utils/debugLogger';
 
 // Initialize Google AI client
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
@@ -40,6 +41,11 @@ function generateCacheKey(data: CoverLetterRequestData): string {
 
 export async function POST(req: Request) {
     console.log("Generating cover letter with Gemini")
+    
+    // Initialize debug logging session if enabled
+    const debugSessionId = CoverLetterDebugLogger.initialize();
+    const startTime = Date.now();
+    
   try {
     const rawData = await req.json()
     
@@ -51,8 +57,25 @@ export async function POST(req: Request) {
     console.log(`[Cache] Checking cache for key: ${cacheKey}`);
     
     const cachedResult = await getCache<{ letter: string; provider: string }>(cacheKey);
+    const cacheHit = !!cachedResult;
+    
     if (cachedResult) {
       console.log(`[Cache] Cache HIT for key: ${cacheKey}`);
+      
+      // Log cached response for debugging
+      if (debugSessionId) {
+        CoverLetterDebugLogger.logResponse({
+          attempt: 1,
+          modelName: 'cached',
+          generationConfig: {},
+          rawResponse: cachedResult.letter,
+          validationResult: { isValid: true, cached: true },
+          duration: Date.now() - startTime,
+          cached: true,
+          provider: cachedResult.provider
+        });
+      }
+      
       return NextResponse.json({
         letter: cachedResult.letter,
         provider: cachedResult.provider,
@@ -80,6 +103,31 @@ export async function POST(req: Request) {
     const keywords = rankRoleKeywords(roleInfo)
     const coreSkills = pickCoreSkills(developerProfile.skills)
     const achievements = deriveAchievements(developerProfile, providedAchievements)
+    
+    // Log request data for debugging
+    if (debugSessionId) {
+      CoverLetterDebugLogger.logRequest({
+        userId: undefined, // Can add session user ID if available
+        developerProfile,
+        roleInfo,
+        companyInfo,
+        personalization: {
+          tone,
+          hiringManager,
+          jobSource: jobSourceInfo?.source,
+          attractionPoints: companyInfo.attractionPoints
+        },
+        processedData: {
+          keywords,
+          coreSkills,
+          achievements
+        },
+        prompt: '', // Will be set later
+        cacheKey,
+        cacheHit,
+        timestamp: new Date().toISOString()
+      });
+    }
 
     console.log("-".repeat(40));
     console.log("DEVELOPER PROFILE DATA");
@@ -108,21 +156,136 @@ export async function POST(req: Request) {
       )
     }
 
-    const prompt = `SYSTEM:
+    // Use MVP content as primary source if available, fallback to structured data
+    const hasMvpContent = developerProfile.mvpContent && developerProfile.mvpContent.trim().length > 0;
+    
+    const prompt = hasMvpContent ? 
+    `SYSTEM:
 You are an elite career-coach copywriter who crafts concise, metrics-driven ${requestType === "coverLetter" ? "cover letters" : "outreach messages"} with a ${tone} yet professional voice.
 
 USER:
 <HEADER>
 Name: ${developerProfile.name} | Email: ${developerProfile.profileEmail ?? developerProfile.email} | Phone: ${developerProfile.contactInfo?.phone ?? "N/A"}
 
-<COMPANY>
+<COMPANY CONTEXT>
 Name: ${companyInfo.name}
-Location: ${companyInfo.location ?? "N/A"}
-Fact: "${companyInfo.attractionPoints?.[0] ?? ""}"
+${companyInfo.industry ? `Industry: ${companyInfo.industry}` : ''}
+${companyInfo.size ? `Company Size: ${companyInfo.size}` : ''}
+${companyInfo.headquarters ? `Headquarters: ${companyInfo.headquarters}` : ''}
+${companyInfo.foundedDate ? `Founded: ${companyInfo.foundedDate}` : ''}
+${companyInfo.description ? `About: ${companyInfo.description}` : ''}
+${companyInfo.specialties && companyInfo.specialties.length > 0 ? `Core Specialties: ${companyInfo.specialties.join(', ')}` : ''}
 
-<ROLE>
+Company Culture & Benefits:
+${companyInfo.attractionPoints?.map(point => `- ${point}`).join('\n') ?? "- Innovative company in the tech space"}
+
+<ROLE SPECIFICS>
 Title: ${roleInfo.title}
-TopKeywords: ${keywords.join(", ")}
+${roleInfo.seniority ? `Seniority Level: ${roleInfo.seniority}` : ''}
+${roleInfo.employmentType && roleInfo.employmentType.length > 0 ? `Employment Type: ${roleInfo.employmentType.join(', ')}` : ''}
+${roleInfo.remote !== undefined ? `Remote Work: ${roleInfo.remote ? 'Yes' : 'Office-based'}` : ''}
+${roleInfo.directApply !== undefined ? `Application Method: ${roleInfo.directApply ? 'LinkedIn Easy Apply' : 'External Application'}` : ''}
+${roleInfo.location ? `Location: ${roleInfo.location}` : ''}
+${roleInfo.aiWorkArrangement ? `Work Arrangement: ${roleInfo.aiWorkArrangement}` : ''}
+${roleInfo.aiWorkingHours ? `Working Hours: ${roleInfo.aiWorkingHours} hours/week` : ''}
+
+${roleInfo.description ? `Role Overview: ${roleInfo.description}` : ''}
+
+${roleInfo.aiCoreResponsibilities ? `Core Responsibilities:\n${roleInfo.aiCoreResponsibilities}` : ''}
+
+${roleInfo.aiRequirementsSummary ? `Requirements Summary:\n${roleInfo.aiRequirementsSummary}` : ''}
+
+Requirements:
+${roleInfo.requirements?.map(req => `- ${req}`).join('\n') ?? '- Not specified'}
+
+Skills Needed:
+${roleInfo.skills?.map(skill => `- ${skill}`).join('\n') ?? '- Not specified'}
+
+${roleInfo.aiKeySkills && roleInfo.aiKeySkills.length > 0 ? `Key Skills (AI-Extracted): ${roleInfo.aiKeySkills.join(', ')}` : ''}
+
+${roleInfo.aiBenefits && roleInfo.aiBenefits.length > 0 ? `Benefits:\n${roleInfo.aiBenefits.map(b => `- ${b}`).join('\n')}` : ''}
+
+${roleInfo.recruiterName ? `Recruiter: ${roleInfo.recruiterName}${roleInfo.recruiterTitle ? ` (${roleInfo.recruiterTitle})` : ''}` : ''}
+${roleInfo.aiHiringManagerName ? `Hiring Manager: ${roleInfo.aiHiringManagerName}` : ''}
+
+Keywords: ${keywords.join(", ")}
+
+<FULL CV CONTENT>
+${developerProfile.mvpContent}
+
+<TASK>
+Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} using the FULL CV CONTENT above as your primary source of information about the applicant.
+
+Use the detailed ROLE & JOB DETAILS to create a highly targeted letter that addresses specific requirements and demonstrates how the candidate's CV experience aligns with the job needs.
+
+Structure:
+1. Greeting: "Dear ${hiringManager ?? "Hiring Team"},".
+2. Hook: cite role title + most relevant company fact.
+3. Proof: extract relevant achievements from CV content & match with job requirements.
+4. Alignment: use CV skills/experience to address specific job requirements and company needs.
+5. CTA & sign-off.
+
+Rules:
+• First-person, no clichés, no invented data.
+• Use ONLY information from the CV content provided.
+• Address the named person exactly.
+• Match CV experience to specific job requirements listed above.
+• Reference company facts that align with candidate values.
+• Within specified word count.
+• Do NOT use asterisks (*), bullet points, bold formatting (**), or any markdown.
+• Write in plain paragraph format only.
+• Output ONLY the final letter text (no markdown, no extra commentary).
+`
+    :
+    `SYSTEM:
+You are an elite career-coach copywriter who crafts concise, metrics-driven ${requestType === "coverLetter" ? "cover letters" : "outreach messages"} with a ${tone} yet professional voice.
+
+USER:
+<HEADER>
+Name: ${developerProfile.name} | Email: ${developerProfile.profileEmail ?? developerProfile.email} | Phone: ${developerProfile.contactInfo?.phone ?? "N/A"}
+
+<COMPANY CONTEXT>
+Name: ${companyInfo.name}
+${companyInfo.industry ? `Industry: ${companyInfo.industry}` : ''}
+${companyInfo.size ? `Company Size: ${companyInfo.size}` : ''}
+${companyInfo.headquarters ? `Headquarters: ${companyInfo.headquarters}` : ''}
+${companyInfo.foundedDate ? `Founded: ${companyInfo.foundedDate}` : ''}
+${companyInfo.description ? `About: ${companyInfo.description}` : ''}
+${companyInfo.specialties && companyInfo.specialties.length > 0 ? `Core Specialties: ${companyInfo.specialties.join(', ')}` : ''}
+
+Company Culture & Benefits:
+${companyInfo.attractionPoints?.map(point => `- ${point}`).join('\n') ?? "- Innovative company in the tech space"}
+
+<ROLE SPECIFICS>
+Title: ${roleInfo.title}
+${roleInfo.seniority ? `Seniority Level: ${roleInfo.seniority}` : ''}
+${roleInfo.employmentType && roleInfo.employmentType.length > 0 ? `Employment Type: ${roleInfo.employmentType.join(', ')}` : ''}
+${roleInfo.remote !== undefined ? `Remote Work: ${roleInfo.remote ? 'Yes' : 'Office-based'}` : ''}
+${roleInfo.directApply !== undefined ? `Application Method: ${roleInfo.directApply ? 'LinkedIn Easy Apply' : 'External Application'}` : ''}
+${roleInfo.location ? `Location: ${roleInfo.location}` : ''}
+${roleInfo.aiWorkArrangement ? `Work Arrangement: ${roleInfo.aiWorkArrangement}` : ''}
+${roleInfo.aiWorkingHours ? `Working Hours: ${roleInfo.aiWorkingHours} hours/week` : ''}
+
+${roleInfo.description ? `Role Overview: ${roleInfo.description}` : ''}
+
+${roleInfo.aiCoreResponsibilities ? `Core Responsibilities:\n${roleInfo.aiCoreResponsibilities}` : ''}
+
+${roleInfo.aiRequirementsSummary ? `Requirements Summary:\n${roleInfo.aiRequirementsSummary}` : ''}
+
+Requirements:
+${roleInfo.requirements?.map(req => `- ${req}`).join('\n') ?? '- Not specified'}
+
+Skills Needed:
+${roleInfo.skills?.map(skill => `- ${skill}`).join('\n') ?? '- Not specified'}
+
+${roleInfo.aiKeySkills && roleInfo.aiKeySkills.length > 0 ? `Key Skills (AI-Extracted): ${roleInfo.aiKeySkills.join(', ')}` : ''}
+
+${roleInfo.aiBenefits && roleInfo.aiBenefits.length > 0 ? `Benefits:\n${roleInfo.aiBenefits.map(b => `- ${b}`).join('\n')}` : ''}
+
+${roleInfo.recruiterName ? `Recruiter: ${roleInfo.recruiterName}${roleInfo.recruiterTitle ? ` (${roleInfo.recruiterTitle})` : ''}` : ''}
+${roleInfo.aiHiringManagerName ? `Hiring Manager: ${roleInfo.aiHiringManagerName}` : ''}
+
+Keywords: ${keywords.join(", ")}
 
 <APPLICANT SNAPSHOT>
 Professional Title: ${developerProfile.title ?? "Software Developer"}
@@ -131,16 +294,22 @@ KeyAchievements:
 ${achievements.map((a) => `- ${a}`).join("\n")}
 
 <TASK>
-Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} that follows this structure:
+Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} using the detailed ROLE & JOB DETAILS above to create a highly targeted letter.
+
+Match the applicant's skills and achievements to the specific job requirements and address the company's values through the provided facts.
+
+Structure:
 1. Greeting: "Dear ${hiringManager ?? "Hiring Team"},".
-2. Hook: cite role title + single company fact.
-3. Proof: weave achievements & 3 keywords naturally.
-4. Alignment: explain how skills solve company need.
+2. Hook: cite role title + most relevant company fact from the list above.
+3. Proof: weave achievements with specific job requirements (not just generic keywords).
+4. Alignment: explain how skills solve the specific needs outlined in the job requirements.
 5. CTA & sign-off.
 
 Rules:
 • First-person, no clichés, no invented data.
 • Address the named person exactly.
+• Reference specific job requirements, not just generic keywords.
+• Use company facts that align with candidate values.
 • Within specified word count.
 • Do NOT use asterisks (*), bullet points, bold formatting (**), or any markdown.
 • Write in plain paragraph format only.
@@ -150,24 +319,56 @@ Rules:
     console.log("=".repeat(80));
     console.log("COVER LETTER GENERATION REQUEST");
     console.log("=".repeat(80));
+    console.log(`Using ${hasMvpContent ? 'MVP CV CONTENT' : 'STRUCTURED PROFILE DATA'} as primary source`);
+    if (hasMvpContent) {
+      console.log(`MVP Content Length: ${developerProfile.mvpContent?.length} characters`);
+    }
     console.log("Generated Prompt:", prompt)
+    
+    // Update request log with the actual prompt
+    if (debugSessionId) {
+      CoverLetterDebugLogger.logRequest({
+        userId: undefined,
+        developerProfile,
+        roleInfo,
+        companyInfo,
+        personalization: {
+          tone,
+          hiringManager,
+          jobSource: jobSourceInfo?.source,
+          attractionPoints: companyInfo.attractionPoints
+        },
+        processedData: {
+          keywords,
+          coreSkills,
+          achievements
+        },
+        prompt,
+        cacheKey,
+        cacheHit,
+        timestamp: new Date().toISOString()
+      });
+    }
 
     try {
         // Get the generative model
         const modelName = getGeminiModel('cover-letter');
+        const generationConfig = {
+            temperature: 0.5,
+            topK: 40,
+            topP: 0.8,
+            maxOutputTokens: 512,
+        };
         const model = genAI.getGenerativeModel({ 
             model: modelName,
-            generationConfig: {
-                temperature: 0.5,
-                topK: 40,
-                topP: 0.8,
-                maxOutputTokens: 512,
-            },
+            generationConfig
         });
 
+        const aiStartTime = Date.now();
         const geminiResult = await model.generateContent(prompt);
         const response = await geminiResult.response;
         let letterContent = response.text();
+        const aiDuration = Date.now() - aiStartTime;
 
         if (!letterContent) {
             throw new CoverLetterGenerationError("Gemini response did not contain letter content.");
@@ -193,6 +394,20 @@ Rules:
             );
         }
 
+        // Log successful response for debugging
+        if (debugSessionId) {
+          CoverLetterDebugLogger.logResponse({
+            attempt: 1,
+            modelName,
+            generationConfig,
+            rawResponse: letterContent,
+            validationResult: validation,
+            duration: aiDuration,
+            cached: false,
+            provider: 'gemini'
+          });
+        }
+
         const result = {
             letter: letterContent.trim(),
             provider: 'gemini' as const
@@ -210,6 +425,32 @@ Rules:
         return NextResponse.json(result)
     } catch (geminiError) {
         console.error("Gemini API call failed:", geminiError);
+        
+        // Log error for debugging
+        if (debugSessionId) {
+          CoverLetterDebugLogger.logResponse({
+            attempt: 1,
+            modelName: getGeminiModel('cover-letter'),
+            generationConfig: {
+              temperature: 0.5,
+              topK: 40,
+              topP: 0.8,
+              maxOutputTokens: 512,
+            },
+            rawResponse: '',
+            validationResult: { 
+              isValid: false, 
+              errors: [geminiError instanceof Error ? geminiError.message : 'Unknown error'],
+              warnings: [],
+              wordCount: 0
+            },
+            duration: Date.now() - aiStartTime,
+            cached: false,
+            provider: 'gemini',
+            error: geminiError
+          });
+        }
+        
         throw new CoverLetterGenerationError(
           `Gemini API Error: ${geminiError instanceof Error ? geminiError.message : 'Unknown error'}`,
           { provider: 'gemini', originalError: geminiError }
@@ -218,6 +459,32 @@ Rules:
 
   } catch (error) {
     console.error("Cover letter generation error (Gemini):", error);
+    
+    // Log general error for debugging
+    if (debugSessionId) {
+      const errorType = error.name === 'ZodError' ? 'VALIDATION_ERROR' 
+        : error instanceof CoverLetterValidationError ? 'LETTER_VALIDATION_ERROR'
+        : error instanceof CoverLetterGenerationError ? 'GENERATION_ERROR' 
+        : 'INTERNAL_ERROR';
+      
+      CoverLetterDebugLogger.logResponse({
+        attempt: 1,
+        modelName: 'error',
+        generationConfig: {},
+        rawResponse: '',
+        validationResult: { 
+          isValid: false, 
+          errors: [error instanceof Error ? error.message : 'Unknown error'],
+          warnings: [],
+          wordCount: 0,
+          errorType
+        },
+        duration: Date.now() - startTime,
+        cached: false,
+        provider: 'error',
+        error
+      });
+    }
     
     // Handle validation errors specifically
     if (error.name === 'ZodError') {

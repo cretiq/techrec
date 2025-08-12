@@ -103,7 +103,8 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
       employeeCount: apiJob.linkedin_org_employees || undefined,
       logoUrl: apiJob.organization_logo || undefined,
       linkedinUrl: apiJob.linkedin_org_url || undefined,
-    };
+      foundedDate: apiJob.linkedin_org_foundeddate || undefined,
+    } as CompanySummary & { foundedDate?: string };
   };
 
   // Basic mapping for RoleType
@@ -192,8 +193,26 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     url: apiJob.url || '',
     applicationInfo: mapApplicationInfo(),
     
-    // Preserve AI fields for matching
+    // Preserve AI fields for matching and cover letter generation
     ai_key_skills: apiJob.ai_key_skills || undefined,
     linkedin_org_specialties: apiJob.linkedin_org_specialties || undefined,
+    
+    // Preserve additional RapidAPI fields for enhanced cover letters
+    seniority: apiJob.seniority || undefined,
+    employment_type: apiJob.employment_type || undefined,
+    ai_core_responsibilities: apiJob.ai_core_responsibilities || undefined,
+    ai_requirements_summary: apiJob.ai_requirements_summary || undefined,
+    ai_benefits: apiJob.ai_benefits || undefined,
+    ai_work_arrangement: apiJob.ai_work_arrangement || undefined,
+    ai_working_hours: apiJob.ai_working_hours || undefined,
+  } as Role & {
+    // Additional fields not in base Role interface but useful for cover letters
+    seniority?: string;
+    employment_type?: string[];
+    ai_core_responsibilities?: string;
+    ai_requirements_summary?: string;
+    ai_benefits?: string[];
+    ai_work_arrangement?: string;
+    ai_working_hours?: number;
   };
 }; 

@@ -17,6 +17,24 @@ export interface RoleInfo {
   description: string;
   requirements: string[];
   skills: string[];
+  // Enhanced fields from RapidAPI
+  location?: string;
+  url?: string;
+  seniority?: string;
+  employmentType?: string[];
+  remote?: boolean;
+  directApply?: boolean;
+  // AI-extracted fields
+  aiKeySkills?: string[];
+  aiCoreResponsibilities?: string;
+  aiRequirementsSummary?: string;
+  aiBenefits?: string[];
+  aiWorkArrangement?: string;
+  aiWorkingHours?: number;
+  // Recruiter information
+  recruiterName?: string;
+  recruiterTitle?: string;
+  aiHiringManagerName?: string;
 }
 
 export interface CompanyInfo {
@@ -24,6 +42,15 @@ export interface CompanyInfo {
   location?: string;
   remote?: boolean;
   attractionPoints?: string[];
+  // Enhanced company fields from RapidAPI
+  industry?: string;
+  size?: string;
+  headquarters?: string;
+  description?: string;
+  specialties?: string[];
+  employeeCount?: number;
+  foundedDate?: string;
+  linkedinUrl?: string;
 }
 
 export interface JobSourceInfo {
@@ -87,6 +114,15 @@ export const CompanyInfoSchema = z.object({
   location: z.string().optional(),
   remote: z.boolean().optional(),
   attractionPoints: z.array(z.string()).optional(),
+  // Enhanced company fields
+  industry: z.string().optional(),
+  size: z.string().optional(),
+  headquarters: z.string().optional(),
+  description: z.string().optional(),
+  specialties: z.array(z.string()).optional(),
+  employeeCount: z.number().optional(),
+  foundedDate: z.string().optional(),
+  linkedinUrl: z.string().optional(),
 });
 
 export const RoleInfoSchema = z.object({
@@ -94,6 +130,24 @@ export const RoleInfoSchema = z.object({
   description: z.string().min(1, "Role description is required"),
   requirements: z.array(z.string()),
   skills: z.array(z.string()),
+  // Enhanced fields
+  location: z.string().optional(),
+  url: z.string().optional(),
+  seniority: z.string().optional(),
+  employmentType: z.array(z.string()).optional(),
+  remote: z.boolean().optional(),
+  directApply: z.boolean().optional(),
+  // AI-extracted fields
+  aiKeySkills: z.array(z.string()).optional(),
+  aiCoreResponsibilities: z.string().optional(),
+  aiRequirementsSummary: z.string().optional(),
+  aiBenefits: z.array(z.string()).optional(),
+  aiWorkArrangement: z.string().optional(),
+  aiWorkingHours: z.number().optional(),
+  // Recruiter information
+  recruiterName: z.string().optional(),
+  recruiterTitle: z.string().optional(),
+  aiHiringManagerName: z.string().optional(),
 });
 
 export const CoverLetterRequestSchema = z.object({
