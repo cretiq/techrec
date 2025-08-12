@@ -6,10 +6,11 @@ import remarkGfm from 'remark-gfm';
 import { Button } from '@/components/ui-daisy/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui-daisy/card';
 import { Badge } from '@/components/ui-daisy/badge';
-import { Copy, Download, Eye, EyeOff, Code, FileText, Lightbulb, Sparkles } from 'lucide-react';
+import { Copy, Download, Eye, EyeOff, Code, FileText, Lightbulb, Sparkles, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import { motion } from 'framer-motion';
 import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
+import { ReUploadButton } from '@/components/cv/ReUploadButton';
 
 /**
  * MVP-specific CV display component
@@ -28,6 +29,10 @@ interface MvpResultDisplayProps {
   filename?: string;
   onGetSuggestions?: () => void;
   suggestionsVisible?: boolean;
+  analysisData?: any;
+  onUploadComplete?: (analysisId?: string) => void;
+  onAnimationStateChange?: (isAnimating: boolean, processingText: string, sparkles: boolean) => void;
+  isMvpMode?: boolean;
 }
 
 export function MvpResultDisplay({
@@ -39,11 +44,80 @@ export function MvpResultDisplay({
   wordCount = 0,
   filename = 'CV',
   onGetSuggestions,
-  suggestionsVisible = false
+  suggestionsVisible = false,
+  analysisData,
+  onUploadComplete,
+  onAnimationStateChange,
+  isMvpMode = false
 }: MvpResultDisplayProps) {
   const [activeTab, setActiveTab] = useState<'markdown' | 'text'>('markdown');
   const [isJsonExpanded, setIsJsonExpanded] = useState(false);
   const { toast } = useToast();
+
+  // Pre-process markdown text to fix line breaks
+  const preprocessMarkdown = (text: string): string => {
+    if (!text) return text;
+    
+    const lines = text.split('\n');
+    const processedLines: string[] = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+      const currentLine = lines[i];
+      const nextLine = lines[i + 1];
+      
+      processedLines.push(currentLine);
+      
+      // Skip if current line is empty (already has a break)
+      if (currentLine.trim() === '') {
+        continue;
+      }
+      
+      // Skip if next line is empty (already has proper spacing)
+      if (!nextLine || nextLine.trim() === '') {
+        continue;
+      }
+      
+      // Skip if current line is a header
+      if (currentLine.trim().startsWith('#')) {
+        continue;
+      }
+      
+      // Skip if next line is a header
+      if (nextLine.trim().startsWith('#')) {
+        continue;
+      }
+      
+      // Skip if current line is a list item
+      if (currentLine.trim().match(/^[-*+]\s/) || currentLine.trim().match(/^\d+\.\s/)) {
+        continue;
+      }
+      
+      // Skip if next line is a list item
+      if (nextLine.trim().match(/^[-*+]\s/) || nextLine.trim().match(/^\d+\.\s/)) {
+        continue;
+      }
+      
+      // Skip if we're in a code block (basic detection)
+      if (currentLine.trim().startsWith('```') || currentLine.trim().includes('`')) {
+        continue;
+      }
+      
+      // Add an extra line break for content lines that should be separate paragraphs
+      if (currentLine.trim().length > 0 && nextLine && nextLine.trim().length > 0) {
+        // Special handling for job-related content patterns
+        const isJobTitle = currentLine.includes('•') || currentLine.match(/\d{2}\/\d{4}/);
+        const isJobDescription = nextLine.match(/^[A-Z]/) && !nextLine.includes('•');
+        
+        if (isJobTitle || isJobDescription || 
+            // General content that needs separation
+            (!currentLine.endsWith(':') && !currentLine.endsWith(',') && !currentLine.endsWith(';'))) {
+          processedLines.push(''); // Add empty line
+        }
+      }
+    }
+    
+    return processedLines.join('\n');
+  };
 
   // Copy to clipboard functionality
   const copyToClipboard = async (content: string, type: string) => {
@@ -83,32 +157,125 @@ export function MvpResultDisplay({
   // Format JSON for display
   const formattedJsonString = JSON.stringify(basicJson, null, 2);
 
+  // Re-upload handler
+  const handleReUpload = async () => {
+    if (!analysisData) {
+      toast({
+        title: "No Profile Data",
+        description: "No profile data found to clear.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.pdf,.docx,.txt';
+    fileInput.style.display = 'none';
+    
+    fileInput.onchange = async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        toast({
+          title: "No File Selected",
+          description: "Please select a file to upload",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file type and size
+      const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+      const maxSize = 10 * 1024 * 1024; // 10MB
+
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please select a PDF, DOCX, or TXT file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (file.size > maxSize) {
+        toast({
+          title: "File Too Large",
+          description: "File size must be less than 10MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      try {
+        // Clear profile data first
+        const deleteResponse = await fetch('/api/developer/me/profile', {
+          method: 'DELETE',
+        });
+        
+        if (!deleteResponse.ok) {
+          const errorData = await deleteResponse.json();
+          throw new Error(errorData.error || 'Failed to clear profile data');
+        }
+        
+        // Upload new file
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const uploadResponse = await fetch('/api/cv/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.error || 'Upload failed');
+        }
+        
+        const result = await uploadResponse.json();
+        
+        toast({
+          title: "Upload Successful",
+          description: `CV ${file.name} uploaded and processed successfully!`,
+        });
+
+        if (result.analysisId) {
+          onUploadComplete?.(result.analysisId);
+        } else {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Re-upload failed:', error);
+        toast({
+          title: "Upload Failed",
+          description: error instanceof Error ? error.message : "An unexpected error occurred",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+  };
+
   return (
     <div className="space-y-6">
-      {/* MVP Mode Header */}
+      {/* Unified Header - CV Status + Actions */}
       <Card className="bg-gradient-to-r from-purple-500/10 via-violet-500/10 to-indigo-500/10 border-purple-300/30">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <CardTitle className="flex items-center gap-2 mb-2">
                 <FileText className="w-5 h-5 text-purple-600" />
-                CV Processed Successfully (MVP Mode)
+                CV Processed Successfully
               </CardTitle>
-              <CardDescription>
-                Your CV has been extracted in two formats for maximum flexibility
-              </CardDescription>
             </div>
-            <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-              Score: {improvementScore}/100
-            </Badge>
+            
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <p className="text-muted-foreground">Processing Time</p>
-              <p className="font-semibold">{extractionDuration}ms</p>
-            </div>
+        <CardContent className="space-y-4">
+          {/* Processing Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground">Characters</p>
               <p className="font-semibold">{characterCount.toLocaleString()}</p>
@@ -124,6 +291,28 @@ export function MvpResultDisplay({
               </p>
             </div>
           </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Button 
+              variant="default" 
+              className="flex items-center gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              Generate Cover Letter
+            </Button>
+            {/* Re-Upload Button in MVP Header - always show when we have the necessary props */}
+            {analysisData && onUploadComplete && (
+              <Button 
+                variant="default" 
+                className="flex items-center gap-2"
+                onClick={handleReUpload}
+              >
+                <RefreshCw className="w-4 h-4" />
+                Re-upload CV
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -132,12 +321,11 @@ export function MvpResultDisplay({
         {/* Left: CV Content */}
         <div className="flex-1">
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle>Extracted Content</CardTitle>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 bg-base-200 p-1 rounded-lg">
                   <Button
-                    variant={activeTab === 'markdown' ? 'default' : 'outline'}
+                    variant={activeTab === 'markdown' ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => setActiveTab('markdown')}
                     className="flex items-center gap-2"
@@ -146,13 +334,34 @@ export function MvpResultDisplay({
                     Preview
                   </Button>
                   <Button
-                    variant={activeTab === 'text' ? 'default' : 'outline'}
+                    variant={activeTab === 'text' ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => setActiveTab('text')}
                     className="flex items-center gap-2"
                   >
                     <FileText className="w-4 h-4" />
                     Raw Text
+                  </Button>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(formattedText, activeTab === 'markdown' ? 'Markdown' : 'Text')}
+                    className="flex items-center gap-2"
+                  >
+                    <Copy className="w-4 h-4" />
+                    Copy
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => downloadContent(formattedText, activeTab === 'markdown' ? 'Markdown' : 'Text')}
+                    className="flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download
                   </Button>
                 </div>
               </div>
@@ -166,60 +375,28 @@ export function MvpResultDisplay({
               transition={{ duration: 0.2 }}
               className="space-y-4"
             >
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Rendered markdown preview of your CV content
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyToClipboard(formattedText, 'Markdown')}
-                    className="flex items-center gap-2"
-                  >
-                    <Copy className="w-4 h-4" />
-                    Copy
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => downloadContent(formattedText, 'Markdown')}
-                    className="flex items-center gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download
-                  </Button>
-                </div>
-              </div>
               
               <div className="relative">
-                <div className="bg-background border rounded-md p-6 prose prose-sm max-w-none text-foreground">
+                <div className="bg-background rounded-md p-6 prose prose-lg max-w-none text-foreground">
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      h1: ({ children }) => <h1 className="text-2xl font-bold text-foreground mb-4">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-xl font-semibold text-foreground mb-3 mt-6">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-lg font-medium text-foreground mb-2 mt-4">{children}</h3>,
-                      p: ({ children }) => <p className="text-foreground mb-3 leading-relaxed text-base">{children}</p>,
-                      ul: ({ children }) => <ul className="text-foreground mb-4 pl-6 space-y-1 text-base">{children}</ul>,
-                      ol: ({ children }) => <ol className="text-foreground mb-4 pl-6 space-y-1 text-base">{children}</ol>,
-                      li: ({ children }) => <li className="text-foreground text-base">{children}</li>,
+                      h1: ({ children }) => <h1 className="text-3xl font-bold text-foreground mb-5">{children}</h1>,
+                      h2: ({ children }) => <h2 className="text-2xl font-semibold text-foreground mb-4 mt-7">{children}</h2>,
+                      h3: ({ children }) => <h3 className="text-xl font-medium text-foreground mb-3 mt-5">{children}</h3>,
+                      p: ({ children }) => <p className="text-foreground mb-4 leading-relaxed text-lg">{children}</p>,
+                      ul: ({ children }) => <ul className="text-foreground mb-5 pl-6 space-y-2 text-lg">{children}</ul>,
+                      ol: ({ children }) => <ol className="text-foreground mb-5 pl-6 space-y-2 text-lg">{children}</ol>,
+                      li: ({ children }) => <li className="text-foreground text-lg leading-relaxed">{children}</li>,
                       strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
                       em: ({ children }) => <em className="italic text-foreground">{children}</em>,
-                      code: ({ children }) => <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono text-foreground">{children}</code>,
-                      blockquote: ({ children }) => <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-4">{children}</blockquote>,
+                      code: ({ children }) => <code className="bg-muted px-2 py-1 rounded text-base font-mono text-foreground">{children}</code>,
+                      blockquote: ({ children }) => <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-5">{children}</blockquote>,
                     }}
                   >
-                    {formattedText || 'No content available'}
+                    {preprocessMarkdown(formattedText) || 'No content available'}
                   </ReactMarkdown>
                 </div>
-                {formattedText.length > 1000 && (
-                  <div className="absolute bottom-2 right-2">
-                    <Badge variant="outline" className="bg-background/80">
-                      {Math.round(formattedText.length / 1000)}K chars
-                    </Badge>
-                  </div>
-                )}
               </div>
             </motion.div>
           )}
@@ -232,45 +409,13 @@ export function MvpResultDisplay({
               transition={{ duration: 0.2 }}
               className="space-y-4"
             >
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Raw markdown text format ready for AI processing
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyToClipboard(formattedText, 'Text')}
-                    className="flex items-center gap-2"
-                  >
-                    <Copy className="w-4 h-4" />
-                    Copy
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => downloadContent(formattedText, 'Text')}
-                    className="flex items-center gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download
-                  </Button>
-                </div>
-              </div>
               
               <div className="relative">
-                <div className="bg-background border rounded-md p-6 prose prose-sm max-w-none text-foreground">
-                  <pre className="whitespace-pre-wrap font-mono text-base leading-relaxed overflow-auto max-h-96">
+                <div className="bg-background rounded-md p-6 prose prose-lg max-w-none text-foreground">
+                  <pre className="whitespace-pre-wrap font-mono text-lg leading-relaxed overflow-auto max-h-96">
                     {formattedText || 'No formatted text available'}
                   </pre>
                 </div>
-                {formattedText.length > 1000 && (
-                  <div className="absolute bottom-2 right-2">
-                    <Badge variant="outline" className="bg-background/80">
-                      {Math.round(formattedText.length / 1000)}K chars
-                    </Badge>
-                  </div>
-                )}
               </div>
             </motion.div>
           )}
@@ -284,64 +429,38 @@ export function MvpResultDisplay({
           <div className="w-80">
             <Card 
               variant="elevated-interactive" 
-              className="sticky top-20"
+              className="sticky top-20 flex flex-col"
               data-testid="cv-management-suggestions-sidebar"
+              style={{ height: 'calc(100vh - 400px)' }}
             >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+              <CardHeader className="flex-shrink-0 border-b border-base-300/50">
+                <CardTitle className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-5 h-5 text-primary" />
-                  AI Suggestions
+                  CV Improvement
                 </CardTitle>
-                <CardDescription>
-                  Personalized recommendations to improve your CV
-                </CardDescription>
+                
+                {/* Enhance CV Button - Large and prominent, right under title */}
+                {onGetSuggestions && (
+                  <Button 
+                    variant="default" 
+                    size="lg"
+                    className="flex items-center justify-center gap-3 w-full py-4 text-lg font-semibold"
+                    onClick={onGetSuggestions}
+                  >
+                    <Lightbulb className="w-6 h-6" />
+                    Enhance CV
+                  </Button>
+                )}
               </CardHeader>
-              <CardContent className="space-y-4 max-h-96 overflow-y-auto">
+              
+              <CardContent className="flex-1 overflow-y-auto p-4">
                 {/* Overall MVP suggestions */}
-                <div className="space-y-4">
-                  <SuggestionManager section="overall" />
-                </div>
+                <SuggestionManager section="overall" />
               </CardContent>
             </Card>
           </div>
         )}
       </div>
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>What's Next?</CardTitle>
-          <CardDescription>
-            Your CV content is ready for AI-powered suggestions and cover letter generation
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-3">
-            {onGetSuggestions && (
-              <Button 
-                variant="default"
-                className="flex items-center gap-2"
-                onClick={onGetSuggestions}
-              >
-                <Lightbulb className="w-4 h-4" />
-                Get Suggestions
-              </Button>
-            )}
-            <Button variant="outline" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              Generate Cover Letter
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Export Content
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Eye className="w-4 h-4" />
-              Preview Format
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

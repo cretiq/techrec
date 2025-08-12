@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { UploadForm } from '@/components/cv/UploadForm';
 import { AnalysisResultDisplay } from '@/components/analysis/AnalysisResultDisplay';
 import { AnalysisActionButtons } from '@/components/analysis/AnalysisActionButtons';
+import { MvpResultDisplay } from '@/components/analysis/MvpResultDisplay';
 import { ProfileScoringSidebar } from '@/components/cv/ProfileScoringSidebar';
 import {  Card, CardContent, CardDescription, CardHeader, CardTitle  } from '@/components/ui-daisy/card';
 import { toast } from "@/components/ui-daisy/use-toast";
@@ -12,6 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
 import { setAnalysis, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
+import { selectSuggestionsVisibility, setSuggestionsVisibility } from '@/lib/features/suggestionsSlice';
 import { cn } from '@/lib/utils';
 import { RefreshCw, Download, BarChart3, Rocket, Loader2, Sparkles } from 'lucide-react';
 import { ProjectEnhancementModal } from '@/components/analysis/ProjectEnhancementModal';
@@ -19,6 +21,7 @@ import { ReUploadButton } from '@/components/cv/ReUploadButton';
 import { useSession } from 'next-auth/react';
 import { AnalysisStatus } from '@prisma/client';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSuggestionsFetcher, SuggestionManager } from '@/components/suggestions/SuggestionManager';
 
 interface CV {
     id: string;
@@ -32,6 +35,10 @@ interface CV {
     uploadDate: string;
     extractedText?: string | null;
     improvementScore?: number | null;
+    // MVP Mode fields
+    mvpContent?: string | null;
+    mvpRawData?: any | null;
+    mode?: string; // To track if this was processed in MVP mode
     createdAt: string;
     updatedAt: string;
 }
@@ -49,6 +56,10 @@ export default function CVManagementPage() {
     const [processingText, setProcessingText] = useState('');
     const [showSparkles, setShowSparkles] = useState(false);
     const [currentTextIndex, setCurrentTextIndex] = useState(0);
+    
+    // MVP Mode detection
+    const [isMvpMode, setIsMvpMode] = useState(false);
+    const [mvpData, setMvpData] = useState<{ content: string; json: any } | null>(null);
 
     // Authentication hooks
     const { data: session, status } = useSession();
@@ -60,6 +71,7 @@ export default function CVManagementPage() {
     const analysisIdFromStore = useSelector(selectCurrentAnalysisId);
     const analysisStatus = useSelector(selectAnalysisStatus);
     const analysisData = useSelector(selectCurrentAnalysisData);
+    const suggestionsVisible = useSelector(selectSuggestionsVisibility);
 
     // Ref hooks
     const hasInitialLoaded = useRef(false);
@@ -268,6 +280,28 @@ export default function CVManagementPage() {
         setProcessingText(text);
         setShowSparkles(sparkles);
     }, []);
+
+    // --- Handler for Get Suggestions ---
+    const { fetchSuggestions } = useSuggestionsFetcher();
+    const handleGetSuggestions = useCallback(async () => {
+        console.log('[CVManagementPage] Get Suggestions clicked for MVP mode');
+        
+        if (!currentCV?.mvpRawData) {
+            console.error('[CVManagementPage] No MVP raw data available for suggestions');
+            return;
+        }
+        
+        try {
+            console.log('[CVManagementPage] Fetching suggestions with MVP data:', currentCV.mvpRawData);
+            await fetchSuggestions(currentCV.mvpRawData);
+            console.log('[CVManagementPage] Successfully fetched suggestions');
+            
+            // Show suggestions after successful fetch
+            dispatch(setSuggestionsVisibility(true));
+        } catch (error) {
+            console.error('[CVManagementPage] Failed to fetch suggestions:', error);
+        }
+    }, [currentCV?.mvpRawData, fetchSuggestions, dispatch]);
 
     // Text colors for each phrase - Blue/Teal shades only
     const textColors = [
@@ -635,7 +669,8 @@ export default function CVManagementPage() {
                             style={{ animationDelay: '500ms' }}
                             data-testid="cv-management-profile-section"
                         >
-                            {/* Quick Actions Bar - With Spectacular Animations */}
+                            {/* Quick Actions Bar - With Spectacular Animations - Hide in MVP mode */}
+                            {!(currentCV?.mvpContent && currentCV?.mvpRawData) && (
                             <Card 
                                 variant="gradient"
                                 className="rounded-xl"
@@ -748,27 +783,55 @@ export default function CVManagementPage() {
                                     </CardContent>
                                 </motion.div>
                             </Card>
+                            )}
 
-                            <div className="flex gap-6">
-                                {/* Smart Scoring Sidebar */}
-                                <aside className="w-80 hidden lg:block" data-testid="cv-management-scoring-sidebar">
-                                    <Card 
-                                        variant="elevated-interactive"
-                                        className="sticky top-20"
-                                        data-testid="cv-management-scoring-card"
-                                    >
-                                        <CardHeader>
-                                            <CardTitle className="text-lg">Profile Score</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
-                                            <ProfileScoringSidebar analysisData={analysisData} />
-                                        </CardContent>
-                                    </Card>
-                                </aside>
+                            <div className={`flex gap-6 ${currentCV?.mvpContent && currentCV?.mvpRawData ? '' : ''}`}>
+                                {/* Smart Scoring Sidebar - Hide in MVP mode */}
+                                {!(currentCV?.mvpContent && currentCV?.mvpRawData) && (
+                                    <aside className="w-80 hidden lg:block" data-testid="cv-management-scoring-sidebar">
+                                        <Card 
+                                            variant="elevated-interactive"
+                                            className="sticky top-20"
+                                            data-testid="cv-management-scoring-card"
+                                        >
+                                            <CardHeader>
+                                                <CardTitle className="text-lg">Profile Score</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="space-y-4">
+                                                <ProfileScoringSidebar analysisData={analysisData} />
+                                            </CardContent>
+                                        </Card>
+                                    </aside>
+                                )}
 
                                 {/* Main Profile Content */}
                                 <div className="flex-1">
-                                    <AnalysisResultDisplay originalMimeType={originalMimeType} />
+                                    {/* MVP Mode: Show simplified display */}
+                                    {currentCV?.mvpContent && currentCV?.mvpRawData ? (
+                                        <div className="space-y-6">
+                                            {/* Top section with CV info and actions */}
+                                            <div className="space-y-6">
+                                                <MvpResultDisplay 
+                                                    formattedText={currentCV.mvpContent}
+                                                    basicJson={currentCV.mvpRawData}
+                                                    improvementScore={currentCV.improvementScore || 0}
+                                                    extractionDuration={0} // Not available from stored data
+                                                    characterCount={currentCV.mvpContent?.length || 0}
+                                                    wordCount={currentCV.mvpContent ? currentCV.mvpContent.split(/\s+/).length : 0}
+                                                    filename={currentCV.originalName}
+                                                    onGetSuggestions={handleGetSuggestions}
+                                                    suggestionsVisible={suggestionsVisible}
+                                                    analysisData={analysisData}
+                                                    onUploadComplete={handleUploadComplete}
+                                                    onAnimationStateChange={handleAnimationStateChange}
+                                                    isMvpMode={true}
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        /* Standard Mode: Show full analysis display */
+                                        <AnalysisResultDisplay originalMimeType={originalMimeType} />
+                                    )}
                                 </div>
                             </div>
                         </div>
