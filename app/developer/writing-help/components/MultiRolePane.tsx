@@ -59,7 +59,7 @@ export function MultiRolePane({
             /> */}
             
             <Card 
-                className={`relative transition-all duration-300 ${
+                className={`relative transition-all duration-300 bg-transparent border-none shadow-none ${
                     isRemoveHovered ? '' : ''
                 }`} 
                 data-testid={`write-multirole-card-${role.id}`}

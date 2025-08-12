@@ -39,6 +39,9 @@ const buttonVariants = {
   
   // Special variants
   linkedin: `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] text-white font-medium border-transparent`,
+  'linkedin-light': `${buttonBase} bg-[#0077b5]/10 hover:bg-[#0077b5]/20 text-[#0077b5] border-[#0077b5]/20 font-medium`,
+  'export-action': `${buttonBase} bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 border-blue-500/20 font-medium`,
+  'copy-action': `${buttonBase} bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 border-teal-500/20 font-medium`,
   writeto: `${buttonBase} bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium border-transparent`,
   markasapplied: `${buttonBase} bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium border-transparent`,
   
@@ -55,6 +58,9 @@ const buttonVariants = {
   'error-interactive': `${buttonBase} btn-error`,
   'info-interactive': `${buttonBase} btn-info`,
   'linkedin-interactive': `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] text-white font-medium border-transparent`,
+  'linkedin-light-interactive': `${buttonBase} bg-[#0077b5]/10 hover:bg-[#0077b5]/20 text-[#0077b5] border-[#0077b5]/20 font-medium`,
+  'export-action-interactive': `${buttonBase} bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 border-blue-500/20 font-medium`,
+  'copy-action-interactive': `${buttonBase} bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 border-teal-500/20 font-medium`,
   'flashy-interactive': `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 border-base-300/50 text-base-content font-medium`,
   
   // Legacy aliases for backwards compatibility

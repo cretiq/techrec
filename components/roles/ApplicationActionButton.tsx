@@ -101,12 +101,12 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
     >
       <Button
         size={isFullWidth ? "lg" : "sm"}
-        variant="glass"
+        variant="linkedin-light"
         onClick={handleClick}
         disabled={disabled}
         leftIcon={<LinkedInIcon className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0`} />}
         rightIcon={<ArrowRight className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0 group-hover:translate-x-0.5 transition-transform`} />}
-        className={`${isFullWidth ? 'text-sm' : 'text-xs'} font-medium text-[#0077b5] hover:text-[#005885] border-[#0077b5]/30 hover:border-[#0077b5]/50 hover:bg-[#0077b5]/10 group whitespace-nowrap ${className}`}
+        className={`${isFullWidth ? 'text-sm' : 'text-xs'} group whitespace-nowrap ${className}`}
         title="Apply via LinkedIn (opens in new tab)"
         data-testid={testId || 'application-action-button-external'}
       >

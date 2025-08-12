@@ -51,6 +51,7 @@ export function AnimatedTabs({
         className="w-full"
       >
         <TabsList 
+          variant="glass"
           className={cn(
             "relative grid w-full max-w-2xl mx-auto h-12 bg-base-100/60 backdrop-blur-md border border-base-300/50 rounded-xl p-1.5 shadow-xl items-center place-items-center",
             `grid-cols-${tabs.length}`,
@@ -64,8 +65,10 @@ export function AnimatedTabs({
               key={tab.value}
               value={tab.value}
               disabled={tab.disabled}
+              variant="glass"
               className={cn(
                 "relative flex items-center justify-center gap-2 text-sm font-medium rounded-lg transition-all duration-100 z-20 h-full min-h-0 py-0 leading-none",
+                "data-[state=active]:bg-transparent data-[state=inactive]:bg-transparent hover:bg-transparent",
                 tab.disabled 
                   ? "opacity-50 cursor-not-allowed text-base-content/40 hover:text-base-content/40" 
                   : "data-[state=active]:text-white data-[state=inactive]:text-base-content/70 hover:text-base-content"

@@ -225,12 +225,6 @@ export default function WritingHelpPage() {
         layoutId="writeHelpTabBackground"
         testId="write-nav-tabs-main"
       />
-      
-      <Tabs
-        value={activeTab}
-        onValueChange={() => {}} // Controlled by AnimatedTabs
-        className="w-full"
-      >
         
         {/* Action Buttons Row - Show in cover-letter and outreach tabs */}
         {(activeTab === 'cover-letter' || activeTab === 'outreach') && selectedRoles.length > 0 && (
@@ -312,7 +306,6 @@ export default function WritingHelpPage() {
             </div>
           </motion.div>
         )}
-      </Tabs>
 
         {/* Grid Layout Container - Render MultiRolePane for each role */} 
         <div className="grid grid-cols-1 gap-4 w-full mt-6">

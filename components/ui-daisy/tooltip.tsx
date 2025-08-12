@@ -13,7 +13,7 @@ export interface TooltipProps {
   disabled?: boolean;
 }
 
-export function Tooltip({
+export function TooltipBasic({
   content,
   children,
   size = 'medium',
@@ -140,51 +140,111 @@ export function TooltipEnhanced({
 // Pre-configured tooltip variants for common use cases
 export function TooltipSmall({ content, children, position = 'top', ...props }: Omit<TooltipProps, 'size'>) {
   return (
-    <Tooltip content={content} size="small" position={position} {...props}>
+    <TooltipBasic content={content} size="small" position={position} {...props}>
       {children}
-    </Tooltip>
+    </TooltipBasic>
   );
 }
 
 export function TooltipMedium({ content, children, position = 'top', ...props }: Omit<TooltipProps, 'size'>) {
   return (
-    <Tooltip content={content} size="medium" position={position} {...props}>
+    <TooltipBasic content={content} size="medium" position={position} {...props}>
       {children}
-    </Tooltip>
+    </TooltipBasic>
   );
 }
 
 export function TooltipLarge({ content, children, position = 'top', ...props }: Omit<TooltipProps, 'size'>) {
   return (
-    <Tooltip content={content} size="large" position={position} {...props}>
+    <TooltipBasic content={content} size="large" position={position} {...props}>
       {children}
-    </Tooltip>
+    </TooltipBasic>
   );
 }
 
 // Info tooltip with question mark icon
 export function TooltipInfo({ content, size = 'medium', position = 'top', className = '', ...props }: TooltipProps) {
   return (
-    <Tooltip content={content} size={size} position={position} className={className} {...props}>
+    <TooltipBasic content={content} size={size} position={position} className={className} {...props}>
       <div className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-base-300 text-base-content hover:bg-base-200 transition-colors cursor-help">
         <span className="text-xs">?</span>
       </div>
-    </Tooltip>
+    </TooltipBasic>
   );
 }
 
-// Compatibility exports for shadcn-ui style usage
+// Tooltip context for proper state management
+const TooltipContext = React.createContext<{
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}>({ isOpen: false, setIsOpen: () => {} });
+
+// Compatibility exports for shadcn-ui style usage with proper hover functionality
 export const TooltipProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
-export const TooltipTrigger = ({ children, asChild, ...props }: { children: React.ReactNode; asChild?: boolean; [key: string]: any }) => (
-  <div {...props}>{children}</div>
-);
-export const TooltipContent = ({ children, side, className, ...props }: { 
+
+export const Tooltip = ({ children }: { children: React.ReactNode }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  
+  return (
+    <TooltipContext.Provider value={{ isOpen, setIsOpen }}>
+      <div className="relative inline-block">
+        {children}
+      </div>
+    </TooltipContext.Provider>
+  );
+};
+
+export const TooltipTrigger = ({ children, asChild, ...props }: { 
+  children: React.ReactNode; 
+  asChild?: boolean; 
+  [key: string]: any 
+}) => {
+  const { setIsOpen } = React.useContext(TooltipContext);
+  
+  return (
+    <div 
+      {...props}
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+      onFocus={() => setIsOpen(true)}
+      onBlur={() => setIsOpen(false)}
+      className={cn('inline-block', props.className)}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const TooltipContent = ({ children, side = 'top', className, ...props }: { 
   children: React.ReactNode; 
   side?: 'top' | 'bottom' | 'left' | 'right';
   className?: string;
   [key: string]: any 
-}) => (
-  <div className={cn('bg-base-content text-base-100 rounded-lg p-2 text-sm shadow-lg', className)} {...props}>
-    {children}
-  </div>
-);
+}) => {
+  const { isOpen } = React.useContext(TooltipContext);
+  
+  const positionClasses = {
+    top: 'bottom-full mb-2 left-1/2 -translate-x-1/2',
+    bottom: 'top-full mt-2 left-1/2 -translate-x-1/2', 
+    left: 'right-full mr-2 top-1/2 -translate-y-1/2',
+    right: 'left-full ml-2 top-1/2 -translate-y-1/2'
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div 
+      className={cn(
+        'absolute z-[9999] pointer-events-none',
+        'bg-base-content/80 backdrop-blur-sm text-base-100 rounded-lg p-2 text-sm shadow-lg',
+        'border border-base-300/20',
+        'animate-in fade-in-0 zoom-in-95 duration-100',
+        positionClasses[side],
+        className
+      )} 
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};

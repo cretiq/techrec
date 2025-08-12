@@ -340,7 +340,7 @@ export function CoverLetterCreator({
       >
         {/* Header Card */}
         <Card 
-          variant="transparent"
+          variant="glass"
           data-testid="write-coverletter-card-header"
         >
             <CardHeader className={cn(isMultiRoleMode ? "pb-4 pt-4" : "pb-6 pt-6")}>
@@ -418,9 +418,8 @@ export function CoverLetterCreator({
                 <Button
                   onClick={generatedLetter ? handleRegenerate : handleGenerate}
                   disabled={isGenerating || isExternallyLocked || !developerProfile}
-                  variant="linkedin"
+                  variant="hybrid"
                   size="lg"
-                  elevation="lg"
                   loading={isGenerating}
                   className="w-full text-base group"
                   data-testid="write-coverletter-button-generate-trigger"
@@ -449,10 +448,10 @@ export function CoverLetterCreator({
         {/* Customization Card */}
         <motion.div variants={fadeInUp}>
           <Card 
-            className="bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 rounded-lg"
+            variant="glass"
             data-testid="write-coverletter-card-customization"
           >
-            <CardHeader className="bg-base-100/30 backdrop-blur-sm transition-all duration-300">
+            <CardHeader>
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
                 <CardTitle className="text-lg text-base-content">Personalize Your Application</CardTitle>
@@ -513,15 +512,15 @@ export function CoverLetterCreator({
           </Card>
         </motion.div>
 
-        {/* Progress Indicator */}
+        {/* Progress Indicator - Always shown for debug */}
         <AnimatePresence>
-          {isGenerating && (
+          {true && (
             <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.9 }}
-              className="p-5 bg-primary/10 backdrop-blur-sm rounded-lg border border-primary/30 shadow-lg"
             >
+              <Card variant="gradientSharp" className="p-5">
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -530,7 +529,7 @@ export function CoverLetterCreator({
                   </div>
                 </div>
                 <div className="flex-1">
-                  <p className="text-base font-semibold text-base-content">AI is crafting your perfect cover letter...</p>
+                  <p className="text-base font-semibold text-base-content">Crafting your perfect cover letter...</p>
                   <p className="text-sm text-muted-foreground mt-1">
                     {role.applicationInfo?.applicationUrl 
                       ? `Analyzing job description and matching it to your profile...`
@@ -549,6 +548,7 @@ export function CoverLetterCreator({
                   <div className="absolute inset-0 h-2 bg-gradient-to-r from-primary to-secondary opacity-20 blur-sm" />
                 </div>
               </div>
+              </Card>
             </motion.div>
           )}
         </AnimatePresence>
@@ -574,14 +574,15 @@ export function CoverLetterCreator({
           className="rounded-lg h-full"
         >
           <Card 
+            variant="glass"
             className={cn(
-              "bg-base-100/60 backdrop-blur-sm border border-base-300/50 transition-all duration-300 h-full relative overflow-hidden rounded-lg shadow-lg",
+              "h-full relative overflow-hidden",
               isNewlyGenerated && "ring-2 ring-success/50 bg-success/5"
             )}
             data-testid="write-coverletter-card-output"
           >
           <CardContent className="flex flex-col bg-transparent p-6 h-full">
-            <div className="flex-1 relative min-h-0">
+            <div className="flex-1 relative min-h-0 flex flex-col">
               {!generatedLetter && (
                 <motion.div 
                   initial={{ opacity: 0 }}
@@ -677,12 +678,12 @@ export function CoverLetterCreator({
                 <Textarea
                   value={generatedLetter}
                   readOnly
-                  variant={generatedLetter ? "default" : "ghost"}
+                  variant={generatedLetter ? "default" : "glass"}
                   className={cn(
-                    "resize-none transition-all duration-300 font-sans text-base h-full w-full",
+                    "resize-none transition-all duration-300 font-sans font-base text-base-content/90 flex-1 w-full min-h-[400px]",
                     !generatedLetter && "text-center opacity-0",
-                    generatedLetter && !isNewlyGenerated && "shadow-inner bg-base-100/60 backdrop-blur-sm border-base-300/50 rounded-lg",
-                    generatedLetter && isNewlyGenerated && "shadow-inner bg-success/10 backdrop-blur-sm border-success/30 rounded-lg"
+                    generatedLetter && !isNewlyGenerated && "shadow-inner bg-base-100/60 backdrop-blur-sm border-2 border-base-300/80 rounded-lg",
+                    generatedLetter && isNewlyGenerated && "shadow-inner bg-success/10 backdrop-blur-sm border-2 border-success/60 rounded-lg"
                   )}
                   data-testid="write-coverletter-textarea-output"
                 />
@@ -702,11 +703,10 @@ export function CoverLetterCreator({
                     <div className="flex-1">
                       <Button
                         onClick={handleExport}
-                        variant="outline"
+                        variant="export-action"
                         size="default"
-                        elevation="sm"
                         leftIcon={<Download className="h-4 w-4" />}
-                        className="w-full group font-medium"
+                        className="w-full group"
                         data-testid="write-coverletter-button-export-trigger"
                       >
                         Export as Text
@@ -715,9 +715,8 @@ export function CoverLetterCreator({
                     <div className="flex-1">
                       <Button
                         onClick={handleCopy}
-                        variant={isCopied ? "gradient-blue" : "outline"}
+                        variant={isCopied ? "success" : "copy-action"}
                         size="default"
-                        elevation="sm"
                         className="w-full group"
                         leftIcon={isCopied ? (
                           <motion.div
