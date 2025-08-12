@@ -17,7 +17,9 @@ const cardVariants = {
   elevated: `${cardBase} bg-base-100 border border-base-300/50 shadow-md`,
   floating: `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
   gradient: `${cardBase} bg-gradient-to-br from-blue-50 to-purple-50 border border-base-100`,
+  gradientSharp: `${cardBase} bg-gradient-to-br from-blue-50 to-purple-50 border border-brand-sharp`,
   gradientMuted: `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
+  selected: `${cardBase} bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
   
   // Interactive variants with built-in hover effects
   'default-interactive': `${cardBase} bg-base-200 border border-base-300 shadow-sm`,
@@ -27,6 +29,7 @@ const cardVariants = {
   'glass-interactive': `${cardBase} bg-base-200/60 backdrop-blur-lg border border-brand-sharp shadow-xs`,
   'outlined-interactive': `${cardBase} bg-transparent border-2 border-base-300`,
   'floating-interactive': `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
+  'selected-interactive': `${cardBase} bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
 }
 
 // Type for all available card variants
@@ -60,13 +63,15 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(({
 }, ref) => {
   // Apply hover effects for interactive variants or clickable cards
   const isInteractiveVariant = variant.includes('-interactive')
+  const isSelectedVariant = variant.includes('selected')
   
   const cardClasses = cn(
     cardVariants[variant],
-    // Apply hover effects for interactive variants
-    isInteractiveVariant && getHoverEffect('card', variant.replace('-interactive', '')),
-    // Apply interactive effects for clickable cards
-    clickable && !isInteractiveVariant && getHoverEffect('card', 'interactive'),
+    // Apply hover effects for interactive variants (but not selected variants)
+    isInteractiveVariant && !isSelectedVariant && getHoverEffect('card', variant.replace('-interactive', '')),
+    // For selected variants, don't apply any hover system at all
+    // Apply interactive effects for clickable cards (but not selected variants)
+    clickable && !isInteractiveVariant && !isSelectedVariant && getHoverEffect('card', 'interactive'),
     clickable && "cursor-pointer",
     className
   )

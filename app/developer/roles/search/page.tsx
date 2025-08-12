@@ -392,7 +392,7 @@ export default function RolesSearch2Page() {
 
           {/* No Results State */}
           {!loading && filteredRoles.length === 0 && (
-            <Card variant="glass-interactive" className="text-center p-8 animate-fade-in-up" data-testid="role-search-card-no-results">
+            <Card variant="elevated-interactive" animated className="text-center" data-testid="role-search-card-no-results">
               <CardHeader>
                 <CardTitle>Ready to Search for Roles</CardTitle>
                 <CardDescription>
@@ -529,16 +529,15 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
 
   return (
     <Card 
-      variant="gradient-interactive"
+      variant={isSelected ? "selected-interactive" : "elevated-interactive"}
+      animated
+      clickable
       tabIndex={0}
       role="checkbox"
       aria-checked={isSelected}
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
-      className={cn(
-        "animate-fade-in-up flex flex-col h-full relative cursor-pointer focus:outline-none",
-        isSelected && "bg-gradient-to-br from-blue-50 to-blue-100 shadow-sm border-blue-300 dark:bg-blue-900/30 dark:border-blue-700"
-      )}
+      className="flex flex-col h-full relative focus:outline-none"
       style={{ animationDelay: `${index * 100}ms` }}
       data-testid={testId || `role-search-card-role-item-${role.id}`}
                 >

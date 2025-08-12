@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import {  Button  } from '@/components/ui-daisy/button'
 import { useSession, signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { Loader2, User, LogOut, Settings } from 'lucide-react'
+import { Loader2, User, LogOut } from 'lucide-react'
 import { useDispatch } from 'react-redux'
 import { userLoggedOut } from '@/lib/features/metaSlice'
 import { persistor } from '@/lib/store'
@@ -196,18 +196,12 @@ export function UserNav() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
-        <div className="absolute top-full right-0 z-50 w-48 mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-100 ease-out" data-testid="nav-dropdown-account-menu">
+        <div className="absolute top-full left-0 z-50 w-48 mt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-100 ease-out" data-testid="nav-dropdown-account-menu">
           <ul className="menu p-2 shadow-lg bg-base-100 rounded-lg border border-base-300">
             <li>
               <Link href="/developer/profile" className="hover:bg-base-200 rounded-md flex items-center gap-2" data-testid="nav-dropdown-profile-trigger">
                 <User className="h-4 w-4" />
                 <span>Profile</span>
-              </Link>
-            </li>
-            <li>
-              <Link href="/developer/settings" className="hover:bg-base-200 rounded-md flex items-center gap-2" data-testid="nav-dropdown-settings-trigger">
-                <Settings className="h-4 w-4" />
-                <span>Settings</span>
               </Link>
             </li>
             <li>

@@ -33,6 +33,7 @@ export const HOVER_SYSTEM = {
       outlined: "hover:border-primary/50 hover:bg-base-100/50 hover:shadow-sm",
       floating: "hover:shadow-xl hover:bg-base-100",
       interactive: "hover:shadow-md cursor-pointer",
+      selected: "", // No hover effects for selected cards
     },
     button: {
       default: "hover:shadow-md hover:bg-base-200",

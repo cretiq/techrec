@@ -11,8 +11,9 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="data-theme"
-      defaultTheme="light"
+      defaultTheme="system"
       themes={themes}
+      enableSystem={true}
       disableTransitionOnChange
       {...props}
     >
