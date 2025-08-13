@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui-daisy/badge';
 import { Copy, Download, Eye, EyeOff, Code, FileText, Lightbulb, Sparkles, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/ui-daisy/use-toast';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import { selectSuggestionsLoading } from '@/lib/features/suggestionsSlice';
 import { SuggestionManager } from '@/components/suggestions/SuggestionManager';
 import { ReUploadButton } from '@/components/cv/ReUploadButton';
 
@@ -28,7 +30,6 @@ interface MvpResultDisplayProps {
   wordCount?: number;
   filename?: string;
   onGetSuggestions?: () => void;
-  isEnhancementLoading?: boolean;
   suggestionsVisible?: boolean;
   analysisData?: any;
   onUploadComplete?: (analysisId?: string) => void;
@@ -45,7 +46,6 @@ export function MvpResultDisplay({
   wordCount = 0,
   filename = 'CV',
   onGetSuggestions,
-  isEnhancementLoading = false,
   suggestionsVisible = false,
   analysisData,
   onUploadComplete,
@@ -55,6 +55,9 @@ export function MvpResultDisplay({
   const [activeTab, setActiveTab] = useState<'markdown' | 'text'>('markdown');
   const [isJsonExpanded, setIsJsonExpanded] = useState(false);
   const { toast } = useToast();
+  
+  // Get loading state from Redux store
+  const isEnhancementLoading = useSelector(selectSuggestionsLoading);
 
   // Pre-process markdown text to fix line breaks
   const preprocessMarkdown = (text: string): string => {
@@ -487,67 +490,17 @@ export function MvpResultDisplay({
                 
                 {/* Enhance CV Button - Large and prominent, right under title */}
                 {onGetSuggestions && (
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full"
+                  <Button 
+                    variant="primary-interactive"
+                    size="default"
+                    className="w-full py-3 text-base font-semibold"
+                    onClick={onGetSuggestions}
+                    loading={isEnhancementLoading}
+                    leftIcon={<Lightbulb className="w-5 h-5" />}
+                    animated
                   >
-                    <Button 
-                      variant="default" 
-                      size="default"
-                      className="flex items-center justify-center gap-2 w-full py-3 text-base font-semibold relative overflow-hidden group"
-                      onClick={onGetSuggestions}
-                      disabled={isEnhancementLoading}
-                    >
-                      <motion.div
-                        animate={isEnhancementLoading ? {
-                          rotate: [0, -10, 10, -10, 10, 0],
-                          scale: [1, 1.2, 1, 1.2, 1]
-                        } : { rotate: 0, scale: 1 }}
-                        transition={isEnhancementLoading ? {
-                          duration: 0.8,
-                          ease: "easeInOut",
-                          times: [0, 0.2, 0.4, 0.6, 0.8, 1]
-                        } : { duration: 0.2 }}
-                      >
-                        <Lightbulb className="w-6 h-6" />
-                      </motion.div>
-                      <motion.span
-                        initial={false}
-                        animate={isEnhancementLoading ? { opacity: 0.8 } : { opacity: 1 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {isEnhancementLoading ? 'Enhancing...' : 'Enhance CV'}
-                      </motion.span>
-                      
-                      {/* Sparkle effect during enhancement */}
-                      {isEnhancementLoading && (
-                        <>
-                          <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-orange-500/20 to-red-500/20"
-                            animate={{ 
-                              opacity: [0.2, 0.5, 0.2],
-                              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-                            }}
-                            transition={{ 
-                              duration: 1.5, 
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                          />
-                          <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-yellow-300 animate-pulse" />
-                        </>
-                      )}
-                      
-                      {/* Hover gradient effect */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: '100%' }}
-                        transition={{ duration: 0.6, ease: "easeInOut" }}
-                      />
-                    </Button>
-                  </motion.div>
+                    {isEnhancementLoading ? 'Enhancing CV...' : 'Enhance CV'}
+                  </Button>
                 )}
               </CardHeader>
               
