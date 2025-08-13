@@ -414,7 +414,7 @@ logs/direct-gemini-upload/
 
 ### 📋 Comprehensive Testing Guide
 **🚨 CRITICAL**: Read the complete testing best practices document first:
-**📖 See: [`E2E_TESTING_BEST_PRACTICES.md`](./E2E_TESTING_BEST_PRACTICES.md)**
+**📖 See: [`docs/testing/e2e-best-practices.md`](./docs/testing/e2e-best-practices.md)**
 
 ### Critical Testing Rules
 **🚨 AUTHENTICATION RULE**:

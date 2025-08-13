@@ -5,7 +5,7 @@
 **Status**: [📊 See Test Health Report](./test-health-report.md) for detailed current status
 
 **🚨 CRITICAL**: Read the comprehensive E2E testing best practices:  
-**📖 See: [`../../E2E_TESTING_BEST_PRACTICES.md`](../../E2E_TESTING_BEST_PRACTICES.md)**
+**📖 See: [`./e2e-best-practices.md`](./e2e-best-practices.md)**
 
 ---
 

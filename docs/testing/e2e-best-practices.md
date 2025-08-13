@@ -241,7 +241,7 @@ if (!isVisible) {
 
 ---
 
-## 🧹 Test Cleanup Approach
+## 🧹 Test Cleanup Results
 
 ### **What We Removed and Why**
 
@@ -420,6 +420,131 @@ console.log('Page content:', content?.substring(0, 200));
 
 ---
 
+## 📁 Test Organization
+
+### **Current Directory Structure**
+```
+tests/
+├── user-flows/                  # Authentication tests (35/35 PASS ✅)
+│   └── authentication.spec.ts  # Complete auth workflows
+├── e2e/core-workflows/          # Core functionality (10/45 tests)
+│   ├── cv-upload-and-display.spec.ts    # CV management (2/5 pass)
+│   └── experience-management.spec.ts    # Profile editing (5/5 pass)
+└── utils/                       # Test utilities
+    ├── auth-helper.ts          # CRITICAL: Authentication management
+    └── global-setup.ts         # Test user creation
+```
+
+### **Selector Best Practices**
+```typescript
+// ✅ GOOD: Use data-testid attributes
+await page.click('[data-testid="profile-experience-add-button"]');
+await page.fill('[data-testid="experience-title-input"]', 'Senior Developer');
+
+// ✅ GOOD: Specific context selectors
+await page.locator(`[data-testid="cv-row-${cvId}"]`).click();
+
+// ❌ AVOID: Text-based selectors (brittle)
+await page.click('text=Submit');
+
+// ❌ AVOID: CSS class selectors (change frequently)
+await page.click('.btn-primary');
+```
+
+### **Wait Conditions**
+```typescript
+// ✅ Wait for specific elements
+await page.waitForSelector('[data-testid="upload-complete-indicator"]');
+
+// ✅ Wait for network requests to complete
+await page.waitForLoadState('networkidle');
+
+// ✅ Wait for specific text content
+await expect(page.locator('[data-testid="status"]')).toContainText('Complete');
+
+// ❌ AVOID: Arbitrary timeouts
+await page.waitForTimeout(5000); // Flaky!
+```
+
+---
+
+## 🧪 Testing Patterns
+
+### **File Upload Testing**
+```typescript
+test('should upload CV file successfully', async ({ page }) => {
+  await page.goto('/developer/cv-management');
+  
+  // Prepare file upload
+  const filePath = path.join(__dirname, '../fixtures/sample-cv.pdf');
+  expect(fs.existsSync(filePath)).toBeTruthy();
+  
+  // Perform upload
+  await page.setInputFiles('[data-testid="cv-upload-input"]', filePath);
+  await page.click('[data-testid="upload-submit-button"]');
+  
+  // Verify upload success
+  await expect(page.locator('[data-testid="upload-success-message"]')).toBeVisible();
+});
+```
+
+### **Form Interaction Testing**
+```typescript
+test('should edit experience information', async ({ page }) => {
+  await page.goto('/developer/profile');
+  
+  // Fill form fields
+  await page.fill('[data-testid="experience-title-input"]', 'Senior Developer');
+  await page.fill('[data-testid="experience-company-input"]', 'TechCorp');
+  await page.selectOption('[data-testid="experience-location-select"]', 'Remote');
+  
+  // Submit form
+  await page.click('[data-testid="experience-save-button"]');
+  
+  // Verify save success
+  await expect(page.locator('[data-testid="save-success-indicator"]')).toBeVisible();
+});
+```
+
+---
+
+## 📈 Test Execution
+
+### **Local Development**
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run specific test file
+npx playwright test cv-upload-and-display.spec.ts
+
+# Run tests with visible browser (debugging)
+npx playwright test --headed
+
+# Debug specific test with step-by-step execution
+npx playwright test --debug cv-upload-and-display.spec.ts
+```
+
+### **CI/CD Pipeline**
+```bash
+# Headless execution for CI
+npx playwright test --browser=chromium
+
+# Generate test report
+npx playwright show-report
+
+# Capture screenshots on failure
+npx playwright test --screenshot=only-on-failure
+```
+
+### **Performance Considerations**
+- **Parallel Execution**: Tests run in parallel by default
+- **Resource Management**: Close database connections after tests
+- **File Cleanup**: Remove uploaded test files after completion
+- **Browser Management**: Playwright handles browser lifecycle automatically
+
+---
+
 ## 📝 Conclusion
 
 These practices transformed our test suite from **10% success rate to 91% success rate**. The key lessons:
@@ -434,6 +559,6 @@ Following these guidelines will ensure stable, reliable E2E tests that provide r
 
 ---
 
-**Last Updated**: August 7, 2025  
+**Last Updated**: August 12, 2025  
 **Success Rate Achieved**: 91% (41/45 tests passing)  
 **Total Tests Cleaned**: Removed 277 problematic tests, retained 45 core tests

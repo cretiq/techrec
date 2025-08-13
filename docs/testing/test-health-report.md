@@ -5,7 +5,7 @@
 **Validated By**: Claude Code Analysis & Test Suite Cleanup  
 
 **🚨 CRITICAL**: Read the comprehensive E2E testing best practices:  
-**📖 See: [`../../E2E_TESTING_BEST_PRACTICES.md`](../../E2E_TESTING_BEST_PRACTICES.md)**
+**📖 See: [`./e2e-best-practices.md`](./e2e-best-practices.md)**
 
 ---
 
@@ -297,4 +297,4 @@ npx playwright test --debug
 
 ---
 
-*For questions about this report or test issues, refer to the [Testing Strategy](./strategy.md) or [E2E Guidelines](./e2e-guidelines.md) documentation.*
+*For questions about this report or test issues, refer to the [Testing Strategy](./strategy.md) or [E2E Best Practices](./e2e-best-practices.md) documentation.*

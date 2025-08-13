@@ -5,7 +5,7 @@
 **Owner**: Development Team (Tech Lead oversight)
 
 **🚨 CRITICAL**: Read the comprehensive E2E testing best practices:  
-**📖 See: [`../../E2E_TESTING_BEST_PRACTICES.md`](../../E2E_TESTING_BEST_PRACTICES.md)**
+**📖 See: [`./e2e-best-practices.md`](./e2e-best-practices.md)**
 
 ---
 
@@ -293,7 +293,7 @@ Track these metrics monthly and document trends:
 ### **Documentation**
 - [📊 Test Health Report](./test-health-report.md) - Current detailed status
 - [🎯 Testing Strategy](./strategy.md) - Overall approach and philosophy
-- [🌐 E2E Guidelines](./e2e-guidelines.md) - End-to-end testing best practices
+- [🌐 E2E Best Practices](./e2e-best-practices.md) - End-to-end testing best practices
 - [🔗 Integration Tests](./integration-tests.md) - Integration testing guide
 - [📋 Data Contracts](./data-contracts.md) - Schema validation strategy
 

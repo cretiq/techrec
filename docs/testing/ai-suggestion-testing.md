@@ -6,7 +6,7 @@
 
 **🚨 IMPORTANT**: AI suggestion E2E tests were removed due to API timeouts and external dependencies. This guide remains for manual testing and debugging purposes only.
 
-**📖 See**: [`../../E2E_TESTING_BEST_PRACTICES.md`](../../E2E_TESTING_BEST_PRACTICES.md) for current testing approach.
+**📖 See**: [`./e2e-best-practices.md`](./e2e-best-practices.md) for current testing approach.
 
 ---
 
