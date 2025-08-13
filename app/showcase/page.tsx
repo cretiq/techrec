@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Palette, 
@@ -106,36 +107,10 @@ const sections: Record<string, Section> = {
 export default function ShowcasePage() {
   const [activeSection, setActiveSection] = useState('components');
   const [searchQuery, setSearchQuery] = useState('');
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
   const ActiveComponent = sections[activeSection]?.component || sections.components.component;
-
-  // Handle system theme detection and changes
-  useEffect(() => {
-    const updateResolvedTheme = () => {
-      if (theme === 'system') {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        setResolvedTheme(systemTheme);
-      } else {
-        setResolvedTheme(theme);
-      }
-    };
-
-    updateResolvedTheme();
-
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      mediaQuery.addEventListener('change', updateResolvedTheme);
-      return () => mediaQuery.removeEventListener('change', updateResolvedTheme);
-    }
-  }, [theme]);
-
-  // Apply theme to document
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', resolvedTheme);
-  }, [resolvedTheme]);
 
   const handleCopyCode = (code: string, id: string) => {
     navigator.clipboard.writeText(code);

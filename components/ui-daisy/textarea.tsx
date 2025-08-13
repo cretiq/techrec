@@ -16,6 +16,7 @@ const textareaVariants = cva(
         success: "border-success/50 focus:border-success bg-success/5 focus:bg-success/10",
         warning: "border-warning/50 focus:border-warning bg-warning/5 focus:bg-warning/10",
         error: "border-error/50 focus:border-error bg-error/5 focus:bg-error/10",
+        gradientSharp: "bg-gradient-to-br from-blue-50 to-purple-50 border border-brand-sharp",
       },
       size: {
         xs: "textarea-xs text-xs min-h-16 p-2",

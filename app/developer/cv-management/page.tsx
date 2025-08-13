@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import type { AppDispatch } from '@/lib/store';
 import { setAnalysis, clearAnalysis, selectCurrentAnalysisId, selectAnalysisStatus, selectCurrentAnalysisData } from '@/lib/features/analysisSlice';
-import { selectSuggestionsVisibility, setSuggestionsVisibility } from '@/lib/features/suggestionsSlice';
+import { selectSuggestionsVisibility, setGlobalVisibility } from '@/lib/features/suggestionsSlice';
 import { cn } from '@/lib/utils';
 import { RefreshCw, Download, BarChart3, Rocket, Loader2, Sparkles } from 'lucide-react';
 import { ProjectEnhancementModal } from '@/components/analysis/ProjectEnhancementModal';
@@ -297,7 +297,7 @@ export default function CVManagementPage() {
             console.log('[CVManagementPage] Successfully fetched suggestions');
             
             // Show suggestions after successful fetch
-            dispatch(setSuggestionsVisibility(true));
+            dispatch(setGlobalVisibility(true));
         } catch (error) {
             console.error('[CVManagementPage] Failed to fetch suggestions:', error);
         }

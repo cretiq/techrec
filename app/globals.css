@@ -6,8 +6,10 @@
   themes: light --default, dark --prefersdark;
 }
 
-/* Custom variant to make dark: work with DaisyUI dark theme */
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+/* TailwindCSS v4: Custom variant for dark mode with DaisyUI data-theme */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* TailwindCSS v4: Dark mode now configured with @custom-variant above */
 
 /* Custom light theme with pure white background */
 @plugin "daisyui/theme" {

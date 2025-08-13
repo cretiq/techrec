@@ -124,7 +124,7 @@ export function OutreachMessageGenerator({
         toast({ 
           title: "Error Loading Profile", 
           description: "Could not load your profile data.", 
-          variant: "destructive" 
+          variant: "error" 
         })
       }
     }
@@ -221,7 +221,7 @@ export function OutreachMessageGenerator({
       toast({
         title: "Error",
         description: "Profile data not loaded yet. Please wait.",
-        variant: "destructive",
+        variant: "error",
       })
       onGenerationComplete?.(role.id, false)
       return
@@ -234,7 +234,7 @@ export function OutreachMessageGenerator({
         toast({
           title: "Missing Information",
           description: "Please provide the recipient's name.",
-          variant: "destructive",
+          variant: "error",
         })
         return
       } else {
@@ -313,7 +313,7 @@ export function OutreachMessageGenerator({
       toast({
         title: "Generation Failed",
         description: error instanceof Error ? error.message : "An unknown error occurred.",
-        variant: "destructive",
+        variant: "error",
       })
     } finally {
       setIsGenerating(false)
@@ -435,9 +435,8 @@ export function OutreachMessageGenerator({
                 <Button
                   onClick={() => handleGenerate()}
                   disabled={isGenerating || isExternallyLocked || !recipientName}
-                  variant="linkedin"
+                  variant="hybrid"
                   size="lg"
-                  elevation="lg"
                   loading={isGenerating}
                   leftIcon={!isGenerating ? <Sparkles className="h-5 w-5 flex-shrink-0 group-hover:animate-pulse" /> : undefined}
                   rightIcon={!isGenerating ? <ArrowRight className="h-5 w-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" /> : undefined}
@@ -516,10 +515,11 @@ export function OutreachMessageGenerator({
         )}
       </AnimatePresence>
       {/* Left Panel - Input Section */}
-      <div 
-        className="bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 backdrop-blur-sm border border-base-300/50 rounded-lg shadow-lg p-6 space-y-6"
+      <Card 
+        variant="transparent"
         data-testid="write-outreach-card-input-container"
       >
+        <CardContent className="p-6 space-y-6">
         {/* Header Section */}
         <div className="space-y-2" data-testid="write-outreach-header-section">
           <h3 
@@ -847,13 +847,15 @@ export function OutreachMessageGenerator({
               <li data-testid="write-outreach-tip-4">• End with a clear call to action</li>
             </ul>
           </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Right Panel - Generated Messages */}
-      <div 
-        className="bg-gradient-to-br from-secondary/5 via-accent/5 to-primary/5 backdrop-blur-sm border border-base-300/50 rounded-lg shadow-lg p-6"
+      <Card 
+        variant="transparent"
         data-testid="write-outreach-card-messages-container"
       >
+        <CardContent className="p-6">
         {/* Header Section */}
         <div className="space-y-2 mb-6" data-testid="write-outreach-header-messages">
           <div 
@@ -1168,7 +1170,8 @@ export function OutreachMessageGenerator({
               </div>
             </div>
           )}
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

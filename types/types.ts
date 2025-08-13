@@ -173,6 +173,10 @@ export interface InternalProfile {
   savedRoles: InternalSavedRole[];
   customRoles: InternalCustomRole[];
 
+  // MVP CV Content for AI processing (cover letters, suggestions)
+  mvpContent?: string | null; // Formatted markdown text from latest CV
+  mvpRawData?: any | null; // Unvalidated JSON structure from latest CV
+
   // Consider adding calculated fields if needed by the UI, populated by the service/mapper
   // e.g., totalYearsExperience?: number;
 }

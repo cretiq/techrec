@@ -3,7 +3,8 @@
 import {
     Developer, ContactInfo, DeveloperSkill, Skill as PrismaSkill, SkillCategory,
     Experience as PrismaExperience, Education as PrismaEducation, Achievement as PrismaAchievement,
-    Application as PrismaApplication, Role as PrismaRole, SavedRole as PrismaSavedRole, CustomRole as PrismaCustomRole
+    Application as PrismaApplication, Role as PrismaRole, SavedRole as PrismaSavedRole, CustomRole as PrismaCustomRole,
+    CV as PrismaCV
 } from '@prisma/client';
 import {
     InternalProfile, InternalContactInfo, InternalSkill,
@@ -23,6 +24,8 @@ type PrismaDeveloperWithRelations = Developer & {
     applications: (PrismaApplication & { role: PrismaRole & { company: { name: string | null } } })[];
     savedRoles: (PrismaSavedRole & { role: PrismaRole & { company: { name: string | null } } })[];
     customRoles: PrismaCustomRole[];
+    // Include CVs with MVP content for cover letter generation
+    cvs: Pick<PrismaCV, 'id' | 'filename' | 'originalName' | 'uploadDate' | 'status' | 'improvementScore' | 'mvpContent' | 'mvpRawData'>[];
 };
 
 /**
@@ -120,6 +123,11 @@ export function mapPrismaProfileToInternalProfile(developer: PrismaDeveloperWith
         updatedAt: cr.updatedAt.toISOString(),
     }));
 
+    // Extract MVP content from the latest CV (if available)
+    const latestCV = developer.cvs && developer.cvs.length > 0 ? developer.cvs[0] : null;
+    const mvpContent = latestCV?.mvpContent || null;
+    const mvpRawData = latestCV?.mvpRawData || null;
+
     return {
         id: developer.id,
         name: developer.name,
@@ -135,6 +143,9 @@ export function mapPrismaProfileToInternalProfile(developer: PrismaDeveloperWith
         applications: applications,
         savedRoles: savedRoles,
         customRoles: customRoles,
+        // Include MVP CV content for AI processing (cover letters, suggestions)
+        mvpContent: mvpContent,
+        mvpRawData: mvpRawData,
     };
 }
 

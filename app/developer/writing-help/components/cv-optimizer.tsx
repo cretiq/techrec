@@ -658,7 +658,7 @@ export function CVOptimizer({ role, isMultiRoleMode = false }: CVOptimizerProps)
                                     <Button
                                       onClick={() => handleSuggestion(suggestion.id, true)}
                                       disabled={suggestion.accepted === true}
-                                      variant={suggestion.accepted === true ? "gradient-green" : "default"}
+                                      variant={suggestion.accepted === true ? "gradient" : "default"}
                                       size="sm"
                                       className="w-full"
                                     >
@@ -712,7 +712,7 @@ export function CVOptimizer({ role, isMultiRoleMode = false }: CVOptimizerProps)
                           </div>
                           <Button
                             onClick={applyAcceptedChanges}
-                            variant="gradient-green"
+                            variant="gradient"
                             size="sm"
                             className="shadow-lg"
                           >
@@ -750,10 +750,9 @@ export function CVOptimizer({ role, isMultiRoleMode = false }: CVOptimizerProps)
                       <div className="flex-1">
                         <Button
                           onClick={handleCopy}
-                          variant={isCopied ? "gradient-blue" : "outline"}
+                          variant={isCopied ? "gradient" : "outline"}
                           size="default"
                           className="w-full group shadow-md transition-all duration-150 rounded-lg"
-                          elevation="sm"
                           data-testid="cv-optimizer-button-copy"
                         >
                           {isCopied ? (

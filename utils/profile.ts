@@ -26,7 +26,24 @@ const profileInclude = {
     savedRoles: {
         include: { role: { include: { company: { select: { name: true } } } } }
     },
-    customRoles: true
+    customRoles: true,
+    // Include CVs with MVP content for cover letter generation
+    cvs: {
+        select: {
+            id: true,
+            filename: true,
+            originalName: true,
+            uploadDate: true,
+            status: true,
+            improvementScore: true,
+            mvpContent: true,
+            mvpRawData: true
+        },
+        orderBy: {
+            uploadDate: 'desc'
+        },
+        take: 1 // Get only the most recent CV
+    }
 };
 
 /**

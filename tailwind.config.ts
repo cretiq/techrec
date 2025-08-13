@@ -10,6 +10,7 @@ const config: Config = {
     './types/**/*.{js,ts,jsx,tsx}',
     // Add other paths here if necessary
   ],
+  // TailwindCSS v4: darkMode configured in CSS with @custom-variant
   safelist: [
     // Force include problem utilities
     'bg-green-200',
