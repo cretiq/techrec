@@ -6,73 +6,12 @@
   themes: light --default, dark --prefersdark;
 }
 
-/* TailwindCSS v4: Custom variant for dark mode with DaisyUI data-theme */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* TailwindCSS v4: Custom variant for dark mode with DaisyUI data-theme - SIMPLIFIED SYNTAX */
+@variant dark ([data-theme="dark"] &);
 
 /* TailwindCSS v4: Dark mode now configured with @custom-variant above */
 
-/* Custom light theme with pure white background */
-@plugin "daisyui/theme" {
-  name: "light";
-  default: true;
-  prefersdark: false;
-  color-scheme: light;
-  --color-base-100: oklch(99% 0.005 240);
-  --color-base-200: oklch(98% 0 0);
-  --color-base-300: oklch(96% 0 0);
-  --color-base-content: oklch(20% 0.05 240);
-  --color-primary: oklch(55% 0.3 240);
-  --color-primary-content: oklch(98% 0.01 240);
-  --color-secondary: oklch(70% 0.25 200);
-  --color-secondary-content: oklch(98% 0.01 200);
-  --color-accent: oklch(65% 0.25 160);
-  --color-accent-content: oklch(98% 0.01 160);
-  --color-neutral: oklch(50% 0.05 240);
-  --color-neutral-content: oklch(98% 0.01 240);
-  --color-info: oklch(70% 0.2 220);
-  --color-info-content: oklch(98% 0.01 220);
-  --color-success: oklch(65% 0.25 140);
-  --color-success-content: oklch(98% 0.01 140);
-  --color-warning: oklch(80% 0.25 80);
-  --color-warning-content: oklch(20% 0.05 80);
-  --color-error: oklch(65% 0.3 30);
-  --color-error-content: oklch(98% 0.01 30);
-
-  /* Brand colors */
-  --color-brand-muted: oklch(98% 0 0);
-  --color-brand-sharp: oklch(93% 0 0); 
-}
-
-/* Custom dark theme */
-@plugin "daisyui/theme" {
-  name: "dark";
-  prefersdark: true;
-  color-scheme: dark;
-  --color-base-100: oklch(25% 0.015 240); /* Dark background */
-  --color-base-200: oklch(23% 0.015 240); /* Darker background */
-  --color-base-300: oklch(21% 0.015 240); /* Darkest background */
-  --color-base-content: oklch(90% 0.015 240); /* Light text for dark theme */
-  --color-primary: oklch(65% 0.25 240);
-  --color-primary-content: oklch(20% 0.05 240);
-  --color-secondary: oklch(75% 0.2 200);
-  --color-secondary-content: oklch(20% 0.05 200);
-  --color-accent: oklch(70% 0.2 160);
-  --color-accent-content: oklch(20% 0.05 160);
-  --color-neutral: oklch(60% 0.05 240);
-  --color-neutral-content: oklch(20% 0.05 240);
-  --color-info: oklch(75% 0.15 220);
-  --color-info-content: oklch(20% 0.05 220);
-  --color-success: oklch(70% 0.2 140);
-  --color-success-content: oklch(20% 0.05 140);
-  --color-warning: oklch(85% 0.2 80);
-  --color-warning-content: oklch(20% 0.05 80);
-  --color-error: oklch(70% 0.25 30);
-  --color-error-content: oklch(20% 0.05 30);
-
-  /* Brand colors */
-  --color-brand-muted: oklch(23% 0.02 240);
-  --color-brand-sharp: oklch(33% 0.02 240); 
-}
+/* Custom theme definitions temporarily removed to test built-in DaisyUI theme switching */
 
 @theme {
   /* Custom colors that generate TailwindCSS utilities */
