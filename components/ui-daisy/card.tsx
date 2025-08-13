@@ -17,7 +17,7 @@ const cardVariants = {
   elevated: `${cardBase} bg-base-100 border border-base-300/50 shadow-md`,
   floating: `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
   gradient: `${cardBase} bg-gradient-to-br from-blue-50 to-purple-50 border border-base-100`,
-  gradientSharp: `${cardBase} bg-gradient-to-br from-blue-50 to-purple-50 border border-brand-sharp`,
+  gradientSharp: `${cardBase} bg-gradient-brand-sharp border border-brand-sharp`,
   gradientMuted: `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
   selected: `${cardBase} bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
   

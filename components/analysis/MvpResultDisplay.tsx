@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Button } from '@/components/ui-daisy/button';
@@ -28,6 +28,7 @@ interface MvpResultDisplayProps {
   wordCount?: number;
   filename?: string;
   onGetSuggestions?: () => void;
+  isEnhancementLoading?: boolean;
   suggestionsVisible?: boolean;
   analysisData?: any;
   onUploadComplete?: (analysisId?: string) => void;
@@ -44,6 +45,7 @@ export function MvpResultDisplay({
   wordCount = 0,
   filename = 'CV',
   onGetSuggestions,
+  isEnhancementLoading = false,
   suggestionsVisible = false,
   analysisData,
   onUploadComplete,
@@ -52,7 +54,6 @@ export function MvpResultDisplay({
 }: MvpResultDisplayProps) {
   const [activeTab, setActiveTab] = useState<'markdown' | 'text'>('markdown');
   const [isJsonExpanded, setIsJsonExpanded] = useState(false);
-  const [isEnhancing, setIsEnhancing] = useState(false);
   const { toast } = useToast();
 
   // Pre-process markdown text to fix line breaks
@@ -495,20 +496,15 @@ export function MvpResultDisplay({
                       variant="default" 
                       size="default"
                       className="flex items-center justify-center gap-2 w-full py-3 text-base font-semibold relative overflow-hidden group"
-                      onClick={() => {
-                        setIsEnhancing(true);
-                        onGetSuggestions();
-                        // Reset after animation
-                        setTimeout(() => setIsEnhancing(false), 2000);
-                      }}
-                      disabled={isEnhancing}
+                      onClick={onGetSuggestions}
+                      disabled={isEnhancementLoading}
                     >
                       <motion.div
-                        animate={isEnhancing ? {
+                        animate={isEnhancementLoading ? {
                           rotate: [0, -10, 10, -10, 10, 0],
                           scale: [1, 1.2, 1, 1.2, 1]
                         } : { rotate: 0, scale: 1 }}
-                        transition={isEnhancing ? {
+                        transition={isEnhancementLoading ? {
                           duration: 0.8,
                           ease: "easeInOut",
                           times: [0, 0.2, 0.4, 0.6, 0.8, 1]
@@ -518,14 +514,14 @@ export function MvpResultDisplay({
                       </motion.div>
                       <motion.span
                         initial={false}
-                        animate={isEnhancing ? { opacity: 0.8 } : { opacity: 1 }}
+                        animate={isEnhancementLoading ? { opacity: 0.8 } : { opacity: 1 }}
                         transition={{ duration: 0.2 }}
                       >
-                        {isEnhancing ? 'Enhancing...' : 'Enhance CV'}
+                        {isEnhancementLoading ? 'Enhancing...' : 'Enhance CV'}
                       </motion.span>
                       
                       {/* Sparkle effect during enhancement */}
-                      {isEnhancing && (
+                      {isEnhancementLoading && (
                         <>
                           <motion.div
                             className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-orange-500/20 to-red-500/20"
