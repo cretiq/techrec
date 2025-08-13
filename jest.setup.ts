@@ -341,11 +341,12 @@ global.mockSession = {
 }
 
 // Mock UI components that might cause rendering issues
+// Mock UI components to prevent rendering issues
 jest.mock('@/components/ui-daisy/button', () => ({
-  Button: jest.fn(({ children, onClick, disabled, loading, leftIcon, ...props }) => {
+  Button: jest.fn(({ children, onClick, disabled, loading, leftIcon, rightIcon, ...props }) => {
     const React = require('react');
     // Filter out non-DOM props
-    const { variant, size, ...domProps } = props;
+    const { variant, size, hoverable, animated, interactive, ...domProps } = props;
     return React.createElement('button', {
       onClick,
       disabled: disabled || loading,
@@ -353,6 +354,112 @@ jest.mock('@/components/ui-daisy/button', () => ({
       ...domProps
     }, loading ? 'Loading...' : children);
   }),
+}))
+
+jest.mock('@/components/ui-daisy/card', () => ({
+  Card: jest.fn(({ children, ...props }) => {
+    const React = require('react');
+    const { variant, ...domProps } = props;
+    return React.createElement('div', {
+      'data-testid': 'card',
+      ...domProps
+    }, children);
+  }),
+}))
+
+jest.mock('@/components/ui-daisy/input', () => ({
+  Input: jest.fn(({ onChange, value, leftIcon, rightIcon, ...props }) => {
+    const React = require('react');
+    const { variant, inputSize, hoverable, animated, interactive, ...domProps } = props;
+    return React.createElement('input', {
+      onChange,
+      value,
+      ...domProps
+    });
+  }),
+}))
+
+jest.mock('@/components/ui-daisy/use-toast', () => ({
+  useToast: jest.fn(() => ({
+    toast: jest.fn(),
+  })),
+}))
+
+jest.mock('@/components/ui-daisy/badge', () => ({
+  Badge: jest.fn(({ children, ...props }) => {
+    const React = require('react');
+    const { variant, ...domProps } = props;
+    return React.createElement('span', {
+      'data-testid': 'badge',
+      ...domProps
+    }, children);
+  }),
+  StatusBadge: jest.fn(({ children, ...props }) => {
+    const React = require('react');
+    const { variant, status, ...domProps } = props;
+    return React.createElement('span', {
+      'data-testid': 'status-badge',
+      ...domProps
+    }, children);
+  }),
+}))
+
+jest.mock('@/components/ui-daisy/tooltip', () => ({
+  Tooltip: jest.fn(({ children, content, ...props }) => {
+    const React = require('react');
+    return React.createElement('div', {
+      'data-testid': 'tooltip',
+      title: content,
+      ...props
+    }, children);
+  }),
+}))
+
+// Don't mock SuggestionManager globally - let test files handle it
+// Don't mock suggestionHighlight globally - let test files handle it
+
+jest.mock('@/lib/animation-config', () => ({
+  defaultTransition: { duration: 0.2 },
+  hoverTransition: { duration: 0.1 },
+  entranceTransition: { duration: 0.3 },
+  contentTransition: { duration: 0.2 },
+  fadeInUp: {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  },
+  scaleOnHover: {
+    rest: { scale: 1 },
+    hover: { scale: 1.05 }
+  },
+}))
+
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: jest.fn(({ children, ...props }) => {
+      const React = require('react');
+      const { variants, initial, animate, whileHover, ...domProps } = props;
+      return React.createElement('div', domProps, children);
+    }),
+  },
+  AnimatePresence: jest.fn(({ children }) => children),
+}))
+
+// Mock lodash
+jest.mock('lodash', () => ({
+  isEqual: jest.fn((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+  debounce: jest.fn((fn) => fn),
+}))
+
+// Mock lib utils
+jest.mock('@/lib/utils', () => ({
+  cn: jest.fn((...args) => args.filter(Boolean).join(' ')),
+}))
+
+// Don't mock react-redux globally - tests need real Redux functionality
+
+// Mock types
+jest.mock('@/types/cv', () => ({
+  // Empty mock - types don't need runtime mocks
 }))
 
 jest.mock('@/components/ui-daisy/confirmation-dialog', () => ({
@@ -392,7 +499,19 @@ jest.mock('@/hooks/useSavedRoles', () => ({
   })),
 }))
 
-// Mock Lucide React icons
+// Mock react-markdown and related packages
+jest.mock('react-markdown', () => {
+  return jest.fn(({ children }) => {
+    const React = require('react');
+    return React.createElement('div', { 'data-testid': 'react-markdown' }, children);
+  });
+});
+
+jest.mock('remark-gfm', () => {
+  return jest.fn();
+});
+
+// Mock Lucide React icons - comprehensive set
 jest.mock('lucide-react', () => ({
   Check: jest.fn(() => {
     const React = require('react');
@@ -429,6 +548,51 @@ jest.mock('lucide-react', () => ({
   Trash2: jest.fn(() => {
     const React = require('react');
     return React.createElement('span', { 'data-testid': 'trash-icon' }, '🗑️');
+  }),
+  // ContactInfoDisplay icons
+  Mail: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'mail-icon' }, '📧');
+  }),
+  Phone: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'phone-icon' }, '📞');
+  }),
+  MapPin: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'map-pin-icon' }, '📍');
+  }),
+  Linkedin: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'linkedin-icon' }, '🔗');
+  }),
+  Github: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'github-icon' }, '🐙');
+  }),
+  Link: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'link-icon' }, '🔗');
+  }),
+  LinkIcon: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'link-icon' }, '🔗');
+  }),
+  Edit: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'edit-icon' }, '✏️');
+  }),
+  Save: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'save-icon' }, '💾');
+  }),
+  User: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'user-icon' }, '👤');
+  }),
+  Wand2: jest.fn(() => {
+    const React = require('react');
+    return React.createElement('span', { 'data-testid': 'wand-icon' }, '🪄');
   }),
 }))
 
