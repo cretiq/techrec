@@ -23,7 +23,7 @@ jest.mock('@/lib/animation-config', () => ({
   fadeInUp: { hidden: {}, visible: {} }
 }));
 
-// Mock child components
+// Mock child components - IMPORTANT: Use same paths as component imports
 jest.mock('../display/ContactInfoDisplay', () => ({
   ContactInfoDisplay: ({ data, onChange }: any) => (
     <div data-testid="contact-info-display">
@@ -367,10 +367,10 @@ describe('AnalysisResultDisplay', () => {
       expect(screen.getByTestId('projects-display')).toBeInTheDocument();
       
       // AI assistance buttons should render
-      expect(screen.getAllByTestId('ai-button')).toHaveLength(5); // 5 sections with AI buttons
+      expect(screen.getAllByTestId('ai-button')).toHaveLength(4); // 4 sections with AI buttons (About, Experience, Education, PersonalProjects)
       
       // Suggestion managers should render
-      expect(screen.getAllByTestId('suggestion-manager')).toHaveLength(4); // 4 sections with suggestion managers
+      expect(screen.getAllByTestId('suggestion-manager')).toHaveLength(5); // 5 sections with suggestion managers (ContactInfo, About, Skills, Education, PersonalProjects)
     });
   });
 });
