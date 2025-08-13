@@ -181,7 +181,7 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
   return {
     id: apiJob.id || `job-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     title: apiJob.title || 'Job Title Not Available',
-    description: apiJob.description_text || apiJob.linkedin_org_description || 'No description available.',
+    description: apiJob.description_text || 'Role description not provided by job source.',
     requirements: apiJob.linkedin_org_specialties || [],
     skills: mapSkills(),
     company: mapCompany(),

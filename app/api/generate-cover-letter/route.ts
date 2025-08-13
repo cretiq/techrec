@@ -189,8 +189,6 @@ ${roleInfo.location ? `Location: ${roleInfo.location}` : ''}
 ${roleInfo.aiWorkArrangement ? `Work Arrangement: ${roleInfo.aiWorkArrangement}` : ''}
 ${roleInfo.aiWorkingHours ? `Working Hours: ${roleInfo.aiWorkingHours} hours/week` : ''}
 
-${roleInfo.description ? `Role Overview: ${roleInfo.description}` : ''}
-
 ${roleInfo.aiCoreResponsibilities ? `Core Responsibilities:\n${roleInfo.aiCoreResponsibilities}` : ''}
 
 ${roleInfo.aiRequirementsSummary ? `Requirements Summary:\n${roleInfo.aiRequirementsSummary}` : ''}
@@ -207,6 +205,7 @@ ${roleInfo.aiBenefits && roleInfo.aiBenefits.length > 0 ? `Benefits:\n${roleInfo
 
 ${roleInfo.recruiterName ? `Recruiter: ${roleInfo.recruiterName}${roleInfo.recruiterTitle ? ` (${roleInfo.recruiterTitle})` : ''}` : ''}
 ${roleInfo.aiHiringManagerName ? `Hiring Manager: ${roleInfo.aiHiringManagerName}` : ''}
+${roleInfo.aiHiringManagerEmail ? `HM Email: ${roleInfo.aiHiringManagerEmail}` : ''}
 
 Keywords: ${keywords.join(", ")}
 
@@ -219,7 +218,7 @@ Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180
 Use the detailed ROLE & JOB DETAILS to create a highly targeted letter that addresses specific requirements and demonstrates how the candidate's CV experience aligns with the job needs.
 
 Structure:
-1. Greeting: "Dear ${hiringManager ?? "Hiring Team"},".
+1. Greeting: "Dear ${hiringManager ?? roleInfo.aiHiringManagerName ?? "Hiring Team"},".
 2. Hook: cite role title + most relevant company fact.
 3. Proof: extract relevant achievements from CV content & match with job requirements.
 4. Alignment: use CV skills/experience to address specific job requirements and company needs.
@@ -266,8 +265,6 @@ ${roleInfo.location ? `Location: ${roleInfo.location}` : ''}
 ${roleInfo.aiWorkArrangement ? `Work Arrangement: ${roleInfo.aiWorkArrangement}` : ''}
 ${roleInfo.aiWorkingHours ? `Working Hours: ${roleInfo.aiWorkingHours} hours/week` : ''}
 
-${roleInfo.description ? `Role Overview: ${roleInfo.description}` : ''}
-
 ${roleInfo.aiCoreResponsibilities ? `Core Responsibilities:\n${roleInfo.aiCoreResponsibilities}` : ''}
 
 ${roleInfo.aiRequirementsSummary ? `Requirements Summary:\n${roleInfo.aiRequirementsSummary}` : ''}
@@ -284,6 +281,7 @@ ${roleInfo.aiBenefits && roleInfo.aiBenefits.length > 0 ? `Benefits:\n${roleInfo
 
 ${roleInfo.recruiterName ? `Recruiter: ${roleInfo.recruiterName}${roleInfo.recruiterTitle ? ` (${roleInfo.recruiterTitle})` : ''}` : ''}
 ${roleInfo.aiHiringManagerName ? `Hiring Manager: ${roleInfo.aiHiringManagerName}` : ''}
+${roleInfo.aiHiringManagerEmail ? `HM Email: ${roleInfo.aiHiringManagerEmail}` : ''}
 
 Keywords: ${keywords.join(", ")}
 
@@ -299,7 +297,7 @@ Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180
 Match the applicant's skills and achievements to the specific job requirements and address the company's values through the provided facts.
 
 Structure:
-1. Greeting: "Dear ${hiringManager ?? "Hiring Team"},".
+1. Greeting: "Dear ${hiringManager ?? roleInfo.aiHiringManagerName ?? "Hiring Team"},".
 2. Hook: cite role title + most relevant company fact from the list above.
 3. Proof: weave achievements with specific job requirements (not just generic keywords).
 4. Alignment: explain how skills solve the specific needs outlined in the job requirements.

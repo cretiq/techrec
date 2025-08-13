@@ -389,3 +389,20 @@ ai_working_hours	The number of required working hours. Defaults to 40 if not men
 ai_employment_type	One or more employment types as derived from the job description: FULL_TIME/PART_TIME/CONTRACTOR/TEMPORARY/INTERN/VOLUNTEER/PER_DIEM/OTHER	text[]
 ai_job_language	The language of the job description	text
 ai_visa_sponsorship	Returns true if the job description mentions Visa sponsorship opportunities	boolean
+
+## Known Data Quality Issues
+
+### Job Description Fallback Issue
+**Issue**: The `description_text` field from RapidAPI is frequently null/empty, especially for jobs sourced through aggregators like Dice.
+
+**Impact**: When mapping to our internal Role structure, the description falls back to `linkedin_org_description` (company description), causing:
+- Redundant content in cover letter prompts
+- Misleading role information presentation
+- Confusion between role-specific and company-wide information
+
+**Solution Implemented**: 
+- Updated data mapper (`utils/mappers.ts:184`) to use explicit fallback message instead of company description
+- Fixed cover letter prompt to remove redundant "Role Overview" section when it duplicates company information
+- Added AI-extracted fields (`ai_core_responsibilities`, `ai_requirements_summary`) as primary sources for role details
+
+**Recommendation**: Use AI-extracted role fields (`ai_core_responsibilities`, `ai_requirements_summary`) as the primary source for role-specific information in cover letter generation.
