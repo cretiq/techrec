@@ -82,7 +82,7 @@ export function BadgeGallery({ badges, className = '' }: BadgeGalleryProps) {
               className="relative"
             >
               <Card
-                variant={badge.isEarned ? "solid" : "transparent"}
+                variant={badge.isEarned ? "bordered" : "transparent"}
                 hoverable
                 className={`
                   cursor-pointer transition-all duration-100 hover:scale-105

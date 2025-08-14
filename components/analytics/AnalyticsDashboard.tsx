@@ -71,7 +71,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ /* analy
       {/* Grid for Charts */}
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
         {/* Improvement Over Time */}
-        <Card>
+        <Card variant="bordered">
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-base font-medium'>Improvement Over Time</CardTitle>
             <Button variant="ghost" size="sm" className='h-7 w-7 p-0 text-muted-foreground' onClick={() => handleExport('Improvement Over Time')}><Download className="h-4 w-4" /></Button>
@@ -82,7 +82,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ /* analy
         </Card>
 
         {/* Strengths/Weaknesses Radar Chart */}
-        <Card>
+        <Card variant="bordered">
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-base font-medium'>Strengths & Weaknesses</CardTitle>
             <Button variant="ghost" size="sm" className='h-7 w-7 p-0 text-muted-foreground' onClick={() => handleExport('Strengths & Weaknesses')}><Download className="h-4 w-4" /></Button>
@@ -93,7 +93,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ /* analy
         </Card>
 
         {/* Category Performance */}
-        <Card>
+        <Card variant="bordered">
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-base font-medium'>Category Performance</CardTitle>
             <Button variant="ghost" size="sm" className='h-7 w-7 p-0 text-muted-foreground' onClick={() => handleExport('Category Performance')}><Download className="h-4 w-4" /></Button>
@@ -104,7 +104,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ /* analy
         </Card>
 
         {/* Suggestion Implementation Progress */}
-        <Card>
+        <Card variant="bordered">
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-base font-medium'>Suggestion Progress</CardTitle>
             <Button variant="ghost" size="sm" className='h-7 w-7 p-0 text-muted-foreground' onClick={() => handleExport('Suggestion Progress')}><Download className="h-4 w-4" /></Button>

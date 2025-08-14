@@ -314,7 +314,7 @@ export function ExperienceReorganizer({
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <Card className="p-4">
+      <Card variant="bordered" className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Button
@@ -442,7 +442,7 @@ export function ExperienceReorganizer({
         
         <DragOverlay>
           {activeId && activeExperience ? (
-            <Card className="p-4 shadow-lg opacity-90">
+            <Card variant="elevated" className="p-4 shadow-lg opacity-90">
               <div className="font-semibold">{activeExperience.title}</div>
               <div className="text-sm text-base-content/70">{activeExperience.company}</div>
             </Card>

@@ -231,7 +231,7 @@ export function CVExtractionManager({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="p-6">
+      <Card variant="bordered" className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold">CV Extraction Manager</h2>
@@ -360,7 +360,7 @@ export function CVExtractionManager({
           >
             {/* High Confidence Suggestions */}
             {highConfidenceSuggestions.length > 0 && (
-              <Card className="p-4">
+              <Card variant="success" className="p-4">
                 <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
                   <CheckCircle className="h-5 w-5 text-success" />
                   High Confidence Suggestions
@@ -379,7 +379,7 @@ export function CVExtractionManager({
 
             {/* Medium Confidence Suggestions */}
             {mediumConfidenceSuggestions.length > 0 && (
-              <Card className="p-4">
+              <Card variant="warning" className="p-4">
                 <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-warning" />
                   Medium Confidence Suggestions
@@ -398,7 +398,7 @@ export function CVExtractionManager({
 
             {/* Low Confidence Suggestions */}
             {lowConfidenceSuggestions.length > 0 && (
-              <Card className="p-4">
+              <Card variant="info" className="p-4">
                 <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
                   <Lightbulb className="h-5 w-5 text-info" />
                   Consider These Ideas
@@ -417,7 +417,7 @@ export function CVExtractionManager({
 
             {/* No Suggestions */}
             {suggestions.length === 0 && !isLoadingSuggestions && (
-              <Card className="p-8 text-center">
+              <Card variant="default" className="p-8 text-center">
                 <Lightbulb className="h-12 w-12 text-base-content opacity-30 mx-auto mb-4" />
                 <h3 className="font-semibold text-lg mb-2">No Suggestions Available</h3>
                 <p className="text-base-content opacity-70 mb-4">

@@ -83,7 +83,7 @@ export function MvpSuggestionDisplay({
   };
   if (!suggestions || suggestions.trim() === '') {
     return (
-      <Card className={className}>
+      <Card variant="default" className={className}>
         <CardContent className="p-6 text-center">
           <div className="flex flex-col items-center gap-3">
             <Lightbulb className="w-8 h-8 text-muted-foreground" />

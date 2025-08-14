@@ -98,6 +98,7 @@ export function SortableExperienceItem({
       )}
     >
       <Card
+        variant="bordered"
         className={cn(
           'p-4 transition-all',
           isSelected && 'ring-2 ring-primary ring-opacity-50 bg-primary/5',
