@@ -64,7 +64,7 @@ export default function WritingHelpPage() {
   useEffect(() => {
     // Redirect if unauthenticated
     if (sessionStatus === 'unauthenticated') {
-        toast({ title: "Authentication Required", description: "Please log in to use Writing Help.", variant: "destructive" });
+        toast({ title: "Authentication Required", description: "Please log in to use Writing Help.", variant: "error" });
         router.push('/auth/signin?callbackUrl=/developer/writing-help');
         return;
     }
@@ -245,7 +245,6 @@ export default function WritingHelpPage() {
                 onClick={() => router.push("/developer/roles/search")}
                 variant="glass"
                 size="lg"
-                elevation="lg"
                 leftIcon={<ArrowRight className="h-5 w-5 rotate-180" />}
                 data-testid="write-button-back-to-roles-trigger"
               >
@@ -266,7 +265,6 @@ export default function WritingHelpPage() {
                   disabled={isAnyGenerationActive}
                   size="xl"
                   variant="gradient"
-                  elevation="lg"
                   loading={isAnyGenerationActive}
                   leftIcon={!isAnyGenerationActive ? (
                     <motion.div

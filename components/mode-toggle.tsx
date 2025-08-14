@@ -16,10 +16,10 @@ export function ModeToggle() {
     return null // Avoid hydration mismatch
   }
 
-  const isDark = theme === "dark"
+  const isDark = theme === "night"
 
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTheme(e.target.checked ? "dark" : "light")
+    setTheme(e.target.checked ? "night" : "pastel")
   }
 
   return (
@@ -30,7 +30,7 @@ export function ModeToggle() {
         className="theme-controller" 
         checked={isDark}
         onChange={handleToggle}
-        aria-label="Toggle between light and dark themes"
+        aria-label="Toggle between pastel and night themes"
       />
 
       {/* sun icon */}

@@ -3,33 +3,30 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { getHoverEffect } from "@/lib/hoverSystem"
 
-// Base card styles that all variants inherit
-const cardBase = "rounded-3xl transition-all duration-100 ease-smooth"
-
 const cardVariants = {
   // Basic variants without hover effects
-  default: `${cardBase} bg-base-200 border border-base-300 shadow-sm`,
-  transparent: `${cardBase} bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
-  glass: `${cardBase} bg-base-200/60 backdrop-blur-lg border border-brand-sharp shadow-xs`,
-  solid: `${cardBase} bg-base-100 border border-base-300 shadow-sm`,
-  hybrid: `${cardBase} bg-brand-muted border border-brand-sharp`,
-  outlined: `${cardBase} bg-transparent border-2 border-base-300`,
-  elevated: `${cardBase} bg-base-100 border border-base-300/50 shadow-md`,
-  floating: `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
-  gradient: `${cardBase} bg-gradient-to-br from-blue-50 to-purple-50 border border-base-100`,
-  gradientSharp: `${cardBase} bg-gradient-brand-sharp border border-brand-sharp`,
-  gradientMuted: `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
-  selected: `${cardBase} bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
+  default: `card bg-base-200 border border-base-300 shadow-sm`,
+  transparent: `card bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
+  glass: `card bg-base-100 backdrop-blur-lg border border-brand-sharp shadow-xs`,
+  solid: `card bg-base-100 border border-base-300 shadow-sm`,
+  hybrid: `card bg-brand-muted border border-brand-sharp`,
+  outlined: `card bg-transparent border-2 border-base-300`,
+  elevated: `card bg-base-100 border border-base-300/50 shadow-md`,
+  floating: `card bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
+  gradient: `card bg-gradient-to-br from-blue-50 to-purple-50 border border-base-100`,
+  gradientSharp: `card bg-gradient-brand-sharp border border-brand-sharp`,
+  gradientMuted: `card bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
+  selected: `card bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
   
   // Interactive variants with built-in hover effects
-  'default-interactive': `${cardBase} bg-base-200 border border-base-300 shadow-sm`,
-  'gradient-interactive': `${cardBase} bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200/50`,
-  'gradientMuted-interactive': `${cardBase} bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
-  'elevated-interactive': `${cardBase} bg-base-100 border border-base-300/50 shadow-md`,
-  'glass-interactive': `${cardBase} bg-base-200/60 backdrop-blur-lg border border-brand-sharp shadow-xs`,
-  'outlined-interactive': `${cardBase} bg-transparent border-2 border-base-300`,
-  'floating-interactive': `${cardBase} bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
-  'selected-interactive': `${cardBase} bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
+  'default-interactive': `card bg-base-200 border border-base-300 shadow-sm`,
+  'gradient-interactive': `card bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200/50`,
+  'gradientMuted-interactive': `card bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
+  'elevated-interactive': `card bg-base-100 border border-base-300/50 shadow-md`,
+  'glass-interactive': `card bg-base-200/60 backdrop-blur-lg border border-brand-sharp shadow-xs`,
+  'outlined-interactive': `card bg-transparent border-2 border-base-300`,
+  'floating-interactive': `card bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
+  'selected-interactive': `card bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
 }
 
 // Type for all available card variants

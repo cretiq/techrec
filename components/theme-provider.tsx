@@ -5,7 +5,7 @@ import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
 
 // Available DaisyUI themes - match tailwind.config.ts
-const themes = ["light", "dark"]
+const themes = ["pastel", "night"]
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
