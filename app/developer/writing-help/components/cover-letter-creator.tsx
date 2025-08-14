@@ -366,14 +366,17 @@ export function CoverLetterCreator({
   return (
     <div 
       className={cn(
-        "grid grid-cols-1 lg:grid-cols-2 max-w-7xl mx-auto",
+        "grid grid-cols-1 lg:grid-cols-2 max-w-7xl mx-auto h-full",
         isMultiRoleMode ? "gap-4" : "gap-6",
-        "lg:items-start lg:h-auto"
+        "lg:items-stretch"
       )}
     >
       {/* Left Column - Customization */}
       <div 
-        className={cn(isMultiRoleMode ? "space-y-4" : "space-y-6")}
+        className={cn(
+          "flex flex-col h-full",
+          isMultiRoleMode ? "gap-4" : "gap-6"
+        )}
       >
         {/* Header Card */}
         <Card 
@@ -482,113 +485,130 @@ export function CoverLetterCreator({
             </CardHeader>
         </Card>
 
-        {/* Customization Card */}
-        <motion.div variants={fadeInUp}>
-          <Card 
-            variant="glass"
-            data-testid="write-coverletter-card-customization"
-          >
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                <CardTitle className="text-lg text-base-content">Personalize Your Application</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Always Visible: Tone & Style and Hiring Manager Name */}
-              <CoverLetterPersonalization
-                roleId={role.id}
-                tone={tone}
-                hiringManager={hiringManager}
-                jobSource={jobSource}
-                isMultiRoleMode={isMultiRoleMode}
-              />
-              
-              {/* TODO: Additional Customization section temporarily hidden for UI simplicity
-                  This includes the collapsible button and all advanced customization options:
-                  - Job Source input
-                  - Key Achievements section
-                  - Company Attraction Points section
-                  Will be restored when we want to offer more detailed personalization options */}
-              {/* <div className="mt-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
-                  className="w-full justify-between p-3 h-auto hover:bg-base-200/50 transition-all duration-100 rounded-lg m-0"
-                  data-testid="write-coverletter-header-personalization-trigger"
+        {/* Dynamic Content Area - Swaps between Personalization and Progress */}
+        <div className="flex-1 flex flex-col">
+          <AnimatePresence mode="wait">
+            {!isGenerating ? (
+              <motion.div 
+                key="personalization"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="flex-1 flex flex-col h-full"
+              >
+                <Card 
+                  variant="glass"
+                  className="flex-1 flex flex-col h-full"
+                  data-testid="write-coverletter-card-customization"
                 >
-                  <span className="text-sm font-medium text-base-content">
-                    Additional Customization
-                  </span>
-                  <motion.div
-                    animate={{ rotate: isPersonalizationExpanded ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronDown className="h-4 w-4 text-base-content/60" />
-                  </motion.div>
-                </Button>
-                
-                <AnimatePresence>
-                  {isPersonalizationExpanded && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="pt-4 space-y-6">
-                        [Job Source Input, Achievements Section, Company Attraction Points sections were here]
+                  <CardHeader className="flex-shrink-0">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg text-base-content">Personalize Your Application</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col">
+                    {/* Always Visible: Tone & Style and Hiring Manager Name */}
+                    <CoverLetterPersonalization
+                      roleId={role.id}
+                      tone={tone}
+                      hiringManager={hiringManager}
+                      jobSource={jobSource}
+                      isMultiRoleMode={isMultiRoleMode}
+                    />
+                    
+                    {/* Spacer to push content to fill available height */}
+                    <div className="flex-1" />
+                    
+                    {/* TODO: Additional Customization section temporarily hidden for UI simplicity
+                        This includes the collapsible button and all advanced customization options:
+                        - Job Source input
+                        - Key Achievements section
+                        - Company Attraction Points section
+                        Will be restored when we want to offer more detailed personalization options */}
+                    {/* <div className="mt-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsPersonalizationExpanded(!isPersonalizationExpanded)}
+                        className="w-full justify-between p-3 h-auto hover:bg-base-200/50 transition-all duration-100 rounded-lg m-0"
+                        data-testid="write-coverletter-header-personalization-trigger"
+                      >
+                        <span className="text-sm font-medium text-base-content">
+                          Additional Customization
+                        </span>
+                        <motion.div
+                          animate={{ rotate: isPersonalizationExpanded ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown className="h-4 w-4 text-base-content/60" />
+                        </motion.div>
+                      </Button>
+                      
+                      <AnimatePresence>
+                        {isPersonalizationExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pt-4 space-y-6">
+                              [Job Source Input, Achievements Section, Company Attraction Points sections were here]
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div> */}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="progress"
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="flex-1 flex flex-col"
+              >
+                <Card variant="gradientSharp" className="flex-1 flex flex-col">
+                  <CardContent className="flex-1 flex flex-col justify-center p-6">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="relative">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <div className="absolute inset-0 h-8 w-8 animate-ping opacity-30">
+                          <Loader2 className="h-8 w-8 text-primary" />
+                        </div>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div> */}
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Progress Indicator - Always shown for debug */}
-        <AnimatePresence>
-          {true && (
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            >
-              <Card variant="gradientSharp" className="p-5">
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <div className="absolute inset-0 h-8 w-8 animate-ping opacity-30">
-                    <Loader2 className="h-8 w-8 text-primary" />
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <p className="text-base font-semibold text-base-content">Crafting your perfect cover letter...</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {role.applicationInfo?.applicationUrl 
-                      ? `Analyzing job description and matching it to your profile...`
-                      : `Matching your profile to ${role.company.name}'s requirements...`
-                    }
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 space-y-2">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Progress</span>
-                  <span>Usually takes 10-15 seconds</span>
-                </div>
-                <div className="relative">
-                  <Progress value={progressValue} className="h-2" />
-                  <div className="absolute inset-0 h-2 bg-gradient-to-r from-primary to-secondary opacity-20 blur-sm" />
-                </div>
-              </div>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                      <div className="flex-1">
+                        <p className="text-base font-semibold text-base-content">Crafting your perfect cover letter...</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {role.applicationInfo?.applicationUrl 
+                            ? `Analyzing job description and matching it to your profile...`
+                            : `Matching your profile to ${role.company.name}'s requirements...`
+                          }
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Progress</span>
+                        <span>Usually takes 10-15 seconds</span>
+                      </div>
+                      <div className="relative">
+                        <Progress value={progressValue} className="h-2" />
+                        <div className="absolute inset-0 h-2 bg-gradient-to-r from-primary to-secondary opacity-20 blur-sm" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Right Column - Generated Letter */}
