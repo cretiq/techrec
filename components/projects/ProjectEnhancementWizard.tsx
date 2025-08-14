@@ -311,7 +311,7 @@ export const ProjectEnhancementWizard: React.FC<ProjectEnhancementWizardProps> =
 
         {/* Error Alert */}
         {error && (
-          <Alert variant="destructive" className="mb-6">
+          <Alert variant="error" className="mb-6">
             <ExclamationTriangleIcon className="w-5 h-5" />
             <span>{error}</span>
             <button

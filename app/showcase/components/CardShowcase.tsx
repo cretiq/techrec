@@ -26,24 +26,37 @@ interface CardShowcaseProps {
 }
 
 export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShowcaseProps) {
-  const basicCardVariants = [
-    { variant: 'default', label: 'Default' },
-    { variant: 'transparent', label: 'Transparent' },
-    { variant: 'glass', label: 'Glass' },
-    { variant: 'solid', label: 'Solid' },
-    { variant: 'outlined', label: 'Outlined' },
-    { variant: 'elevated', label: 'Elevated' },
-    { variant: 'floating', label: 'Floating' },
-    { variant: 'gradient', label: 'Gradient' },
+  // Core DaisyUI variants (like button's btn-primary, btn-secondary)
+  const coreDaisyUIVariants = [
+    { variant: 'default', label: 'Default', description: 'Pure DaisyUI card bg-base-100' },
+    { variant: 'primary', label: 'Primary', description: 'DaisyUI card bg-primary (like btn-primary)' },
+    { variant: 'secondary', label: 'Secondary', description: 'DaisyUI card bg-secondary' },
+    { variant: 'accent', label: 'Accent', description: 'DaisyUI card bg-accent' },
+    { variant: 'neutral', label: 'Neutral', description: 'DaisyUI card bg-neutral' },
+  ];
+  
+  // DaisyUI style variants (like button's btn-ghost, btn-outline)
+  const styleDaisyUIVariants = [
+    { variant: 'bordered', label: 'Bordered', description: 'DaisyUI card-border (like btn-outline)' },
+    { variant: 'flat', label: 'Flat', description: 'DaisyUI card with no shadow' },
+    { variant: 'elevated', label: 'Elevated', description: 'DaisyUI card with shadow-lg' },
+    { variant: 'outlined', label: 'Outlined', description: 'Transparent with DaisyUI border' },
+  ];
+  
+  // Custom variants (like button's LinkedIn custom styling)
+  const customVariants = [
+    { variant: 'glass', label: 'Glass', description: 'Custom glass effect (no DaisyUI equivalent)' },
+    { variant: 'floating', label: 'Floating', description: 'Enhanced shadow with backdrop blur' },
+    { variant: 'gradient', label: 'Gradient', description: 'Custom gradient (no DaisyUI equivalent)' },
+    { variant: 'selected', label: 'Selected', description: 'App-specific selected state' },
   ];
 
   const interactiveCardVariants = [
-    { variant: 'default-interactive', label: 'Default Interactive', description: 'Subtle background and shadow change on hover' },
-    { variant: 'gradient-interactive', label: 'Gradient Interactive', description: 'Gradient shifts to blue/purple with shadow on hover' },
-    { variant: 'elevated-interactive', label: 'Elevated Interactive', description: 'Shadow lift and background lightening on hover' },
-    { variant: 'glass-interactive', label: 'Glass Interactive', description: 'Enhanced backdrop blur and background on hover' },
-    { variant: 'outlined-interactive', label: 'Outlined Interactive', description: 'Border glow and background fill on hover' },
-    { variant: 'floating-interactive', label: 'Floating Interactive', description: 'Enhanced shadow and lift effect on hover' },
+    { variant: 'default-interactive', label: 'Default Interactive', description: 'Pure DaisyUI with hover effects' },
+    { variant: 'primary-interactive', label: 'Primary Interactive', description: 'DaisyUI primary with hover (like button)' },
+    { variant: 'bordered-interactive', label: 'Bordered Interactive', description: 'DaisyUI border with hover effects' },
+    { variant: 'elevated-interactive', label: 'Elevated Interactive', description: 'DaisyUI shadow with enhanced hover' },
+    { variant: 'glass-interactive', label: 'Glass Interactive', description: 'Custom glass effect with hover' },
   ];
 
   return (
@@ -51,34 +64,37 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
       <div>
         <h2 className="text-3xl font-bold mb-2 text-base-content">Card Component</h2>
         <p className="text-base-content/70 mb-6">
-          Versatile card components with consistent borders and minimal design. Now featuring a comprehensive
-          hover system with interactive variants that provide consistent, reusable hover behaviors across the application.
+          Card components following the <strong>same DaisyUI-first approach as Button</strong>. 
+          Uses pure <code className="bg-base-200 px-1 rounded text-xs">card bg-primary</code> classes 
+          (like <code className="bg-base-200 px-1 rounded text-xs mx-1">btn btn-primary</code>) with minimal custom CSS only where needed.
         </p>
       </div>
 
-      {/* Basic Variants Grid */}
+      {/* Core DaisyUI Variants */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-base-content">Basic Card Variants</h3>
+          <h3 className="text-xl font-semibold text-base-content">Core DaisyUI Variants (Like Button)</h3>
           <button
             onClick={() => onCopyCode(
               `import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui-daisy/card';
 
-// Basic variants (no hover effects)
-<Card variant="default">Basic card</Card>
-<Card variant="glass">Glass effect card</Card>
-<Card variant="gradient">Gradient card</Card>
+// Pure DaisyUI variants (like btn-primary, btn-secondary) ✨
+<Card variant="primary">card bg-primary text-primary-content</Card>
+<Card variant="secondary">card bg-secondary text-secondary-content</Card>
+<Card variant="accent">card bg-accent text-accent-content</Card>
 
-// Interactive variants (with built-in hover effects) ✨
-<Card variant="default-interactive">Hover-enabled default card</Card>
-<Card variant="glass-interactive">Hover-enabled glass card</Card>
-<Card variant="gradient-interactive">Hover-enabled gradient card</Card>
-<Card variant="elevated-interactive">Hover-enabled elevated card</Card>`,
-              'card-variants'
+// DaisyUI style variants (like btn-ghost, btn-outline)
+<Card variant="bordered">card card-border</Card>
+<Card variant="outlined">card bg-transparent card-border</Card>
+
+// DaisyUI sizes (like btn-sm, btn-lg)
+<Card size="sm">card-sm</Card>
+<Card size="lg">card-lg</Card>`,
+              'core-daisyui-variants'
             )}
             className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
           >
-            {copiedCode === 'card-variants' ? (
+            {copiedCode === 'core-daisyui-variants' ? (
               <>
                 <Check className="h-3 w-3" />
                 Copied!
@@ -98,15 +114,198 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
           initial="initial"
           animate="animate"
         >
-          {basicCardVariants.map(({ variant, label }) => (
+          {coreDaisyUIVariants.map(({ variant, label, description }) => (
             <motion.div key={variant} variants={staggerItem}>
               <Card variant={variant as any} className="h-full">
                 <CardHeader>
                   <CardTitle className="text-lg">{label}</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <p className="text-sm mb-2">
+                    {description}
+                  </p>
+                  <div className="bg-black/5 rounded p-2">
+                    <code className="text-xs">
+                      variant="{variant}"
+                    </code>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* DaisyUI Style Variants */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold text-base-content">DaisyUI Style Variants</h3>
+          <button
+            onClick={() => onCopyCode(
+              `// DaisyUI style variants (like btn-ghost, btn-outline)
+<Card variant="bordered">card bg-base-100 card-border</Card>
+<Card variant="flat">card bg-base-100 (no shadow)</Card>
+<Card variant="elevated">card bg-base-100 shadow-lg</Card>
+<Card variant="outlined">card bg-transparent card-border</Card>`,
+              'style-variants'
+            )}
+            className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
+          >
+            {copiedCode === 'style-variants' ? (
+              <>
+                <Check className="h-3 w-3" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                Copy code
+              </>
+            )}
+          </button>
+        </div>
+        
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+        >
+          {styleDaisyUIVariants.map(({ variant, label, description }) => (
+            <motion.div key={variant} variants={staggerItem}>
+              <Card variant={variant as any} className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-lg">{label}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-base-content/70 mb-2">
+                    {description}
+                  </p>
+                  <div className="bg-base-200/50 rounded p-2">
+                    <code className="text-xs text-base-content/80">
+                      variant="{variant}"
+                    </code>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* Custom Variants */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold text-base-content">Custom Variants (Minimal)</h3>
+          <button
+            onClick={() => onCopyCode(
+              `// Custom variants only where DaisyUI has no equivalent
+<Card variant="glass">Custom glass effect</Card>
+<Card variant="selected">App-specific selected state</Card>
+<Card variant="gradient">Custom gradient background</Card>
+
+// Like button's LinkedIn custom styling - minimal custom CSS`,
+              'custom-variants'
+            )}
+            className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
+          >
+            {copiedCode === 'custom-variants' ? (
+              <>
+                <Check className="h-3 w-3" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                Copy code
+              </>
+            )}
+          </button>
+        </div>
+        
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+        >
+          {customVariants.map(({ variant, label, description }) => (
+            <motion.div key={variant} variants={staggerItem}>
+              <Card variant={variant as any} className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-lg">{label}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-base-content/70 mb-2">
+                    {description}
+                  </p>
+                  <div className="bg-base-200/50 rounded p-2">
+                    <code className="text-xs text-base-content/80">
+                      variant="{variant}"
+                    </code>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* DaisyUI Size Variants */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold text-base-content">DaisyUI Size Variants ✨</h3>
+          <button
+            onClick={() => onCopyCode(
+              `// DaisyUI native size support
+<Card size="xs">Extra small card</Card>
+<Card size="sm">Small card</Card>
+<Card size="md">Medium card (default)</Card>
+<Card size="lg">Large card</Card>
+<Card size="xl">Extra large card</Card>
+
+// Legacy compact support (maps to size="sm")
+<Card compact>Legacy compact card</Card>`,
+              'card-sizes'
+            )}
+            className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
+          >
+            {copiedCode === 'card-sizes' ? (
+              <>
+                <Check className="h-3 w-3" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                Copy code
+              </>
+            )}
+          </button>
+        </div>
+        
+        <div className="bg-info/10 border border-info/20 rounded-lg p-4 mb-4">
+          <p className="text-sm text-info-content">
+            <strong>✨ DaisyUI Native:</strong> Size variants use DaisyUI's built-in 
+            <code className="bg-info/20 px-1 rounded text-xs mx-1">card-{'{size}'}</code> classes for consistent sizing across your app.
+          </p>
+        </div>
+
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-start"
+          variants={staggerContainer}
+          initial="initial"
+          animate="animate"
+        >
+          {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map((size) => (
+            <motion.div key={size} variants={staggerItem}>
+              <Card variant="solid" size={size} className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-lg">{size.toUpperCase()}</CardTitle>
+                </CardHeader>
+                <CardContent>
                   <p className="text-sm text-base-content/70">
-                    This is a {label.toLowerCase()} card variant with professional styling.
+                    DaisyUI card-{size}
                   </p>
                 </CardContent>
               </Card>
@@ -121,16 +320,16 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
           <h3 className="text-xl font-semibold text-base-content">Interactive Card Variants ✨</h3>
           <button
             onClick={() => onCopyCode(
-              `// New Interactive Variants - Built-in Hover Effects
-<Card variant="gradient-interactive">Gradient with hover effects</Card>
-<Card variant="elevated-interactive">Elevated with hover effects</Card>
-<Card variant="glass-interactive">Glass with hover effects</Card>
-<Card variant="outlined-interactive">Outlined with hover effects</Card>
-<Card variant="floating-interactive">Floating with hover effects</Card>
-<Card variant="default-interactive">Default with hover effects</Card>
+              `// DaisyUI Interactive Variants (Same Pattern as Button) ✨
+<Card variant="primary-interactive">card bg-primary + hover</Card>
+<Card variant="bordered-interactive">card card-border + hover</Card>
+<Card variant="elevated-interactive">card shadow-lg + hover</Card>
 
-// Clean API - No manual hover classes needed!
-// Hover effects are built into the variant`,
+// Compare to Button's interactive pattern:
+<Button variant="primary">btn btn-primary</Button>
+<Card variant="primary-interactive">card bg-primary + hover</Card>
+
+// Same philosophy: DaisyUI base + minimal enhancements`,
               'interactive-variants'
             )}
             className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
@@ -151,9 +350,10 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
         
         <div className="bg-info/10 border border-info/20 rounded-lg p-4 mb-4">
           <p className="text-sm text-info-content">
-            <strong>✨ New Hover System:</strong> Interactive variants have built-in hover effects that are consistent 
-            across the entire application. No need for manual hover classes - just use the 
-            <code className="bg-info/20 px-1 rounded text-xs mx-1">-interactive</code> suffix!
+            <strong>✨ Same as Button Component:</strong> Interactive variants follow the exact same DaisyUI-first approach. 
+            Pure <code className="bg-info/20 px-1 rounded text-xs mx-1">card bg-primary</code> classes 
+            (like <code className="bg-info/20 px-1 rounded text-xs mx-1">btn btn-primary</code>) with 
+            <code className="bg-info/20 px-1 rounded text-xs mx-1">-interactive</code> suffix for hover effects!
           </p>
         </div>
 
@@ -187,38 +387,41 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
 
       {/* Migration Guide */}
       <section className="space-y-4">
-        <h3 className="text-xl font-semibold text-base-content">Migration Guide: Old vs New</h3>
+        <h3 className="text-xl font-semibold text-base-content">Philosophy: Same DaisyUI-First Approach as Button</h3>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Old Way */}
           <Card variant="outlined" className="">
             <CardHeader>
               <CardTitle className="text-error flex items-center gap-2">
-                ❌ Old Way (Don't Use)
+                ❌ Old Approach (Over-Engineered Custom)
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="bg-base-200 rounded p-3">
                 <code className="text-sm text-base-content/80">
                   {`<Card className="
-  bg-gradient-to-br 
-  from-base-200 
-  to-base-300 
-  hover:from-blue-50 
-  hover:to-purple-100 
+  bg-base-100
+  border-2
+  border-base-300
+  shadow-sm
   hover:shadow-md 
+  hover:bg-base-200
   transition-all 
-  duration-200"
+  duration-200
+  rounded-lg
+  p-4"
 >`}
                 </code>
               </div>
               <div className="text-sm text-base-content/70">
                 <strong>Problems:</strong>
                 <ul className="list-disc list-inside mt-1 space-y-1">
-                  <li>Scattered hover classes everywhere</li>
-                  <li>Inconsistent behavior across pages</li>
-                  <li>Hard to maintain and update</li>
-                  <li>Duplicated hover logic</li>
+                  <li>Manual CSS for every card variation</li>
+                  <li>Inconsistent styling across components</li>
+                  <li>Large CSS bundle with duplicated styles</li>
+                  <li>No design system consistency</li>
+                  <li>Hard to maintain responsive behavior</li>
                 </ul>
               </div>
             </CardContent>
@@ -228,26 +431,128 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
           <Card variant="gradient-interactive" className="">
             <CardHeader>
               <CardTitle className="text-success flex items-center gap-2">
-                ✅ New Way (Recommended)
+                ✅ New Approach (DaisyUI-First Like Button)
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="bg-base-200 rounded p-3">
-                <code className="text-sm text-base-content/80">
-                  {`<Card variant="gradient-interactive">
-  {/* Content */}
-</Card>`}
-                </code>
+                <div className="space-y-2">
+                  <div className="bg-base-200 rounded p-3">
+                    <code className="text-sm text-base-content/80">
+                      {`// Cards now follow Button's pattern
+<Card variant="primary">DaisyUI primary</Card>
+<Card variant="bordered">DaisyUI bordered</Card>
+<Card size="lg">DaisyUI size</Card>`}
+                    </code>
+                  </div>
+                  <div className="bg-base-200 rounded p-3">
+                    <code className="text-sm text-base-content/80">
+                      {`// Compare to Button component
+<Button variant="primary">DaisyUI primary</Button>
+<Button variant="outline">DaisyUI outline</Button>
+<Button size="lg">DaisyUI size</Button>`}
+                    </code>
+                  </div>
+                </div>
               </div>
               <div className="text-sm text-base-content/70">
                 <strong>Benefits:</strong>
                 <ul className="list-disc list-inside mt-1 space-y-1">
-                  <li>Clean, readable component API</li>
-                  <li>Consistent hover behavior everywhere</li>
-                  <li>Easy to maintain and update globally</li>
-                  <li>Built-in accessibility support</li>
+                  <li>Consistent with Button component's approach</li>
+                  <li>Pure DaisyUI classes (like btn-primary → card bg-primary)</li>
+                  <li>Minimal custom CSS only where truly needed</li>
+                  <li>Automatic DaisyUI theming and updates</li>
+                  <li>Smaller bundle size, better performance</li>
                 </ul>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* DaisyUI Special Features */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold text-base-content">DaisyUI Special Features ✨</h3>
+          <button
+            onClick={() => onCopyCode(
+              `// DaisyUI side-by-side layout
+<Card side>Horizontal layout</Card>
+
+// DaisyUI background image
+<Card imageFull>
+  <figure>
+    <img src="image.jpg" alt="Background" />
+  </figure>
+  <CardContent>Overlay content</CardContent>
+</Card>
+
+// DaisyUI with figure element
+<Card>
+  <figure>
+    <img src="image.jpg" alt="Card image" />
+  </figure>
+  <CardContent>Regular content below image</CardContent>
+</Card>`,
+              'daisyui-features'
+            )}
+            className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
+          >
+            {copiedCode === 'daisyui-features' ? (
+              <>
+                <Check className="h-3 w-3" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                Copy code
+              </>
+            )}
+          </button>
+        </div>
+        
+        <div className="bg-success/10 border border-success/20 rounded-lg p-4 mb-4">
+          <p className="text-sm text-success-content">
+            <strong>✨ DaisyUI Advanced Features:</strong> Cards get DaisyUI's built-in 
+            <code className="bg-success/20 px-1 rounded text-xs mx-1">card-side</code> and 
+            <code className="bg-success/20 px-1 rounded text-xs mx-1">image-full</code> for free, 
+            just like Button gets <code className="bg-success/20 px-1 rounded text-xs mx-1">btn-sm</code> and <code className="bg-success/20 px-1 rounded text-xs mx-1">btn-outline</code>.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Side Layout Example */}
+          <Card variant="solid" side className="flex-col lg:flex-row">
+            <figure className="lg:w-1/3">
+              <div className="w-full h-32 lg:h-full bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-bold text-2xl">
+                IMG
+              </div>
+            </figure>
+            <div className="lg:w-2/3">
+              <CardHeader>
+                <CardTitle>Card Side Layout</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-base-content/70">
+                  DaisyUI's <code className="bg-base-200 px-1 rounded text-xs">card-side</code> class 
+                  creates responsive side-by-side layouts automatically.
+                </p>
+              </CardContent>
+            </div>
+          </Card>
+
+          {/* Image Full Example */}
+          <Card variant="default" imageFull className="relative">
+            <figure>
+              <div className="w-full h-48 bg-gradient-to-br from-purple-400 to-pink-600"></div>
+            </figure>
+            <CardContent className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent text-white">
+              <CardTitle className="text-white">Image Full Layout</CardTitle>
+              <p className="text-sm text-white/90">
+                DaisyUI's <code className="bg-white/20 px-1 rounded text-xs">image-full</code> creates 
+                overlay content on background images.
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -287,8 +592,8 @@ export default function CardShowcase({ onCopyCode, copiedCode, theme }: CardShow
         
         <div className="bg-warning/10 border border-warning/20 rounded-lg p-3 mb-4">
           <p className="text-sm text-warning-content">
-            <strong>⚠️ Legacy Support:</strong> These props are still supported for backward compatibility, 
-            but we recommend using interactive variants for new code.
+            <strong>⚠️ Legacy Support:</strong> These props are still supported for backward compatibility. 
+            For new code, prefer DaisyUI-based variants with <code className="bg-warning/20 px-1 rounded text-xs">-interactive</code> suffix.
           </p>
         </div>
 

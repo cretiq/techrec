@@ -96,13 +96,11 @@ export default function MarkAsAppliedButton({
       <>
         <Button
           variant="success"
-          size="xl"
+          size="lg"
           disabled={!allowUnApply || isUnApplying}
           loading={isUnApplying}
           onClick={allowUnApply ? handleAppliedButtonClick : undefined}
-          className={`${className} h-12 text-base font-semibold ${
-            allowUnApply && !isUnApplying ? 'hover:btn-success/80 cursor-pointer' : 'opacity-90'
-          }`}
+          className={cn(className)}
           leftIcon={isUnApplying ? <X className="h-5 w-5" /> : <Check className="h-5 w-5" />}
           data-testid={testId ? `${testId}-applied-status` : `mark-applied-button-applied-${role.id}`}
         >
@@ -128,12 +126,12 @@ export default function MarkAsAppliedButton({
   // Default state - show mark as applied button
   return (
     <Button
-      variant="primary"
+      variant="accent"
       size="lg"
       loading={isMarkingAsApplied}
       disabled={!session?.user || isMarkingAsApplied}
       onClick={handleMarkAsApplied}
-      className={cn(className)}
+      className={cn(className, "")}
       leftIcon={<ArrowRight className="h-5 w-5" />}
       data-testid={testId ? `${testId}-mark-applied` : `mark-applied-button-${role.id}`}
     >

@@ -2,9 +2,9 @@
 
 import React from 'react'
 import { Button } from '@/components/ui-daisy/button'
-import { ArrowRight, Zap, ExternalLink, AlertTriangle } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { ArrowRight, Zap, AlertTriangle } from 'lucide-react'
 import type { ApplicationInfo } from '@/types/role'
+import { cn } from '@/lib/utils'
 
 // LinkedIn Logo Component
 const LinkedInIcon = ({ className }: { className?: string }) => (
@@ -48,10 +48,14 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
     return (
       <Button 
         size={isFullWidth ? "lg" : "sm"} 
-        variant="glass-outline"
+        variant="outline"
         disabled 
         leftIcon={<AlertTriangle className={`${isFullWidth ? 'h-5 w-5' : 'h-3 w-3'} flex-shrink-0`} />}
-        className={`${isFullWidth ? 'text-base' : 'text-xs'} font-medium ${className}`}
+        className={cn(
+          isFullWidth ? 'text-base' : 'text-xs',
+          'font-medium backdrop-blur-sm',
+          className
+        )}
         data-testid={testId || 'application-action-button-disabled'}
       >
         <span className={`${isFullWidth ? 'text-lg' : ''}`}>
@@ -61,58 +65,20 @@ export const ApplicationActionButton: React.FC<ApplicationActionButtonProps> = (
     )
   }
 
-  // Easy Apply button (LinkedIn)
-  if (applicationInfo.directApply) {
-    return (
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.1 }}
-      >
-        <Button
-          size={isFullWidth ? "lg" : "sm"}
-          variant="linkedin"
-          elevation="lg"
-          onClick={handleClick}
-          disabled={disabled}
-          leftIcon={
-            <>
-              <LinkedInIcon className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0`} />
-              <Zap className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0 group-hover:animate-pulse`} />
-            </>
-          }
-          rightIcon={isFullWidth ? <ArrowRight className="h-4 w-4 flex-shrink-0 group-hover:translate-x-1 transition-transform" /> : undefined}
-          className={`${isFullWidth ? 'text-sm' : 'text-xs'} font-medium group whitespace-nowrap ${className}`}
-          title="Apply directly through LinkedIn Easy Apply"
-          data-testid={testId || 'application-action-button-easy-apply'}
-        >
-          {isFullWidth ? 'Apply on LinkedIn - Easy Apply' : 'Easy Apply'}
-        </Button>
-      </motion.div>
-    )
-  }
-
   // External application button
   return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.1 }}
-    >
       <Button
-        size={isFullWidth ? "lg" : "sm"}
-        variant="linkedin-light"
+        size={isFullWidth ? "lg" : "default"}
+        variant="linkedin"
         onClick={handleClick}
         disabled={disabled}
         leftIcon={<LinkedInIcon className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0`} />}
         rightIcon={<ArrowRight className={`${isFullWidth ? 'h-4 w-4' : 'h-3 w-3'} flex-shrink-0 group-hover:translate-x-0.5 transition-transform`} />}
-        className={`${isFullWidth ? 'text-sm' : 'text-xs'} group whitespace-nowrap ${className}`}
         title="Apply via LinkedIn (opens in new tab)"
         data-testid={testId || 'application-action-button-external'}
       >
         {isFullWidth ? 'Apply on LinkedIn - External' : 'Apply on LinkedIn'}
       </Button>
-    </motion.div>
   )
 }
 

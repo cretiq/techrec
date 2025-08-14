@@ -243,7 +243,7 @@ export default function ProjectPlanPage() {
     return (
       <div className="min-h-screen bg-base-100 flex items-center justify-center">
         <Card className="p-8 max-w-md w-full text-center">
-          <Alert variant="destructive" className="mb-4">
+          <Alert variant="error" className="mb-4">
             {error || 'Project plan not found'}
           </Alert>
           <Button onClick={() => router.back()}>

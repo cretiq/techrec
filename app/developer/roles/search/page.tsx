@@ -529,7 +529,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
 
   return (
     <Card 
-      variant={isSelected ? "selected-interactive" : "elevated-interactive"}
+      variant={isSelected ? "selected-interactive" : "default-interactive"}
       animated
       clickable
       tabIndex={0}
@@ -537,7 +537,6 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
       aria-checked={isSelected}
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
-      className="flex flex-col h-full relative focus:outline-none"
       style={{ animationDelay: `${index * 100}ms` }}
       data-testid={testId || `role-search-card-role-item-${role.id}`}
                 >
@@ -578,12 +577,16 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                       <div className="space-y-2 flex-1">
                         <div className="flex justify-between items-start">
                           <CardTitle className="text-lg line-clamp-2 break-words flex-1">{role.title}</CardTitle>
+
                           {/* BLUEPRINT REQUIREMENT: Date Posted */}
-                          {(role as any).date_posted && (
+
+                          {/* Commented out until further validation */}
+                          {/* {(role as any).date_posted && (
                             <div className="text-xs text-muted-foreground ml-2 flex-shrink-0">
                               {new Date((role as any).date_posted).toLocaleDateString()}
                             </div>
-                          )}
+                          )} */}
+
                         </div>
                         <div className="space-y-1 text-base-content/70 text-sm">
                           <div className="flex items-center gap-1">
@@ -618,23 +621,25 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                   </CardHeader>
                   <CardContent className="flex-1 space-y-4" data-testid={`role-search-content-role-${role.id}`}>
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary" leftIcon={<MapPin className="h-3 w-3 flex-shrink-0" />} className="whitespace-nowrap">
+                      <Badge variant="secondary" leftIcon={<MapPin className="h-3 w-3 flex-shrink-0" />} className={cn("whitespace-nowrap", "badge-outline")}>
                         {/* BLUEPRINT REQUIREMENT: Use locations_derived */}
                         {((role as any).locations_derived && (role as any).locations_derived.length > 0) 
                           ? (role as any).locations_derived[0] 
                           : role.location || 'N/A'}
                       </Badge>
-                      <Badge variant="secondary" leftIcon={<Briefcase className="h-3 w-3 flex-shrink-0" />} className="whitespace-nowrap">
+                      <Badge variant="secondary" leftIcon={<Briefcase className="h-3 w-3 flex-shrink-0" />} className={cn("whitespace-nowrap", "badge-outline")}>
                         {formatJobType(role.type)}
                       </Badge>
                       {role.remote && (
-                        <Badge variant="secondary" leftIcon={<Clock className="h-3 w-3 flex-shrink-0" />} className="whitespace-nowrap">
+                        <Badge variant="secondary" leftIcon={<Clock className="h-3 w-3 flex-shrink-0" />} className={cn("whitespace-nowrap", "badge-outline")}>
                           Remote
                         </Badge>
                       )}
                     </div>
+
                     {/* Enhanced Job Description */}
-                    <div className="space-y-2">
+
+                    {/* <div className="space-y-2">
                       <p className="text-muted-foreground text-sm line-clamp-3">
                         {(role as any).description_text || role.description || 'No description available.'}
                       </p>
@@ -644,7 +649,8 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                           <span className="text-xs text-primary/80">Enhanced job description</span>
                         </div>
                       )}
-                    </div>
+                    </div> */}
+
                     {/* Enhanced Skills & Requirements Section with AI prioritization */}
                     {(((role as any).ai_key_skills && (role as any).ai_key_skills.length > 0) || 
                       (role.requirements && role.requirements.length > 0) || 
@@ -655,12 +661,12 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                         {(role as any).ai_key_skills && (role as any).ai_key_skills.length > 0 && (
                           <div className="space-y-2">
                             <div className="flex items-center gap-1">
-                              <Sparkles className="h-3 w-3 text-primary" />
-                              <span className="text-xs font-medium text-primary">Key Skills (AI-Curated)</span>
+                              <Sparkles className="h-3 w-3 text-base-content/70" />
+                              <span className="font-medium text-base-content/70">Key Skills</span>
                             </div>
                             <div className="flex flex-wrap gap-2">
                               {(role as any).ai_key_skills.map((skill: string, idx: number) => (
-                                <Badge key={`${role.id}-ai-skill-${idx}`} variant="default" className="text-xs bg-primary/10 text-primary border-primary/30">
+                                <Badge key={`${role.id}-ai-skill-${idx}`} variant="default" className={cn("text-xs", "badge-soft")}>
                                   {skill}
                                 </Badge>
                               ))}
@@ -669,7 +675,9 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                         )}
                         
                         {/* Traditional Skills/Requirements */}
-                        <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
+
+                        {/* Commented out until further validation */}
+                        {/* <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
                           {(role.requirements && role.requirements.length > 0) ? (
                             role.requirements.map((req, idx) => (
                               <Badge key={`${role.id}-req-${idx}`} variant="outline" className="text-xs">
@@ -689,27 +697,30 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                               </Badge>
                             ))
                           ) : null}
-                        </div>
-                        {role.company?.specialties && role.company.specialties.length > 5 && (
+                        </div> */}
+
+                        {/* Commented out until further validation */}
+                        {/* {role.company?.specialties && role.company.specialties.length > 5 && (
                           <p className="text-xs text-muted-foreground">
                             +{role.company.specialties.length - 5} more company specialties
                           </p>
-                        )}
+                        )} */}
+
                       </div>
                     )}
                     
                     {/* AI-Enhanced Job Details */}
                     {((role as any).ai_core_responsibilities || (role as any).ai_work_arrangement || 
                       ((role as any).ai_benefits && (role as any).ai_benefits.length > 0)) && (
-                      <div className="space-y-3 border-t border-base-300/50 pt-3">
+                      <div className="space-y-3">
                         {/* AI Core Responsibilities */}
                         {(role as any).ai_core_responsibilities && (
-                          <div className="space-y-2">
+                          <div className="space-y-2 bg-base-200 p-4 rounded-xl">
                             <div className="flex items-center gap-1">
-                              <Sparkles className="h-3 w-3 text-primary" />
-                              <span className="text-xs font-medium text-primary">Core Responsibilities</span>
+                              <Sparkles className="h-3 w-3 text-base-content/70" />
+                              <span className="font-medium text-base-content/70">Core Responsibilities</span>
                             </div>
-                            <p className="text-xs text-muted-foreground line-clamp-3">
+                            <p className="text-muted-foreground line-clamp-3">
                               {(role as any).ai_core_responsibilities}
                             </p>
                           </div>
@@ -718,11 +729,11 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                         {/* AI Work Arrangement */}
                         {(role as any).ai_work_arrangement && (
                           <div className="space-y-1">
-                            <div className="flex items-center gap-1">
-                              <Target className="h-3 w-3 text-secondary" />
-                              <span className="text-xs font-medium text-secondary">Work Arrangement</span>
-                            </div>
-                            <Badge variant="secondary" className="text-xs bg-secondary/10 text-secondary border-secondary/30">
+                            {/* <div className="flex items-center gap-1">
+                              <Target className="h-3 w-3 text-base-content/70" />
+                              <span className="font-medium text-base-content/70">Work Arrangement</span>
+                            </div> */}
+                            <Badge variant="secondary">
                               {(role as any).ai_work_arrangement}
                             </Badge>
                           </div>
@@ -731,13 +742,13 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                         {/* AI Benefits */}
                         {(role as any).ai_benefits && (role as any).ai_benefits.length > 0 && (
                           <div className="space-y-2">
-                            <div className="flex items-center gap-1">
-                              <Check className="h-3 w-3 text-success" />
-                              <span className="text-xs font-medium text-success">Benefits</span>
-                            </div>
+                            {/* <div className="flex items-center gap-1">
+                              <Check className="h-3 w-3 text-base-content/70" />
+                              <span className="font-medium text-base-content/70">Benefits</span>
+                            </div> */}
                             <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
                               {(role as any).ai_benefits.slice(0, 4).map((benefit: string, idx: number) => (
-                                <Badge key={`${role.id}-benefit-${idx}`} variant="outline" className="text-xs bg-success/5 text-success/80 border-success/30">
+                                <Badge key={`${role.id}-benefit-${idx}`} variant="default" className={cn("text-xs", "badge-soft")}>
                                   {benefit}
                                 </Badge>
                               ))}
@@ -753,13 +764,17 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                     )}
                     
                     {/* Recruiter/Hiring Manager Contact Information */}
-                    {role.applicationInfo && (role.applicationInfo.recruiter || role.applicationInfo.hiringManager) && (
+
+                    {/* Commented out until further validation */}
+                    {/* {role.applicationInfo && (role.applicationInfo.recruiter || role.applicationInfo.hiringManager) && (
                       <RecruiterCard 
                         applicationInfo={role.applicationInfo}
                         data-testid={`role-search-recruiter-card-${role.id}`}
                       />
-                    )}
+                    )} */}
+
                   </CardContent>
+
                   <CardFooter className="card-body pt-2 mt-auto space-y-3" data-testid={`role-search-footer-role-${role.id}`}>
                     {/* Salary Section - BLUEPRINT REQUIREMENT */}
                     <div className="w-full text-center">
@@ -804,7 +819,6 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                         {/* Right: Write to Button */}
                         <div className="flex-shrink-0">
                           <Button
-                            size="sm"
                             variant="default"
                             onClick={handleWriteClick}
                             disabled={!session?.user}

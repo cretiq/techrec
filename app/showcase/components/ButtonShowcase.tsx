@@ -36,13 +36,7 @@ export default function ButtonShowcase({ onCopyCode, copiedCode, theme }: Button
 
   const basicVariants = [
     { variant: 'default', label: 'Default' },
-    { variant: 'transparent', label: 'Transparent' },
-    { variant: 'glass', label: 'Glass' },
-    { variant: 'solid', label: 'Solid' },
-    { variant: 'hybrid', label: 'Hybrid' },
-    { variant: 'outlined', label: 'Outlined' },
     { variant: 'elevated', label: 'Elevated' },
-    { variant: 'floating', label: 'Floating' },
     { variant: 'gradient', label: 'Gradient' },
     { variant: 'primary', label: 'Primary' },
     { variant: 'secondary', label: 'Secondary' },

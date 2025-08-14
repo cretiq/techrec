@@ -61,7 +61,7 @@ export default function SessionDebugPage() {
   if (loading) {
     return (
       <div className="container mx-auto p-4">
-        <Card>
+        <Card variant="default">
           <CardContent className="flex items-center justify-center p-8">
             <Loader2 className="w-8 h-8 animate-spin mr-2" />
             <span>Loading session debug data...</span>
@@ -74,7 +74,7 @@ export default function SessionDebugPage() {
   if (!debugData) {
     return (
       <div className="container mx-auto p-4">
-        <Card>
+        <Card variant="error">
           <CardContent className="p-8">
             <div className="text-center">
               <AlertTriangle className="w-12 h-12 mx-auto text-red-500 mb-4" />
@@ -97,7 +97,7 @@ export default function SessionDebugPage() {
       </div>
 
       {/* Authentication Status */}
-      <Card>
+      <Card variant="info">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -114,7 +114,7 @@ export default function SessionDebugPage() {
             ) : (
               <>
                 <AlertTriangle className="w-5 h-5 text-red-500" />
-                <Badge variant="destructive">Not Authenticated</Badge>
+                <Badge variant="error">Not Authenticated</Badge>
               </>
             )}
           </div>
@@ -140,7 +140,7 @@ export default function SessionDebugPage() {
 
       {/* Database Consistency Check */}
       {debugData.databaseLookup && (
-        <Card>
+        <Card variant="neutral">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="w-5 h-5" />
@@ -157,7 +157,7 @@ export default function SessionDebugPage() {
               ) : (
                 <>
                   <AlertTriangle className="w-5 h-5 text-red-500" />
-                  <Badge variant="destructive">Inconsistent</Badge>
+                  <Badge variant="error">Inconsistent</Badge>
                 </>
               )}
             </div>
@@ -173,7 +173,7 @@ export default function SessionDebugPage() {
                     <div><strong>Profile Email:</strong> {debugData.databaseLookup.byId.profileEmail}</div>
                   </div>
                 ) : (
-                  <Badge variant="destructive">Not Found</Badge>
+                  <Badge variant="error">Not Found</Badge>
                 )}
               </div>
 
@@ -187,7 +187,7 @@ export default function SessionDebugPage() {
                     <div><strong>Profile Email:</strong> {debugData.databaseLookup.byEmail.profileEmail}</div>
                   </div>
                 ) : (
-                  <Badge variant="destructive">Not Found</Badge>
+                  <Badge variant="error">Not Found</Badge>
                 )}
               </div>
             </div>
@@ -197,7 +197,7 @@ export default function SessionDebugPage() {
 
       {/* CV Data Comparison */}
       {debugData.cvData && (
-        <Card>
+        <Card variant="secondary">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="w-5 h-5" />
@@ -246,7 +246,7 @@ export default function SessionDebugPage() {
 
       {/* Analysis Summary */}
       {debugData.analysis && (
-        <Card>
+        <Card variant="warning">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="w-5 h-5" />
@@ -260,7 +260,7 @@ export default function SessionDebugPage() {
                 {debugData.analysis.sessionIdMatchesEmailId ? (
                   <Badge variant="default">Yes</Badge>
                 ) : (
-                  <Badge variant="destructive">No</Badge>
+                  <Badge variant="error">No</Badge>
                 )}
               </div>
 
@@ -280,7 +280,7 @@ export default function SessionDebugPage() {
 
       {/* Error Display */}
       {debugData.error && (
-        <Card>
+        <Card variant="error">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 text-red-600">
               <AlertTriangle className="w-5 h-5" />

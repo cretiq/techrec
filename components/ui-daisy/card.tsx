@@ -3,56 +3,90 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { getHoverEffect } from "@/lib/hoverSystem"
 
+/**
+ * Card component built on DaisyUI v5 card system
+ * 
+ * DaisyUI Classes Used:
+ * - card: Base card component
+ * - card-body: Content area with proper padding
+ * - card-title: Styled heading for card titles
+ * - card-actions: Action area (typically for buttons)
+ * - card-border: Adds border to card
+ * - card-side: Side-by-side layout
+ * - image-full: Background image mode
+ * - card-{size}: Size variants (xs, sm, md, lg, xl)
+ */
+
+// DaisyUI card variants - systematic migration following DAISYUI_MIGRATION_GUIDE.md
 const cardVariants = {
-  // Basic variants without hover effects
-  default: `card bg-base-200 border border-base-300 shadow-sm`,
-  transparent: `card bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
-  glass: `card bg-base-100 backdrop-blur-lg border border-brand-sharp shadow-xs`,
-  solid: `card bg-base-100 border border-base-300 shadow-sm`,
-  hybrid: `card bg-brand-muted border border-brand-sharp`,
-  outlined: `card bg-transparent border-2 border-base-300`,
-  elevated: `card bg-base-100 border border-base-300/50 shadow-md`,
-  floating: `card bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
-  gradient: `card bg-gradient-to-br from-blue-50 to-purple-50 border border-base-100`,
-  gradientSharp: `card bg-gradient-brand-sharp border border-brand-sharp`,
-  gradientMuted: `card bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
-  selected: `card bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
+  // Phase 1: Pure DaisyUI Core Variants (like btn-primary, btn-secondary)
+  default: "card bg-base-200 shadow-sm",
+  primary: "card bg-primary text-primary-content",
+  secondary: "card bg-secondary text-secondary-content",
+  accent: "card bg-accent text-accent-content",
+  neutral: "card bg-neutral text-neutral-content",
+  info: "card bg-info text-info-content",
+  success: "card bg-success text-success-content",
+  warning: "card bg-warning text-warning-content",
+  error: "card bg-error text-error-content",
   
-  // Interactive variants with built-in hover effects
-  'default-interactive': `card bg-base-200 border border-base-300 shadow-sm`,
-  'gradient-interactive': `card bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200/50`,
-  'gradientMuted-interactive': `card bg-gradient-to-br from-base-200 to-base-300 border border-base-100`,
-  'elevated-interactive': `card bg-base-100 border border-base-300/50 shadow-md`,
-  'glass-interactive': `card bg-base-200/60 backdrop-blur-lg border border-brand-sharp shadow-xs`,
-  'outlined-interactive': `card bg-transparent border-2 border-base-300`,
-  'floating-interactive': `card bg-base-100/95 backdrop-blur-md border border-base-300/40 shadow-lg`,
-  'selected-interactive': `card bg-primary/10 border border-primary/30 shadow-md ring-2 ring-primary/20`,
-}
+  // Phase 2: DaisyUI Style Variants (like btn-outline, btn-ghost)
+  bordered: "card bg-base-100 card-border",
+  flat: "card bg-base-200", // no shadow
+  elevated: "card bg-base-200 shadow-lg",
+  outlined: "card bg-transparent card-border",
+  
+  // Phase 3: Custom variants only where DaisyUI lacks equivalent (like LinkedIn button custom)
+  glass: "card bg-base-100/80 backdrop-blur-sm card-border",
+  selected: "card bg-success/10 shadow-md ring-2 ring-success/20",
+  gradient: "card bg-gradient-to-br from-blue-50 to-purple-50 shadow-sm",
+  'gradient-brand': "card bg-gradient-brand-sharp border-none text-white",
+  
+  // Phase 4: Interactive variants with built-in hover effects
+  'default-interactive': "card bg-base-100 shadow-md hover:shadow-lg",
+  'primary-interactive': "card bg-primary text-primary-content",
+  'secondary-interactive': "card bg-secondary text-secondary-content",
+  'accent-interactive': "card bg-accent text-accent-content",
+  'bordered-interactive': "card bg-base-200 card-border",
+  'elevated-interactive': "card bg-base-200 shadow-lg",
+  'selected-interactive': "card bg-success/10 shadow-md ring-2 ring-success/20",
+} as const
 
 // Type for all available card variants
 type CardVariant = keyof typeof cardVariants
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Visual style variant. Use '-interactive' suffix for built-in hover effects */
   variant?: CardVariant
-  /** Makes the card compact (DaisyUI) */
-  compact?: boolean
-  /** Shows border (DaisyUI) */
-  bordered?: boolean
-  /** Makes image fill the card (DaisyUI) */
+  /** DaisyUI card size */
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+  /** DaisyUI: Side-by-side layout */
+  side?: boolean
+  /** DaisyUI: Makes image fill the card background */
   imageFull?: boolean
   /** Enables Framer Motion animations */
   animated?: boolean
   /** Makes card clickable with active state */
   clickable?: boolean
+  /** Legacy: Use size prop instead */
+  compact?: boolean
+}
+
+const sizeVariants = {
+  xs: "card-xs",
+  sm: "card-sm",
+  md: "", // card-md is default, no class needed
+  lg: "card-lg", 
+  xl: "card-xl"
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(({ 
   className, 
   variant = "default", 
+  size,
   compact = false, 
-  bordered = true, 
   imageFull = false,
+  side = false,
   animated = false,
   clickable = false,
   children,
@@ -64,9 +98,15 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(({
   
   const cardClasses = cn(
     cardVariants[variant],
+    // DaisyUI size classes
+    size && sizeVariants[size],
+    // Legacy compact support
+    compact && 'card-sm',
+    // DaisyUI modifiers
+    imageFull && 'image-full',
+    side && 'card-side',
     // Apply hover effects for interactive variants (but not selected variants)
     isInteractiveVariant && !isSelectedVariant && getHoverEffect('card', variant.replace('-interactive', '')),
-    // For selected variants, don't apply any hover system at all
     // Apply interactive effects for clickable cards (but not selected variants)
     clickable && !isInteractiveVariant && !isSelectedVariant && getHoverEffect('card', 'interactive'),
     clickable && "cursor-pointer",
@@ -107,7 +147,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("card-body pb-2 rounded-t-xl", className)}
+    className={cn("card-body pb-2", className)}
     {...props}
   />
 ))
@@ -143,7 +183,7 @@ const CardContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div 
     ref={ref} 
-    className={cn("card-body pt-2", className)} 
+    className={cn("card-body", className)} 
     {...props} 
   />
 ))
@@ -155,7 +195,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("card-actions justify-end pt-2", className)}
+    className={cn("card-actions justify-end", className)}
     {...props}
   />
 ))

@@ -51,7 +51,7 @@ export const GitHubRepositorySelector: React.FC<GitHubRepositorySelectorProps> =
 
   if (error) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="error">
         <span>Failed to load repositories: {error}</span>
       </Alert>
     );

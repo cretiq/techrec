@@ -363,7 +363,7 @@ export function ReUploadButton({ analysisData, onUploadComplete, onAnimationStat
             Cancel
           </Button>
           <Button
-            variant="destructive"
+            variant="error"
             onClick={handleConfirmReUpload}
             disabled={isDeleting}
             leftIcon={isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}

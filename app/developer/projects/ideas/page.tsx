@@ -290,7 +290,7 @@ export default function ProjectIdeasPage() {
 
         {/* Error Alert */}
         {error && (
-          <Alert variant="destructive" className="mb-6">
+          <Alert variant="error" className="mb-6">
             {error}
           </Alert>
         )}
