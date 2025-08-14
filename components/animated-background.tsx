@@ -15,43 +15,41 @@ export function AnimatedBackground() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Calculate parallax offset for each blob based on scroll (much slower)
-  const blob1Transform = `translate(${scrollY * 0.02}px, ${scrollY * 0.03}px)`
-  const blob2Transform = `translate(${scrollY * -0.015}px, ${scrollY * 0.025}px)`
-  const blob3Transform = `translate(${scrollY * 0.025}px, ${scrollY * -0.02}px)`
+  // Calculate parallax offset for dot pattern based on scroll
+  const dotPatternTransform = `translate(${scrollY * 0.1}px, ${scrollY * 0.05}px)`
 
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
-      {/* Base gradient that extends full page */}
-      <div className="absolute inset-0 bg-black/50" />
+      {/* Enhanced gradient background - light and dark mode */}
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-purple-50 to-blue-50 dark:from-base-300 dark:via-base-200 dark:to-base-300" />
       
-      {/* Animated blobs with scroll-based movement */}
-      {/* <div 
-        className="absolute top-20 -left-4 w-42 h-42 bg-gray-500 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"
-        style={{ transform: blob1Transform }}
-      />
+      {/* Animated dot pattern overlay with parallax */}
       <div 
-        className="absolute top-40 -right-4 w-96 h-96 bg-gray-500 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-2000"
-        style={{ transform: blob2Transform }}
-      />
+        className="absolute inset-0 opacity-30 dark:opacity-20"
+        style={{ transform: dotPatternTransform }}
+      >
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 25px 25px, rgba(139, 92, 246, 0.15) 2px, transparent 0), radial-gradient(circle at 75px 75px, rgba(59, 130, 246, 0.15) 2px, transparent 0)`,
+          backgroundSize: '100px 100px'
+        }} />
+      </div>
+
+      {/* Secondary dot pattern for depth */}
       <div 
-        className="absolute -bottom-8 left-20 w-72 h-72 bg-gray-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"
-        style={{ transform: blob3Transform }}
-      />
+        className="absolute inset-0 opacity-20 dark:opacity-10"
+        style={{ transform: `translate(${scrollY * -0.08}px, ${scrollY * 0.03}px)` }}
+      >
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 50px 50px, rgba(168, 85, 247, 0.1) 1px, transparent 0)`,
+          backgroundSize: '150px 150px'
+        }} />
+      </div>
       
-      {/* Additional blobs for depth throughout the page */}
-      {/* <div 
-        className="absolute top-[50vh] left-[60%] w-96 h-96 bg-neutral-200 rounded-full mix-blend-multiply filter blur-xl opacity-90 animate-blob animation-delay-2000"
-        style={{ transform: `${blob1Transform} scale(1.2)` }}
-      />
-      <div 
-        className="absolute top-[100vh] right-[20%] w-80 h-80 bg-zinc-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"
-        style={{ transform: `${blob2Transform} scale(0.8)` }}
-      />
-      <div 
-        className="absolute top-[150vh] left-[30%] w-64 h-64 bg-slate-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-4000"
-        style={{ transform: `${blob3Transform} scale(0.9)` }}
-      /> */}
+      {/* Bottom gradient fade for content transition */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-violet-50/60 to-transparent dark:from-base-300/60 pointer-events-none" />
+      
+      {/* Top subtle fade */}
+      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-violet-50/40 to-transparent dark:from-base-300/40 pointer-events-none" />
     </div>
   )
 }

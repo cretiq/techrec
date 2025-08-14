@@ -43,7 +43,6 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeProvider>
-      <div className="ai-backdrop"></div>
       <div className="flex min-h-screen flex-col relative" data-testid="layout-main-container">
         <header className="fixed top-0 z-50 w-full glass border-b-base-100 bg-base-100/95 backdrop-blur-md" data-testid="layout-header">
           <div className="container mx-auto max-w-7xl">
