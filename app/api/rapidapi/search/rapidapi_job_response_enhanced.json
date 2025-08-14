@@ -146,6 +146,138 @@
         "ai_visa_sponsorship": false
     },
     {
+        "id": "87654321",
+        "date_posted": "2025-08-14T10:55:00",
+        "date_created": "2025-08-14T10:56:00.123456",
+        "title": "Senior Backend Engineer (.NET)",
+        "organization": "Financor Systems",
+        "organization_url": "https://www.linkedin.com/company/financor-systems",
+        "date_validthrough": "2025-09-13T10:55:00",
+        "locations_raw": [{
+            "@type": "Place",
+            "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "US",
+                "addressLocality": "New York",
+                "addressRegion": "NY",
+                "streetAddress": null
+            },
+            "latitude": 40.7128,
+            "longitude": -74.0060
+        }],
+        "location_type": null,
+        "location_requirements_raw": null,
+        "salary_raw": {
+            "@type": "MonetaryAmount",
+            "currency": "USD",
+            "value": {
+                "@type": "QuantitativeValue",
+                "minValue": 170000,
+                "maxValue": 250000,
+                "unitText": "YEAR"
+            }
+        },
+        "employment_type": [
+            "FULL_TIME"
+        ],
+        "url": "https://www.linkedin.com/jobs/view/senior-backend-engineer-net-at-financor-systems-87654321",
+        "source_type": "jobboard",
+        "source": "linkedin",
+        "source_domain": "linkedin.com",
+        "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQGV36q2EowSyw/company-logo_200_200/company-logo_200_200/0/1724881581208/nvidia_logo?e=2147483647&v=beta&t=yF-4C3SrvMQ8g1dxIpI7QXtbsm9QoSrnc27dnGnD1Ls",
+        "cities_derived": [
+            "New York"
+        ],
+        "counties_derived": [
+            "New York County"
+        ],
+        "regions_derived": [
+            "New York"
+        ],
+        "countries_derived": [
+            "United States"
+        ],
+        "locations_derived": [
+            "New York, NY, United States"
+        ],
+        "timezones_derived": [
+            "America/New_York"
+        ],
+        "lats_derived": [
+            40.7128
+        ],
+        "lngs_derived": [
+            -74.0060
+        ],
+        "remote_derived": false,
+        "linkedin_org_employees": 2500,
+        "linkedin_org_url": "http://www.financorsystems.com",
+        "linkedin_org_size": "1,001-5,000 employees",
+        "linkedin_org_slogan": "Powering Tomorrow's Commerce.",
+        "linkedin_org_industry": "Financial Services",
+        "linkedin_org_followers": 150000,
+        "linkedin_org_headquarters": "New York, NY",
+        "linkedin_org_type": "Private",
+        "linkedin_org_foundeddate": "2018",
+        "linkedin_org_specialties": [
+            "Payment Gateway Solutions",
+            "Cloud-Native Platforms",
+            "FinTech",
+            "SaaS",
+            "Microservice Architecture",
+            "API Development"
+        ],
+        "linkedin_org_locations": [
+            "100 Wall Street, New York, NY 10005, US"
+        ],
+        "linkedin_org_description": "Financor Systems is a leader in cloud-native payment gateway solutions. We build highly scalable, secure, and reliable platforms that process millions of transactions daily for top-tier e-commerce and enterprise clients. Our mission is to democratize complex financial technology through robust and developer-friendly APIs.",
+        "linkedin_org_recruitment_agency_derived": false,
+        "seniority": "Senior",
+        "directapply": false,
+        "linkedin_org_slug": "financor-systems",
+        "no_jb_schema": null,
+        "external_apply_url": "https://financorsystems.wd5.myworkdayjobs.com/financorsystems/job/US-NY-New-York/Senior-Backend-Engineer-NET_JR-12345",
+        "description_text": "Financor Systems is a leader in cloud-native payment gateway solutions. We build highly scalable, secure, and reliable platforms that process millions of transactions daily for top-tier e-commerce and enterprise clients. Our mission is to democratize complex financial technology through robust and developer-friendly APIs.\n\nWe are looking for a Senior Backend Engineer with deep expertise in the .NET ecosystem to join our core Platform team. You will be responsible for designing, building, and maintaining the critical microservices that power our global payment infrastructure. This is a chance to work on high-impact projects at a massive scale.\n\nWhat You’ll Be Doing\n\n- Design and develop high-availability, low-latency microservices using C# and .NET Core.\n- Architect and optimize our high-throughput PostgreSQL database clusters for performance and resilience.\n- Build and maintain our core RESTful APIs, ensuring they are robust, well-documented, and secure.\n- Work with message brokers like RabbitMQ to ensure asynchronous, reliable communication between services.\n- Collaborate with our DevOps team to deploy and scale applications using Docker containers on AWS.\n- Mentor junior engineers and contribute to a culture of engineering excellence through code reviews and architectural discussions.\n\nWhat We Need To See\n\n- 8+ years of professional software development experience, with a strong focus on C# and the .NET ecosystem.\n- Proven track record of architecting and delivering complex, scalable backend systems, preferably with microservice architectures.\n- Deep expertise in relational databases, particularly PostgreSQL or SQL Server.\n- Hands-on experience with caching technologies like Redis and message queuing with RabbitMQ.\n- Solid understanding of containerization with Docker and deploying to cloud environments like AWS.\n- A passion for writing clean, maintainable, and well-tested code.\n- Bachelor's degree in Computer Science or a related field, or equivalent experience.",
+        "ai_salary_currency": "USD",
+        "ai_salary_value": null,
+        "ai_salary_minvalue": 170000,
+        "ai_salary_maxvalue": 250000,
+        "ai_salary_unittext": "YEAR",
+        "ai_benefits": [
+            "401(k) matching",
+            "Comprehensive health, dental, and vision insurance",
+            "Unlimited PTO",
+            "Professional development stipend"
+        ],
+        "ai_experience_level": "8+",
+        "ai_work_arrangement": "Hybrid",
+        "ai_work_arrangement_office_days": 3,
+        "ai_remote_location": null,
+        "ai_remote_location_derived": null,
+        "ai_key_skills": [
+            "C#",
+            ".NET Core",
+            "Microservices",
+            "System Architecture",
+            "RESTful APIs",
+            "PostgreSQL",
+            "SQL Server",
+            "Docker",
+            "AWS",
+            "RabbitMQ",
+            "Redis",
+            "Backend Development",
+            "High Availability"
+        ],
+        "ai_hiring_manager_name": "Sarah Chen",
+        "ai_hiring_manager_email_address": null,
+        "ai_core_responsibilities": "Design and develop high-availability, low-latency microservices for a global payment platform using C#, .NET Core, and PostgreSQL. Architect scalable backend systems and mentor junior engineers.",
+        "ai_requirements_summary": "Seeking a candidate with 8+ years of experience in C# and .NET, with a proven track record in microservice architecture, PostgreSQL, Docker, and AWS.",
+        "ai_working_hours": 40,
+        "ai_job_language": "English",
+        "ai_visa_sponsorship": true
+    },
+    {
         "id": "1849518793",
         "date_posted": "2025-08-14T04:31:41",
         "date_created": "2025-08-14T04:44:27.560781",
