@@ -430,17 +430,17 @@ export function MvpResultDisplay({
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      h1: ({ children }) => <h1 className="text-3xl font-bold text-foreground mb-5">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-2xl font-semibold text-foreground mb-4 mt-7">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-xl font-medium text-foreground mb-3 mt-5">{children}</h3>,
-                      p: ({ children }) => <p className="text-foreground mb-4 leading-relaxed text-lg">{children}</p>,
-                      ul: ({ children }) => <ul className="text-foreground mb-5 pl-6 space-y-2 text-lg">{children}</ul>,
-                      ol: ({ children }) => <ol className="text-foreground mb-5 pl-6 space-y-2 text-lg">{children}</ol>,
-                      li: ({ children }) => <li className="text-foreground text-lg leading-relaxed">{children}</li>,
-                      strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
-                      em: ({ children }) => <em className="italic text-foreground">{children}</em>,
-                      code: ({ children }) => <code className="bg-muted px-2 py-1 rounded text-base font-mono text-foreground">{children}</code>,
-                      blockquote: ({ children }) => <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-5">{children}</blockquote>,
+                      h1: ({ children }) => <h1 className="text-3xl font-bold text-primary text-primary-enhanced mb-5">{children}</h1>,
+                      h2: ({ children }) => <h2 className="text-2xl font-semibold text-secondary text-secondary-enhanced mb-4 mt-7">{children}</h2>,
+                      h3: ({ children }) => <h3 className="text-xl font-medium text-accent text-accent-enhanced mb-3 mt-5">{children}</h3>,
+                      p: ({ children }) => <p className="text-base-content/85 mb-4 leading-relaxed text-lg">{children}</p>,
+                      ul: ({ children }) => <ul className="text-base-content/85 mb-5 pl-6 space-y-2 text-lg">{children}</ul>,
+                      ol: ({ children }) => <ol className="text-base-content/85 mb-5 pl-6 space-y-2 text-lg">{children}</ol>,
+                      li: ({ children }) => <li className="text-base-content/85 text-lg leading-relaxed">{children}</li>,
+                      strong: ({ children }) => <strong className="font-semibold text-primary text-primary-strong">{children}</strong>,
+                      em: ({ children }) => <em className="italic text-base-content/80">{children}</em>,
+                      code: ({ children }) => <code className="bg-base-200 text-base-content px-2 py-1 rounded text-base font-mono">{children}</code>,
+                      blockquote: ({ children }) => <blockquote className="border-l-4 border-primary pl-4 italic text-base-content/70 my-5">{children}</blockquote>,
                     }}
                   >
                     {preprocessMarkdown(formattedText) || 'No content available'}
@@ -483,15 +483,10 @@ export function MvpResultDisplay({
               style={{ height: 'calc(100vh - 400px)' }}
             >
               <CardHeader className="flex-shrink-0 border-b border-base-300/50 pb-4 max-h-fit">
-                <CardTitle className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  CV Improvement
-                </CardTitle>
-                
-                {/* Enhance CV Button - Large and prominent, right under title */}
+                {/* Enhance CV Button - Large and prominent */}
                 {onGetSuggestions && (
                   <Button 
-                    variant="primary-interactive"
+                    variant="default"
                     size="default"
                     className="w-full py-3 text-base font-semibold"
                     onClick={onGetSuggestions}

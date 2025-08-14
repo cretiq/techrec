@@ -125,9 +125,44 @@
   --gradient-brand-sharp: linear-gradient(135deg, oklch(25% 0.02 240), oklch(20% 0.04 270));
 }
 
+/* Enhanced colors for pastel theme - stronger contrast while maintaining pastel aesthetic */
+[data-theme="pastel"] {
+  /* Enhanced heading colors - stronger but still harmonious with pastel theme */
+  --color-primary-enhanced: oklch(45% 0.15 210);    /* Enhanced blue - stronger than default pastel primary */
+  --color-secondary-enhanced: oklch(50% 0.12 320);  /* Enhanced purple - more visible than default pastel secondary */
+  --color-accent-enhanced: oklch(55% 0.14 160);     /* Enhanced green - better contrast than default pastel accent */
+  
+  /* Enhanced text contrast for better readability */
+  --color-base-content-enhanced: oklch(30% 0.02 240); /* Darker text while keeping pastel warmth */
+  
+  /* Enhanced strong/emphasis colors */
+  --color-primary-strong: oklch(40% 0.18 210);      /* For bold text and emphasis */
+}
+
 /* Theme-aware gradient utility classes */
 .bg-gradient-brand-sharp {
   background: var(--gradient-brand-sharp);
+}
+
+/* Enhanced utility classes - only active in pastel theme */
+[data-theme="pastel"] .text-primary-enhanced {
+  color: var(--color-primary-enhanced);
+}
+
+[data-theme="pastel"] .text-secondary-enhanced {
+  color: var(--color-secondary-enhanced);
+}
+
+[data-theme="pastel"] .text-accent-enhanced {
+  color: var(--color-accent-enhanced);
+}
+
+[data-theme="pastel"] .text-base-content-enhanced {
+  color: var(--color-base-content-enhanced);
+}
+
+[data-theme="pastel"] .text-primary-strong {
+  color: var(--color-primary-strong);
 }
 
 /* Global base styles without @layer for v4 */
