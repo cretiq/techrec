@@ -2,8 +2,9 @@
 
 import React from 'react'
 import { Badge } from '@/components/ui-daisy/badge'
-import { ExternalLink, Zap } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import type { ApplicationInfo } from '@/types/role'
+import { cn } from '@/lib/utils'
 
 // LinkedIn Logo Component (same as in ApplicationActionButton)
 const LinkedInIcon = ({ className }: { className?: string }) => (
@@ -30,8 +31,8 @@ export const ApplicationBadge: React.FC<ApplicationBadgeProps> = ({
   if (applicationInfo.directApply) {
     return (
       <Badge
-        variant="default"
-        className={`bg-[#0077b5]/20 text-[#0077b5] border-[#0077b5]/30 hover:bg-[#0077b5]/30 backdrop-blur-sm transition-all duration-100 ${className}`}
+        variant="info"
+        className={className}
         data-testid={testId || 'application-badge-easy-apply'}
       >
         <LinkedInIcon className="mr-1 h-3 w-3" />
@@ -44,7 +45,7 @@ export const ApplicationBadge: React.FC<ApplicationBadgeProps> = ({
   return (
     <Badge
       variant="outline"
-      className={`border-[#0077b5]/30 text-[#0077b5] hover:bg-[#0077b5]/10 backdrop-blur-sm transition-all duration-100 ${className}`}
+      className={className}
       data-testid={testId || 'application-badge-external'}
     >
       <LinkedInIcon className="mr-1 h-3 w-3" />

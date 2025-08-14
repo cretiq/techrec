@@ -75,7 +75,7 @@ export function AssessmentCard({
       <CardContent className="pb-2">
         <div className="flex flex-wrap gap-1 mb-3">
           {skills.map((skill, index) => (
-            <Badge key={index} variant="outline" className="bg-primary/5">
+            <Badge key={index} variant="outline">
               {skill}
             </Badge>
           ))}
@@ -192,7 +192,7 @@ export function CandidateCard({
           {matchPercentage && (
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Match:</span>
-              <Badge variant="outline" className="bg-green-50 text-green-700 flex items-center gap-1">
+              <Badge variant="success" className="flex items-center gap-1">
                 <Award className="h-3 w-3" />
                 {matchPercentage}% Match
               </Badge>

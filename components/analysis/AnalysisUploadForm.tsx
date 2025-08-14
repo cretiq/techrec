@@ -340,14 +340,14 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
                      <Badge variant="outline"><Loader2 className="mr-1 h-3 w-3 animate-spin" />Analyzing...</Badge>
                  )}
                  {uploadState === 'success' && (
-                     <Badge variant="default" className="bg-green-600 hover:bg-green-700"><CheckCircle className="mr-1 h-3 w-3" />Done</Badge>
+                     <Badge variant="success"><CheckCircle className="mr-1 h-3 w-3" />Done</Badge>
                  )}
                  {uploadState === 'cached' && (
                      <Badge variant="secondary"><CheckCircle className="mr-1 h-3 w-3" />Cached</Badge>
                  )}
                  {uploadState === 'error' && (
                     <>
-                      <Badge variant="destructive"><AlertCircle className="mr-1 h-3 w-3" />Error</Badge>
+                      <Badge variant="error"><AlertCircle className="mr-1 h-3 w-3" />Error</Badge>
                       {analysisId && (
                         <Button 
                           size="sm" 

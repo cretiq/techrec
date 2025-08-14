@@ -7,46 +7,35 @@ import { motion } from "framer-motion"
 // Base badge styles that all variants inherit
 const badgeBase = "badge inline-flex items-center gap-1.5 transition-all duration-100 ease-smooth font-medium"
 
-// Object-based variants for optimal performance and maintainability
+// Simplified DaisyUI-first badge variants (90% reduction in custom CSS)
 const badgeVariants = {
-  // Core variants
+  // Core DaisyUI variants
   default: `${badgeBase} badge-neutral`,
-  transparent: `${badgeBase} bg-base-100/80 backdrop-blur-sm border border-base-300/50`,
-  glass: `${badgeBase} bg-base-100/60 backdrop-blur-lg border border-base-300/20`,
-  solid: `${badgeBase} bg-base-200 border border-base-300`,
-  hybrid: `${badgeBase} border border-brand-sharp shadow-xs`,
-  
-  // Layout variants
-  outlined: `${badgeBase} badge-outline hover:bg-base-100/50`,
-  elevated: `${badgeBase} bg-base-100 shadow-sm hover:shadow-md`,
-  floating: `${badgeBase} bg-base-100/95 backdrop-blur-md shadow-sm`,
-  gradient: `${badgeBase} bg-gradient-to-r from-base-100 to-base-200`,
-  
-  // Semantic variants - using DaisyUI semantic colors
   primary: `${badgeBase} badge-primary`,
   secondary: `${badgeBase} badge-secondary`,
+  accent: `${badgeBase} badge-accent`,
   success: `${badgeBase} badge-success`,
   warning: `${badgeBase} badge-warning`,
   error: `${badgeBase} badge-error`,
   info: `${badgeBase} badge-info`,
-  accent: `${badgeBase} badge-accent`,
   
-  // Interactive variants
-  ghost: `${badgeBase} badge-ghost hover:bg-base-200/60`,
-  
-  // Special variants
+  // DaisyUI style variants
+  outline: `${badgeBase} badge-outline`,
+  ghost: `${badgeBase} badge-ghost`,
+  dash: `${badgeBase} badge-dash`,
   soft: `${badgeBase} badge-soft`,
   
-  // Premium gradient variants
-  "gradient-brand": `${badgeBase} bg-gradient-to-r from-brand-500 to-brand-600 text-white border-0 shadow-lg`,
-  "gradient-blue": `${badgeBase} bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-0 shadow-lg`,
-  "gradient-success": `${badgeBase} bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-lg`,
-  "gradient-warning": `${badgeBase} bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-lg`,
-  
-  // Glass morphism variants
-  "glass-primary": `${badgeBase} bg-primary/10 backdrop-blur-md border border-primary/20 text-primary`,
-  "glass-success": `${badgeBase} bg-success/10 backdrop-blur-md border border-success/20 text-success`,
-  "glass-error": `${badgeBase} bg-error/10 backdrop-blur-md border border-error/20 text-error`,
+  // Legacy aliases for backward compatibility during migration
+  outlined: `${badgeBase} badge-outline`, // maps to DaisyUI outline
+  transparent: `${badgeBase} badge-ghost`, // maps to DaisyUI ghost
+  glass: `${badgeBase} badge-neutral badge-outline`, // simplified glass effect
+  elevated: `${badgeBase} badge-neutral shadow-md`, // minimal shadow for elevation
+  destructive: `${badgeBase} badge-error`, // maps to DaisyUI error
+  gradient: `${badgeBase} badge-primary`, // simplified gradient to primary
+  "gradient-brand": `${badgeBase} badge-primary`, // simplified gradient to primary
+  "gradient-blue": `${badgeBase} badge-info`, // maps to DaisyUI info
+  "gradient-success": `${badgeBase} badge-success`, // maps to DaisyUI success
+  "gradient-warning": `${badgeBase} badge-warning`, // maps to DaisyUI warning
 }
 
 const Badge = React.forwardRef<
@@ -82,13 +71,13 @@ const Badge = React.forwardRef<
 }, ref) => {
   const isClickable = interactive || onRemove || props.onClick
 
-  // Size variants
+  // DaisyUI size variants with minimal custom additions
   const sizeClasses = {
-    xs: "badge-xs text-xs px-1.5 py-0.5 gap-0.5",
-    sm: "badge-sm text-sm px-2 py-1 gap-1",
-    default: "text-sm px-2.5 py-1 gap-1.5",
-    lg: "badge-lg text-base px-3 py-1.5 gap-1.5",
-    xl: "text-lg px-4 py-2 gap-2",
+    xs: "badge-xs",
+    sm: "badge-sm", 
+    default: "", // badge-md is default size
+    lg: "badge-lg",
+    xl: "badge-lg", // DaisyUI doesn't have xl, map to lg
   }
 
   // Handle count display
@@ -106,6 +95,7 @@ const Badge = React.forwardRef<
       xl: "w-4 h-4",
     }
 
+    // DaisyUI semantic colors for dots
     const dotColors = {
       primary: "bg-primary",
       secondary: "bg-secondary",
@@ -114,7 +104,12 @@ const Badge = React.forwardRef<
       warning: "bg-warning",
       error: "bg-error",
       info: "bg-info",
+      neutral: "bg-neutral",
       default: "bg-neutral",
+      // Legacy aliases for backward compatibility
+      outlined: "bg-neutral",
+      ghost: "bg-neutral",
+      outline: "bg-neutral",
     }
 
     return (
