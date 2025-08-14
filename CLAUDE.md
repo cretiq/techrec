@@ -163,10 +163,10 @@ const componentVariants = {
 <Card variant="elevated" interactive />
 ```
 
-**❌ FORBIDDEN Approaches**: 
-- Never override styles in consuming components
-- Never create one-off inline styles
-- Never duplicate styling logic
+**✅ RECOMMENDED Styling Utilities**: 
+- **Use `cn()` for conditional styling**: Leverage clsx/classnames for dynamic class logic
+- **Combine variants with utilities**: Mix object-based variants with utility functions
+- **Smart class merging**: Use tailwind-merge for conflict resolution when needed
 
 **Why This Approach is Mandatory**:
 - **Single Source of Truth**: Change once, updates everywhere
@@ -189,6 +189,61 @@ const componentVariants = {
 4. **Is this truly reusable?** → `/components/ui-daisy/`
 5. **Is this page-specific?** → `/app/components/` (rare)
 
+### Styling Utilities & Best Practices
+**🚀 MANDATORY: Use Styling Utilities Where Applicable**
+
+**Core Utilities Available**:
+```tsx
+import { cn } from '@/lib/utils'           // clsx/classnames wrapper
+import { twMerge } from 'tailwind-merge'   // Intelligent class merging
+```
+
+**Recommended Usage Patterns**:
+```tsx
+// ✅ Conditional styling with cn()
+const className = cn(
+  'base-classes',
+  isActive && 'bg-primary text-primary-content',
+  disabled && 'opacity-50 cursor-not-allowed',
+  size === 'large' && 'text-lg p-4'
+)
+
+// ✅ Object-based conditionals (cleaner than ternaries)
+const className = cn('btn', {
+  'btn-primary': variant === 'primary',
+  'btn-secondary': variant === 'secondary',
+  'btn-loading': isLoading,
+  'btn-disabled': disabled
+})
+
+// ✅ Combining variants with dynamic utilities
+<Button 
+  variant="glass" 
+  className={cn(isHighlighted && 'ring-2 ring-accent')}
+/>
+
+// ✅ Smart conflict resolution with tailwind-merge
+const mergedClasses = twMerge(
+  'p-4 bg-red-500',    // Base styles
+  'p-2 bg-blue-500'    // Override: results in 'p-2 bg-blue-500'
+)
+
+// ✅ Array support for complex conditions
+const className = cn([
+  'base-class',
+  condition1 && 'conditional-class-1',
+  condition2 && 'conditional-class-2',
+  null, // Automatically filtered out
+  undefined // Automatically filtered out
+])
+```
+
+**When to Use Each Utility**:
+- **`cn()` (clsx/classnames)**: Conditional logic, object-based classes, array handling
+- **`twMerge()`**: When class conflicts need intelligent resolution
+- **Object variants**: For predictable, reusable component APIs
+- **Direct className**: For simple, static styling
+
 ### Design System Standards
 **Glass Morphism Theme**:
 ```tsx
@@ -210,10 +265,29 @@ const componentVariants = {
 
 **Essential Patterns**:
 ```tsx
+// ✅ Use cn() for conditional styling
+const buttonClass = cn(
+  'btn btn-primary',
+  isLoading && 'loading',
+  disabled && 'btn-disabled'
+)
+
+// ✅ Combine variants with utility functions
+<Button 
+  variant="primary" 
+  className={cn(baseStyles, isActive && 'ring-2 ring-primary')} 
+/>
+
+// ✅ Smart class merging with tailwind-merge
+import { twMerge } from 'tailwind-merge'
+const mergedClasses = twMerge('p-4 p-2 bg-red-500 bg-blue-500')
+
 // ✅ Fixed table layouts prevent width flickering
 <Table className="table-fixed w-full">
+
 // ✅ Cross-component communication
 window.dispatchEvent(new CustomEvent('expandAllSections'));
+
 // ✅ Comprehensive test coverage
 <Button data-testid={`action-button-${action}-${id}`}>
 ```
@@ -746,7 +820,7 @@ When implementing new features:
 1. **Component-First Thinking**: Check existing components before creating anything new
 2. **Variant-Based Extensions**: Add variants to existing components rather than creating new ones
 3. **Standardized APIs**: Follow established patterns (`variant`, `size`, `className`, `icon`)
-4. **No Style Overrides**: Never use className for styling - only extend component variants
+4. **Smart Styling Utilities**: Use `cn()`, `clsx`, and `tailwind-merge` for dynamic styling logic
 5. **Reusability Focus**: Every component should be usable across multiple contexts
 6. **Accessibility Built-In**: Components must include proper ARIA labels and keyboard navigation
 7. **Documentation Updated**: Add new components/variants to design system documentation
@@ -764,7 +838,7 @@ Before shipping any UI component:
 - [ ] Added to component library exports (`/components/ui-daisy/index.ts`)
 - [ ] Documented with usage examples in showcase
 - [ ] Tested across different screen sizes and interaction states
-- [ ] No inline styles or className overrides in consuming components
+- [ ] Uses `cn()` or similar utilities for conditional styling when needed
 
 ---
 
@@ -788,7 +862,11 @@ Before shipping any UI component:
 
 *This guide serves as the comprehensive reference for developing within the TechRec codebase. Follow these guidelines consistently to maintain code quality, architectural integrity, and development efficiency.*
 
-**Last Update**: August 14, 2025 - **COVER LETTER DEBUG SYSTEM CLEANUP & RAW CONTENT EXTRACTION COMPLETE**:
+**Last Update**: August 14, 2025 - **STYLING UTILITIES PROMOTION & COVER LETTER DEBUG SYSTEM CLEANUP**:
+- ✅ **Styling Utilities Promoted**: Removed restrictions on `cn()`, `clsx`, and `tailwind-merge` - now actively encouraged
+- ✅ **Comprehensive Utility Guide**: Added dedicated section with usage patterns, best practices, and when to use each utility
+- ✅ **Enhanced Code Examples**: Updated patterns to showcase conditional styling and smart class merging
+- ✅ **Developer Guidelines Updated**: Component checklist and implementation mandate now promote utility usage
 - ✅ **Cleaned Debug Structure**: Removed redundant formatted sections, simplified to 3 main fields at top level
 - ✅ **Three-File Debug System**: `unified-debug.json` + `raw-content.json` + `analysis.json` per session
 - ✅ **Raw Content File Generation**: Analysis script auto-creates lightweight file with only `rawPromptTemplate`, `fullPrompt`, `aiResponse`
