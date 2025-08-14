@@ -62,7 +62,7 @@ export function PrimaryButton({ loading, disabled, size, icon, onClick, classNam
   
   return (
     <Button 
-      variant="default"
+      variant="primary"
       size={buttonSize}
       loading={loading}
       disabled={disabled}
@@ -81,7 +81,7 @@ export function SecondaryButton({ loading, disabled, size, icon, onClick, classN
   
   return (
     <Button 
-      variant="outline"
+      variant="secondary"
       size={buttonSize}
       loading={loading}
       disabled={disabled}
@@ -119,7 +119,7 @@ export function DestructiveButton({ loading, disabled, size, icon, onClick, clas
   
   return (
     <Button 
-      variant="destructive"
+      variant="error"
       size={buttonSize}
       loading={loading}
       disabled={disabled}
@@ -138,13 +138,13 @@ export function GlassButton({ loading, disabled, size, icon, onClick, className,
   
   return (
     <Button 
-      variant="glass"
+      variant="ghost"
       size={buttonSize}
       loading={loading}
       disabled={disabled}
       onClick={onClick}
       leftIcon={icon}
-      className={cn("gap-2", sizeClass, className)}
+      className={cn("gap-2 backdrop-blur-sm", sizeClass, className)}
     >
       {children}
     </Button>
@@ -179,7 +179,7 @@ export function BadgeButton({ loading, disabled, size, icon, onClick, className,
   
   return (
     <Button 
-      variant="default"
+      variant="primary"
       size={buttonSize}
       loading={loading}
       disabled={disabled}
@@ -241,7 +241,7 @@ export function NavigationButtons() {
         <ArrowLeft className="h-4 w-4" />
         Previous
       </Button>
-      <Button className="gap-2">
+      <Button variant="primary" className="gap-2">
         Next
         <ArrowRight className="h-4 w-4" />
       </Button>
@@ -252,21 +252,15 @@ export function NavigationButtons() {
 export function StatusButtons() {
   return (
     <div className="flex gap-2">
-      <Button
-        variant="outline"
-        className="gap-2 text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
-      >
+      <Button variant="success" className="gap-2">
         <CheckCircle className="h-4 w-4" />
         Pass
       </Button>
-      <Button variant="outline" className="gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
+      <Button variant="error" className="gap-2">
         <XCircle className="h-4 w-4" />
         Fail
       </Button>
-      <Button
-        variant="outline"
-        className="gap-2 text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700"
-      >
+      <Button variant="warning" className="gap-2">
         <Clock className="h-4 w-4" />
         Review
       </Button>
@@ -285,7 +279,7 @@ export function ActionButtons() {
         <FileText className="h-4 w-4" />
         Details
       </Button>
-      <Button size="sm" className="gap-1">
+      <Button variant="primary" size="sm" className="gap-1">
         <Code className="h-4 w-4" />
         Code
       </Button>
@@ -339,13 +333,14 @@ export function MatchButton({ matchPercentage }: { matchPercentage: number }) {
 // Create a WarningButton variant for amber-colored warnings
 export function WarningButton({ onClick, children }: ActionButtonProps) {
   return (
-    <SecondaryButton 
+    <Button 
+      variant="warning"
       onClick={onClick}
-      icon={<AlertTriangle className="h-4 w-4" />}
-      className="text-amber-600 border-amber-200 hover:bg-amber-50 hover:text-amber-700"
+      leftIcon={<AlertTriangle className="h-4 w-4" />}
+      className="gap-2"
     >
       {children}
-    </SecondaryButton>
+    </Button>
   )
 }
 
@@ -388,12 +383,12 @@ export function ToggleButton({ options }: { options: string[] }) {
   const [selected, setSelected] = useState(0)
 
   return (
-    <div className="flex border rounded-md overflow-hidden">
+    <div className="join">
       {options.map((option, index) => (
         <button
           key={index}
-          className={`px-4 py-2 text-sm font-medium ${
-            selected === index ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+          className={`btn join-item ${
+            selected === index ? "btn-primary" : "btn-outline"
           }`}
           onClick={() => setSelected(index)}
         >

@@ -106,10 +106,10 @@ export default function SearchMarkAsAppliedButton({
   if (isApplied) {
     return (
       <Button
-        variant="default"
+        variant="success"
         size="xl"
         disabled={true}
-        className={`${className} h-12 text-base font-semibold bg-success hover:bg-success text-success-content border-success opacity-90`}
+        className={`${className} h-12 text-base font-semibold opacity-90`}
         leftIcon={<Check className="h-5 w-5" />}
         data-testid={testId ? `${testId}-applied-status` : `search-mark-applied-button-applied-${role.id}`}
       >
@@ -121,7 +121,7 @@ export default function SearchMarkAsAppliedButton({
   // Default state - show mark as applied button
   return (
     <Button
-      variant="default"
+      variant="primary"
       size="xl"
       loading={isLoading}
       disabled={!session?.user || isLoading}

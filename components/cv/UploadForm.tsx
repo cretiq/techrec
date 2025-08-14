@@ -402,9 +402,9 @@ export function UploadForm({ onUploadComplete }: UploadFormProps) {
                 <Button
                   onClick={handleUpload}
                   disabled={uploadState === 'uploading'}
-                  variant="elevated-interactive"
+                  variant="primary"
                   size="lg"
-                  className="w-full"
+                  className="w-full shadow-md"
                   data-testid="cv-management-button-upload-trigger"
                 >
                   {uploadState === 'uploading' ? (

@@ -283,11 +283,11 @@ export function CodeEditor({
           </Button>
         </div>
         <div className="flex gap-2">
-          <Button onClick={runTests} disabled={isRunning || readOnly} className="gap-2">
+          <Button onClick={runTests} disabled={isRunning || readOnly} variant="primary" className="gap-2">
             {isRunning ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
             Run Tests
           </Button>
-          <Button onClick={handleSave} disabled={isRunning || readOnly} className="gap-2">
+          <Button onClick={handleSave} disabled={isRunning || readOnly} variant="success" className="gap-2">
             <Save className="h-4 w-4" />
             Save Solution
           </Button>

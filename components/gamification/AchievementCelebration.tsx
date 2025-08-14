@@ -328,7 +328,7 @@ export function AchievementCelebration() {
                 </Button>
                 
                 <Button
-                  variant="default"
+                  variant="primary"
                   size="sm"
                   onClick={handleDismiss}
                   className="px-6"

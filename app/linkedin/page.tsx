@@ -244,10 +244,10 @@ export default function LinkedInTesterPage() {
               <p className="text-green-600 font-medium">Authenticated!</p>
               <Label htmlFor="accessToken">Access Token:</Label>
               <Textarea id="accessToken" readOnly value={accessToken} rows={3} className="font-mono text-xs" />
-               <Button onClick={() => { setAccessToken(null); localStorage.removeItem('linkedin_access_token'); setAuthUrl(null); checkAuth(); toast.info('Logged out.'); }} variant="destructive">Logout</Button>
+               <Button onClick={() => { setAccessToken(null); localStorage.removeItem('linkedin_access_token'); setAuthUrl(null); checkAuth(); toast.info('Logged out.'); }} variant="error">Logout</Button>
             </div>
           ) : (
-            <Button onClick={handleAuthenticate} disabled={isLoading || !authUrl}>
+            <Button onClick={handleAuthenticate} variant="primary" disabled={isLoading || !authUrl}>
               {isLoading ? 'Checking...' : 'Authenticate with LinkedIn'}
             </Button>
           )}
@@ -288,7 +288,7 @@ export default function LinkedInTesterPage() {
                   />
                 </div>
               </div>
-              <Button onClick={handleSearchJobs} disabled={isSearching}>
+              <Button onClick={handleSearchJobs} variant="primary" disabled={isSearching}>
                 {isSearching ? 'Searching...' : 'Search Jobs'}
               </Button>
             </CardContent>
@@ -328,7 +328,7 @@ export default function LinkedInTesterPage() {
                   onChange={(e) => setJobId(e.target.value)}
                 />
               </div>
-              <Button onClick={handleGetJobById} disabled={isFetchingJob}>
+              <Button onClick={handleGetJobById} variant="secondary" disabled={isFetchingJob}>
                 {isFetchingJob ? 'Fetching...' : 'Get Job Details'}
               </Button>
             </CardContent>

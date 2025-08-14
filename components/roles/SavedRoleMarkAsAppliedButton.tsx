@@ -104,13 +104,13 @@ export default function SavedRoleMarkAsAppliedButton({
     return (
       <>
         <Button
-          variant="default"
+          variant="success"
           size="xl"
           disabled={!allowUnApply || isUnApplying}
           loading={isUnApplying}
           onClick={allowUnApply ? handleAppliedButtonClick : undefined}
-          className={`${className} h-12 text-base font-semibold bg-success hover:bg-success text-success-content border-success ${
-            allowUnApply && !isUnApplying ? 'hover:bg-success/80 cursor-pointer' : 'opacity-90'
+          className={`${className} h-12 text-base font-semibold ${
+            allowUnApply && !isUnApplying ? 'hover:btn-success/80 cursor-pointer' : 'opacity-90'
           }`}
           leftIcon={isUnApplying ? <X className="h-5 w-5" /> : <Check className="h-5 w-5" />}
           data-testid={testId ? `${testId}-applied-status` : `saved-role-mark-applied-button-applied-${role.id}`}
@@ -137,7 +137,7 @@ export default function SavedRoleMarkAsAppliedButton({
   // Default state - show mark as applied button
   return (
     <Button
-      variant="default"
+      variant="primary"
       size="xl"
       loading={isLoading}
       disabled={!session?.user || isLoading}

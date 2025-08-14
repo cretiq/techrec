@@ -239,6 +239,7 @@ export default function RedisTestComponent() {
           <Button
             onClick={handleSaveToRedis}
             disabled={isLoading || !testKey || !testValue}
+            variant="primary"
             className="flex items-center gap-2"
           >
             <Save className="h-4 w-4" />

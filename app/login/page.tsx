@@ -45,7 +45,7 @@ export default function LoginPage() {
               </CardContent>
               <CardFooter data-testid="auth-login-card-company-footer">
                 <Link href="/login/company" className="w-full" data-testid="auth-login-company-link-trigger">
-                  <Button className="w-full gap-1" data-testid="auth-login-company-button-trigger">
+                  <Button variant="primary" className="w-full gap-1" data-testid="auth-login-company-button-trigger">
                     Company Login
                     <ArrowRight className="h-4 w-4" />
                   </Button>

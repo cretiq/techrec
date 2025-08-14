@@ -59,7 +59,7 @@ export function MobileNav() {
               </Button>
             </Link>
             <Link href="/signup" onClick={() => setOpen(false)} data-testid="nav-mobile-link-signup-trigger">
-              <Button className="w-full" data-testid="nav-mobile-button-signup-trigger">Sign Up</Button>
+              <Button variant="primary" className="w-full" data-testid="nav-mobile-button-signup-trigger">Sign Up</Button>
             </Link>
           </div>
         </div>

@@ -331,7 +331,7 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
                {/* Action Button or Status Indicator */} 
               <div className="flex-shrink-0 flex items-center gap-2">
                  {uploadState === 'idle' && (
-                     <Button size="sm" onClick={handleUploadAndAnalyze}>Analyze</Button>
+                     <Button size="sm" variant="primary" onClick={handleUploadAndAnalyze}>Analyze</Button>
                  )}
                  {uploadState === 'uploading' && (
                      <Badge variant="outline"><Loader2 className="mr-1 h-3 w-3 animate-spin" />Uploading ({uploadProgress}%)</Badge>

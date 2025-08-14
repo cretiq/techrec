@@ -74,7 +74,7 @@ export function SignInForm() {
         />
         {errors.password && <span className="text-error text-sm mt-1">{errors.password.message}</span>}
       </div>
-      <Button type="submit" className="w-full" loading={isLoading}>
+      <Button type="submit" variant="primary" className="w-full" loading={isLoading}>
         Sign In with Email
       </Button>
     </form>

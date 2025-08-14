@@ -140,7 +140,7 @@ export default function DeveloperLoginPage() {
                   Remember me
                 </Label>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading} data-testid="auth-developer-login-button-submit-trigger">
+              <Button type="submit" variant="primary" className="w-full" disabled={isLoading} data-testid="auth-developer-login-button-submit-trigger">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" data-testid="auth-developer-login-submit-loading-spinner" />

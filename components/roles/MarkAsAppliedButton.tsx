@@ -8,6 +8,7 @@ import { Check, ArrowRight, X } from 'lucide-react'
 import { markRoleAsApplied, saveAndMarkRoleAsApplied, unApplyRole } from '@/lib/features/savedRolesSlice'
 import { useSavedRoleStatus } from '@/hooks/useSavedRoles'
 import { ConfirmationDialog } from '@/components/ui-daisy/confirmation-dialog'
+import { cn } from '@/lib/utils'
 import type { AppDispatch } from '@/lib/store'
 import type { Role } from '@/types/role'
 
@@ -94,13 +95,13 @@ export default function MarkAsAppliedButton({
     return (
       <>
         <Button
-          variant="default"
+          variant="success"
           size="xl"
           disabled={!allowUnApply || isUnApplying}
           loading={isUnApplying}
           onClick={allowUnApply ? handleAppliedButtonClick : undefined}
-          className={`${className} h-12 text-base font-semibold bg-success hover:bg-success text-success-content border-success ${
-            allowUnApply && !isUnApplying ? 'hover:bg-success/80 cursor-pointer' : 'opacity-90'
+          className={`${className} h-12 text-base font-semibold ${
+            allowUnApply && !isUnApplying ? 'hover:btn-success/80 cursor-pointer' : 'opacity-90'
           }`}
           leftIcon={isUnApplying ? <X className="h-5 w-5" /> : <Check className="h-5 w-5" />}
           data-testid={testId ? `${testId}-applied-status` : `mark-applied-button-applied-${role.id}`}
@@ -127,12 +128,12 @@ export default function MarkAsAppliedButton({
   // Default state - show mark as applied button
   return (
     <Button
-      variant="markasapplied"
-      size="xl"
+      variant="primary"
+      size="lg"
       loading={isMarkingAsApplied}
       disabled={!session?.user || isMarkingAsApplied}
       onClick={handleMarkAsApplied}
-      className={`${className} h-12 text-base font-semibold`}
+      className={cn(className)}
       leftIcon={<ArrowRight className="h-5 w-5" />}
       data-testid={testId ? `${testId}-mark-applied` : `mark-applied-button-${role.id}`}
     >

@@ -5,67 +5,37 @@ import { Slot } from "@radix-ui/react-slot"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
-import { getButtonHoverEffect } from "@/lib/hoverSystem"
 
-// Base classes - shared foundation for all button variants
-const buttonBase = "btn rounded-xl btn-shadow-mixed transition-all duration-100 ease-smooth relative overflow-hidden border"
-
-// Object-based variants for optimal performance and maintainability
+// DaisyUI button variants - using out-of-the-box classes
 const buttonVariants = {
-  // Basic variants (no built-in hover effects)
-  default: `${buttonBase} bg-base-100 border-base-300`,
-  transparent: `${buttonBase} bg-base-100/80 backdrop-blur-sm border-base-300/50`,
-  glass: `${buttonBase} bg-base-100/60 backdrop-blur-lg border-base-300/30`,
-  solid: `${buttonBase} bg-base-200 border-base-300`,
-  hybrid: `${buttonBase} bg-brand-muted border-brand-sharp`,
+  // Core DaisyUI variants
+  default: "btn btn-neutral",
+  primary: "btn btn-primary", 
+  secondary: "btn btn-secondary",
+  accent: "btn btn-accent",
+  success: "btn btn-success",
+  warning: "btn btn-warning",
+  error: "btn btn-error",
+  info: "btn btn-info",
   
-  // Layout variants
-  outlined: `${buttonBase} bg-transparent border-base-300/50`,
-  elevated: `${buttonBase} bg-base-100 shadow-sm border-base-300/50`,
-  floating: `${buttonBase} bg-base-100/95 backdrop-blur-md shadow-sm border-base-300/30`,
-  gradient: `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 border-base-300/50`,
+  // Style variants
+  ghost: "btn btn-ghost",
+  link: "btn btn-link",
+  outline: "btn btn-outline",
   
-  // Semantic variants - using DaisyUI semantic colors
-  primary: `${buttonBase} btn-primary`, 
-  secondary: `${buttonBase} btn-secondary`,
-  success: `${buttonBase} btn-success`,
-  warning: `${buttonBase} btn-warning`,
-  error: `${buttonBase} btn-error`,
-  info: `${buttonBase} btn-info`,
-  
-  // Interactive variants
-  ghost: `${buttonBase} btn-ghost`,
-  link: `${buttonBase} btn-link text-primary`,
-  
-  // Special variants
-  linkedin: `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] text-white font-medium border-transparent`,
-  'linkedin-light': `${buttonBase} bg-[#0077b5]/10 hover:bg-[#0077b5]/20 text-[#0077b5] border-[#0077b5]/20 font-medium`,
-  'export-action': `${buttonBase} bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 border-blue-500/20 font-medium`,
-  'copy-action': `${buttonBase} bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 border-teal-500/20 font-medium`,
-  writeto: `${buttonBase} bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium border-transparent`,
-  markasapplied: `${buttonBase} bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium border-transparent`,
-  
-  // Interactive variants with built-in hover effects
-  'default-interactive': `${buttonBase} bg-base-100 border-base-300`,
-  'elevated-interactive': `${buttonBase} bg-base-100 shadow-sm border-base-300/50`,
-  'gradient-interactive': `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 border-base-300/50`,
-  'outlined-interactive': `${buttonBase} bg-transparent border-base-300/50`,
-  'ghost-interactive': `${buttonBase} btn-ghost`,
-  'primary-interactive': `${buttonBase} btn-primary`,
-  'secondary-interactive': `${buttonBase} btn-secondary`,
-  'success-interactive': `${buttonBase} btn-success`,
-  'warning-interactive': `${buttonBase} btn-warning`,
-  'error-interactive': `${buttonBase} btn-error`,
-  'info-interactive': `${buttonBase} btn-info`,
-  'linkedin-interactive': `${buttonBase} bg-gradient-to-r from-[#0077b5] to-[#005885] text-white font-medium border-transparent`,
-  'linkedin-light-interactive': `${buttonBase} bg-[#0077b5]/10 hover:bg-[#0077b5]/20 text-[#0077b5] border-[#0077b5]/20 font-medium`,
-  'export-action-interactive': `${buttonBase} bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 border-blue-500/20 font-medium`,
-  'copy-action-interactive': `${buttonBase} bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 border-teal-500/20 font-medium`,
-  'flashy-interactive': `${buttonBase} bg-gradient-to-br from-base-100 to-base-200 border-base-300/50 text-base-content font-medium`,
+  // Custom variants that need special styling
+  linkedin: "btn btn-primary [--btn-color:#0077b5] [--btn-color-hover:#005885] text-white",
+  'linkedin-light': "btn btn-outline [--btn-color:#0077b5] [--btn-border-color:#0077b5]",
+  'export-action': "btn btn-info",
+  'copy-action': "btn btn-success",
+  glass: "btn btn-ghost backdrop-blur-sm",
   
   // Legacy aliases for backwards compatibility
-  outline: `${buttonBase} bg-transparent border-base-300/50`,
-  destructive: `${buttonBase} btn-error`,
+  destructive: "btn btn-error",
+  elevated: "btn btn-neutral shadow-md",
+  gradient: "btn btn-primary",
+  writeto: "btn btn-primary bg-gradient-to-r from-purple-500 to-indigo-600 border-none",
+  markasapplied: "btn btn-primary bg-gradient-to-r from-blue-500 to-cyan-600 border-none",
 }
 
 // Type for all available button variants
@@ -84,11 +54,11 @@ export interface ButtonProps
 }
 
 const sizeVariants = {
-  sm: "btn-sm px-3 py-1.5 text-sm",
-  default: "px-4 py-2 text-base",
-  lg: "btn-lg px-6 py-3 text-lg", 
-  xl: "btn-lg px-8 py-4 text-base",
-  icon: "btn-square p-2"
+  sm: "btn-sm",
+  default: "", // btn-md is default, no class needed
+  lg: "btn-lg", 
+  xl: "btn-xl",
+  icon: "btn-square"
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -111,15 +81,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const showSpinner = loading && !hasIcons
     const animateExistingIcons = loading && hasIcons
     
-    // Apply hover effects for interactive variants
-    const isInteractiveVariant = variant.includes('-interactive')
-    
     const buttonClasses = cn(
       buttonVariants[variant],
       sizeVariants[size],
-      // Apply hover effects for interactive variants
-      isInteractiveVariant && getButtonHoverEffect(variant.replace('-interactive', '')),
-      disabled && "opacity-50 cursor-not-allowed",
+      disabled && "btn-disabled",
       className
     )
 

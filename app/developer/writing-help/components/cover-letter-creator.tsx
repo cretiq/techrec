@@ -760,7 +760,7 @@ export function CoverLetterCreator({
                     <div className="flex-1">
                       <Button
                         onClick={handleExport}
-                        variant="export-action"
+                        variant="info"
                         size="default"
                         leftIcon={<Download className="h-4 w-4" />}
                         className="w-full group"
