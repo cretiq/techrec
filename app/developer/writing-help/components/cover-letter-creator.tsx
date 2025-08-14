@@ -16,7 +16,8 @@ import {
   setCoverLetter, 
   selectCoverLetter, 
   updateCoverLetterAttractionPoints,
-  updateCoverLetterJobSource
+  updateCoverLetterJobSource,
+  updateCoverLetterHiringManager
 } from '@/lib/features/coverLettersSlice'
 import { PlusCircle, Trash2, ArrowRight, Download, RefreshCw, Loader2, Copy, Check, Sparkles, Award, Target, FileText, CheckCircle2, ChevronRight, ChevronDown, Briefcase, X } from "lucide-react"
 import { ApplicationActionButton } from "@/components/roles/ApplicationActionButton"
@@ -73,7 +74,7 @@ export function CoverLetterCreator({
   const [lastTriggeredValue, setLastTriggeredValue] = useState<number>(0)
   const [isNewlyGenerated, setIsNewlyGenerated] = useState(false)
   
-  // Use Redux state or default values
+  // Use Redux state or default values, with automatic population from role data
   const generatedLetter = existingCoverLetter?.letter || ""
   const jobSource = existingCoverLetter?.jobSource || ""
   const companyAttractionPoints = existingCoverLetter?.companyAttractionPoints || [
@@ -82,7 +83,8 @@ export function CoverLetterCreator({
   ]
   const tone = existingCoverLetter?.tone || "formal"
   const requestType = "coverLetter" // Fixed for cover letter tab
-  const hiringManager = existingCoverLetter?.hiringManager || ""
+  // Auto-populate hiring manager from role data if not already set in Redux
+  const hiringManager = existingCoverLetter?.hiringManager || role.applicationInfo?.hiringManager?.name || ""
   
   const { toast } = useToast()
 
@@ -103,6 +105,17 @@ export function CoverLetterCreator({
       fetchProfile()
     }
   }, [session, toast])
+
+  // Auto-populate hiring manager field from role data when role changes
+  useEffect(() => {
+    // Only auto-populate if there's no existing hiring manager data in Redux and role has hiring manager info
+    if (!existingCoverLetter?.hiringManager && role.applicationInfo?.hiringManager?.name) {
+      dispatch(updateCoverLetterHiringManager({ 
+        roleId: role.id, 
+        hiringManager: role.applicationInfo.hiringManager.name 
+      }))
+    }
+  }, [role.id, role.applicationInfo?.hiringManager?.name, existingCoverLetter?.hiringManager, dispatch])
 
   useEffect(() => {
     // Only trigger generation for "Generate All" if:
