@@ -2,6 +2,7 @@
 
 import { CoverLetterDebugLogger } from '../utils/debugLogger';
 import fs from 'fs';
+import path from 'path';
 
 // Analyze the latest cover letter generation session
 async function analyzeCoverLetterGeneration() {
@@ -16,11 +17,44 @@ async function analyzeCoverLetterGeneration() {
   }
   
   console.log(`📊 Analyzing session: ${latestSession.sessionId}`);
-  console.log(`📁 Request file: ${latestSession.requestFile}`);
-  console.log(`📁 Response files: ${latestSession.responseFiles.length}\n`);
+  
+  if (latestSession.unifiedFile) {
+    console.log(`📁 Unified debug file: ${latestSession.unifiedFile}\n`);
+  } else {
+    console.log(`📁 Request file: ${latestSession.requestFile}`);
+    console.log(`📁 Response files: ${latestSession.responseFiles.length}\n`);
+  }
   
   // Read session data
   const sessionData = CoverLetterDebugLogger.readSession(latestSession.sessionId);
+  
+  // If we have unified data, display the new format first
+  if (sessionData.unified) {
+    console.log('=== UNIFIED DEBUG FILE STRUCTURE (CLEANED) ===');
+    console.log(`Unified file contains:`);
+    console.log(`- Main content fields: 3 (rawPromptTemplate, fullPrompt, aiResponse)`);
+    console.log(`- Metadata sections: ${Object.keys(sessionData.unified.metadata).length}`);
+    
+    console.log('\n--- MAIN CONTENT ACCESS ---');
+    console.log(`Raw prompt template: ${sessionData.unified.rawPromptTemplate ? 'Available' : 'Not available'}`);
+    console.log(`Final processed prompt: ${sessionData.unified.fullPrompt ? 'Available' : 'Not available'}`);
+    console.log(`AI response: ${sessionData.unified.aiResponse ? 'Available' : 'Not available'}`);
+    
+    const metadata = sessionData.unified.metadata;
+    console.log('\n--- QUICK METADATA OVERVIEW ---');
+    console.log(`Template type: ${metadata.templateInfo.templateType}`);
+    console.log(`Template expansion: ${metadata.templateInfo.rawTemplateLength} → ${metadata.templateInfo.finalPromptLength} chars (${metadata.templateInfo.expansionRatio}x)`);
+    console.log(`Response: ${metadata.responseInfo.wordCount} words, ${metadata.responseInfo.duration}ms generation`);
+    console.log(`Validation: ${metadata.responseInfo.validationPassed ? '✅ PASSED' : '❌ FAILED'}`);
+    console.log(`Cache: ${sessionData.unified.cached ? '✅ HIT' : '❌ MISS'}`);
+    
+    console.log('\n' + '='.repeat(60));
+    console.log('📋 Access main content fields at:');
+    console.log(`   sessionData.unified.rawPromptTemplate    # Template with \${variable} placeholders`);
+    console.log(`   sessionData.unified.fullPrompt           # Final prompt with substituted values`); 
+    console.log(`   sessionData.unified.aiResponse           # Generated cover letter content`);
+    console.log('='.repeat(60) + '\n');
+  }
   
   // Analyze request
   console.log('=== REQUEST ANALYSIS ===');
@@ -514,6 +548,33 @@ async function analyzeCoverLetterGeneration() {
   
   console.log(`\n💡 To view the full generated letter, check:`);
   console.log(`   ${latestSession.responseFiles[0]}`);
+  
+  // Create raw-only file for easy access to core content
+  if (sessionData.unified) {
+    console.log('\n=== CREATING RAW CONTENT FILE ===');
+    
+    const rawContent = {
+      rawPromptTemplate: sessionData.unified.rawPromptTemplate,
+      fullPrompt: sessionData.unified.fullPrompt,  
+      aiResponse: sessionData.unified.aiResponse
+    };
+    
+    const rawFileName = `${latestSession.sessionId}-raw-content.json`;
+    const rawFilePath = path.join(path.dirname(latestSession.unifiedFile || latestSession.requestFile), rawFileName);
+    
+    try {
+      fs.writeFileSync(rawFilePath, JSON.stringify(rawContent, null, 2));
+      console.log(`✅ Raw content file created: ${rawFilePath}`);
+      console.log(`📋 Contains only the 3 main fields:`);
+      console.log(`   - rawPromptTemplate: ${rawContent.rawPromptTemplate ? 'Available' : 'Missing'}`);
+      console.log(`   - fullPrompt: ${rawContent.fullPrompt ? 'Available' : 'Missing'}`);
+      console.log(`   - aiResponse: ${rawContent.aiResponse ? 'Available' : 'Missing'}`);
+    } catch (error) {
+      console.error(`❌ Failed to create raw content file: ${error.message}`);
+    }
+  } else {
+    console.log('\n⚠️  Raw content file creation skipped - unified data not available');
+  }
 }
 
 // Run the analysis

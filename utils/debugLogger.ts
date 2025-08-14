@@ -170,6 +170,7 @@ export class CoverLetterDebugLogger {
   private static logDir = path.join(process.cwd(), 'logs', 'cover-letter-generation');
   private static currentSessionId: string | null = null;
   private static isEnabled = process.env.DEBUG_COVER_LETTER === 'true';
+  private static sessionData: any = null;
 
   static initialize() {
     if (!this.isEnabled) return null;
@@ -179,8 +180,18 @@ export class CoverLetterDebugLogger {
       fs.mkdirSync(this.logDir, { recursive: true });
     }
 
-    // Generate session ID
-    this.currentSessionId = new Date().toISOString().replace(/[:.]/g, '-');
+    // Generate session ID with Swedish timezone (UTC+2)
+    const swedishTime = new Date(Date.now() + (2 * 60 * 60 * 1000)); // Add 2 hours
+    this.currentSessionId = swedishTime.toISOString().replace(/[:.]/g, '-');
+    
+    // Initialize session data
+    this.sessionData = {
+      sessionId: this.currentSessionId,
+      timestamp: swedishTime.toISOString(),
+      request: null,
+      responses: []
+    };
+    
     return this.currentSessionId;
   }
 
@@ -209,9 +220,6 @@ export class CoverLetterDebugLogger {
     if (!this.isEnabled) return null;
     if (!this.currentSessionId) this.initialize();
     
-    const filename = `${this.currentSessionId}-request.json`;
-    const filepath = path.join(this.logDir, filename);
-    
     // Create profile summary for privacy/analysis
     const profileSummary = {
       hasContactInfo: !!data.developerProfile.contactInfo,
@@ -226,7 +234,8 @@ export class CoverLetterDebugLogger {
       hasMvpCvContent: !!data.developerProfile.mvpContent
     };
     
-    const logData = {
+    // Store request data in memory
+    this.sessionData.request = {
       sessionId: this.currentSessionId,
       type: 'REQUEST',
       timestamp: data.timestamp,
@@ -261,9 +270,8 @@ export class CoverLetterDebugLogger {
       fullCompanyInfo: data.companyInfo
     };
 
-    fs.writeFileSync(filepath, JSON.stringify(logData, null, 2));
-    console.log(`📝 [CoverLetterDebugLogger] Request logged to: ${filepath}`);
-    return filepath;
+    console.log(`📝 [CoverLetterDebugLogger] Request data stored in memory for session: ${this.currentSessionId}`);
+    return this.currentSessionId;
   }
 
   static logResponse(data: {
@@ -280,15 +288,12 @@ export class CoverLetterDebugLogger {
     if (!this.isEnabled) return null;
     if (!this.currentSessionId) this.initialize();
     
-    const filename = `${this.currentSessionId}-response-attempt${data.attempt}.json`;
-    const filepath = path.join(this.logDir, filename);
-    
     // Calculate quality metrics
     const wordCount = data.rawResponse ? data.rawResponse.split(/\s+/).filter(w => w.length > 0).length : 0;
     const paragraphCount = data.rawResponse ? data.rawResponse.split(/\n\n+/).filter(p => p.trim().length > 0).length : 0;
     const sentenceCount = data.rawResponse ? data.rawResponse.split(/[.!?]+/).filter(s => s.trim().length > 0).length : 0;
     
-    const logData = {
+    const responseData = {
       sessionId: this.currentSessionId,
       type: 'RESPONSE',
       timestamp: new Date().toISOString(),
@@ -327,8 +332,91 @@ export class CoverLetterDebugLogger {
       }
     };
 
-    fs.writeFileSync(filepath, JSON.stringify(logData, null, 2));
-    console.log(`📝 [CoverLetterDebugLogger] Response logged to: ${filepath}`);
+    // Add response to session data
+    this.sessionData.responses.push(responseData);
+
+    // Create unified debug file
+    this._writeUnifiedDebugFile();
+
+    console.log(`📝 [CoverLetterDebugLogger] Response logged and unified file created for session: ${this.currentSessionId}`);
+    return this.currentSessionId;
+  }
+
+  private static _writeUnifiedDebugFile() {
+    if (!this.sessionData || !this.sessionData.request) return;
+
+    const request = this.sessionData.request;
+    const response = this.sessionData.responses[this.sessionData.responses.length - 1]; // Latest response
+    
+    // Helper function to format content for better readability
+    const formatPrompt = (prompt: string) => {
+      if (!prompt) return '';
+      return prompt
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n');
+    };
+
+    const unifiedData = {
+      // Session metadata
+      sessionId: this.sessionData.sessionId,
+      timestamp: this.sessionData.timestamp,
+      cached: request.cacheInfo?.hit || false,
+      
+      // ===== RAW CONTENT SECTION (The three main fields you requested) =====
+      rawPromptTemplate: request.promptInfo?.rawTemplate || null,
+      fullPrompt: request.promptInfo?.fullPrompt || null,
+      aiResponse: response?.aiResponse?.rawContent || null,
+
+      // ===== METADATA & ANALYSIS =====
+      metadata: {
+        templateInfo: {
+          rawTemplateLength: request.promptInfo?.rawTemplateLength || 0,
+          finalPromptLength: request.promptInfo?.promptLength || 0,
+          expansionRatio: request.promptInfo?.rawTemplateLength > 0 ? 
+            (request.promptInfo.promptLength / request.promptInfo.rawTemplateLength).toFixed(2) : null,
+          templateType: request.promptInfo?.rawTemplate?.includes('FULL CV CONTENT') ? 
+            'MVP Content Template' : 'Structured Data Template',
+          variableCount: request.promptInfo?.rawTemplate ? 
+            (request.promptInfo.rawTemplate.match(/\$\{[^}]+\}/g) || []).length : 0
+        },
+        responseInfo: {
+          duration: response?.duration || 0,
+          provider: response?.provider || 'unknown',
+          model: response?.modelInfo?.name || 'unknown',
+          wordCount: response?.qualityMetrics?.wordCount || 0,
+          paragraphCount: response?.qualityMetrics?.paragraphCount || 0,
+          hasGreeting: response?.qualityMetrics?.hasGreeting || false,
+          hasClosing: response?.qualityMetrics?.hasClosing || false,
+          hasMarkdown: response?.qualityMetrics?.hasMarkdown || false,
+          validationPassed: response?.validation?.isValid || false,
+          errorCount: response?.validation?.errors?.length || 0
+        },
+        requestInfo: {
+          roleTitle: request.requestData?.roleInfo?.title || 'Unknown',
+          company: request.requestData?.roleInfo?.company || 'Unknown',
+          hasMvpContent: request.requestData?.developerProfileSummary?.hasMvpCvContent || false,
+          skillsCount: request.requestData?.developerProfileSummary?.skillsCount || 0,
+          experienceCount: request.requestData?.developerProfileSummary?.experienceCount || 0,
+          tone: request.requestData?.personalization?.tone || 'formal',
+          cacheKey: request.cacheInfo?.key || 'unknown'
+        }
+      },
+
+      // ===== FULL CONTEXT DATA (for analysis scripts) =====
+      fullContext: {
+        request: request,
+        responses: this.sessionData.responses
+      }
+    };
+
+    // Write unified debug file
+    const filename = `${this.currentSessionId}-unified-debug.json`;
+    const filepath = path.join(this.logDir, filename);
+    
+    fs.writeFileSync(filepath, JSON.stringify(unifiedData, null, 2));
+    console.log(`📝 [CoverLetterDebugLogger] Unified debug file created: ${filepath}`);
     return filepath;
   }
 
@@ -353,25 +441,53 @@ export class CoverLetterDebugLogger {
     if (!fs.existsSync(this.logDir)) return null;
     
     const files = fs.readdirSync(this.logDir);
-    const requestFiles = files.filter(f => f.endsWith('-request.json'));
+    const unifiedFiles = files.filter(f => f.endsWith('-unified-debug.json'));
     
-    if (requestFiles.length === 0) return null;
+    if (unifiedFiles.length === 0) {
+      // Fallback to old format for backward compatibility
+      const requestFiles = files.filter(f => f.endsWith('-request.json'));
+      if (requestFiles.length === 0) return null;
+      
+      requestFiles.sort((a, b) => b.localeCompare(a));
+      const latestRequest = requestFiles[0];
+      const sessionId = latestRequest.replace('-request.json', '');
+      
+      return {
+        sessionId,
+        requestFile: path.join(this.logDir, latestRequest),
+        responseFiles: files
+          .filter(f => f.startsWith(sessionId) && f.includes('-response-'))
+          .map(f => path.join(this.logDir, f)),
+        unifiedFile: null
+      };
+    }
     
     // Sort by timestamp in filename
-    requestFiles.sort((a, b) => b.localeCompare(a));
-    const latestRequest = requestFiles[0];
-    const sessionId = latestRequest.replace('-request.json', '');
+    unifiedFiles.sort((a, b) => b.localeCompare(a));
+    const latestUnified = unifiedFiles[0];
+    const sessionId = latestUnified.replace('-unified-debug.json', '');
     
     return {
       sessionId,
-      requestFile: path.join(this.logDir, latestRequest),
-      responseFiles: files
-        .filter(f => f.startsWith(sessionId) && f.includes('-response-'))
-        .map(f => path.join(this.logDir, f))
+      unifiedFile: path.join(this.logDir, latestUnified),
+      requestFile: null, // Unified file contains all data
+      responseFiles: []   // Unified file contains all data
     };
   }
 
   static readSession(sessionId: string) {
+    // Try unified file first
+    const unifiedFile = path.join(this.logDir, `${sessionId}-unified-debug.json`);
+    if (fs.existsSync(unifiedFile)) {
+      const unifiedData = JSON.parse(fs.readFileSync(unifiedFile, 'utf-8'));
+      return {
+        request: unifiedData.fullContext.request,
+        responses: unifiedData.fullContext.responses,
+        unified: unifiedData // Include the unified structure
+      };
+    }
+    
+    // Fallback to old format
     const requestFile = path.join(this.logDir, `${sessionId}-request.json`);
     const responseFiles = fs.readdirSync(this.logDir)
       .filter(f => f.startsWith(sessionId) && f.includes('-response-'))
@@ -383,7 +499,8 @@ export class CoverLetterDebugLogger {
     
     return {
       request: JSON.parse(fs.readFileSync(requestFile, 'utf-8')),
-      responses: responseFiles.map(f => JSON.parse(fs.readFileSync(f, 'utf-8')))
+      responses: responseFiles.map(f => JSON.parse(fs.readFileSync(f, 'utf-8'))),
+      unified: null
     };
   }
 
