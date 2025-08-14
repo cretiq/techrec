@@ -98,7 +98,7 @@ npx prisma studio      # Database GUI
 npx prisma migrate dev # Run migrations
 ```
 
-📖 **Full docs**: [`docs/testing/e2e-best-practices.md`](./docs/testing/e2e-best-practices.md) • [`CLAUDE.md`](./CLAUDE.md)
+📖 **Full docs**: [`docs/testing/e2e-best-practices.md`](./docs/testing/e2e-best-practices.md) • [`CLAUDE.md`](./CLAUDE.md) • [`requests/`](./requests/) feature management
 
 ---
 

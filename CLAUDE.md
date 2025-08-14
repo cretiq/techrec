@@ -678,7 +678,13 @@ grep -i "session\|auth\|unauthorized" server.log
 │   ├── cover-letter-generation/ # Cover letter debug sessions (unified files)
 │   └── cv-upload-parse-*     # Traditional upload debug sessions
 ├── prisma/                   # Database schema
-└── types/                    # TypeScript definitions
+├── types/                    # TypeScript definitions
+└── requests/                 # Feature request management system
+    ├── index.md              # Main navigation hub with statistics
+    ├── ideas-parking-lot.md  # Brainstorming and raw concepts  
+    ├── active/               # Active feature requests (14 files)
+    ├── completed/            # Completed features archive (20+ files)
+    └── templates/            # Feature request template system
 
 📁 Key CV Upload Files:
 ├── app/api/cv/upload/route.ts           # Main upload API (Direct Upload primary)
@@ -768,11 +774,15 @@ Before shipping any UI component:
 - `CLAUDE.md` - This file (project guidelines)
 - `GAMIFICATION_STRATEGY.md` - Comprehensive gamification documentation
 - `README.md` - Project setup and overview
+- `requests/index.md` - Feature request management hub with navigation and statistics
+- `requests/ideas-parking-lot.md` - Brainstorming workspace for raw feature concepts
+- `requests/templates/feature-request-template.md` - Standardized template for new requests
 
 ### Update Requirements
 - After any gamification-related changes (update `GAMIFICATION_STRATEGY.md`)
 - After adding new API endpoints or significant features
 - After architectural changes or new patterns
+- After feature request workflow changes (update `requests/` documentation)
 
 ---
 
@@ -828,6 +838,15 @@ Before shipping any UI component:
 - ✅ **Improved Developer Experience**: Better TypeScript support and simpler mental model
 - ✅ **Performance Optimizations**: Direct object lookup vs complex CVA configurations
 - ✅ **Visual Consistency**: Unified variant behavior across Button, Card, Accordion components
+
+**Last Update**: August 14, 2025 - **FEATURE REQUEST MANAGEMENT SYSTEM RESTRUCTURE**:
+- ✅ **Organized File System**: Migrated from single 2000+ line `requests.md` to structured `/requests/` folder system
+- ✅ **Navigation Hub**: Created `requests/index.md` with comprehensive navigation, statistics, and quick access
+- ✅ **Categorized Organization**: Separated active requests (`/active/`), completed features (`/completed/`), and ideas (`ideas-parking-lot.md`)
+- ✅ **Professional Templates**: Established standardized template for consistent future feature request documentation  
+- ✅ **Linking System**: Implemented cross-references and relative linking between all documentation components
+- ✅ **Maintainability Improvement**: Individual feature files enable focused editing without affecting other requests
+- ✅ **Documentation Architecture**: Added requests system to project guidelines with proper file location references
 
 **Previous Update**: January 31, 2025 - **MAJOR ARCHITECTURAL MODERNIZATION**: 
 - ✅ **Single Source of Truth Migration**: Eliminated redundant CvAnalysis table
