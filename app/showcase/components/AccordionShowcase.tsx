@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui-daisy/accordion';
+import { DaisyAccordion, DaisyAccordionItem, DaisyAccordionTrigger, DaisyAccordionContent } from '@/components/ui-daisy/accordion-daisyui';
 import { Button } from '@/components/ui-daisy/button';
 import { Badge } from '@/components/ui-daisy/badge';
 import { 
@@ -24,41 +24,37 @@ import {
 import { motion } from 'framer-motion';
 import { staggerContainer, staggerItem } from '@/lib/animations';
 
-interface AccordionShowcaseProps {
+interface DaisyAccordionShowcaseProps {
   onCopyCode: (code: string, id: string) => void;
   copiedCode: string | null;
   theme?: 'light' | 'dark';
 }
 
-export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: AccordionShowcaseProps) {
+export default function DaisyAccordionShowcase({ onCopyCode, copiedCode, theme }: DaisyAccordionShowcaseProps) {
   const [openSections, setOpenSections] = useState<string[]>(['profile']);
 
-  const basicAccordionVariants = [
+  const basicDaisyAccordionVariants = [
     { variant: 'default', label: 'Default' },
-    { variant: 'transparent', label: 'Transparent' },
-    { variant: 'glass', label: 'Glass' },
-    { variant: 'solid', label: 'Solid' },
-    { variant: 'outlined', label: 'Outlined' },
+    { variant: 'faq', label: 'FAQ' },
+    { variant: 'filters', label: 'Filters' },
+    { variant: 'compact', label: 'Compact' },
     { variant: 'elevated', label: 'Elevated' },
-    { variant: 'floating', label: 'Floating' },
-    { variant: 'gradient', label: 'Gradient' },
+    { variant: 'glass', label: 'Glass' },
+    { variant: 'interactive', label: 'Interactive' },
+    { variant: 'gradient', label: 'Gradient (Legacy)' },
   ];
 
-  const interactiveAccordionVariants = [
-    { variant: 'default-interactive', label: 'Default Interactive', description: 'Subtle background and shadow change on hover' },
-    { variant: 'transparent-interactive', label: 'Transparent Interactive', description: 'Enhanced backdrop blur and background on hover' },
-    { variant: 'glass-interactive', label: 'Glass Interactive', description: 'Enhanced glass effect with blur and shadow on hover' },
-    { variant: 'solid-interactive', label: 'Solid Interactive', description: 'Background lightening with shadow on hover' },
-    { variant: 'outlined-interactive', label: 'Outlined Interactive', description: 'Border glow and background fill on hover' },
-    { variant: 'elevated-interactive', label: 'Elevated Interactive', description: 'Shadow lift and background lightening on hover' },
-    { variant: 'floating-interactive', label: 'Floating Interactive', description: 'Enhanced shadow and lift effect on hover' },
-    { variant: 'gradient-interactive', label: 'Gradient Interactive', description: 'Gradient shifts with shadow enhancement on hover' },
+  const contextualUseCases = [
+    { variant: 'faq', label: 'FAQ Section', context: 'Documentation & Help', description: 'Gradient styling for FAQ sections and documentation' },
+    { variant: 'filters', label: 'Filter Controls', context: 'Settings & Controls', description: 'Clean styling for search filters and preferences' },
+    { variant: 'elevated', label: 'Data Display', context: 'Analysis & Results', description: 'Elevated styling for important data sections' },
+    { variant: 'interactive', label: 'Interactive Content', context: 'Forms & Actions', description: 'Enhanced interactive styling with hover effects' },
   ];
 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold mb-2 text-base-content">Accordion Component</h2>
+        <h2 className="text-3xl font-bold mb-2 text-base-content">DaisyAccordion Component</h2>
         <p className="text-base-content/70 mb-6">
           Collapsible accordion components with consistent borders and minimal design. Now featuring a comprehensive
           hover system with interactive variants that provide consistent, reusable hover behaviors across the application.
@@ -68,26 +64,26 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
       {/* Basic Variants Grid */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-base-content">Basic Accordion Variants</h3>
+          <h3 className="text-xl font-semibold text-base-content">Basic DaisyAccordion Variants</h3>
           <button
             onClick={() => onCopyCode(
-              `import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui-daisy/accordion';
+              `import { DaisyAccordion, DaisyAccordionItem, DaisyAccordionTrigger, DaisyAccordionContent } from '@/components/ui-daisy/accordion-daisyui';
 
 // Basic variants (no hover effects)
-<Accordion type="single" value={activeSection} onValueChange={setActiveSection}>
-  <AccordionItem variant="default" value="section1">
-    <AccordionTrigger>Section 1</AccordionTrigger>
-    <AccordionContent>Content for section 1</AccordionContent>
-  </AccordionItem>
-</Accordion>
+<DaisyAccordion type="single" value={activeSection} onValueChange={setActiveSection}>
+  <DaisyAccordionItem variant="default" value="section1">
+    <DaisyAccordionTrigger>Section 1</DaisyAccordionTrigger>
+    <DaisyAccordionContent>Content for section 1</DaisyAccordionContent>
+  </DaisyAccordionItem>
+</DaisyAccordion>
 
 // Interactive variants (with built-in hover effects) ✨
-<Accordion type="single" value={activeSection} onValueChange={setActiveSection}>
-  <AccordionItem variant="glass-interactive" value="section1">
-    <AccordionTrigger>Section 1 with hover effects</AccordionTrigger>
-    <AccordionContent>Content with smooth interactions</AccordionContent>
-  </AccordionItem>
-</Accordion>`,
+<DaisyAccordion type="single" value={activeSection} onValueChange={setActiveSection}>
+  <DaisyAccordionItem variant="glass-interactive" value="section1">
+    <DaisyAccordionTrigger>Section 1 with hover effects</DaisyAccordionTrigger>
+    <DaisyAccordionContent>Content with smooth interactions</DaisyAccordionContent>
+  </DaisyAccordionItem>
+</DaisyAccordion>`,
               'accordion-variants'
             )}
             className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
@@ -112,19 +108,19 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
           initial="initial"
           animate="animate"
         >
-          {basicAccordionVariants.map(({ variant, label }) => (
+          {basicDaisyAccordionVariants.map(({ variant, label }) => (
             <motion.div key={variant} variants={staggerItem}>
-              <Accordion type="single" value="demo" onValueChange={() => {}}>
-                <AccordionItem variant={variant as any} value="demo">
-                  <AccordionTrigger>{label} Accordion</AccordionTrigger>
-                  <AccordionContent>
+              <DaisyAccordion type="single" value="demo" onValueChange={() => {}}>
+                <DaisyAccordionItem variant={variant as any} value="demo">
+                  <DaisyAccordionTrigger>{label} DaisyAccordion</DaisyAccordionTrigger>
+                  <DaisyAccordionContent>
                     <p className="text-sm text-base-content/70">
                       This is a {label.toLowerCase()} accordion variant with professional styling 
                       and smooth animations. Perfect for organizing content sections.
                     </p>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+                  </DaisyAccordionContent>
+                </DaisyAccordionItem>
+              </DaisyAccordion>
             </motion.div>
           ))}
         </motion.div>
@@ -133,26 +129,26 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
       {/* Interactive Variants - NEW HOVER SYSTEM */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-base-content">Interactive Accordion Variants ✨</h3>
+          <h3 className="text-xl font-semibold text-base-content">Interactive DaisyAccordion Variants ✨</h3>
           <button
             onClick={() => onCopyCode(
               `// New Interactive Variants - Built-in Hover Effects
-<Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
-  <AccordionItem variant="glass-interactive" value="section1">
-    <AccordionTrigger>Glass with hover effects</AccordionTrigger>
-    <AccordionContent>Enhanced glass effect on hover</AccordionContent>
-  </AccordionItem>
+<DaisyAccordion type="multiple" value={openSections} onValueChange={setOpenSections}>
+  <DaisyAccordionItem variant="glass-interactive" value="section1">
+    <DaisyAccordionTrigger>Glass with hover effects</DaisyAccordionTrigger>
+    <DaisyAccordionContent>Enhanced glass effect on hover</DaisyAccordionContent>
+  </DaisyAccordionItem>
   
-  <AccordionItem variant="elevated-interactive" value="section2">
-    <AccordionTrigger>Elevated with hover effects</AccordionTrigger>
-    <AccordionContent>Shadow lift and background change on hover</AccordionContent>
-  </AccordionItem>
+  <DaisyAccordionItem variant="elevated-interactive" value="section2">
+    <DaisyAccordionTrigger>Elevated with hover effects</DaisyAccordionTrigger>
+    <DaisyAccordionContent>Shadow lift and background change on hover</DaisyAccordionContent>
+  </DaisyAccordionItem>
   
-  <AccordionItem variant="gradient-interactive" value="section3">
-    <AccordionTrigger>Gradient with hover effects</AccordionTrigger>
-    <AccordionContent>Gradient shifts and shadow enhancement on hover</AccordionContent>
-  </AccordionItem>
-</Accordion>
+  <DaisyAccordionItem variant="gradient-interactive" value="section3">
+    <DaisyAccordionTrigger>Gradient with hover effects</DaisyAccordionTrigger>
+    <DaisyAccordionContent>Gradient shifts and shadow enhancement on hover</DaisyAccordionContent>
+  </DaisyAccordionItem>
+</DaisyAccordion>
 
 // Clean API - No manual hover classes needed!
 // Hover effects are built into the variant`,
@@ -169,7 +165,7 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
               <>
                 <Copy className="h-3 w-3" />
                 Copy code
-              <//>
+              </>
             )}
           </button>
         </div>
@@ -188,13 +184,13 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
           initial="initial"
           animate="animate"
         >
-          {interactiveAccordionVariants.map(({ variant, label, description }) => (
+          {interactiveDaisyAccordionVariants.map(({ variant, label, description }) => (
             <motion.div key={variant} variants={staggerItem}>
               <div className="space-y-2">
-                <Accordion type="single" value="demo" onValueChange={() => {}}>
-                  <AccordionItem variant={variant as any} value="demo">
-                    <AccordionTrigger>{label}</AccordionTrigger>
-                    <AccordionContent>
+                <DaisyAccordion type="single" value="demo" onValueChange={() => {}}>
+                  <DaisyAccordionItem variant={variant as any} value="demo">
+                    <DaisyAccordionTrigger>{label}</DaisyAccordionTrigger>
+                    <DaisyAccordionContent>
                       <p className="text-sm text-base-content/70 mb-2">
                         {description}
                       </p>
@@ -203,9 +199,9 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
                           variant="{variant}"
                         </code>
                       </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                    </DaisyAccordionContent>
+                  </DaisyAccordionItem>
+                </DaisyAccordion>
               </div>
             </motion.div>
           ))}
@@ -214,7 +210,7 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
 
       {/* Migration Guide */}
       <section className="space-y-4">
-        <h3 className="text-xl font-semibold text-base-content">Migration Guide: Old vs New Accordion Hover</h3>
+        <h3 className="text-xl font-semibold text-base-content">Migration Guide: Old vs New DaisyAccordion Hover</h3>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Old Way */}
@@ -224,12 +220,12 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
             </h4>
             <div className="bg-base-200 rounded p-3">
               <code className="text-sm text-base-content/80">
-                {`<AccordionItem 
+                {`<DaisyAccordionItem 
   hoverable 
   className="hover:shadow-lg hover:-translate-y-0.5"
 >
   Manual Hover Classes
-</AccordionItem>`}
+</DaisyAccordionItem>`}
               </code>
             </div>
             <div className="text-sm text-base-content/70">
@@ -250,9 +246,9 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
             </h4>
             <div className="bg-base-200 rounded p-3">
               <code className="text-sm text-base-content/80">
-                {`<AccordionItem variant="elevated-interactive">
-  Clean Interactive Accordion
-</AccordionItem>`}
+                {`<DaisyAccordionItem variant="elevated-interactive">
+  Clean Interactive DaisyAccordion
+</DaisyAccordionItem>`}
               </code>
             </div>
             <div className="text-sm text-base-content/70">
@@ -275,12 +271,12 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
           <button
             onClick={() => onCopyCode(
               `// ⚠️ Legacy props (still supported but prefer interactive variants)
-<AccordionItem hoverable>Hoverable accordion</AccordionItem>
-<AccordionItem interactive>Interactive accordion</AccordionItem>
-<AccordionItem animated>Animated accordion</AccordionItem>
+<DaisyAccordionItem hoverable>Hoverable accordion</DaisyAccordionItem>
+<DaisyAccordionItem interactive>Interactive accordion</DaisyAccordionItem>
+<DaisyAccordionItem animated>Animated accordion</DaisyAccordionItem>
 
 // ✅ Recommended: Use interactive variants instead
-<AccordionItem variant="elevated-interactive">Modern approach</AccordionItem>`,
+<DaisyAccordionItem variant="elevated-interactive">Modern approach</DaisyAccordionItem>`,
               'accordion-legacy'
             )}
             className="text-sm text-base-content/70 hover:text-base-content flex items-center gap-1 px-3 py-1 rounded-lg border border-base-300/50 hover:border-base-content/30 transition-colors"
@@ -307,32 +303,32 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Accordion type="single" value="" onValueChange={() => {}}>
-            <AccordionItem variant="glass" hoverable value="hover">
-              <AccordionTrigger>Hoverable</AccordionTrigger>
-              <AccordionContent>
+          <DaisyAccordion type="single" value="" onValueChange={() => {}}>
+            <DaisyAccordionItem variant="glass" hoverable value="hover">
+              <DaisyAccordionTrigger>Hoverable</DaisyAccordionTrigger>
+              <DaisyAccordionContent>
                 <p className="text-sm">Hover me for elevation effect</p>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+              </DaisyAccordionContent>
+            </DaisyAccordionItem>
+          </DaisyAccordion>
 
-          <Accordion type="single" value="" onValueChange={() => {}}>
-            <AccordionItem variant="glass" interactive value="interactive">
-              <AccordionTrigger>Interactive</AccordionTrigger>
-              <AccordionContent>
+          <DaisyAccordion type="single" value="" onValueChange={() => {}}>
+            <DaisyAccordionItem variant="glass" interactive value="interactive">
+              <DaisyAccordionTrigger>Interactive</DaisyAccordionTrigger>
+              <DaisyAccordionContent>
                 <p className="text-sm">Hover for subtle scale</p>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+              </DaisyAccordionContent>
+            </DaisyAccordionItem>
+          </DaisyAccordion>
 
-          <Accordion type="single" value="" onValueChange={() => {}}>
-            <AccordionItem variant="glass" animated value="animated">
-              <AccordionTrigger>Animated</AccordionTrigger>
-              <AccordionContent>
+          <DaisyAccordion type="single" value="" onValueChange={() => {}}>
+            <DaisyAccordionItem variant="glass" animated value="animated">
+              <DaisyAccordionTrigger>Animated</DaisyAccordionTrigger>
+              <DaisyAccordionContent>
                 <p className="text-sm">Animated on mount</p>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+              </DaisyAccordionContent>
+            </DaisyAccordionItem>
+          </DaisyAccordion>
         </div>
       </section>
 
@@ -341,19 +337,19 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
         <h3 className="text-xl font-semibold text-base-content">Real-world Examples</h3>
 
         <div className="space-y-6">
-          {/* Profile Settings Accordion */}
+          {/* Profile Settings DaisyAccordion */}
           <div>
             <h4 className="text-sm font-medium text-base-content/70 mb-3">Profile Settings</h4>
-            <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
-              <AccordionItem variant="glass-interactive" value="profile">
-                <AccordionTrigger>
+            <DaisyAccordion type="multiple" value={openSections} onValueChange={setOpenSections}>
+              <DaisyAccordionItem variant="glass-interactive" value="profile">
+                <DaisyAccordionTrigger>
                   <div className="flex items-center gap-3">
                     <User className="h-5 w-5" />
                     <span>Personal Information</span>
                     <Badge variant="success" size="sm">Complete</Badge>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent>
+                </DaisyAccordionTrigger>
+                <DaisyAccordionContent>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -373,18 +369,18 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
                       <Button variant="glass" size="sm">Edit Profile</Button>
                     </div>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
+                </DaisyAccordionContent>
+              </DaisyAccordionItem>
 
-              <AccordionItem variant="elevated-interactive" value="security">
-                <AccordionTrigger>
+              <DaisyAccordionItem variant="elevated-interactive" value="security">
+                <DaisyAccordionTrigger>
                   <div className="flex items-center gap-3">
                     <Shield className="h-5 w-5" />
                     <span>Security Settings</span>
                     <Badge variant="warning" size="sm">Action Required</Badge>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent>
+                </DaisyAccordionTrigger>
+                <DaisyAccordionContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -405,18 +401,18 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
                       </Button>
                     </div>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
+                </DaisyAccordionContent>
+              </DaisyAccordionItem>
 
-              <AccordionItem variant="gradient-interactive" value="achievements">
-                <AccordionTrigger>
+              <DaisyAccordionItem variant="gradient-interactive" value="achievements">
+                <DaisyAccordionTrigger>
                   <div className="flex items-center gap-3">
                     <Trophy className="h-5 w-5" />
                     <span>Achievements & Progress</span>
                     <Badge variant="gradient-brand" size="sm">5 New</Badge>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent>
+                </DaisyAccordionTrigger>
+                <DaisyAccordionContent>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-base-100/50">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center">
@@ -439,24 +435,24 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
                       <Badge variant="info" size="sm">+100 XP</Badge>
                     </div>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                </DaisyAccordionContent>
+              </DaisyAccordionItem>
+            </DaisyAccordion>
           </div>
 
-          {/* System Status Accordion */}
+          {/* System Status DaisyAccordion */}
           <div>
             <h4 className="text-sm font-medium text-base-content/70 mb-3">System Status Dashboard</h4>
-            <Accordion type="multiple" value={['status']} onValueChange={() => {}}>
-              <AccordionItem variant="outlined-interactive" value="status">
-                <AccordionTrigger>
+            <DaisyAccordion type="multiple" value={['status']} onValueChange={() => {}}>
+              <DaisyAccordionItem variant="outlined-interactive" value="status">
+                <DaisyAccordionTrigger>
                   <div className="flex items-center gap-3">
                     <Settings className="h-5 w-5" />
                     <span>System Health</span>
                     <Badge variant="success" pulse size="sm">All Systems Operational</Badge>
                   </div>
-                </AccordionTrigger>
-                <AccordionContent>
+                </DaisyAccordionTrigger>
+                <DaisyAccordionContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="flex items-center gap-3 p-3 rounded-lg border border-success/20 bg-success/10">
                       <CheckCircle className="h-5 w-5 text-success" />
@@ -480,9 +476,9 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
                       </div>
                     </div>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                </DaisyAccordionContent>
+              </DaisyAccordionItem>
+            </DaisyAccordion>
           </div>
         </div>
       </section>
@@ -496,14 +492,14 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
             This creates visual harmony across the entire design system while maintaining the professional aesthetic.
           </p>
           <div className="mt-3">
-            <Accordion type="single" value="demo" onValueChange={() => {}}>
-              <AccordionItem variant="default" value="demo">
-                <AccordionTrigger>Consistent Design Language</AccordionTrigger>
-                <AccordionContent>
+            <DaisyAccordion type="single" value="demo" onValueChange={() => {}}>
+              <DaisyAccordionItem variant="default" value="demo">
+                <DaisyAccordionTrigger>Consistent Design Language</DaisyAccordionTrigger>
+                <DaisyAccordionContent>
                   <p className="text-xs text-base-content/60">All accordions use rounded-2xl for visual harmony</p>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                </DaisyAccordionContent>
+              </DaisyAccordionItem>
+            </DaisyAccordion>
           </div>
         </div>
       </section>

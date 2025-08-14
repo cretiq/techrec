@@ -1,6 +1,7 @@
 "use client"
 
-import { Badge, Accordion, AccordionItem, AccordionTitle, AccordionContent } from "@/components/ui-daisy"
+import { Badge } from "@/components/ui-daisy"
+import { DaisyAccordion as Accordion, DaisyAccordionItem as AccordionItem, DaisyAccordionTitle as AccordionTitle, DaisyAccordionContent as AccordionContent } from "@/components/ui-daisy/accordion-daisyui"
 import { SectionBadge } from "@/components/ui-daisy/section-badge"
 import { HelpCircle } from "lucide-react"
 
@@ -75,15 +76,16 @@ export function FAQSection() {
             </p>
           </div>
 
-          {/* FAQ Accordion */}
+          {/* FAQ Accordion - Using Strategic Context-Based DaisyUI Accordion */}
           <div className="">
-            <Accordion variant="plus" grouped={true} className="w-full">
+            <Accordion type="single" className="w-full" value="" onValueChange={() => {}}>
               {faqData.map((faq, index) => (
                 <AccordionItem 
                   key={index}
-                  name="faq-accordion"
-                  defaultOpen={index === 0}
-                  className="bg-gradient-to-br from-base-200 to-base-300 border border-base-100 rounded-3xl mb-2"
+                  value={`faq-${index}`}
+                  variant="faq" // Strategic context-based variant for FAQ sections
+                  icon="plus"
+                  className="mb-2"
                 >
                   <AccordionTitle className="hover:text-primary transition-colors duration-100 px-8 py-6">
                     <div className="flex flex-col items-start gap-2">
