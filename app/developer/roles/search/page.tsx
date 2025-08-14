@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, PenTool, Check, Bookmark, BookmarkCheck } from "lucide-react"
+import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, PenTool, Check, Bookmark, BookmarkCheck, Sparkles, Users, Target } from "lucide-react"
 import ApplicationBadge from '@/components/roles/ApplicationBadge'
 import ApplicationActionButton from '@/components/roles/ApplicationActionButton'
 import RecruiterCard from '@/components/roles/RecruiterCard'
@@ -562,21 +562,54 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
       
       <CardHeader className="pb-4" data-testid={`role-search-header-role-${role.id}`}>
                     <div className="flex justify-between items-start">
-                      <div className="space-y-2">
-                        <CardTitle className="text-lg line-clamp-2 break-words">{role.title}</CardTitle>
+                      {/* BLUEPRINT REQUIREMENT: Organization Logo */}
+                      {(role as any).organization_logo && (
+                        <div className="mr-3 flex-shrink-0">
+                          <img 
+                            src={(role as any).organization_logo} 
+                            alt={`${role.company?.name} logo`}
+                            className="w-12 h-12 rounded-lg object-contain border border-base-300/50"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2 flex-1">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-lg line-clamp-2 break-words flex-1">{role.title}</CardTitle>
+                          {/* BLUEPRINT REQUIREMENT: Date Posted */}
+                          {(role as any).date_posted && (
+                            <div className="text-xs text-muted-foreground ml-2 flex-shrink-0">
+                              {new Date((role as any).date_posted).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
                         <div className="space-y-1 text-base-content/70 text-sm">
                           <div className="flex items-center gap-1">
                             <Building className="h-4 w-4" />
                             <span className="line-clamp-1 text-xs font-medium">{role.company?.name || 'Unknown Company'}</span>
+                            {/* AI-enhanced org data indicator */}
+                            {((role as any).linkedin_org_industry || (role as any).linkedin_org_type) && (
+                              <Sparkles className="h-3 w-3 text-primary/60" title="AI-enhanced company data" />
+                            )}
                           </div>
-                          {role.company?.industry && (
-                            <div className="text-xs text-muted-foreground line-clamp-1">
-                              {role.company.industry}
+                          {/* Enhanced company context with LinkedIn org data */}
+                          {(role as any).linkedin_org_type && (
+                            <div className="text-xs text-muted-foreground line-clamp-1 flex items-center gap-1">
+                              <Target className="h-3 w-3" />
+                              {(role as any).linkedin_org_type}
                             </div>
                           )}
-                          {role.company?.size && (
-                            <div className="text-xs text-muted-foreground">
-                              {role.company.size} employees
+                          {((role as any).linkedin_org_industry || role.company?.industry) && (
+                            <div className="text-xs text-muted-foreground line-clamp-1">
+                              {(role as any).linkedin_org_industry || role.company.industry}
+                            </div>
+                          )}
+                          {((role as any).linkedin_org_size || role.company?.size) && (
+                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              {(role as any).linkedin_org_size || `${role.company.size} employees`}
                             </div>
                           )}
                         </div>
@@ -586,7 +619,10 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                   <CardContent className="flex-1 space-y-4" data-testid={`role-search-content-role-${role.id}`}>
                     <div className="flex flex-wrap gap-2">
                       <Badge variant="secondary" leftIcon={<MapPin className="h-3 w-3 flex-shrink-0" />} className="whitespace-nowrap">
-                        {role.location || 'N/A'}
+                        {/* BLUEPRINT REQUIREMENT: Use locations_derived */}
+                        {((role as any).locations_derived && (role as any).locations_derived.length > 0) 
+                          ? (role as any).locations_derived[0] 
+                          : role.location || 'N/A'}
                       </Badge>
                       <Badge variant="secondary" leftIcon={<Briefcase className="h-3 w-3 flex-shrink-0" />} className="whitespace-nowrap">
                         {formatJobType(role.type)}
@@ -597,15 +633,46 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                         </Badge>
                       )}
                     </div>
-                    <p className="text-muted-foreground text-sm line-clamp-3">{role.description || 'No description available.'}</p>
-                    {((role.requirements && role.requirements.length > 0) || 
+                    {/* Enhanced Job Description */}
+                    <div className="space-y-2">
+                      <p className="text-muted-foreground text-sm line-clamp-3">
+                        {(role as any).description_text || role.description || 'No description available.'}
+                      </p>
+                      {(role as any).description_text && (
+                        <div className="flex items-center gap-1">
+                          <Sparkles className="h-3 w-3 text-primary/60" />
+                          <span className="text-xs text-primary/80">Enhanced job description</span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Enhanced Skills & Requirements Section with AI prioritization */}
+                    {(((role as any).ai_key_skills && (role as any).ai_key_skills.length > 0) || 
+                      (role.requirements && role.requirements.length > 0) || 
                       (role.skills && role.skills.length > 0) || 
                       (role.company?.specialties && role.company.specialties.length > 0)) && (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
+                        {/* AI-Extracted Key Skills (Highest Priority) */}
+                        {(role as any).ai_key_skills && (role as any).ai_key_skills.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1">
+                              <Sparkles className="h-3 w-3 text-primary" />
+                              <span className="text-xs font-medium text-primary">Key Skills (AI-Curated)</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {(role as any).ai_key_skills.map((skill: string, idx: number) => (
+                                <Badge key={`${role.id}-ai-skill-${idx}`} variant="default" className="text-xs bg-primary/10 text-primary border-primary/30">
+                                  {skill}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Traditional Skills/Requirements */}
                         <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
                           {(role.requirements && role.requirements.length > 0) ? (
                             role.requirements.map((req, idx) => (
-                              <Badge key={`${role.id}-req-${idx}`} variant="outline" className="text-md">
+                              <Badge key={`${role.id}-req-${idx}`} variant="outline" className="text-xs">
                                 {req}
                               </Badge>
                             ))
@@ -631,6 +698,60 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                       </div>
                     )}
                     
+                    {/* AI-Enhanced Job Details */}
+                    {((role as any).ai_core_responsibilities || (role as any).ai_work_arrangement || 
+                      ((role as any).ai_benefits && (role as any).ai_benefits.length > 0)) && (
+                      <div className="space-y-3 border-t border-base-300/50 pt-3">
+                        {/* AI Core Responsibilities */}
+                        {(role as any).ai_core_responsibilities && (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1">
+                              <Sparkles className="h-3 w-3 text-primary" />
+                              <span className="text-xs font-medium text-primary">Core Responsibilities</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground line-clamp-3">
+                              {(role as any).ai_core_responsibilities}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* AI Work Arrangement */}
+                        {(role as any).ai_work_arrangement && (
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1">
+                              <Target className="h-3 w-3 text-secondary" />
+                              <span className="text-xs font-medium text-secondary">Work Arrangement</span>
+                            </div>
+                            <Badge variant="secondary" className="text-xs bg-secondary/10 text-secondary border-secondary/30">
+                              {(role as any).ai_work_arrangement}
+                            </Badge>
+                          </div>
+                        )}
+                        
+                        {/* AI Benefits */}
+                        {(role as any).ai_benefits && (role as any).ai_benefits.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1">
+                              <Check className="h-3 w-3 text-success" />
+                              <span className="text-xs font-medium text-success">Benefits</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
+                              {(role as any).ai_benefits.slice(0, 4).map((benefit: string, idx: number) => (
+                                <Badge key={`${role.id}-benefit-${idx}`} variant="outline" className="text-xs bg-success/5 text-success/80 border-success/30">
+                                  {benefit}
+                                </Badge>
+                              ))}
+                              {(role as any).ai_benefits.length > 4 && (
+                                <span className="text-xs text-muted-foreground">
+                                  +{(role as any).ai_benefits.length - 4} more
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {/* Recruiter/Hiring Manager Contact Information */}
                     {role.applicationInfo && (role.applicationInfo.recruiter || role.applicationInfo.hiringManager) && (
                       <RecruiterCard 
@@ -640,9 +761,25 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                     )}
                   </CardContent>
                   <CardFooter className="card-body pt-2 mt-auto space-y-3" data-testid={`role-search-footer-role-${role.id}`}>
-                    {/* Salary Section */}
+                    {/* Salary Section - BLUEPRINT REQUIREMENT */}
                     <div className="w-full text-center">
-                      <div className="text-md font-semibold">{role.salary || 'No Salary Specified'}</div>
+                      <div className="text-md font-semibold">
+                        {/* BLUEPRINT REQUIREMENT: Display salary_raw if available */}
+                        {(role as any).salary_raw ? (
+                          <span>
+                            {(role as any).salary_raw.currency || '$'}
+                            {(role as any).salary_raw.value?.minValue && (role as any).salary_raw.value?.maxValue
+                              ? `${(role as any).salary_raw.value.minValue.toLocaleString()} - ${(role as any).salary_raw.value.maxValue.toLocaleString()}`
+                              : (role as any).salary_raw.value?.value
+                              ? (role as any).salary_raw.value.value.toLocaleString()
+                              : 'Salary Available'
+                            }
+                            {(role as any).salary_raw.value?.unitText && ` ${(role as any).salary_raw.value.unitText}`}
+                          </span>
+                        ) : (
+                          role.salary || 'No Salary Specified'
+                        )}
+                      </div>
                     </div>
                     
                     {/* Action Buttons Section */}

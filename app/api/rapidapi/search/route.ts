@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { PrismaClient } from '@prisma/client'
-import mockJobResponse from './rapidapi_job_response_example_v4.json'
+import mockJobResponse from './rapidapi_job_response_enhanced.json'
 import RapidApiCacheManager, { type SearchParameters } from '@/lib/api/rapidapi-cache'
 import RapidApiValidator from '@/lib/api/rapidapi-validator'
 import { RapidApiEndpointLogger, isPremiumEndpoint, isValidEndpoint, isEligibleSubscriptionTier } from '@/utils/rapidApiEndpointLogger'
 
 const prisma = new PrismaClient()
+
+// High-fidelity RapidAPI parameter defaults for enhanced data quality
+const DEFAULT_AGENCY = process.env.RAPIDAPI_DEFAULT_AGENCY || 'FALSE' // Direct employers only
+const DEFAULT_INCLUDE_AI = process.env.RAPIDAPI_DEFAULT_INCLUDE_AI || 'true' // Enable AI-enriched fields
+const DEFAULT_DESCRIPTION_TYPE = process.env.RAPIDAPI_DEFAULT_DESCRIPTION_TYPE || 'text' // Full job descriptions
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -20,6 +25,7 @@ export async function GET(request: Request) {
     limit: parseInt(searchParams.get('limit') || '10'),
     offset: parseInt(searchParams.get('offset') || '0'),
     title_filter: searchParams.get('title') || searchParams.get('title_filter'),
+    advanced_title_filter: searchParams.get('advanced_title_filter'), // BLUEPRINT REQUIREMENT
     location_filter: searchParams.get('location') || searchParams.get('location_filter'),
     type_filter: searchParams.get('type_filter'),
     seniority_filter: searchParams.get('seniority_filter'),
@@ -30,22 +36,35 @@ export async function GET(request: Request) {
     organization_slug_filter: searchParams.get('organization_slug_filter'),
     industry_filter: searchParams.get('industry_filter'),
     remote: searchParams.get('remote'),
-    agency: searchParams.get('agency'),
+    remote_derived: searchParams.get('remote_derived'), // BLUEPRINT REQUIREMENT
+    agency: searchParams.get('agency') || DEFAULT_AGENCY,
     date_filter: searchParams.get('date_filter'),
     external_apply_url: searchParams.get('external_apply_url'),
     directapply: searchParams.get('directapply'),
     employees_lte: searchParams.get('employees_lte') ? parseInt(searchParams.get('employees_lte')!) : undefined,
     employees_gte: searchParams.get('employees_gte') ? parseInt(searchParams.get('employees_gte')!) : undefined,
     order: searchParams.get('order'),
-    include_ai: searchParams.get('include_ai'),
+    include_ai: searchParams.get('include_ai') || DEFAULT_INCLUDE_AI,
     ai_work_arrangement_filter: searchParams.get('ai_work_arrangement_filter'),
     ai_has_salary: searchParams.get('ai_has_salary'),
     ai_experience_level_filter: searchParams.get('ai_experience_level_filter'),
     ai_visa_sponsorship_filter: searchParams.get('ai_visa_sponsorship_filter'),
-    description_type: searchParams.get('description_type'),
+    description_type: searchParams.get('description_type') || DEFAULT_DESCRIPTION_TYPE,
     // Endpoint selection (defaults to '7d' if not specified)
     endpoint: searchParams.get('endpoint') || '7d',
   }
+
+  // Log high-fidelity parameter usage for monitoring
+  console.log('🚀 High-fidelity RapidAPI parameters:', {
+    agency: params.agency,
+    include_ai: params.include_ai,
+    description_type: params.description_type,
+    defaultsUsed: {
+      agency: !searchParams.get('agency'),
+      include_ai: !searchParams.get('include_ai'),
+      description_type: !searchParams.get('description_type')
+    }
+  });
 
   // Remove undefined values
   Object.keys(params).forEach(key => {

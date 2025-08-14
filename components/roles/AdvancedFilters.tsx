@@ -344,36 +344,39 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               </AccordionContent>
             </AccordionItem> */}
 
-            {/* Remote Work */}
-            {/* <AccordionItem value="remote">
+            {/* Remote Work - BLUEPRINT REQUIREMENT */}
+            <AccordionItem value="remote">
               <AccordionTrigger data-testid="advanced-filters-trigger-remote">
                 <Clock className="h-4 w-4 mr-2" />
                 Remote Work
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 pt-2">
-                  {/* Basic Remote Filter */}
-                  {/* <div className="space-y-2">
-                    <Label>Remote Jobs Only</Label>
+                  {/* Remote Derived Filter - BLUEPRINT REQUIREMENT */}
+                  <div className="space-y-2">
+                    <Label>Remote Job Filter</Label>
                     <div className="flex gap-2">
                       <Badge
-                        variant={filters.remote === 'true' ? "default" : "outline"}
+                        variant={filters.remote_derived === 'true' ? "default" : "outline"}
                         className="cursor-pointer hover:bg-primary/20"
-                        onClick={() => updateFilters({ remote: filters.remote === 'true' ? '' : 'true' })}
-                        data-testid="advanced-filters-badge-remote-true"
+                        onClick={() => updateFilters({ remote_derived: filters.remote_derived === 'true' ? '' : 'true' })}
+                        data-testid="advanced-filters-badge-remote-derived-true"
                       >
                         Remote Only
                       </Badge>
                       <Badge
-                        variant={filters.remote === 'false' ? "default" : "outline"}
+                        variant={filters.remote_derived === 'false' ? "default" : "outline"}
                         className="cursor-pointer hover:bg-primary/20"
-                        onClick={() => updateFilters({ remote: filters.remote === 'false' ? '' : 'false' })}
-                        data-testid="advanced-filters-badge-remote-false"
+                        onClick={() => updateFilters({ remote_derived: filters.remote_derived === 'false' ? '' : 'false' })}
+                        data-testid="advanced-filters-badge-remote-derived-false"
                       >
                         On-site Only
                       </Badge>
                     </div>
-                  </div> */}
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
 
                   {/* AI Work Arrangement (Beta) */}
                   {/* <div className="space-y-2">

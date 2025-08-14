@@ -27,8 +27,12 @@ Detailed documentation for specific platform features:
 
 - **[CV Data Flow](features/cv-data-flow.md)** - Data processing pipeline with Mermaid diagrams
 - **[Button Style Guide](features/button-style-guide.md)** - UI component standardization and styling patterns
-- **[RapidAPI Implementation Summary](features/rapidapi-implementation-summary.md)** - External API integration patterns
-- **[RapidAPI Documentation](features/rapidapi-documentation.md)** - API endpoint documentation and usage
+
+### RapidAPI Integration (Complete Documentation Suite)
+- **[🌟 RapidAPI Complete Reference](features/rapidapi-complete-reference.md)** - **NEW**: Comprehensive guide with AI enhancements, data mapping, and production deployment
+- **[RapidAPI Implementation Summary](features/rapidapi-implementation-summary.md)** - **UPDATED**: External API integration with AI-enriched features
+- **[RapidAPI Enhancement Plan](features/rapidapi-enhancement-plan.md)** - Complete project history and implementation tracking
+- **[RapidAPI Documentation](features/rapidapi-documentation.md)** - Official API endpoint documentation and known issues
 - **[API Call Prevention Verification](features/api-call-prevention-verification.md)** - Performance optimization validation
 
 ## Deployment & Operations
@@ -65,4 +69,4 @@ Structured commands for AI-assisted development workflows:
 - Git history preserved for all moved files
 - Content validated for accuracy and completeness
 
-*Last updated: July 2025 - Complete documentation architecture reorganization*
+*Last updated: August 14, 2025 - RapidAPI documentation suite updated with AI enhancements and complete reference guide*

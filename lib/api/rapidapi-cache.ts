@@ -35,6 +35,7 @@ interface SearchParameters {
   
   // Job characteristics
   remote?: string; // 'true', 'false', or undefined for both
+  remote_derived?: string; // BLUEPRINT REQUIREMENT - boolean filter for remote positions
   agency?: string; // 'true' for agencies only, 'false' for companies only
   description_type?: string; // 'text' to include job description
   

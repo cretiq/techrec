@@ -1,6 +1,7 @@
 import { Role, RoleType, Skill, CompanySummary } from '@/types'; // Adjust path as necessary
 import type { ApplicationInfo } from '@/types/role';
 import { RapidApiJob } from '@/types/rapidapi'; // Adjust path as necessary
+import { EnhancedRole } from '@/types/enhancedRole';
 
 // Formats the job type enum/string into a user-friendly string
 export const formatJobType = (type: RoleType | string | undefined): string => {
@@ -35,8 +36,8 @@ export const formatJobType = (type: RoleType | string | undefined): string => {
   }
 };
 
-// Maps a job from the RapidAPI response to the internal Role interface
-export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
+// Maps a job from the RapidAPI response to the internal EnhancedRole interface
+export const mapRapidApiJobToRole = (apiJob: RapidApiJob): EnhancedRole => {
   // Helper to format salary with comprehensive null safety
   const formatSalary = (): string => {
     // Check if salary_raw exists and has the expected structure
@@ -205,14 +206,20 @@ export const mapRapidApiJobToRole = (apiJob: RapidApiJob): Role => {
     ai_benefits: apiJob.ai_benefits || undefined,
     ai_work_arrangement: apiJob.ai_work_arrangement || undefined,
     ai_working_hours: apiJob.ai_working_hours || undefined,
-  } as Role & {
-    // Additional fields not in base Role interface but useful for cover letters
-    seniority?: string;
-    employment_type?: string[];
-    ai_core_responsibilities?: string;
-    ai_requirements_summary?: string;
-    ai_benefits?: string[];
-    ai_work_arrangement?: string;
-    ai_working_hours?: number;
-  };
+    
+    // HIGH-IMPACT LinkedIn org fields for enhanced cover letter generation
+    linkedin_org_industry: apiJob.linkedin_org_industry || undefined,
+    linkedin_org_type: apiJob.linkedin_org_type || undefined,
+    linkedin_org_description: apiJob.linkedin_org_description || undefined,
+    linkedin_org_size: apiJob.linkedin_org_size || undefined,
+    
+    // Additional context fields for cover letter enhancement
+    description_text: apiJob.description_text || undefined, // Full job description
+    salary_raw: apiJob.salary_raw || undefined,
+    organization: apiJob.organization || undefined,
+    external_apply_url: apiJob.external_apply_url || undefined, // BLUEPRINT REQUIREMENT
+    organization_logo: apiJob.organization_logo || undefined, // BLUEPRINT REQUIREMENT
+    date_posted: apiJob.date_posted || undefined, // BLUEPRINT REQUIREMENT
+    locations_derived: apiJob.locations_derived || undefined, // BLUEPRINT REQUIREMENT
+  } as EnhancedRole;
 }; 

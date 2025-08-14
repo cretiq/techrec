@@ -49,6 +49,7 @@ export interface RapidApiJob {
   salary_raw: MonetaryAmount | null;
   employment_type: string[];
   url: string;
+  external_apply_url?: string; // BLUEPRINT REQUIREMENT - direct application URL
   source_type: string;
   source: string;
   source_domain: string;
