@@ -224,10 +224,10 @@ export const TooltipContent = ({ children, side = 'top', className, ...props }: 
   const { isOpen } = React.useContext(TooltipContext);
   
   const positionClasses = {
-    top: 'bottom-full mb-2 left-1/2 -translate-x-1/2',
-    bottom: 'top-full mt-2 left-1/2 -translate-x-1/2', 
-    left: 'right-full mr-2 top-1/2 -translate-y-1/2',
-    right: 'left-full ml-2 top-1/2 -translate-y-1/2'
+    top: 'bottom-full mb-1 left-1/2 -translate-x-1/2',
+    bottom: 'top-full mt-1 left-1/2 -translate-x-1/2', 
+    left: 'right-full mr-1 top-1/2 -translate-y-1/2',
+    right: 'left-full ml-1 top-1/2 -translate-y-1/2'
   };
 
   if (!isOpen) return null;
@@ -236,9 +236,10 @@ export const TooltipContent = ({ children, side = 'top', className, ...props }: 
     <div 
       className={cn(
         'absolute z-[9999] pointer-events-none',
-        'bg-base-content/80 backdrop-blur-sm text-base-100 rounded-lg p-2 text-sm shadow-lg',
+        'bg-base-content text-base-100 rounded-lg p-3 text-sm shadow-lg',
         'border border-base-300/20',
         'animate-in fade-in-0 zoom-in-95 duration-100',
+        'w-64 min-h-fit whitespace-normal',
         positionClasses[side],
         className
       )} 
