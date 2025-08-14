@@ -43,13 +43,13 @@ const cardVariants = {
   'gradient-brand': "card bg-gradient-brand-sharp border-none text-white",
   
   // Phase 4: Interactive variants with built-in hover effects
-  'default-interactive': "card bg-base-100 shadow-md hover:shadow-lg",
-  'primary-interactive': "card bg-primary text-primary-content",
-  'secondary-interactive': "card bg-secondary text-secondary-content",
-  'accent-interactive': "card bg-accent text-accent-content",
-  'bordered-interactive': "card bg-base-200 card-border",
-  'elevated-interactive': "card bg-base-200 shadow-lg",
-  'selected-interactive': "card bg-success/10 shadow-md ring-2 ring-success/20",
+  'default-interactive': "card bg-base-100 shadow-md hover:shadow-lg hover:bg-base-200",
+  'primary-interactive': "card bg-primary text-primary-content hover:bg-primary/80",
+  'secondary-interactive': "card bg-secondary text-secondary-content hover:bg-secondary/80",
+  'accent-interactive': "card bg-accent text-accent-content hover:bg-accent/80",
+  'bordered-interactive': "card bg-base-200 card-border hover:bg-base-300",
+  'elevated-interactive': "card bg-base-200 shadow-lg hover:shadow-xl",
+  'selected-interactive': "card bg-success/10 shadow-md ring-2 ring-success/20 hover:bg-success/20",
 } as const
 
 // Type for all available card variants
