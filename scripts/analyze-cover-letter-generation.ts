@@ -71,7 +71,8 @@ async function analyzeCoverLetterGeneration() {
     console.log(`  ${idx + 1}. ${achievement.substring(0, 80)}${achievement.length > 80 ? '...' : ''}`);
   });
   
-  console.log(`\nPrompt Length: ${request.promptInfo.promptLength} chars`);
+  console.log(`\nFinal Prompt Length: ${request.promptInfo.promptLength} chars`);
+  console.log(`Raw Template Length: ${request.promptInfo.rawTemplateLength} chars`);
   
   // NEW: Show full developer profile data sent to AI
   console.log('\n=== FULL DEVELOPER PROFILE SENT TO AI ===');
@@ -185,6 +186,91 @@ async function analyzeCoverLetterGeneration() {
     }
   } else {
     console.log('❌ No full company information data found in request');
+  }
+  
+  // NEW: Show raw prompt template and final prompt
+  console.log('\n=== PROMPT ANALYSIS ===');
+  
+  if (request.promptInfo.rawTemplate) {
+    console.log('\n--- RAW PROMPT TEMPLATE ---');
+    console.log('(Shows variable placeholders like ${variable})');
+    console.log(`Length: ${request.promptInfo.rawTemplateLength} characters`);
+    console.log(`Template Type: ${request.promptInfo.rawTemplate.includes('FULL CV CONTENT') ? 'MVP Content Template' : 'Structured Data Template'}`);
+    
+    // Show first 500 chars of raw template
+    console.log('\nTemplate Preview:');
+    console.log('-'.repeat(60));
+    console.log(request.promptInfo.rawTemplatePreview);
+    console.log('-'.repeat(60));
+    
+    // Show key template sections
+    const template = request.promptInfo.rawTemplate;
+    const sections = [
+      { name: 'System Prompt', start: 'SYSTEM:', end: 'USER:' },
+      { name: 'Header Section', start: '<HEADER>', end: '<COMPANY CONTEXT>' },
+      { name: 'Company Context', start: '<COMPANY CONTEXT>', end: '<ROLE SPECIFICS>' },
+      { name: 'Role Specifics', start: '<ROLE SPECIFICS>', end: '<TASK>' },
+      { name: 'Task Instructions', start: '<TASK>', end: 'Rules:' }
+    ];
+    
+    console.log('\nTemplate Structure:');
+    sections.forEach(section => {
+      const startIdx = template.indexOf(section.start);
+      const endIdx = template.indexOf(section.end, startIdx);
+      if (startIdx !== -1) {
+        const sectionLength = endIdx !== -1 ? endIdx - startIdx : template.length - startIdx;
+        console.log(`  ${section.name}: ${sectionLength} chars ${startIdx !== -1 ? '✅' : '❌'}`);
+      } else {
+        console.log(`  ${section.name}: Not found ❌`);
+      }
+    });
+    
+    // Count variable placeholders
+    const variableMatches = template.match(/\$\{[^}]+\}/g) || [];
+    console.log(`\nVariable Placeholders: ${variableMatches.length} found`);
+    
+    // Show top variable types
+    const variableTypes = variableMatches
+      .map(v => v.replace(/\$\{([^.}]+)\..*\}/, '$1').replace(/\$\{([^}]+)\}/, '$1'))
+      .reduce((acc, type) => {
+        acc[type] = (acc[type] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+    
+    Object.entries(variableTypes)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .forEach(([type, count]) => {
+        console.log(`  ${type}: ${count} references`);
+      });
+      
+  } else {
+    console.log('❌ No raw prompt template found in request');
+  }
+  
+  console.log('\n--- FINAL PROCESSED PROMPT ---');
+  console.log('(Shows actual values substituted)');
+  console.log(`Length: ${request.promptInfo.promptLength} characters`);
+  console.log(`Processing: ${request.promptInfo.rawTemplate ? 'Template → Final' : 'Direct Generation'}`);
+  
+  // Show first 500 chars of final prompt
+  console.log('\nFinal Prompt Preview:');
+  console.log('-'.repeat(60));
+  console.log(request.promptInfo.promptPreview);
+  console.log('-'.repeat(60));
+  
+  // Show expansion ratio
+  if (request.promptInfo.rawTemplate && request.promptInfo.rawTemplateLength > 0) {
+    const expansionRatio = (request.promptInfo.promptLength / request.promptInfo.rawTemplateLength).toFixed(2);
+    console.log(`\nTemplate Expansion: ${request.promptInfo.rawTemplateLength} → ${request.promptInfo.promptLength} chars (${expansionRatio}x)`);
+    
+    if (parseFloat(expansionRatio) < 1.5) {
+      console.log('⚠️  Low expansion ratio - may indicate missing variable substitution');
+    } else if (parseFloat(expansionRatio) > 5.0) {
+      console.log('⚠️  Very high expansion ratio - check for data bloat');
+    } else {
+      console.log('✅ Normal expansion ratio');
+    }
   }
   
   // Analyze responses

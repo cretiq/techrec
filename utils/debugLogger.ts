@@ -201,6 +201,7 @@ export class CoverLetterDebugLogger {
       achievements: string[];
     };
     prompt: string;
+    rawPromptTemplate?: string;
     cacheKey: string;
     cacheHit: boolean;
     timestamp: string;
@@ -250,7 +251,10 @@ export class CoverLetterDebugLogger {
       promptInfo: {
         promptLength: data.prompt.length,
         promptPreview: data.prompt.substring(0, 500) + '...',
-        fullPrompt: data.prompt
+        fullPrompt: data.prompt,
+        rawTemplate: data.rawPromptTemplate,
+        rawTemplateLength: data.rawPromptTemplate?.length || 0,
+        rawTemplatePreview: data.rawPromptTemplate ? data.rawPromptTemplate.substring(0, 500) + '...' : null
       },
       fullDeveloperProfile: data.developerProfile,
       fullRoleInfo: data.roleInfo,

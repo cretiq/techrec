@@ -103,31 +103,6 @@ export async function POST(req: Request) {
     const keywords = rankRoleKeywords(roleInfo)
     const coreSkills = pickCoreSkills(developerProfile.skills)
     const achievements = deriveAchievements(developerProfile, providedAchievements)
-    
-    // Log request data for debugging
-    if (debugSessionId) {
-      CoverLetterDebugLogger.logRequest({
-        userId: undefined, // Can add session user ID if available
-        developerProfile,
-        roleInfo,
-        companyInfo,
-        personalization: {
-          tone,
-          hiringManager,
-          jobSource: jobSourceInfo?.source,
-          attractionPoints: companyInfo.attractionPoints
-        },
-        processedData: {
-          keywords,
-          coreSkills,
-          achievements
-        },
-        prompt: '', // Will be set later
-        cacheKey,
-        cacheHit,
-        timestamp: new Date().toISOString()
-      });
-    }
 
     console.log("-".repeat(40));
     console.log("DEVELOPER PROFILE DATA");
@@ -159,6 +134,173 @@ export async function POST(req: Request) {
     // Use MVP content as primary source if available, fallback to structured data
     const hasMvpContent = developerProfile.mvpContent && developerProfile.mvpContent.trim().length > 0;
     
+    // Define raw prompt templates for debugging
+    const rawMvpTemplate = `SYSTEM:
+You are an elite career-coach copywriter who crafts concise, metrics-driven \${requestType === "coverLetter" ? "cover letters" : "outreach messages"} with a \${tone} yet professional voice.
+
+USER:
+<HEADER>
+Name: \${developerProfile.name} | Email: \${developerProfile.profileEmail ?? developerProfile.email} | Phone: \${developerProfile.contactInfo?.phone ?? "N/A"}
+
+<COMPANY CONTEXT>
+Name: \${companyInfo.name}
+\${companyInfo.linkedinOrgType ? \`Organization Type: \${companyInfo.linkedinOrgType}\` : ''}
+\${companyInfo.linkedinOrgIndustry ? \`Industry: \${companyInfo.linkedinOrgIndustry}\` : companyInfo.industry ? \`Industry: \${companyInfo.industry}\` : ''}
+\${companyInfo.linkedinOrgSize ? \`Company Size: \${companyInfo.linkedinOrgSize}\` : companyInfo.size ? \`Company Size: \${companyInfo.size}\` : ''}
+\${companyInfo.headquarters ? \`Headquarters: \${companyInfo.headquarters}\` : ''}
+\${companyInfo.foundedDate ? \`Founded: \${companyInfo.foundedDate}\` : ''}
+\${companyInfo.linkedinOrgDescription ? \`About: \${companyInfo.linkedinOrgDescription}\` : companyInfo.description ? \`About: \${companyInfo.description}\` : ''}
+\${companyInfo.specialties && companyInfo.specialties.length > 0 ? \`Core Specialties: \${companyInfo.specialties.join(', ')}\` : ''}
+
+Company Culture & Benefits:
+\${companyInfo.attractionPoints?.map(point => \`- \${point}\`).join('\\n') ?? "- Innovative company in the tech space"}
+
+<ROLE SPECIFICS>
+Title: \${roleInfo.title}
+\${roleInfo.organization ? \`Organization: \${roleInfo.organization}\` : ''}
+\${roleInfo.seniority ? \`Seniority Level: \${roleInfo.seniority}\` : ''}
+\${roleInfo.employmentType && roleInfo.employmentType.length > 0 ? \`Employment Type: \${roleInfo.employmentType.join(', ')}\` : ''}
+\${roleInfo.remote !== undefined ? \`Remote Work: \${roleInfo.remote ? 'Yes' : 'Office-based'}\` : ''}
+\${roleInfo.directApply !== undefined ? \`Application Method: \${roleInfo.directApply ? 'LinkedIn Easy Apply' : 'External Application'}\` : ''}
+\${roleInfo.location ? \`Location: \${roleInfo.location}\` : ''}
+\${roleInfo.aiWorkArrangement ? \`Work Arrangement: \${roleInfo.aiWorkArrangement}\` : ''}
+\${roleInfo.aiWorkingHours ? \`Working Hours: \${roleInfo.aiWorkingHours} hours/week\` : ''}
+\${roleInfo.salaryRaw ? \`Compensation: \${JSON.stringify(roleInfo.salaryRaw)}\` : ''}
+
+\${roleInfo.descriptionText ? \`Full Job Description:\\n\${roleInfo.descriptionText}\\n\` : ''}
+
+\${roleInfo.aiCoreResponsibilities ? \`Core Responsibilities:\\n\${roleInfo.aiCoreResponsibilities}\` : ''}
+
+\${roleInfo.aiRequirementsSummary ? \`Requirements Summary:\\n\${roleInfo.aiRequirementsSummary}\` : ''}
+
+Requirements:
+\${roleInfo.requirements?.map(req => \`- \${req}\`).join('\\n') ?? '- Not specified'}
+
+Skills Needed:
+\${roleInfo.skills?.map(skill => \`- \${skill}\`).join('\\n') ?? '- Not specified'}
+
+\${roleInfo.aiKeySkills && roleInfo.aiKeySkills.length > 0 ? \`Key Skills (AI-Extracted): \${roleInfo.aiKeySkills.join(', ')}\` : ''}
+
+\${roleInfo.aiBenefits && roleInfo.aiBenefits.length > 0 ? \`Benefits:\\n\${roleInfo.aiBenefits.map(b => \`- \${b}\`).join('\\n')}\` : ''}
+
+\${roleInfo.recruiterName ? \`Recruiter: \${roleInfo.recruiterName}\${roleInfo.recruiterTitle ? \` (\${roleInfo.recruiterTitle})\` : ''}\` : ''}
+\${roleInfo.aiHiringManagerName ? \`Hiring Manager: \${roleInfo.aiHiringManagerName}\` : ''}
+\${roleInfo.aiHiringManagerEmail ? \`HM Email: \${roleInfo.aiHiringManagerEmail}\` : ''}
+
+Keywords: \${keywords.join(", ")}
+
+<FULL CV CONTENT>
+\${developerProfile.mvpContent}
+
+<TASK>
+Write a \${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} using the FULL CV CONTENT above as your primary source of information about the applicant.
+
+Use the detailed ROLE & JOB DETAILS including the full job description to create a highly targeted letter that addresses specific requirements and demonstrates how the candidate's CV experience aligns with the job needs.
+
+Structure:
+1. Greeting: "Dear \${hiringManager ?? roleInfo.aiHiringManagerName ?? "Hiring Team"},".
+2. Hook: cite role title + most relevant company fact (organization type, industry, or mission).
+3. Proof: extract relevant achievements from CV content & match with specific job requirements from the full description.
+4. Alignment: use CV skills/experience to address specific job requirements, work arrangement, and company culture.
+5. CTA & sign-off.
+
+Rules:
+• First-person, no clichés, no invented data.
+• Use ONLY information from the CV content provided.
+• Address the named person exactly.
+• Match CV experience to specific job requirements listed above, especially from the full job description.
+• Reference LinkedIn org details and company facts that align with candidate values.
+• Within specified word count.
+• Do NOT use asterisks (*), bullet points, bold formatting (**), or any markdown.
+• Write in plain paragraph format only.
+• Output ONLY the final letter text (no markdown, no extra commentary).
+`;
+
+    const rawStructuredTemplate = `SYSTEM:
+You are an elite career-coach copywriter who crafts concise, metrics-driven \${requestType === "coverLetter" ? "cover letters" : "outreach messages"} with a \${tone} yet professional voice.
+
+USER:
+<HEADER>
+Name: \${developerProfile.name} | Email: \${developerProfile.profileEmail ?? developerProfile.email} | Phone: \${developerProfile.contactInfo?.phone ?? "N/A"}
+
+<COMPANY CONTEXT>
+Name: \${companyInfo.name}
+\${companyInfo.linkedinOrgType ? \`Organization Type: \${companyInfo.linkedinOrgType}\` : ''}
+\${companyInfo.linkedinOrgIndustry ? \`Industry: \${companyInfo.linkedinOrgIndustry}\` : companyInfo.industry ? \`Industry: \${companyInfo.industry}\` : ''}
+\${companyInfo.linkedinOrgSize ? \`Company Size: \${companyInfo.linkedinOrgSize}\` : companyInfo.size ? \`Company Size: \${companyInfo.size}\` : ''}
+\${companyInfo.headquarters ? \`Headquarters: \${companyInfo.headquarters}\` : ''}
+\${companyInfo.foundedDate ? \`Founded: \${companyInfo.foundedDate}\` : ''}
+\${companyInfo.linkedinOrgDescription ? \`About: \${companyInfo.linkedinOrgDescription}\` : companyInfo.description ? \`About: \${companyInfo.description}\` : ''}
+\${companyInfo.specialties && companyInfo.specialties.length > 0 ? \`Core Specialties: \${companyInfo.specialties.join(', ')}\` : ''}
+
+Company Culture & Benefits:
+\${companyInfo.attractionPoints?.map(point => \`- \${point}\`).join('\\n') ?? "- Innovative company in the tech space"}
+
+<ROLE SPECIFICS>
+Title: \${roleInfo.title}
+\${roleInfo.organization ? \`Organization: \${roleInfo.organization}\` : ''}
+\${roleInfo.seniority ? \`Seniority Level: \${roleInfo.seniority}\` : ''}
+\${roleInfo.employmentType && roleInfo.employmentType.length > 0 ? \`Employment Type: \${roleInfo.employmentType.join(', ')}\` : ''}
+\${roleInfo.remote !== undefined ? \`Remote Work: \${roleInfo.remote ? 'Yes' : 'Office-based'}\` : ''}
+\${roleInfo.directApply !== undefined ? \`Application Method: \${roleInfo.directApply ? 'LinkedIn Easy Apply' : 'External Application'}\` : ''}
+\${roleInfo.location ? \`Location: \${roleInfo.location}\` : ''}
+\${roleInfo.aiWorkArrangement ? \`Work Arrangement: \${roleInfo.aiWorkArrangement}\` : ''}
+\${roleInfo.aiWorkingHours ? \`Working Hours: \${roleInfo.aiWorkingHours} hours/week\` : ''}
+\${roleInfo.salaryRaw ? \`Compensation: \${JSON.stringify(roleInfo.salaryRaw)}\` : ''}
+
+\${roleInfo.descriptionText ? \`Full Job Description:\\n\${roleInfo.descriptionText}\\n\` : ''}
+
+\${roleInfo.aiCoreResponsibilities ? \`Core Responsibilities:\\n\${roleInfo.aiCoreResponsibilities}\` : ''}
+
+\${roleInfo.aiRequirementsSummary ? \`Requirements Summary:\\n\${roleInfo.aiRequirementsSummary}\` : ''}
+
+Requirements:
+\${roleInfo.requirements?.map(req => \`- \${req}\`).join('\\n') ?? '- Not specified'}
+
+Skills Needed:
+\${roleInfo.skills?.map(skill => \`- \${skill}\`).join('\\n') ?? '- Not specified'}
+
+\${roleInfo.aiKeySkills && roleInfo.aiKeySkills.length > 0 ? \`Key Skills (AI-Extracted): \${roleInfo.aiKeySkills.join(', ')}\` : ''}
+
+\${roleInfo.aiBenefits && roleInfo.aiBenefits.length > 0 ? \`Benefits:\\n\${roleInfo.aiBenefits.map(b => \`- \${b}\`).join('\\n')}\` : ''}
+
+\${roleInfo.recruiterName ? \`Recruiter: \${roleInfo.recruiterName}\${roleInfo.recruiterTitle ? \` (\${roleInfo.recruiterTitle})\` : ''}\` : ''}
+\${roleInfo.aiHiringManagerName ? \`Hiring Manager: \${roleInfo.aiHiringManagerName}\` : ''}
+\${roleInfo.aiHiringManagerEmail ? \`HM Email: \${roleInfo.aiHiringManagerEmail}\` : ''}
+
+Keywords: \${keywords.join(", ")}
+
+<APPLICANT SNAPSHOT>
+Professional Title: \${developerProfile.title ?? "Software Developer"}
+CoreSkills: \${coreSkills.join(", ")}
+KeyAchievements:
+\${achievements.map((a) => \`- \${a}\`).join("\\n")}
+
+<TASK>
+Write a \${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} using the detailed ROLE & JOB DETAILS above to create a highly targeted letter.
+
+Match the applicant's skills and achievements to the specific job requirements from the full job description and address the company's values through the LinkedIn org details and provided facts.
+
+Structure:
+1. Greeting: "Dear \${hiringManager ?? roleInfo.aiHiringManagerName ?? "Hiring Team"},".
+2. Hook: cite role title + most relevant company fact (org type, industry, or LinkedIn description).
+3. Proof: weave achievements with specific job requirements from full description (not just generic keywords).
+4. Alignment: explain how skills solve the specific needs outlined in the full job description, work arrangement, and organizational culture.
+5. CTA & sign-off.
+
+Rules:
+• First-person, no clichés, no invented data.
+• Address the named person exactly.
+• Reference specific job requirements from the full description, not just generic keywords.
+• Use LinkedIn org details and company facts that align with candidate values.
+• Within specified word count.
+• Do NOT use asterisks (*), bullet points, bold formatting (**), or any markdown.
+• Write in plain paragraph format only.
+• Output ONLY the final letter text (no markdown, no extra commentary).
+`;
+
+    const rawPromptTemplate = hasMvpContent ? rawMvpTemplate : rawStructuredTemplate;
+    
     const prompt = hasMvpContent ? 
     `SYSTEM:
 You are an elite career-coach copywriter who crafts concise, metrics-driven ${requestType === "coverLetter" ? "cover letters" : "outreach messages"} with a ${tone} yet professional voice.
@@ -169,11 +311,12 @@ Name: ${developerProfile.name} | Email: ${developerProfile.profileEmail ?? devel
 
 <COMPANY CONTEXT>
 Name: ${companyInfo.name}
-${companyInfo.industry ? `Industry: ${companyInfo.industry}` : ''}
-${companyInfo.size ? `Company Size: ${companyInfo.size}` : ''}
+${companyInfo.linkedinOrgType ? `Organization Type: ${companyInfo.linkedinOrgType}` : ''}
+${companyInfo.linkedinOrgIndustry ? `Industry: ${companyInfo.linkedinOrgIndustry}` : companyInfo.industry ? `Industry: ${companyInfo.industry}` : ''}
+${companyInfo.linkedinOrgSize ? `Company Size: ${companyInfo.linkedinOrgSize}` : companyInfo.size ? `Company Size: ${companyInfo.size}` : ''}
 ${companyInfo.headquarters ? `Headquarters: ${companyInfo.headquarters}` : ''}
 ${companyInfo.foundedDate ? `Founded: ${companyInfo.foundedDate}` : ''}
-${companyInfo.description ? `About: ${companyInfo.description}` : ''}
+${companyInfo.linkedinOrgDescription ? `About: ${companyInfo.linkedinOrgDescription}` : companyInfo.description ? `About: ${companyInfo.description}` : ''}
 ${companyInfo.specialties && companyInfo.specialties.length > 0 ? `Core Specialties: ${companyInfo.specialties.join(', ')}` : ''}
 
 Company Culture & Benefits:
@@ -181,6 +324,7 @@ ${companyInfo.attractionPoints?.map(point => `- ${point}`).join('\n') ?? "- Inno
 
 <ROLE SPECIFICS>
 Title: ${roleInfo.title}
+${roleInfo.organization ? `Organization: ${roleInfo.organization}` : ''}
 ${roleInfo.seniority ? `Seniority Level: ${roleInfo.seniority}` : ''}
 ${roleInfo.employmentType && roleInfo.employmentType.length > 0 ? `Employment Type: ${roleInfo.employmentType.join(', ')}` : ''}
 ${roleInfo.remote !== undefined ? `Remote Work: ${roleInfo.remote ? 'Yes' : 'Office-based'}` : ''}
@@ -188,6 +332,9 @@ ${roleInfo.directApply !== undefined ? `Application Method: ${roleInfo.directApp
 ${roleInfo.location ? `Location: ${roleInfo.location}` : ''}
 ${roleInfo.aiWorkArrangement ? `Work Arrangement: ${roleInfo.aiWorkArrangement}` : ''}
 ${roleInfo.aiWorkingHours ? `Working Hours: ${roleInfo.aiWorkingHours} hours/week` : ''}
+${roleInfo.salaryRaw ? `Compensation: ${JSON.stringify(roleInfo.salaryRaw)}` : ''}
+
+${roleInfo.descriptionText ? `Full Job Description:\n${roleInfo.descriptionText}\n` : ''}
 
 ${roleInfo.aiCoreResponsibilities ? `Core Responsibilities:\n${roleInfo.aiCoreResponsibilities}` : ''}
 
@@ -215,21 +362,21 @@ ${developerProfile.mvpContent}
 <TASK>
 Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} using the FULL CV CONTENT above as your primary source of information about the applicant.
 
-Use the detailed ROLE & JOB DETAILS to create a highly targeted letter that addresses specific requirements and demonstrates how the candidate's CV experience aligns with the job needs.
+Use the detailed ROLE & JOB DETAILS including the full job description to create a highly targeted letter that addresses specific requirements and demonstrates how the candidate's CV experience aligns with the job needs.
 
 Structure:
 1. Greeting: "Dear ${hiringManager ?? roleInfo.aiHiringManagerName ?? "Hiring Team"},".
-2. Hook: cite role title + most relevant company fact.
-3. Proof: extract relevant achievements from CV content & match with job requirements.
-4. Alignment: use CV skills/experience to address specific job requirements and company needs.
+2. Hook: cite role title + most relevant company fact (organization type, industry, or mission).
+3. Proof: extract relevant achievements from CV content & match with specific job requirements from the full description.
+4. Alignment: use CV skills/experience to address specific job requirements, work arrangement, and company culture.
 5. CTA & sign-off.
 
 Rules:
 • First-person, no clichés, no invented data.
 • Use ONLY information from the CV content provided.
 • Address the named person exactly.
-• Match CV experience to specific job requirements listed above.
-• Reference company facts that align with candidate values.
+• Match CV experience to specific job requirements listed above, especially from the full job description.
+• Reference LinkedIn org details and company facts that align with candidate values.
 • Within specified word count.
 • Do NOT use asterisks (*), bullet points, bold formatting (**), or any markdown.
 • Write in plain paragraph format only.
@@ -245,11 +392,12 @@ Name: ${developerProfile.name} | Email: ${developerProfile.profileEmail ?? devel
 
 <COMPANY CONTEXT>
 Name: ${companyInfo.name}
-${companyInfo.industry ? `Industry: ${companyInfo.industry}` : ''}
-${companyInfo.size ? `Company Size: ${companyInfo.size}` : ''}
+${companyInfo.linkedinOrgType ? `Organization Type: ${companyInfo.linkedinOrgType}` : ''}
+${companyInfo.linkedinOrgIndustry ? `Industry: ${companyInfo.linkedinOrgIndustry}` : companyInfo.industry ? `Industry: ${companyInfo.industry}` : ''}
+${companyInfo.linkedinOrgSize ? `Company Size: ${companyInfo.linkedinOrgSize}` : companyInfo.size ? `Company Size: ${companyInfo.size}` : ''}
 ${companyInfo.headquarters ? `Headquarters: ${companyInfo.headquarters}` : ''}
 ${companyInfo.foundedDate ? `Founded: ${companyInfo.foundedDate}` : ''}
-${companyInfo.description ? `About: ${companyInfo.description}` : ''}
+${companyInfo.linkedinOrgDescription ? `About: ${companyInfo.linkedinOrgDescription}` : companyInfo.description ? `About: ${companyInfo.description}` : ''}
 ${companyInfo.specialties && companyInfo.specialties.length > 0 ? `Core Specialties: ${companyInfo.specialties.join(', ')}` : ''}
 
 Company Culture & Benefits:
@@ -257,6 +405,7 @@ ${companyInfo.attractionPoints?.map(point => `- ${point}`).join('\n') ?? "- Inno
 
 <ROLE SPECIFICS>
 Title: ${roleInfo.title}
+${roleInfo.organization ? `Organization: ${roleInfo.organization}` : ''}
 ${roleInfo.seniority ? `Seniority Level: ${roleInfo.seniority}` : ''}
 ${roleInfo.employmentType && roleInfo.employmentType.length > 0 ? `Employment Type: ${roleInfo.employmentType.join(', ')}` : ''}
 ${roleInfo.remote !== undefined ? `Remote Work: ${roleInfo.remote ? 'Yes' : 'Office-based'}` : ''}
@@ -264,6 +413,9 @@ ${roleInfo.directApply !== undefined ? `Application Method: ${roleInfo.directApp
 ${roleInfo.location ? `Location: ${roleInfo.location}` : ''}
 ${roleInfo.aiWorkArrangement ? `Work Arrangement: ${roleInfo.aiWorkArrangement}` : ''}
 ${roleInfo.aiWorkingHours ? `Working Hours: ${roleInfo.aiWorkingHours} hours/week` : ''}
+${roleInfo.salaryRaw ? `Compensation: ${JSON.stringify(roleInfo.salaryRaw)}` : ''}
+
+${roleInfo.descriptionText ? `Full Job Description:\n${roleInfo.descriptionText}\n` : ''}
 
 ${roleInfo.aiCoreResponsibilities ? `Core Responsibilities:\n${roleInfo.aiCoreResponsibilities}` : ''}
 
@@ -294,20 +446,20 @@ ${achievements.map((a) => `- ${a}`).join("\n")}
 <TASK>
 Write a ${requestType === "coverLetter" ? "250-300-word cover letter" : "150-180-word outreach message"} using the detailed ROLE & JOB DETAILS above to create a highly targeted letter.
 
-Match the applicant's skills and achievements to the specific job requirements and address the company's values through the provided facts.
+Match the applicant's skills and achievements to the specific job requirements from the full job description and address the company's values through the LinkedIn org details and provided facts.
 
 Structure:
 1. Greeting: "Dear ${hiringManager ?? roleInfo.aiHiringManagerName ?? "Hiring Team"},".
-2. Hook: cite role title + most relevant company fact from the list above.
-3. Proof: weave achievements with specific job requirements (not just generic keywords).
-4. Alignment: explain how skills solve the specific needs outlined in the job requirements.
+2. Hook: cite role title + most relevant company fact (org type, industry, or LinkedIn description).
+3. Proof: weave achievements with specific job requirements from full description (not just generic keywords).
+4. Alignment: explain how skills solve the specific needs outlined in the full job description, work arrangement, and organizational culture.
 5. CTA & sign-off.
 
 Rules:
 • First-person, no clichés, no invented data.
 • Address the named person exactly.
-• Reference specific job requirements, not just generic keywords.
-• Use company facts that align with candidate values.
+• Reference specific job requirements from the full description, not just generic keywords.
+• Use LinkedIn org details and company facts that align with candidate values.
 • Within specified word count.
 • Do NOT use asterisks (*), bullet points, bold formatting (**), or any markdown.
 • Write in plain paragraph format only.
@@ -342,6 +494,7 @@ Rules:
           achievements
         },
         prompt,
+        rawPromptTemplate,
         cacheKey,
         cacheHit,
         timestamp: new Date().toISOString()
