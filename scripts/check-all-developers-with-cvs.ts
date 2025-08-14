@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, SortOrder } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -68,7 +68,7 @@ async function checkAllDevelopersWithCvs() {
         }
       },
       orderBy: {
-        uploadDate: 'desc'
+        uploadDate: SortOrder.desc
       },
       take: 10 // Last 10 CVs
     });

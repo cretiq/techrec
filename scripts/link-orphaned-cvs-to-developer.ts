@@ -9,7 +9,7 @@
  * Instead of deleting orphaned CV records, this script links them to a specific developer.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, SortOrder } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -173,7 +173,7 @@ async function main() {
             uploadDate: true
           },
           orderBy: {
-            uploadDate: 'desc'
+            uploadDate: SortOrder.desc
           }
         }
       }

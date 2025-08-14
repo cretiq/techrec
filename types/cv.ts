@@ -15,6 +15,23 @@ export interface ValidationResult<T> {
   hasWarnings: boolean;
 }
 
+// Text extraction result interface
+export interface TextExtractionResult {
+  success: boolean;
+  extractedText?: string;
+  extractionDuration?: number;
+  characterCount?: number;
+  wordCount?: number;
+  lineCount?: number;
+  metadata?: {
+    filename: string;
+    originalName: string;
+    mimeType: string;
+    fileSize: number;
+  };
+  error?: string;
+}
+
 // --- Zod Schemas for Validation ---
 
 // Schema for basic contact info within analysis data

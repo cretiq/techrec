@@ -6,11 +6,12 @@ import { connectToDatabase } from '@/prisma/prisma'
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { roleId: string; applicationId: string } }
+  { params }: { params: Promise<{ roleId: string; applicationId: string }> }
 ) {
   try {
     await connectToDatabase()
     const { status } = await request.json()
+    const { roleId, applicationId } = await params
 
     if (!['pending', 'reviewed', 'accepted', 'rejected'].includes(status)) {
       return NextResponse.json(
@@ -20,7 +21,7 @@ export async function PATCH(
     }
 
     // Find the role and update the application status
-    const role = await Role.findById(params.roleId)
+    const role = await Role.findById(roleId)
     if (!role) {
       return NextResponse.json(
         { error: 'Role not found' },
@@ -28,7 +29,7 @@ export async function PATCH(
       )
     }
 
-    const application = role.applications.id(params.applicationId)
+    const application = role.applications.id(applicationId)
     if (!application) {
       return NextResponse.json(
         { error: 'Application not found' },
@@ -44,7 +45,7 @@ export async function PATCH(
     const developer = await Developer.findById(application.developer)
     if (developer) {
       const devApplication = developer.applications.find(
-        (app: Application) => app.role.toString() === params.roleId
+        (app: Application) => app.role.toString() === roleId
       )
       if (devApplication) {
         devApplication.status = status
@@ -55,7 +56,7 @@ export async function PATCH(
     return NextResponse.json({
       message: 'Application status updated successfully',
       application: {
-        role: params.roleId,
+        role: roleId,
         developer: application.developer,
         status,
       },

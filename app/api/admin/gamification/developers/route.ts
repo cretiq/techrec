@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { SortOrder } from '@prisma/client';
 import { prisma } from '@/prisma/prisma';
 
 export async function GET(request: NextRequest) {
@@ -102,7 +103,7 @@ export async function GET(request: NextRequest) {
             status: true,
             mimeType: true
           },
-          orderBy: { uploadDate: 'desc' }
+          orderBy: { uploadDate: SortOrder.desc }
         },
         _count: {
           select: {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, SortOrder } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
           }
         },
         cvs: {
-          orderBy: { uploadDate: 'desc' },
+          orderBy: { uploadDate: SortOrder.desc },
           select: {
             id: true,
             filename: true,

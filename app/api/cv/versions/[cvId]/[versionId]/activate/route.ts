@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 // POST /api/cv/versions/[cvId]/[versionId]/activate - Activate a specific version
 export async function POST(
   request: Request,
-  { params }: { params: { cvId: string; versionId: string } }
+  { params }: { params: Promise<{ cvId: string; versionId: string }> }
 ) {
   try {
     // Authentication

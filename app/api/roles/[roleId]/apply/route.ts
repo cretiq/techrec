@@ -6,14 +6,15 @@ import { connectToDatabase } from '@/prisma/prisma'
 
 export async function POST(
   request: Request,
-  { params }: { params: { roleId: string } }
+  { params }: { params: Promise<{ roleId: string }> }
 ) {
   try {
     await connectToDatabase()
     const { developerId, coverLetter } = await request.json()
+    const { roleId } = await params
 
     // Check if role exists and is open
-    const role = await Role.findById(params.roleId)
+    const role = await Role.findById(roleId)
     if (!role) {
       return NextResponse.json(
         { error: 'Role not found' },
@@ -58,7 +59,7 @@ export async function POST(
 
     // Add application to developer
     developer.applications.push({
-      role: params.roleId,
+      role: roleId,
       status: 'pending',
       appliedAt: new Date(),
       coverLetter,
@@ -69,7 +70,7 @@ export async function POST(
     return NextResponse.json({
       message: 'Application submitted successfully',
       application: {
-        role: params.roleId,
+        role: roleId,
         developer: developerId,
         status: 'pending',
         appliedAt: new Date(),

@@ -19,7 +19,7 @@ const convertLinkedInJobType = (type: string): RoleType => {
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check if we have the access token in the request headers
@@ -37,7 +37,7 @@ export async function GET(
       );
     }
 
-    const jobId = params.id;
+    const { id: jobId } = await params;
     if (!jobId) {
       return NextResponse.json(
         { error: 'Job ID is required' },
@@ -71,9 +71,9 @@ export async function GET(
 
     return NextResponse.json(formattedJob);
   } catch (error) {
-    console.error(`Error fetching LinkedIn job ${params.id}:`, error);
+    console.error(`Error fetching LinkedIn job ${jobId}:`, error);
     return NextResponse.json(
-      { error: `Failed to fetch LinkedIn job ${params.id}` },
+      { error: `Failed to fetch LinkedIn job ${jobId}` },
       { status: 500 }
     );
   }

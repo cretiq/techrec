@@ -1,0 +1,2794 @@
+[
+    {
+      "id": "1789609028",
+      "date_posted": "2025-07-02T06:08:10",
+      "date_created": "2025-07-02T06:34:02.546184",
+      "title": "Front-End Developer (Angular, Node, Nest)",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:08:10",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Westlake",
+            "addressRegion": "TX",
+            "streetAddress": null
+          },
+          "latitude": 32.99391,
+          "longitude": -97.19771
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/front-end-developer-angular-node-nest-at-jobs-via-dice-4259110039",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Westlake"
+      ],
+      "regions_derived": [
+        "Texas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Westlake, Texas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        32.9809
+      ],
+      "lngs_derived": [
+        -97.2041
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "This is a job description. We want someone with 5 years of experience in Javascript, Angular, Node, and Nest.js.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/6wrAUOtyvp632QVOBhKhH1lNJR2W2aycKjSluMtC4J8="
+    },
+    {
+      "id": "1789609028",
+      "date_posted": "2025-07-02T06:08:10",
+      "date_created": "2025-07-02T06:34:02.546184",
+      "title": "Front-End Developer (Angular, Node, Nest)",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:08:10",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Westlake",
+            "addressRegion": "TX",
+            "streetAddress": null
+          },
+          "latitude": 32.99391,
+          "longitude": -97.19771
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/front-end-developer-angular-node-nest-at-jobs-via-dice-4259110039",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Westlake"
+      ],
+      "regions_derived": [
+        "Texas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Westlake, Texas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        32.9809
+      ],
+      "lngs_derived": [
+        -97.2041
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/6wrAUOtyvp632QVOBhKhH1lNJR2W2aycKjSluMtC4J8="
+    },
+    {
+      "id": "1789604491",
+      "date_posted": "2025-07-02T06:08:09",
+      "date_created": "2025-07-02T06:32:42.436869",
+      "title": "Java full stack with Angular UI exp. for Charlotte, NC - Hybrid Location",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:08:09",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Charlotte",
+            "addressRegion": "NC",
+            "streetAddress": null
+          },
+          "latitude": 35.223785,
+          "longitude": -80.84114
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/java-full-stack-with-angular-ui-exp-for-charlotte-nc-hybrid-location-at-jobs-via-dice-4259108171",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Charlotte"
+      ],
+      "regions_derived": [
+        "North Carolina"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Charlotte, North Carolina, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        35.2083
+      ],
+      "lngs_derived": [
+        -80.8303
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/GTj5K01Lbs5S8wPAaOPeIhPXXFK6RnfTpufcDSnM2sQ="
+    },
+    {
+      "id": "1789609511",
+      "date_posted": "2025-07-02T06:08:09",
+      "date_created": "2025-07-02T06:34:11.605041",
+      "title": "Senior Angular Developer (Hybrid)",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:08:09",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Lansing",
+            "addressRegion": "MI",
+            "streetAddress": null
+          },
+          "latitude": 42.733624,
+          "longitude": -84.553925
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 70,
+          "maxValue": 80,
+          "unitText": "HOUR"
+        }
+      },
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-angular-developer-hybrid-at-jobs-via-dice-4259106739",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Lansing"
+      ],
+      "regions_derived": [
+        "Michigan"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Lansing, Michigan, United States"
+      ],
+      "timezones_derived": [
+        "America/Detroit"
+      ],
+      "lats_derived": [
+        42.7142
+      ],
+      "lngs_derived": [
+        -84.5601
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/I9eadKXOy4u8wXUvWUVPtq8XAJgiu52WPpl_4h5uN4I="
+    },
+    {
+      "id": "1789623047",
+      "date_posted": "2025-07-02T06:08:05",
+      "date_created": "2025-07-02T06:38:03.493468",
+      "title": "Lead .NET Developer / Architect (WCF / Angular)",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:08:05",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Columbia",
+            "addressRegion": "SC",
+            "streetAddress": null
+          },
+          "latitude": 34.009285,
+          "longitude": -81.037094
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/lead-net-developer-architect-wcf-angular-at-jobs-via-dice-4259110188",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Columbia"
+      ],
+      "regions_derived": [
+        "South Carolina"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Columbia, South Carolina, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        34.0378
+      ],
+      "lngs_derived": [
+        -80.9036
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/OcmE90A48Dn5gJPJu7w3Ql3lz8LnHELE7z9EkOAVl6U="
+    },
+    {
+      "id": "1789605063",
+      "date_posted": "2025-07-02T06:08:02",
+      "date_created": "2025-07-02T06:32:51.510284",
+      "title": "FS 70% FE 30% BE Angular, Typescript, Node.JS",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:08:02",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Salt Lake City",
+            "addressRegion": "UT",
+            "streetAddress": null
+          },
+          "latitude": 40.758476,
+          "longitude": -111.888145
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/fs-70%25-fe-30%25-be-angular-typescript-node-js-at-jobs-via-dice-4259107863",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Salt Lake City"
+      ],
+      "regions_derived": [
+        "Utah"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Salt Lake City, Utah, United States"
+      ],
+      "timezones_derived": [
+        "America/Denver"
+      ],
+      "lats_derived": [
+        40.7776
+      ],
+      "lngs_derived": [
+        -111.9311
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/UN6PmhS_mNdP1Z5iSKAZw0OcRP3YYUcAlDJjFBO05Po="
+    },
+    {
+      "id": "1789604344",
+      "date_posted": "2025-07-02T06:08:00",
+      "date_created": "2025-07-02T06:32:39.697814",
+      "title": "Angular Role",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:08:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "streetAddress": null
+          },
+          "latitude": 40.713047,
+          "longitude": -74.00723
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/angular-role-at-jobs-via-dice-4259109418",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "New York"
+      ],
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.6943
+      ],
+      "lngs_derived": [
+        -73.9249
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/saedah9NHWs-5oGf9VyW87PvqOTA2qTdGbWy67vpMCc="
+    },
+    {
+      "id": "1789608972",
+      "date_posted": "2025-07-02T06:07:59",
+      "date_created": "2025-07-02T06:34:01.85433",
+      "title": "Java and NodeJS Developer in Alpharetta, GA",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:07:59",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Alpharetta",
+            "addressRegion": "GA",
+            "streetAddress": null
+          },
+          "latitude": 34.075615,
+          "longitude": -84.29455
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/java-and-nodejs-developer-in-alpharetta-ga-at-jobs-via-dice-4259109454",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Alpharetta"
+      ],
+      "regions_derived": [
+        "Georgia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Alpharetta, Georgia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        34.0704
+      ],
+      "lngs_derived": [
+        -84.2738
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/VVr0LRqEAgcetKk3VUt8QJG9VPaIyw-WnSdTGcPIKm8="
+    },
+    {
+      "id": "1789604579",
+      "date_posted": "2025-07-02T06:07:57",
+      "date_created": "2025-07-02T06:32:43.752315",
+      "title": "Angular Developer",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-08-01T06:07:57",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Greenwood Village",
+            "addressRegion": "CO",
+            "streetAddress": null
+          },
+          "latitude": 39.616886,
+          "longitude": -104.95051
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/angular-developer-at-jobs-via-dice-4259111502",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Greenwood Village"
+      ],
+      "regions_derived": [
+        "Colorado"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Greenwood Village, Colorado, United States"
+      ],
+      "timezones_derived": [
+        "America/Denver"
+      ],
+      "lats_derived": [
+        39.6153
+      ],
+      "lngs_derived": [
+        -104.9131
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/3f9DNs8c20lm_8StImVS12ybVZPD6f1MMKtzxbQyfZo="
+    },
+    {
+      "id": "1789450956",
+      "date_posted": "2025-07-02T05:07:09",
+      "date_created": "2025-07-02T05:32:48.045004",
+      "title": "Angular Software Engineer",
+      "organization": "Cognizant",
+      "organization_url": "https://www.linkedin.com/company/cognizant",
+      "date_validthrough": "2025-08-01T05:07:09",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New York",
+            "addressRegion": "NY",
+            "streetAddress": null
+          },
+          "latitude": 40.713047,
+          "longitude": -74.00723
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 68442,
+          "maxValue": 114000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/angular-software-engineer-at-cognizant-4259145441",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQHjkUYrDIUKYA/company-logo_200_200/company-logo_200_200/0/1719839886088/cognizant_logo?e=2147483647&v=beta&t=7V3DlW0wFwrz3FmoSd7fm1u5PQNImA3R4It78L3zVS8",
+      "cities_derived": [
+        "New York"
+      ],
+      "regions_derived": [
+        "New York"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New York, New York, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.6943
+      ],
+      "lngs_derived": [
+        -73.9249
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 337005,
+      "linkedin_org_url": "https://www.cognizant.com",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 8225683,
+      "linkedin_org_headquarters": "Teaneck, New Jersey",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Interactive",
+        "Intelligent Process Automation",
+        "Digital Engineering",
+        "Industry & Platform Solutions",
+        "Internet of Things",
+        "Artificial Intelligence",
+        "Cloud",
+        "Data ",
+        "Healthcare",
+        "Banking",
+        "Finance ",
+        "Fintech",
+        "Manufacturing",
+        "Retail",
+        "Technology ",
+        "and Salesforce"
+      ],
+      "linkedin_org_locations": [
+        "300 Frank W Burr Blvd, Suite 600, Teaneck, New Jersey 07666, US",
+        "Second Floor, Phoenix, Arizona 85029, US",
+        "Thoraipakkam, Chennai, Tamil Nadu 600 096, IN",
+        "1 Kingdom Street, Paddington Central, London, W2 6BD, GB",
+        "3rd floor, Technopolis, Kakkanad, Kochi, Kerala 682 037, IN",
+        "Soroksári út, 44., Budapest, Budapest 1095, HU",
+        "129 Church St, New Haven, CT 06510, US",
+        "15 William St, Melbourne, VIC 3000, AU",
+        "50 Boulevard Haussmann, Paris, IdF 75009, FR",
+        "Via Monte di Pieta, 21, Milan, Lomb. 20121, IT",
+        "Havenlaan 86C, Box 408, Brussels, Brussels Region 1000, BE",
+        "7301 Ohms Ln, Edina, MN 55439, US",
+        "Anson Rd, Singapore, Singapore, SG",
+        "28 Margaret St, Sydney, NSW 2000, AU",
+        "aleja Grunwaldzka 411, Gdansk, PM 80-309, PL",
+        "9655 Maroon Circle, Englewood, CO 80112, US",
+        "Hardstrasse 201, Prime Tower office 18th floor, Zurich, 8005, CH",
+        "St.-Martin-Straße 106, Munich, BY 81669, DE",
+        "Drammensveien 145B, Oslo, Oslo 0277, NO",
+        "Savanoriu prospektas 16, Vilnius, Vilniaus 03116, LT",
+        "Calle Miraflores 222, Santiago, Santiago Metropolitan 8320000, CL",
+        "Toldbodgade, Copenhagen, Capital Region 1253, DK",
+        "Placa d'Europa, l'Hospitalet de Llobregat, Catalonia 08908, ES",
+        "Calle Moreno no. 845 to 899, on the corner of Calle Tacuarí no. 242 to 292, Buenos Aires, AR",
+        "Tucumán 3720, Bulnes Street, Buenos Aires, AR",
+        "200 Barangaroo Avenue, Barangaroo, New South Wales, AU",
+        "Science Hub Tower 4, 1110 Campus Avenue, Mckinley Hill Cyber Park, 1st-4th floor, Taguig City , 1634, PH"
+      ],
+      "linkedin_org_description": "Cognizant (Nasdaq-100: CTSH) engineers modern businesses. We help our clients modernize technology, reimagine processes and transform experiences so they can stay ahead in our fast-changing world. Together, we’re improving everyday life. See how at www.cognizant.com or @cognizant.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "cognizant",
+      "no_jb_schema": null,
+      "external_apply_url": "https://careers.cognizant.com/global-en/jobs/00064673091/angular-software-engineer/?source=JB-11500"
+    },
+    {
+      "id": "1789451035",
+      "date_posted": "2025-07-02T05:07:09",
+      "date_created": "2025-07-02T05:32:51.97209",
+      "title": "Java & Angular Software Engineer",
+      "organization": "Cognizant",
+      "organization_url": "https://www.linkedin.com/company/cognizant",
+      "date_validthrough": "2025-08-01T05:07:09",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "New Jersey",
+            "addressRegion": "United States",
+            "streetAddress": null
+          },
+          "latitude": 40.139095,
+          "longitude": -74.67852
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 68442,
+          "maxValue": 114000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/java-angular-software-engineer-at-cognizant-4259144747",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQHjkUYrDIUKYA/company-logo_200_200/company-logo_200_200/0/1719839886088/cognizant_logo?e=2147483647&v=beta&t=7V3DlW0wFwrz3FmoSd7fm1u5PQNImA3R4It78L3zVS8",
+      "cities_derived": null,
+      "regions_derived": [
+        "New Jersey"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "New Jersey, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.2237
+      ],
+      "lngs_derived": [
+        -74.7641
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 337005,
+      "linkedin_org_url": "https://www.cognizant.com",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 8225683,
+      "linkedin_org_headquarters": "Teaneck, New Jersey",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Interactive",
+        "Intelligent Process Automation",
+        "Digital Engineering",
+        "Industry & Platform Solutions",
+        "Internet of Things",
+        "Artificial Intelligence",
+        "Cloud",
+        "Data ",
+        "Healthcare",
+        "Banking",
+        "Finance ",
+        "Fintech",
+        "Manufacturing",
+        "Retail",
+        "Technology ",
+        "and Salesforce"
+      ],
+      "linkedin_org_locations": [
+        "300 Frank W Burr Blvd, Suite 600, Teaneck, New Jersey 07666, US",
+        "Second Floor, Phoenix, Arizona 85029, US",
+        "Thoraipakkam, Chennai, Tamil Nadu 600 096, IN",
+        "1 Kingdom Street, Paddington Central, London, W2 6BD, GB",
+        "3rd floor, Technopolis, Kakkanad, Kochi, Kerala 682 037, IN",
+        "Soroksári út, 44., Budapest, Budapest 1095, HU",
+        "129 Church St, New Haven, CT 06510, US",
+        "15 William St, Melbourne, VIC 3000, AU",
+        "50 Boulevard Haussmann, Paris, IdF 75009, FR",
+        "Via Monte di Pieta, 21, Milan, Lomb. 20121, IT",
+        "Havenlaan 86C, Box 408, Brussels, Brussels Region 1000, BE",
+        "7301 Ohms Ln, Edina, MN 55439, US",
+        "Anson Rd, Singapore, Singapore, SG",
+        "28 Margaret St, Sydney, NSW 2000, AU",
+        "aleja Grunwaldzka 411, Gdansk, PM 80-309, PL",
+        "9655 Maroon Circle, Englewood, CO 80112, US",
+        "Hardstrasse 201, Prime Tower office 18th floor, Zurich, 8005, CH",
+        "St.-Martin-Straße 106, Munich, BY 81669, DE",
+        "Drammensveien 145B, Oslo, Oslo 0277, NO",
+        "Savanoriu prospektas 16, Vilnius, Vilniaus 03116, LT",
+        "Calle Miraflores 222, Santiago, Santiago Metropolitan 8320000, CL",
+        "Toldbodgade, Copenhagen, Capital Region 1253, DK",
+        "Placa d'Europa, l'Hospitalet de Llobregat, Catalonia 08908, ES",
+        "Calle Moreno no. 845 to 899, on the corner of Calle Tacuarí no. 242 to 292, Buenos Aires, AR",
+        "Tucumán 3720, Bulnes Street, Buenos Aires, AR",
+        "200 Barangaroo Avenue, Barangaroo, New South Wales, AU",
+        "Science Hub Tower 4, 1110 Campus Avenue, Mckinley Hill Cyber Park, 1st-4th floor, Taguig City , 1634, PH"
+      ],
+      "linkedin_org_description": "Cognizant (Nasdaq-100: CTSH) engineers modern businesses. We help our clients modernize technology, reimagine processes and transform experiences so they can stay ahead in our fast-changing world. Together, we’re improving everyday life. See how at www.cognizant.com or @cognizant.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "cognizant",
+      "no_jb_schema": null,
+      "external_apply_url": "https://careers.cognizant.com/global-en/jobs/00064696071/java-angular-software-engineer/?source=JB-11500"
+    },
+    {
+      "id": "1787584352",
+      "date_posted": "2025-07-01T13:18:34",
+      "date_created": "2025-07-01T17:08:39.53111",
+      "title": "Senior Software Engineer (.NET / Angular)",
+      "organization": "Jobot",
+      "organization_url": "https://www.linkedin.com/company/jobot",
+      "date_validthrough": "2025-07-31T13:18:34",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Oklahoma City",
+            "addressRegion": "OK",
+            "streetAddress": null
+          },
+          "latitude": 35.468494,
+          "longitude": -97.52126
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 100000,
+          "maxValue": 160000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-net-angular-at-jobot-4256902043",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFBeHszXin1VA/company-logo_200_200/company-logo_200_200/0/1737157657968/jobot_logo?e=2147483647&v=beta&t=NicMQnujqzx01lzFeWUEoy_NEm1RqfjA_I0QlnQslR8",
+      "cities_derived": [
+        "Oklahoma City"
+      ],
+      "regions_derived": [
+        "Oklahoma"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Oklahoma City, Oklahoma, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        35.4676
+      ],
+      "lngs_derived": [
+        -97.5136
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 1255,
+      "linkedin_org_url": "http://Jobot.com",
+      "linkedin_org_size": "501-1,000 employees",
+      "linkedin_org_slogan": "Hire or Be Hired. Jobot can help. Find a good job at: Jobot.com - Employee Owned Since 2024 💙🤖",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": 3252043,
+      "linkedin_org_headquarters": "Newport Beach, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2018",
+      "linkedin_org_specialties": [
+        "technology",
+        "recruiting",
+        "AI",
+        "artificial intelligence",
+        "construction",
+        "IT",
+        "tech recruiting",
+        "staffing",
+        "mortgage",
+        "healthcare",
+        "accountingfinance",
+        "accounting",
+        "jobot",
+        "staffing",
+        "sales",
+        "humanresources",
+        "tech",
+        "and engineering"
+      ],
+      "linkedin_org_locations": [
+        "3101 W Pacific Coast Hwy, Newport Beach, California 92663, US"
+      ],
+      "linkedin_org_description": "Jobot is on a mission to connect good people with good jobs. By combining AI-powered technology with the expertise of Jobot Pros, our experienced recruiters, we help you find career opportunities that align with your goals and values.\n\nFounded in 2018 and employee-owned since 2024, Jobot is committed to fostering a culture of kindness, respect, innovation, and connection.  As an industry leader, we’ve been recognized as a top workplace by Forbes, Fortune, USA Today, and Staffing Industry Analysts (SIA).\n\nReady to find a good job? Create your profile today at Jobot.com. 🤖",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Not Applicable",
+      "directapply": true,
+      "linkedin_org_slug": "jobot",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1786724824",
+      "date_posted": "2025-07-01T12:07:29",
+      "date_created": "2025-07-01T12:33:15.341003",
+      "title": "Software Engineer (NodeJS, MongoDB)",
+      "organization": "Fidelity Investments",
+      "organization_url": "https://www.linkedin.com/company/fidelity-investments",
+      "date_validthrough": "2025-07-31T12:07:29",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Jersey City",
+            "addressRegion": "NJ",
+            "streetAddress": null
+          },
+          "latitude": 40.719177,
+          "longitude": -74.03327
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 64000,
+          "maxValue": 121000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/software-engineer-nodejs-mongodb-at-fidelity-investments-4260215129",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQEuH501asNUIQ/company-logo_200_200/B4EZXtxo03G0AM-/0/1743450967859/fidelity_investments_logo?e=2147483647&v=beta&t=HSZ7YuPCgYWW94KQGJL3ysDeR9D5iGxHgjZtKwoLK_Y",
+      "cities_derived": [
+        "Jersey City"
+      ],
+      "regions_derived": [
+        "New Jersey"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Jersey City, New Jersey, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        40.7184
+      ],
+      "lngs_derived": [
+        -74.0686
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 82428,
+      "linkedin_org_url": "http://www.fidelity.com",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": "Here to help you grow your savings and invest in the life you want.\n",
+      "linkedin_org_industry": "Financial Services",
+      "linkedin_org_followers": 1146265,
+      "linkedin_org_headquarters": "Boston, MA",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "1946",
+      "linkedin_org_specialties": [
+        "Retirement",
+        "Investments",
+        "Online trading",
+        "Asset management",
+        "IRA",
+        "401k",
+        "Mutual funds",
+        "Stocks",
+        "ETF",
+        "Bonds",
+        "Brokerage",
+        "Cash management",
+        "HSA",
+        "529 plans",
+        "Annuities",
+        "Life insurance",
+        "Benefits consulting",
+        "Stock plan services",
+        "Business news",
+        "and Wealth management"
+      ],
+      "linkedin_org_locations": [
+        "245 Summer St, Boston, MA 02210, US"
+      ],
+      "linkedin_org_description": "Fidelity’s mission is to strengthen the financial well-being of our customers and deliver better outcomes for the clients and businesses we serve. Fidelity’s strength comes from the scale of our diversified, market-leading financial services businesses that serve individuals, families, employers, wealth management firms, and institutions. With assets under administration of $15.0 trillion, including discretionary assets of $5.9 trillion as of March 31, 2025, we focus on meeting the unique needs of a broad and growing customer base. Privately held for 78 years, Fidelity employs more than 77,000 associates across the United States, Ireland, and India. \n \nFor our Terms and Conditions, please visit http://go.fidelity.com/LIterms",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "fidelity-investments",
+      "no_jb_schema": null,
+      "external_apply_url": "https://jobs.fidelity.com/en/jobs/2109544/software-engineer-nodejs-mongodb/?source=LinkedIn_Job+Boards"
+    },
+    {
+      "id": "1786686239",
+      "date_posted": "2025-07-01T11:47:23",
+      "date_created": "2025-07-01T12:07:46.944293",
+      "title": "Lead Software Engineer, Full Stack (Python, Java, Angular)",
+      "organization": "Capital One",
+      "organization_url": "https://www.linkedin.com/company/capital-one",
+      "date_validthrough": "2025-07-31T11:47:23",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Richmond",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 37.539265,
+          "longitude": -77.43803
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/lead-software-engineer-full-stack-python-java-angular-at-capital-one-4260090635",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQF0OgQyRZ9yAA/company-logo_200_200/company-logo_200_200/0/1635782718446/capital_one_logo?e=2147483647&v=beta&t=EdvNN6BepIhdQnc9udE-QlqxASeRgfZxEr0ZYI4s6cQ",
+      "cities_derived": [
+        "Richmond"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Richmond, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        37.5295
+      ],
+      "lngs_derived": [
+        -77.4756
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 62797,
+      "linkedin_org_url": "http://www.capitalone.com",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "Financial Services",
+      "linkedin_org_followers": 920666,
+      "linkedin_org_headquarters": "McLean, Va",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Business Banking"
+      ],
+      "linkedin_org_locations": [
+        "1680 Capital One Drive, McLean, Va 22102, US",
+        "8020 Towers Crescent Dr, Vienna, VA 22182, US",
+        "2 Bethesda METRO Center, Bethesda, MD 20814, US"
+      ],
+      "linkedin_org_description": "At Capital One, we're making things better for our customers and associates through innovation and collaboration. We were founded on the belief that everyone deserves financial freedom—and are dedicated to a world where all have equal opportunity to prosper. \n\nBanking is in our DNA, but we are so much more than a bank. We always think about what’s next—and how we can bring our customers the tools needed to improve their financial lives. Your ideas, experiences and skills will help make banking better. You’ll be part of a supportive culture while earning amazing benefits. That’s life at Capital One. \n\nCapital One is an equal opportunity employer (EOE, including disability/vet) committed to non-discrimination in compliance with applicable federal, state, and local laws.\n\nView our Social Media Community Guidelines https://www.capitalone.com/digital/social-media/\n",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "capital-one",
+      "no_jb_schema": null,
+      "external_apply_url": "https://dsp.prng.co/afNQMYb"
+    },
+    {
+      "id": "1786686409",
+      "date_posted": "2025-07-01T11:47:23",
+      "date_created": "2025-07-01T12:07:50.048896",
+      "title": "Lead Software Engineer, Full Stack (Python, Java, Angular)",
+      "organization": "Capital One",
+      "organization_url": "https://www.linkedin.com/company/capital-one",
+      "date_validthrough": "2025-07-31T11:47:23",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "McLean",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 38.93463,
+          "longitude": -77.17058
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/lead-software-engineer-full-stack-python-java-angular-at-capital-one-4260095256",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQF0OgQyRZ9yAA/company-logo_200_200/company-logo_200_200/0/1635782718446/capital_one_logo?e=2147483647&v=beta&t=EdvNN6BepIhdQnc9udE-QlqxASeRgfZxEr0ZYI4s6cQ",
+      "cities_derived": [
+        "McLean"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "McLean, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.9436
+      ],
+      "lngs_derived": [
+        -77.1943
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 62797,
+      "linkedin_org_url": "http://www.capitalone.com",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "Financial Services",
+      "linkedin_org_followers": 920666,
+      "linkedin_org_headquarters": "McLean, Va",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        "Business Banking"
+      ],
+      "linkedin_org_locations": [
+        "1680 Capital One Drive, McLean, Va 22102, US",
+        "8020 Towers Crescent Dr, Vienna, VA 22182, US",
+        "2 Bethesda METRO Center, Bethesda, MD 20814, US"
+      ],
+      "linkedin_org_description": "At Capital One, we're making things better for our customers and associates through innovation and collaboration. We were founded on the belief that everyone deserves financial freedom—and are dedicated to a world where all have equal opportunity to prosper. \n\nBanking is in our DNA, but we are so much more than a bank. We always think about what’s next—and how we can bring our customers the tools needed to improve their financial lives. Your ideas, experiences and skills will help make banking better. You’ll be part of a supportive culture while earning amazing benefits. That’s life at Capital One. \n\nCapital One is an equal opportunity employer (EOE, including disability/vet) committed to non-discrimination in compliance with applicable federal, state, and local laws.\n\nView our Social Media Community Guidelines https://www.capitalone.com/digital/social-media/\n",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "capital-one",
+      "no_jb_schema": null,
+      "external_apply_url": "https://dsp.prng.co/JMssBMb"
+    },
+    {
+      "id": "1786446566",
+      "date_posted": "2025-07-01T09:41:24",
+      "date_created": "2025-07-01T10:02:40.783344",
+      "title": "Senior/Lead Full Stack Engineer (NodeJS+React)",
+      "organization": "Deep Origin",
+      "organization_url": "https://www.linkedin.com/company/deep-origin",
+      "date_validthrough": "2025-07-31T09:41:16",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "South San Francisco",
+            "addressRegion": "CA",
+            "streetAddress": null
+          },
+          "latitude": 37.65568,
+          "longitude": -122.41248
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-lead-full-stack-engineer-nodejs%2Breact-at-deep-origin-4258645363",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQESJeux7g0zGg/company-logo_200_200/company-logo_200_200/0/1690409011154/deep_origin_logo?e=2147483647&v=beta&t=IMSevOMUdvGvp3-7KFuizQGdF3TBXrYCnm4h8C5iCwU",
+      "cities_derived": [
+        "South San Francisco"
+      ],
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "South San Francisco, California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        37.6538
+      ],
+      "lngs_derived": [
+        -122.4196
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 59,
+      "linkedin_org_url": "https://www.deeporigin.com/",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Accelerating R&D to untangle the complexity of life and discover drugs",
+      "linkedin_org_industry": "Biotechnology Research",
+      "linkedin_org_followers": 12862,
+      "linkedin_org_headquarters": "South San Francisco, California",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2022",
+      "linkedin_org_specialties": [
+        "Bioinformatics",
+        "Biosimulation",
+        "Cloud computing",
+        "Data analysis",
+        "Data management",
+        "Drug discovery",
+        "Small molecules",
+        "and Partnerships"
+      ],
+      "linkedin_org_locations": [
+        "486 Cabot Road, South San Francisco, California 94080, US",
+        "Yerevan, AM"
+      ],
+      "linkedin_org_description": "We help scientists solve disease, develop drugs, and extend healthspan by building tools that simplify R&D, simulate biology, and untangle the complexity of life. Streamline computational analysis today. Discover drugs tomorrow.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "deep-origin",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1786356493",
+      "date_posted": "2025-07-01T09:41:18.106",
+      "date_created": "2025-07-01T09:41:18.195122",
+      "title": "Senior Full Stack Developer - Strong Angular Experience",
+      "organization": "Sitly",
+      "organization_url": "https://nl.linkedin.com/company/sitly",
+      "date_validthrough": null,
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressRegion": "",
+            "addressCountry": "",
+            "addressLocality": "Nederland"
+          }
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": null,
+      "url": "https://nl.linkedin.com/jobs/view/senior-full-stack-developer-strong-angular-experience-at-sitly-4259466812",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "nl.linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQHmk5pdGpUUzQ/company-logo_100_100/company-logo_100_100/0/1687945659859/sitly_logo?e=2147483647&v=beta&t=GL_ATtSrG3ORop62pbgpwPx6GooO_sZ69FnIb0_0pS8",
+      "cities_derived": [
+        "Nederland"
+      ],
+      "regions_derived": [
+        "Texas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Nederland, Texas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        29.9707
+      ],
+      "lngs_derived": [
+        -94.0015
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": null,
+      "linkedin_org_url": null,
+      "linkedin_org_size": null,
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": null,
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": null,
+      "linkedin_org_type": null,
+      "linkedin_org_foundeddate": null,
+      "linkedin_org_specialties": null,
+      "linkedin_org_locations": null,
+      "linkedin_org_description": null,
+      "linkedin_org_recruitment_agency_derived": null,
+      "seniority": "Senior medewerker",
+      "directapply": false,
+      "linkedin_org_slug": null,
+      "no_jb_schema": true,
+      "external_apply_url": "https://sitly.homerun.co/senior-full-stack-developer-strong-experience-with-angular/en"
+    },
+    {
+      "id": "1785841446",
+      "date_posted": "2025-07-01T05:23:03",
+      "date_created": "2025-07-01T05:33:00.156277",
+      "title": "Junior Angular Developer- C11 - TAMPA",
+      "organization": "Lensa",
+      "organization_url": "https://www.linkedin.com/company/lensa",
+      "date_validthrough": "2025-07-31T05:23:03",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Tampa",
+            "addressRegion": "FL",
+            "streetAddress": null
+          },
+          "latitude": 27.947424,
+          "longitude": -82.45878
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 76560,
+          "maxValue": 106840,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/junior-angular-developer-c11-tampa-at-lensa-4259757609",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4D0BAQEkHa-0Aki9XQ/company-logo_200_200/B4DZaKylu7GsAI-/0/1746085240184/lensa_logo?e=2147483647&v=beta&t=uWeVCpbXYyRN0ASrTAkroLlijETQQufn9qquZHoZTfo",
+      "cities_derived": [
+        "Tampa"
+      ],
+      "regions_derived": [
+        "Florida"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Tampa, Florida, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        27.9945
+      ],
+      "lngs_derived": [
+        -82.4447
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 245,
+      "linkedin_org_url": "https://lensa.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Make your move. Building careers that matter for job seekers and professionals.",
+      "linkedin_org_industry": "Internet Publishing",
+      "linkedin_org_followers": 92645,
+      "linkedin_org_headquarters": "West Chester, Pennsylvania",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "eRecruitment",
+        "Online Recruitment",
+        "Talent Acquisition HR Platform",
+        "Hiring platform",
+        "Job search",
+        "Jobs",
+        "Employment",
+        "and job advertising"
+      ],
+      "linkedin_org_locations": [
+        "17 W Gay St, Suite 50, West Chester, Pennsylvania 19380, US",
+        "Kapás utca, 6-12., Budapest, Budapest 1027, HU"
+      ],
+      "linkedin_org_description": "Lensa is a U.S. job search platform with over 20 million registered users.\n\nWe connect jobseekers to a wide range of opportunities from employers, staffing firms, recruitment agencies and job boards. Lensa also offers tools to help users understand their career options and make informed decisions throughout their job search journey — from exploration to application.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Entry level",
+      "directapply": false,
+      "linkedin_org_slug": "lensa",
+      "no_jb_schema": null,
+      "external_apply_url": "https://lensa.com/cgw/bdfd1864942f42f0aa8f7d3f37d68576tjo1?jpsi=directemployers&publisher_preference=easier_apply&utm_campaign=Computer Occupations&utm_medium=slot&utm_source=linkedin&utm_term=jse"
+    },
+    {
+      "id": "1785278782",
+      "date_posted": "2025-07-01T00:09:58",
+      "date_created": "2025-07-01T00:32:43.325051",
+      "title": "Angular Developer",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-07-31T00:09:58",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Chantilly",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 38.888687,
+          "longitude": -77.417496
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 77600,
+          "maxValue": 176000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "PART_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/angular-developer-at-jobs-via-dice-4258370391",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Chantilly"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Chantilly, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.8868
+      ],
+      "lngs_derived": [
+        -77.4453
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/Rp985iBXbsyf9F9tsD3XXsj0CUax6UhT35mMo9klpaM="
+    },
+    {
+      "id": "1785283128",
+      "date_posted": "2025-07-01T00:09:56",
+      "date_created": "2025-07-01T00:33:46.803077",
+      "title": "Full Stack Developer (Frontend-Focused Angular & AWS) - Local to Richmond, VA only",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-07-31T00:09:56",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Richmond",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 37.54076,
+          "longitude": -77.43393
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/full-stack-developer-frontend-focused-angular-aws-local-to-richmond-va-only-at-jobs-via-dice-4258370417",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Richmond"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Richmond, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        37.5295
+      ],
+      "lngs_derived": [
+        -77.4756
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/c2RJ5R_kFNVgUXJpVr6yj2CeZFo-G4pr4Y_cqv15v7Q="
+    },
+    {
+      "id": "1785284152",
+      "date_posted": "2025-07-01T00:09:56",
+      "date_created": "2025-07-01T00:33:58.682879",
+      "title": "Senior Angular Developer",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-07-31T00:09:56",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Dallas",
+            "addressRegion": "TX",
+            "streetAddress": null
+          },
+          "latitude": 32.777977,
+          "longitude": -96.79621
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-angular-developer-at-jobs-via-dice-4258367959",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Dallas"
+      ],
+      "regions_derived": [
+        "Texas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Dallas, Texas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        32.7935
+      ],
+      "lngs_derived": [
+        -96.7667
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/IioyToVXweBn7YplC3SooA6ac9UI2GFrRiQu2ZOVAEA="
+    },
+    {
+      "id": "1784945531",
+      "date_posted": "2025-06-30T21:23:00",
+      "date_created": "2025-06-30T21:32:21.737528",
+      "title": "Full Stack Engineer (Angular, GraphQL, AWS)",
+      "organization": "Randstad Digital Americas",
+      "organization_url": "https://www.linkedin.com/company/randstad-digital-americas",
+      "date_validthrough": "2025-07-30T21:23:00",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Salt Lake City",
+            "addressRegion": "UT",
+            "streetAddress": null
+          },
+          "latitude": 40.744534,
+          "longitude": -111.809
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 74,
+          "maxValue": 75,
+          "unitText": "HOUR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/full-stack-engineer-angular-graphql-aws-at-randstad-digital-americas-4258357044",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQGPQwVLNSXa8A/company-logo_200_200/company-logo_200_200/0/1693387457204?e=2147483647&v=beta&t=Rqw9-BDkNz-iadwyW40aOwtPKTLlYjzu-D3XRtjRaaA",
+      "cities_derived": [
+        "Salt Lake City"
+      ],
+      "regions_derived": [
+        "Utah"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Salt Lake City, Utah, United States"
+      ],
+      "timezones_derived": [
+        "America/Denver"
+      ],
+      "lats_derived": [
+        40.7776
+      ],
+      "lngs_derived": [
+        -111.9311
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 3519,
+      "linkedin_org_url": "https://www.randstaddigital.com/",
+      "linkedin_org_size": "10,001+ employees",
+      "linkedin_org_slogan": "your talent-first digital enablement partner",
+      "linkedin_org_industry": "IT Services and IT Consulting",
+      "linkedin_org_followers": 193723,
+      "linkedin_org_headquarters": "Atlanta, GA",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "1984",
+      "linkedin_org_specialties": [
+        "Total IT Solutions Provider",
+        "Recruitment",
+        "Consulting",
+        "Projects",
+        "Outsourcing",
+        "Permanent IT Staffing",
+        "IT Staff Augmentation",
+        "and Infastructure"
+      ],
+      "linkedin_org_locations": [
+        "3625 Cumberland Park, Blvd, Ste 600, Ste 600, Atlanta, GA 30339, US",
+        "3625 Cumberland Park, Blvd, Ste 600, Ste 600, Atlanta, Georgia 30339, US"
+      ],
+      "linkedin_org_description": "Randstad Digital is a trusted digital enablement partner that facilitates accelerated transformation for businesses by providing global talent, capacity, and solutions across specialized domains. Our talent solutions allow you to seamlessly scale your team while connecting you with skilled professionals around the world who align with your chosen technologies. Our focus lies in managed solutions, and we empower businesses to move at speed and achieve goals efficiently. We support four service lines including customer experience, digital and product engineering, data and analytics, and cloud transformation in addition to three engagement models including talent services, global talent centers, and managed solution capabilities. \n\nRandstad Digital was announced on August 30, 2023, under the umbrella of Randstad, the world’s largest talent company and a partner of choice to clients. Randstad has a deep understanding of the labor market and helps clients to create the high-quality, diverse, and agile workforces they need to succeed. Our 46,000 employees around the world make a positive impact on society by helping people to realize their true potential throughout their working life. \n\nRandstad was founded in 1960 and is headquartered in Diemen, the Netherlands. In 2022, in our 39 markets, we helped more than 2 million people find a job that feels good and advised over 230,000 clients on their talent needs. We generated revenue of €27.6 billion. Randstad N.V. is listed on the Euronext Amsterdam. For more information, see www.randstaddigital.com.\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "randstad-digital-americas",
+      "no_jb_schema": null,
+      "external_apply_url": "https://www.randstadusa.com/jobs/4/1090346/full-stack-engineer-angular-graphql-aws_salt-lake-city/"
+    },
+    {
+      "id": "1785063597",
+      "date_posted": "2025-06-30T21:13:31",
+      "date_created": "2025-06-30T22:33:49.382357",
+      "title": "Angular Developer",
+      "organization": "BOOZ ALLEN HAMILTON INTERNATIONAL (U.K.) LTD",
+      "organization_url": "https://www.linkedin.com/company/booz-allen-hamilton-international-u.k.-ltd",
+      "date_validthrough": "2025-07-30T21:13:31",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Chantilly",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 38.888687,
+          "longitude": -77.417496
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 77600,
+          "maxValue": 176000,
+          "unitText": "YEAR"
+        }
+      },
+      "employment_type": [
+        "PART_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/angular-developer-at-booz-allen-hamilton-international-u-k-ltd-4259639364",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQHrTQfh-KCNGw/company-logo_200_200/company-logo_200_200/0/1654725858842/booz_allen_hamilton_international_uk_ltd_logo?e=2147483647&v=beta&t=fMARfeEdjCLIkwulqRSTGeQgYZKwwU5p4OmEV5lzTOo",
+      "cities_derived": [
+        "Chantilly"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Chantilly, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.8868
+      ],
+      "lngs_derived": [
+        -77.4453
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 30,
+      "linkedin_org_url": "https://www.boozallen.com/",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "Business Consulting and Services",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "LONDON",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "100 NEW BRIDGE STREET, LONDON, EC4V 6JA, GB"
+      ],
+      "linkedin_org_description": "BOOZ ALLEN HAMILTON INTERNATIONAL (U.K.) LTD is a management consulting company based out of 100 NEW BRIDGE STREET, LONDON, United Kingdom.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "booz-allen-hamilton-international-u.k.-ltd",
+      "no_jb_schema": null,
+      "external_apply_url": "https://careers.boozallen.com/jobs/JobDetail?jobId=112779"
+    },
+    {
+      "id": "1784897988",
+      "date_posted": "2025-06-30T20:38:28",
+      "date_created": "2025-06-30T21:02:42.403238",
+      "title": "Senior Angular Developer",
+      "organization": "Avance Consulting",
+      "organization_url": "https://www.linkedin.com/company/avance-services",
+      "date_validthrough": "2025-07-30T20:38:28",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Bellevue",
+            "addressRegion": "WA",
+            "streetAddress": null
+          },
+          "latitude": 47.6137,
+          "longitude": -122.19093
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-angular-developer-at-avance-consulting-4258354067",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQGMIJDpByu3MA/company-logo_200_200/company-logo_200_200/0/1693915285116/avance_services_logo?e=2147483647&v=beta&t=mZdAPUVKNcpF4KisY95KTKKkNM3vwhJag5bEcbX6xdE",
+      "cities_derived": [
+        "Bellevue"
+      ],
+      "regions_derived": [
+        "Washington"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Bellevue, Washington, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        47.5951
+      ],
+      "lngs_derived": [
+        -122.1535
+      ],
+      "remote_derived": false,
+      "recruiter_name": "Mario Mary Veronica",
+      "recruiter_title": "||Connecting Top Talent with Leading Companies across USA || Helping Companies Thrive by Finding the Best Talent 💼||",
+      "recruiter_url": "https://in.linkedin.com/in/mariomaryveronica",
+      "linkedin_org_employees": 1722,
+      "linkedin_org_url": "https://www.avanceservices.com",
+      "linkedin_org_size": "501-1,000 employees",
+      "linkedin_org_slogan": "Recruitment and staffing agency that empowers you to build high-performance teams and tomorrow's leaders.",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": 279470,
+      "linkedin_org_headquarters": "London, United Kingdom",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2007",
+      "linkedin_org_specialties": [
+        "IT Services",
+        "Staffing and Recruiting",
+        "Human Resources",
+        "Recruitment",
+        "Staffing solutions",
+        "Payroll Services",
+        "Recruitment Process Outsourcing (RPO)",
+        "Temporary Staffing Solutions",
+        "Temporary & Contract Staffing",
+        "Global HR Solutions",
+        "Contract-to-Hire",
+        "Specialist Recruitment",
+        "Worldwide Recruitment Solutions",
+        "HR Services",
+        "Recruitment Consultancy",
+        "Recruitment Agency",
+        "Global Recruitment Services",
+        "360 Degree Recruitment",
+        "360 Recruiter",
+        "IT Staffing",
+        "STEM",
+        "and Leadership Hiring"
+      ],
+      "linkedin_org_locations": [
+        "Office No 301C, Golden Cross House, 8 Duncannon Street,, London, United Kingdom WC2N 4JF, GB",
+        "100 Franklin Square, Somerset, NJ 08873, US",
+        "900−895 Don Mills Road, Toronto, Ontario , Canada M3C 1W3, CA",
+        "Koningsplein 1 2 SFAA, Amsterdam, Netherlands 1017BB, NL",
+        "Zug, CH",
+        "Prague, CZ",
+        "Saint-Josse-ten-Noode, BE",
+        "Melbourne, AU"
+      ],
+      "linkedin_org_description": "Avance Consulting is a global organization focused on delivering innovative talent solution services to some of the most renowned companies in the world, across industries that include Information Technology, Financial Services, Media and Entertainment, Telecom, FMCG, and Healthcare.\n\nOur deep understanding of the domains that we focus on is our key strategic differentiator. Our team of over 700 professionals are from a range of distinct industry sectors and utilize their vast professional networks and business knowledge to deliver the perfect solution and services to our client, first time and every time.  \n\nWe understand that our clients have unique organizations which require creative, timely solutions, as well as specialized resources to work with them,  adding real impact to their top and bottom line. \n\nWe closely monitor the pulse of the market and constantly evolving technologies with our in-depth research and publish updates about the state of top trending technology, talent intelligence, compensation benchmarks across industries and other essential talent-related insights, giving an insider’s perspective to both companies and candidates in the form of reports. Avance Consulting gets a Facelift. Our new look embodies our commitment to superior service, data security, and flexibility.\"",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "avance-services",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1784836823",
+      "date_posted": "2025-06-30T20:22:30",
+      "date_created": "2025-06-30T20:32:34.088235",
+      "title": "Full Stack Engineer - Angular",
+      "organization": "ConvexTech Inc.",
+      "organization_url": "https://www.linkedin.com/company/convextech",
+      "date_validthrough": "2025-07-30T20:22:30",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Richmond",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 37.54076,
+          "longitude": -77.43393
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/full-stack-engineer-angular-at-convextech-inc-4258350613",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQEcCTZHLK9p7A/company-logo_200_200/company-logo_200_200/0/1727791733445/convextech_logo?e=2147483647&v=beta&t=iYFCa0QAu_jtc3bS2e67FmxbbYD5OGr0ag1h7gVDW8A",
+      "cities_derived": [
+        "Richmond"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Richmond, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        37.5295
+      ],
+      "lngs_derived": [
+        -77.4756
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 122,
+      "linkedin_org_url": "https://www.convextech.com",
+      "linkedin_org_size": "51-200 employees",
+      "linkedin_org_slogan": "Powering Businesses with Next-Gen Solutions ",
+      "linkedin_org_industry": "Information Technology & Services",
+      "linkedin_org_followers": 14631,
+      "linkedin_org_headquarters": "Pearland, Texas",
+      "linkedin_org_type": "Partnership",
+      "linkedin_org_foundeddate": "2011",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [
+        "11200 Broadway St, 2743, Pearland, Texas 77584, US"
+      ],
+      "linkedin_org_description": "Welcome to ConvexTech INC, an IT consulting company, Leading in SAP Solutions & Expertise with over a decade of experience. We proudly serve diverse sectors, including engineering, healthcare, IT, and non-IT industries, delivering tailored solutions to meet the unique needs of our clients.\n\nOur expertise extends to quality assurance, software development, and comprehensive SAP solutions, allowing us to support organizations in navigating complex challenges and achieving their goals.\n\nWhat We Offer:\nSAP Solutions & Expertise: Driving efficiency and innovation through robust SAP services.\nQuality Assurance & Software Development: Ensuring the highest standards in every project.\nSpecialist Staffing & Recruiting: Connecting top talent with industry leaders.\nConsulting Services: In-depth insights and strategies for engineering and healthcare.\n\nAt ConvexTech INC, we are committed to excellence, collaboration, and the success of our clients. Let’s connect and explore how we can help elevate your business!",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "convextech",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1784836275",
+      "date_posted": "2025-06-30T20:01:51",
+      "date_created": "2025-06-30T20:32:18.424475",
+      "title": "Backend Engineer (GoLang and NodeJS)",
+      "organization": "The Fountain Group",
+      "organization_url": "https://www.linkedin.com/company/the-fountain-group",
+      "date_validthrough": "2025-07-30T20:01:51",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Santa Clara",
+            "addressRegion": "CA",
+            "streetAddress": null
+          },
+          "latitude": 37.352394,
+          "longitude": -121.95308
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/backend-engineer-golang-and-nodejs-at-the-fountain-group-4259630749",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D4E0BAQHq1m8ZrsbL-A/company-logo_200_200/company-logo_200_200/0/1721830038785/the_fountain_group_logo?e=2147483647&v=beta&t=MokgCR4bSXkW0L1AMYuyTESf9Xuw6J0gq5mhpB-Pnn4",
+      "cities_derived": [
+        "Santa Clara"
+      ],
+      "regions_derived": [
+        "California"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Santa Clara, California, United States"
+      ],
+      "timezones_derived": [
+        "America/Los_Angeles"
+      ],
+      "lats_derived": [
+        37.3646
+      ],
+      "lngs_derived": [
+        -121.968
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 350,
+      "linkedin_org_url": "http://www.TheFountainGroup.com",
+      "linkedin_org_size": "501-1,000 employees",
+      "linkedin_org_slogan": "Your Ally in the Quest for Workforce Success",
+      "linkedin_org_industry": "Staffing and Recruiting",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "Tampa",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2001",
+      "linkedin_org_specialties": [
+        "Contingent Labor",
+        "Contingent-to-Permanent",
+        "and SOW resource provider."
+      ],
+      "linkedin_org_locations": [
+        "Tampa, US"
+      ],
+      "linkedin_org_description": "The Fountain Group provides Contingent Labor, Statement-of-Work, and Contingent-to-Permanent resources to clients with an internal/external Contingent Labor Managed Service Program or Clients without a program.\r\n\r\nThe Fountain Group is committed to the belief that we all share in the responsibility to conduct our businesses in a socially and environmentally responsible manner. We base this on the premise that a company is much more than the products it offers. The effect a company has on the environment, the people and the communities it serves reflects the company’s dedication to being not only a good business, but to being a good corporate citizen. \r\n\r\nThe Fountain Group believes the key to servicing a client is to identify the client demand precisely. Therefore, The Fountain Group focused its efforts on building and developing a process, which can identify an exact match for our client’s needs. Our process utilizes modern technology combined with 30+ years of Talent Acquisition experience to deliver Precision resources.\r\n\r\nFinancial strength is prominent among The Fountain Group’s corporate values. The future of our business will be built on the innovation, compassion, outstanding services and technology, but a solid financial foundation is required to carry us forward to meet our business goal and support our long term vision.",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "the-fountain-group",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1786043454",
+      "date_posted": "2025-06-30T19:05:30",
+      "date_created": "2025-07-01T07:06:58.438165",
+      "title": "MEAN Stack Architect",
+      "organization": "Highbrow LLC",
+      "organization_url": "https://www.linkedin.com/company/highbrow-llc",
+      "date_validthrough": "2025-07-30T19:05:30",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Overland Park",
+            "addressRegion": "KS",
+            "streetAddress": null
+          },
+          "latitude": 38.97482,
+          "longitude": -94.6836
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/mean-stack-architect-at-highbrow-llc-4256602973",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQGqguB_ipMGZw/company-logo_200_200/company-logo_200_200/0/1631313572010?e=2147483647&v=beta&t=9a0yDzoavmjKj4mDm0aDUuKgZeJPvnWFOm3qn8RyAm4",
+      "cities_derived": [
+        "Overland Park"
+      ],
+      "regions_derived": [
+        "Kansas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Overland Park, Kansas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        38.887
+      ],
+      "lngs_derived": [
+        -94.687
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 27,
+      "linkedin_org_url": "http://highbrow-tech.com",
+      "linkedin_org_size": "11-50 employees",
+      "linkedin_org_slogan": null,
+      "linkedin_org_industry": "Information Technology & Services",
+      "linkedin_org_followers": 20710,
+      "linkedin_org_headquarters": "Seattle, Washington",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2015",
+      "linkedin_org_specialties": [
+        "Recruitment",
+        "Consulting",
+        "and E-commerce Services Suite"
+      ],
+      "linkedin_org_locations": [
+        "18240 171st CT, Seattle, Washington 98058, US"
+      ],
+      "linkedin_org_description": "\"Highbrow LLC\" has been founded by professionals having deep industry experience. The management team at Highbrow LLC has extensive experience of having worked for many clients during the last 15+ years. During this period, they have worked on complex projects across multiple technology platforms.From an employer’s perspective you need a partner to help maximise the value of your most important asset – your people – look no further than the Highbrow team. Our strong experience across a variety of disciplines backed by an innovative use of technology enables Highbrow to deliver results that add value direct to your business.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "highbrow-llc",
+      "no_jb_schema": null,
+      "external_apply_url": "https://highbrow-tech.com/job/mean-stack-architect-12/"
+    },
+    {
+      "id": "1784600058",
+      "date_posted": "2025-06-30T18:21:43",
+      "date_created": "2025-06-30T18:32:46.096514",
+      "title": "Lead Angular Developer",
+      "organization": "360 Technology",
+      "organization_url": "https://www.linkedin.com/company/360technology-usa",
+      "date_validthrough": "2025-07-30T18:21:42",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Reston",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 38.960186,
+          "longitude": -77.3545
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/lead-angular-developer-at-360-technology-4258336646",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQFsxTgCapjjbQ/company-logo_200_200/company-logo_200_200/0/1630650416682/360technology_usa_logo?e=2147483647&v=beta&t=9REQXXd8VCOaOVHg7hvQ8CI88WpxSLk2aDC9TFph_cY",
+      "cities_derived": [
+        "Reston"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Reston, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.9497
+      ],
+      "lngs_derived": [
+        -77.3461
+      ],
+      "remote_derived": false,
+      "recruiter_name": "Karan Chandran",
+      "recruiter_title": "Service Delivery Manager at 360 Technology",
+      "recruiter_url": "https://in.linkedin.com/in/karan-chandran-91b635166",
+      "linkedin_org_employees": 47,
+      "linkedin_org_url": "http://360.technology",
+      "linkedin_org_size": "201-500 employees",
+      "linkedin_org_slogan": "Bringing the Future in With Technology",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 34700,
+      "linkedin_org_headquarters": "Farmers Branch, Texas",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2012",
+      "linkedin_org_specialties": [
+        "Microservices",
+        "Cloud",
+        "IOT",
+        "Big Data",
+        "DevOps",
+        "CI/CD",
+        "IT Consulting",
+        "AWS",
+        "Azure",
+        "Google Cloud",
+        "Open Stack",
+        "Kubernetes",
+        "Docker",
+        "Low code",
+        "UI Path",
+        "Blueprism",
+        "appigee",
+        "and Data Analytics"
+      ],
+      "linkedin_org_locations": [
+        "4100 Spring Valley Rd, SUITE 770, Farmers Branch, Texas 75244, US",
+        "3490 US Hwy 1, Suite 11 Princeton,, New Jersey , New Jersey  08540, US",
+        "2010 Winston Park Dr, Oakville, Ontario L6H 5R7, CA",
+        "2nd floor Nandi Infotech Building KIADB plot#8, Whitefiled, Bengaluru, Karnataka 560048, IN",
+        "Empire Height A, 9th floor, Business Bay,, Dubai, UAE, AE",
+        "The Vista Centre, 50 Salisbury Road,, Hounslow, UK  TW4 6JQ, GB"
+      ],
+      "linkedin_org_description": "360 Technology delivers digital transformation and technology services from ideation to execution, enabling Global clients to outperform the competition. “Born digital,” 360 Technology takes an agile, collaborative approach to creating customized solutions across the digital value chain. Our deep expertise in Cloud, Microservice Transformation, IOT and applications management turns IT into a strategic asset. Whether you need to run your business more efficiently or accelerate revenue growth, 360 Technology can get you there.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "360technology-usa",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1784605200",
+      "date_posted": "2025-06-30T18:11:59",
+      "date_created": "2025-06-30T18:33:49.330464",
+      "title": "Experience with 12+ in Lead Angular Developer",
+      "organization": "360 Technology",
+      "organization_url": "https://www.linkedin.com/company/360technology-usa",
+      "date_validthrough": "2025-07-30T18:11:59",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Reston",
+            "addressRegion": "VA",
+            "streetAddress": null
+          },
+          "latitude": 38.960186,
+          "longitude": -77.3545
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": null,
+      "employment_type": [
+        "CONTRACTOR"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/experience-with-12%2B-in-lead-angular-developer-at-360-technology-4256489938",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/C560BAQFsxTgCapjjbQ/company-logo_200_200/company-logo_200_200/0/1630650416682/360technology_usa_logo?e=2147483647&v=beta&t=9REQXXd8VCOaOVHg7hvQ8CI88WpxSLk2aDC9TFph_cY",
+      "cities_derived": [
+        "Reston"
+      ],
+      "regions_derived": [
+        "Virginia"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Reston, Virginia, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        38.9497
+      ],
+      "lngs_derived": [
+        -77.3461
+      ],
+      "remote_derived": false,
+      "recruiter_name": "Aman Singh",
+      "recruiter_title": "Senior Healthcare and IT/Non-IT Recruiter.",
+      "recruiter_url": "https://www.linkedin.com/in/aman-singh-491095192",
+      "linkedin_org_employees": 47,
+      "linkedin_org_url": "http://360.technology",
+      "linkedin_org_size": "201-500 employees",
+      "linkedin_org_slogan": "Bringing the Future in With Technology",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": 34700,
+      "linkedin_org_headquarters": "Farmers Branch, Texas",
+      "linkedin_org_type": "Privately Held",
+      "linkedin_org_foundeddate": "2012",
+      "linkedin_org_specialties": [
+        "Microservices",
+        "Cloud",
+        "IOT",
+        "Big Data",
+        "DevOps",
+        "CI/CD",
+        "IT Consulting",
+        "AWS",
+        "Azure",
+        "Google Cloud",
+        "Open Stack",
+        "Kubernetes",
+        "Docker",
+        "Low code",
+        "UI Path",
+        "Blueprism",
+        "appigee",
+        "and Data Analytics"
+      ],
+      "linkedin_org_locations": [
+        "4100 Spring Valley Rd, SUITE 770, Farmers Branch, Texas 75244, US",
+        "3490 US Hwy 1, Suite 11 Princeton,, New Jersey , New Jersey  08540, US",
+        "2010 Winston Park Dr, Oakville, Ontario L6H 5R7, CA",
+        "2nd floor Nandi Infotech Building KIADB plot#8, Whitefiled, Bengaluru, Karnataka 560048, IN",
+        "Empire Height A, 9th floor, Business Bay,, Dubai, UAE, AE",
+        "The Vista Centre, 50 Salisbury Road,, Hounslow, UK  TW4 6JQ, GB"
+      ],
+      "linkedin_org_description": "360 Technology delivers digital transformation and technology services from ideation to execution, enabling Global clients to outperform the competition. “Born digital,” 360 Technology takes an agile, collaborative approach to creating customized solutions across the digital value chain. Our deep expertise in Cloud, Microservice Transformation, IOT and applications management turns IT into a strategic asset. Whether you need to run your business more efficiently or accelerate revenue growth, 360 Technology can get you there.",
+      "linkedin_org_recruitment_agency_derived": false,
+      "seniority": "Mid-Senior level",
+      "directapply": true,
+      "linkedin_org_slug": "360technology-usa",
+      "no_jb_schema": null,
+      "external_apply_url": null
+    },
+    {
+      "id": "1784724816",
+      "date_posted": "2025-06-30T18:09:16",
+      "date_created": "2025-06-30T19:34:23.029331",
+      "title": "Front-End Developer (Angular, Node, Nest)",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-07-30T18:09:16",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Texas",
+            "addressRegion": "United States",
+            "streetAddress": null
+          },
+          "latitude": 31.463848,
+          "longitude": -99.3333
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 55,
+          "maxValue": 56,
+          "unitText": "HOUR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/front-end-developer-angular-node-nest-at-jobs-via-dice-4258328818",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": null,
+      "regions_derived": [
+        "Texas"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Texas, United States"
+      ],
+      "timezones_derived": [
+        "America/Chicago"
+      ],
+      "lats_derived": [
+        30.3005
+      ],
+      "lngs_derived": [
+        -97.7522
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/vkMxXVsDaenBEf9jXyg6qqrTTHKcUAEd_jto1bbOVr8="
+    },
+    {
+      "id": "1785117866",
+      "date_posted": "2025-06-30T18:09:16",
+      "date_created": "2025-06-30T23:05:49.990004",
+      "title": "Senior Angular Engineer",
+      "organization": "Jobs via Dice",
+      "organization_url": "https://www.linkedin.com/company/jobs-via-dice",
+      "date_validthrough": "2025-07-30T18:09:16",
+      "locations_raw": [
+        {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressLocality": "Reynoldsburg",
+            "addressRegion": "OH",
+            "streetAddress": null
+          },
+          "latitude": 39.954628,
+          "longitude": -82.8017
+        }
+      ],
+      "location_type": null,
+      "location_requirements_raw": null,
+      "salary_raw": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 40,
+          "maxValue": 50,
+          "unitText": "HOUR"
+        }
+      },
+      "employment_type": [
+        "FULL_TIME"
+      ],
+      "url": "https://www.linkedin.com/jobs/view/senior-angular-engineer-at-jobs-via-dice-4258328819",
+      "source_type": "jobboard",
+      "source": "linkedin",
+      "source_domain": "linkedin.com",
+      "organization_logo": "https://media.licdn.com/dms/image/v2/D560BAQFwOT1y-MRTFQ/company-logo_200_200/B56ZVEKZkcHsAI-/0/1740605332130/jobs_via_dice_logo?e=2147483647&v=beta&t=ItuthDpih45En6x_7Lse_G78cn8jTcnIwXNaxfl8zqM",
+      "cities_derived": [
+        "Reynoldsburg"
+      ],
+      "regions_derived": [
+        "Ohio"
+      ],
+      "countries_derived": [
+        "United States"
+      ],
+      "locations_derived": [
+        "Reynoldsburg, Ohio, United States"
+      ],
+      "timezones_derived": [
+        "America/New_York"
+      ],
+      "lats_derived": [
+        39.9588
+      ],
+      "lngs_derived": [
+        -82.7943
+      ],
+      "remote_derived": false,
+      "recruiter_name": null,
+      "recruiter_title": null,
+      "recruiter_url": null,
+      "linkedin_org_employees": 9,
+      "linkedin_org_url": "https://www.dice.com",
+      "linkedin_org_size": "1 employee",
+      "linkedin_org_slogan": "Dice: Where tech connects.™",
+      "linkedin_org_industry": "Software Development",
+      "linkedin_org_followers": null,
+      "linkedin_org_headquarters": "",
+      "linkedin_org_type": "Public Company",
+      "linkedin_org_foundeddate": "",
+      "linkedin_org_specialties": [
+        ""
+      ],
+      "linkedin_org_locations": [],
+      "linkedin_org_description": "Welcome to Jobs via Dice, the go-to destination for discovering the tech jobs you want.\n\nThis page is dedicated to sharing job opportunities with tech professionals at every stage of their careers. When you see a job posted by Jobs via Dice, it’s a job for one of our many clients seeking to hire tech professionals like you.\n\nAt Dice, we understand that your career in technology is more than just a job; it’s a journey of growth, innovation and continuous learning. Stay connected with us to explore the latest job opportunities, industry trends and career tips tailored for tech professionals. Your future in tech starts here.\n\nWhat You’ll Find on Dice.com:\n\nTailored Tech Opportunities - Connect with the right tech companies and roles that match your skills and ambitions. Whether you're looking to land your first job or elevate your career, Dice is here to help.\n\nCareer Resources - Utilize our tools to build your skills, enhance your visibility, and get noticed by top employers.\n\nEasy Apply - Find and apply to your perfect tech role in just a few clicks with our Easy Apply feature. Simplify your job search and get hired faster.\n\nIndustry Insights - Stay ahead with our expert career advice and industry insights. From resume tips to interview prep, we provide the resources you need to succeed.\n\nEmployer Profiles - Get a firsthand look at a company’s culture to make informed decisions about where you want to work.\n\nJoin the community of tech professionals who trust Dice to help them find and apply to their next job in tech.\n\nTo follow our company page on LinkedIn, visit: https://www.linkedin.com/company/dice\n",
+      "linkedin_org_recruitment_agency_derived": true,
+      "seniority": "Mid-Senior level",
+      "directapply": false,
+      "linkedin_org_slug": "jobs-via-dice",
+      "no_jb_schema": null,
+      "external_apply_url": "https://click.appcast.io/t/dGBuaAZYMyS7ZblOawBQMgZ5Vc542xwoY5TQz57RxPU="
+    }
+  ]

@@ -1,7 +1,7 @@
 // Placeholder for profile feature service layer 
 
 import { prisma } from '@/prisma/prisma';
-import { Prisma, SkillLevel } from '@prisma/client';
+import { Prisma, SkillLevel, SortOrder } from '@prisma/client';
 import {
     mapPrismaProfileToInternalProfile,
     mapUpdatePayloadToPrismaArgs
@@ -40,7 +40,7 @@ const profileInclude = {
             mvpRawData: true
         },
         orderBy: {
-            uploadDate: 'desc'
+            uploadDate: SortOrder.desc
         },
         take: 1 // Get only the most recent CV
     }
@@ -166,6 +166,7 @@ export async function updateProfile(userId: string, payload: UpdateProfilePayloa
                         developerId: userId,
                         title: exp.title,
                         company: exp.company,
+                        description: exp.description || '',
                         location: exp.location,
                         startDate: new Date(exp.startDate),
                         endDate: exp.endDate ? new Date(exp.endDate) : null,

@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 // DELETE /api/cv/versions/[cvId]/[versionId] - Delete a specific version
 export async function DELETE(
   request: Request,
-  { params }: { params: { cvId: string; versionId: string } }
+  { params }: { params: Promise<{ cvId: string; versionId: string }> }
 ) {
   try {
     // Authentication
@@ -103,7 +103,7 @@ export async function DELETE(
 // GET /api/cv/versions/[cvId]/[versionId] - Get a specific version
 export async function GET(
   request: Request,
-  { params }: { params: { cvId: string; versionId: string } }
+  { params }: { params: Promise<{ cvId: string; versionId: string }> }
 ) {
   try {
     // Authentication
