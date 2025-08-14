@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, SortOrder } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -135,7 +135,7 @@ async function debugAdminCvIssue() {
           }
         },
         cvs: {
-          orderBy: { uploadDate: 'desc' },
+          orderBy: { uploadDate: SortOrder.desc },
           select: {
             id: true,
             filename: true,

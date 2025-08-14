@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 // GET /api/cv/versions/[cvId] - Get all versions for a CV
 export async function GET(
   request: Request,
-  { params }: { params: { cvId: string } }
+  { params }: { params: Promise<{ cvId: string }> }
 ) {
   try {
     // Authentication

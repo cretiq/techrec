@@ -169,7 +169,7 @@ export default function AccordionShowcase({ onCopyCode, copiedCode, theme }: Acc
               <>
                 <Copy className="h-3 w-3" />
                 Copy code
-              <//>
+              </>
             )}
           </button>
         </div>

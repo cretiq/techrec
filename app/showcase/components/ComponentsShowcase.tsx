@@ -361,7 +361,7 @@ export default function ComponentsShowcase({ onCopyCode, copiedCode, theme }: Co
   <DropdownContent>
     <DropdownItem leftIcon={<User />}>Profile</DropdownItem>
     <DropdownItem leftIcon={<Settings />}>Settings</DropdownItem>
-    <DropdownItem leftIcon={<LogOut />} variant="destructive">
+    <DropdownItem leftIcon={<LogOut />} variant="error">
       Sign Out
     </DropdownItem>
   </DropdownContent>
@@ -406,7 +406,7 @@ export default function ComponentsShowcase({ onCopyCode, copiedCode, theme }: Co
                     Notifications
                   </DropdownItem>
                   <li className="border-t border-base-300/50 my-1"></li>
-                  <DropdownItem leftIcon={<LogOut className="h-4 w-4" />} variant="destructive">
+                  <DropdownItem leftIcon={<LogOut className="h-4 w-4" />} variant="error">
                     Sign Out
                   </DropdownItem>
                 </DropdownContent>
@@ -442,7 +442,7 @@ export default function ComponentsShowcase({ onCopyCode, copiedCode, theme }: Co
                   <DropdownItem>Duplicate</DropdownItem>
                   <DropdownItem>Share</DropdownItem>
                   <li className="border-t border-base-300/50 my-1"></li>
-                  <DropdownItem variant="destructive">Delete</DropdownItem>
+                  <DropdownItem variant="error">Delete</DropdownItem>
                 </DropdownContent>
               </Dropdown>
             </div>
@@ -496,7 +496,7 @@ export default function ComponentsShowcase({ onCopyCode, copiedCode, theme }: Co
                       Schedule Meeting
                     </DropdownItem>
                     <li className="border-t border-base-300/50 my-1"></li>
-                    <DropdownItem leftIcon={<LogOut className="h-4 w-4" />} variant="destructive">
+                    <DropdownItem leftIcon={<LogOut className="h-4 w-4" />} variant="error">
                       Sign Out
                     </DropdownItem>
                   </DropdownContent>

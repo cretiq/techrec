@@ -162,7 +162,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         
         {/* Usage Warning */}
         {usageWarningLevel === 'critical' && (
-          <Alert variant="destructive" data-testid="advanced-filters-warning-critical">
+          <Alert variant="error" data-testid="advanced-filters-warning-critical">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               API credits critically low! Consider using cached results.
@@ -624,7 +624,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         {validation && (validation.errors.length > 0 || validation.warnings.length > 0) && (
           <div className="space-y-2">
             {validation.errors.map((error, index) => (
-              <Alert key={`error-${index}`} variant="destructive" data-testid={`advanced-filters-error-${index}`}>
+              <Alert key={`error-${index}`} variant="error" data-testid={`advanced-filters-error-${index}`}>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>

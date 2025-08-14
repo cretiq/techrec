@@ -31,7 +31,7 @@ export default function MigrationComparisonPage() {
             <div className="p-6 border rounded-lg bg-card">
               <div className="flex flex-wrap gap-4">
                 <ShadcnButton>Default</ShadcnButton>
-                <ShadcnButton variant="destructive">Destructive</ShadcnButton>
+                <ShadcnButton variant="error">Destructive</ShadcnButton>
                 <ShadcnButton variant="outline">Outline</ShadcnButton>
                 <ShadcnButton variant="secondary">Secondary</ShadcnButton>
                 <ShadcnButton variant="ghost">Ghost</ShadcnButton>
@@ -51,7 +51,7 @@ export default function MigrationComparisonPage() {
             <div className="p-6 border rounded-lg bg-base-100">
               <div className="flex flex-wrap gap-4">
                 <DaisyButton>Default</DaisyButton>
-                <DaisyButton variant="destructive">Destructive</DaisyButton>
+                <DaisyButton variant="error">Destructive</DaisyButton>
                 <DaisyButton variant="outline">Outline</DaisyButton>
                 <DaisyButton variant="secondary">Secondary</DaisyButton>
                 <DaisyButton variant="ghost">Ghost</DaisyButton>

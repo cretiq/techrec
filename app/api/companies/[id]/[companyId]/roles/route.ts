@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server'
-import { connectToDatabase } from '@/prisma/prisma'
-// Removed non-existent import
+import { prisma } from '@/prisma/prisma'
 
 export async function GET(
   request: Request,
-  { params }: { params: { companyId: string } }
+  { params }: { params: Promise<{ companyId: string }> }
 ) {
   try {
-    await connectToDatabase()
-    const roles = await Role.find({ company: params.companyId })
-      .populate('company', 'name')
-      .sort({ createdAt: -1 })
+    const { companyId } = await params
+    const roles = await prisma.role.findMany({ 
+      where: { companyId },
+      include: { company: { select: { name: true } } },
+      orderBy: { createdAt: 'desc' }
+    })
 
     return NextResponse.json(roles)
   } catch (error) {

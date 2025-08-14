@@ -347,7 +347,7 @@ export function AnalysisUploadForm({ onAnalysisComplete }: AnalysisUploadFormPro
                  )}
                  {uploadState === 'error' && (
                     <>
-                      <Badge variant="destructive"><AlertCircle className="mr-1 h-3 w-3" />Error</Badge>
+                      <Badge variant="error"><AlertCircle className="mr-1 h-3 w-3" />Error</Badge>
                       {analysisId && (
                         <Button 
                           size="sm" 

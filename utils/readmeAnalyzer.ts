@@ -294,8 +294,15 @@ Return ONLY the JSON object, no explanatory text:`;
         throw new Error('Gemini response is empty');
       }
 
+      // Extract the actual string content from the response data
+      const contentString = typeof content === 'string' ? content : content.data || '';
+
+      if (!contentString) {
+        throw new Error('Gemini response data is empty');
+      }
+
       // Clean and parse the response
-      let cleanedContent = content.trim();
+      let cleanedContent = contentString.trim();
       cleanedContent = cleanedContent.replace(/```json\n?/g, '').replace(/```\n?/g, '');
       
       const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
@@ -310,7 +317,7 @@ Return ONLY the JSON object, no explanatory text:`;
         logGeminiAPI('readme-analysis', LogLevel.ERROR, 'JSON parsing failed', {
           error: parseError instanceof Error ? parseError.message : String(parseError),
           repositoryName: repositoryInfo.name,
-          rawContent: content.substring(0, 500)
+          rawContent: contentString.substring(0, 500)
         });
         throw new Error(`Failed to parse analysis response: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
       }

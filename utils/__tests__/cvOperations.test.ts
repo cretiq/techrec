@@ -38,7 +38,7 @@ jest.doMock('@/lib/redis', () => ({
 }));
 
 // Import after mocking
-import { PrismaClient, CV, AnalysisStatus } from '@prisma/client';
+import { PrismaClient, CV, AnalysisStatus, SortOrder } from '@prisma/client';
 import { createCV, getCV, updateCV, deleteCV, listCVs, CvCreateData, CvUpdateData } from '@/utils/cvOperations';
 import { deleteFileFromS3 } from '@/utils/s3Storage';
 import { clearCachePattern } from '@/lib/redis';
@@ -306,7 +306,7 @@ describe('CV Database Operations', () => {
     expect(mockPrisma.cV.findMany).toHaveBeenCalledTimes(1);
     expect(mockPrisma.cV.findMany).toHaveBeenCalledWith(expect.objectContaining({
       where: { developerId: 'dev123' },
-      orderBy: { uploadDate: 'desc' },
+      orderBy: { uploadDate: SortOrder.desc },
     }));
   });
 
@@ -319,7 +319,7 @@ describe('CV Database Operations', () => {
         developerId: 'dev123',
         originalName: { contains: 'test', mode: 'insensitive' },
       },
-      orderBy: { uploadDate: 'desc' },
+      orderBy: { uploadDate: SortOrder.desc },
     }));
   });
 
@@ -332,7 +332,7 @@ describe('CV Database Operations', () => {
         developerId: 'dev123',
         status: AnalysisStatus.COMPLETED,
       },
-       orderBy: { uploadDate: 'desc' },
+       orderBy: { uploadDate: SortOrder.desc },
     }));
   });
 
@@ -346,7 +346,7 @@ describe('CV Database Operations', () => {
         originalName: { contains: 'report', mode: 'insensitive' },
         status: AnalysisStatus.PROCESSING,
       },
-       orderBy: { uploadDate: 'desc' },
+       orderBy: { uploadDate: SortOrder.desc },
     }));
   });
 

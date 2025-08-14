@@ -26,7 +26,7 @@ const CalculateMatchRequestSchema = z.object({
 // GET /api/roles/[roleId]/match-score
 export async function GET(
   request: NextRequest,
-  { params }: { params: { roleId: string } }
+  { params }: { params: Promise<{ roleId: string }> }
 ) {
   try {
     // Authentication check
@@ -123,7 +123,7 @@ export async function GET(
 // POST /api/roles/[roleId]/match-score - Calculate with provided role data
 export async function POST(
   request: NextRequest,
-  { params }: { params: { roleId: string } }
+  { params }: { params: Promise<{ roleId: string }> }
 ) {
   try {
     // Authentication check

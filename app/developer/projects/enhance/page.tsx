@@ -234,7 +234,7 @@ export default function ProjectEnhancePage() {
             )}
 
             {error && (
-              <Alert variant="destructive" className="mt-6" data-testid="project-enhancement-github-error">
+              <Alert variant="error" className="mt-6" data-testid="project-enhancement-github-error">
                 <span data-testid="project-enhancement-github-error-message">{error}</span>
                 <div className="mt-4" data-testid="project-enhancement-manual-entry-option">
                   <p className="text-sm text-base-content/70 mb-3">

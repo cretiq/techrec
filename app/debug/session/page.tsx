@@ -114,7 +114,7 @@ export default function SessionDebugPage() {
             ) : (
               <>
                 <AlertTriangle className="w-5 h-5 text-red-500" />
-                <Badge variant="destructive">Not Authenticated</Badge>
+                <Badge variant="error">Not Authenticated</Badge>
               </>
             )}
           </div>
@@ -157,7 +157,7 @@ export default function SessionDebugPage() {
               ) : (
                 <>
                   <AlertTriangle className="w-5 h-5 text-red-500" />
-                  <Badge variant="destructive">Inconsistent</Badge>
+                  <Badge variant="error">Inconsistent</Badge>
                 </>
               )}
             </div>
@@ -173,7 +173,7 @@ export default function SessionDebugPage() {
                     <div><strong>Profile Email:</strong> {debugData.databaseLookup.byId.profileEmail}</div>
                   </div>
                 ) : (
-                  <Badge variant="destructive">Not Found</Badge>
+                  <Badge variant="error">Not Found</Badge>
                 )}
               </div>
 
@@ -187,7 +187,7 @@ export default function SessionDebugPage() {
                     <div><strong>Profile Email:</strong> {debugData.databaseLookup.byEmail.profileEmail}</div>
                   </div>
                 ) : (
-                  <Badge variant="destructive">Not Found</Badge>
+                  <Badge variant="error">Not Found</Badge>
                 )}
               </div>
             </div>
@@ -260,7 +260,7 @@ export default function SessionDebugPage() {
                 {debugData.analysis.sessionIdMatchesEmailId ? (
                   <Badge variant="default">Yes</Badge>
                 ) : (
-                  <Badge variant="destructive">No</Badge>
+                  <Badge variant="error">No</Badge>
                 )}
               </div>
 

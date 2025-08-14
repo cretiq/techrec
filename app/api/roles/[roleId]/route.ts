@@ -5,7 +5,7 @@ import { prisma } from "@/prisma/prisma"
 
 export async function GET(
   request: Request,
-  context: { params: { roleId: string } }
+  context: { params: Promise<{ roleId: string }> }
 ) {
   const params = await context.params
   const roleId = params.roleId

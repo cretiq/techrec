@@ -3,12 +3,13 @@ import { prisma } from '@/prisma/prisma'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const roles = await prisma.role.findMany({
       where: {
-        companyId: params.id
+        companyId: id
       },
       include: {
         company: {

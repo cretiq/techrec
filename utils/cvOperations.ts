@@ -1,4 +1,4 @@
-import { PrismaClient, CV, AnalysisStatus } from '@prisma/client';
+import { PrismaClient, CV, AnalysisStatus, SortOrder } from '@prisma/client';
 import { deleteFileFromS3 } from './s3Storage'; // Import S3 delete function
 import { clearCachePattern } from '@/lib/redis'; // Import Redis cache clearing function
 
@@ -188,7 +188,7 @@ export const listCVs = async (
       // skip: pagination.skip,
       // take: pagination.take,
       orderBy: {
-        uploadDate: 'desc', // Default sort order
+        uploadDate: SortOrder.desc, // Default sort order
       },
     });
     console.log(`[listCVs] Found ${cvs.length} CVs matching criteria.`);

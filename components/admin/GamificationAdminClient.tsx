@@ -854,7 +854,7 @@ export function GamificationAdminClient() {
                       CV Management
                     </div>
                     <Button
-                      variant="destructive"
+                      variant="error"
                       size="sm"
                       onClick={handleClearProfileClick}
                       disabled={loading || isClearingProfile}
@@ -981,7 +981,7 @@ export function GamificationAdminClient() {
                         Cancel
                       </Button>
                       <Button
-                        variant="destructive"
+                        variant="error"
                         onClick={() => deleteCv(cvToDelete.id)}
                         disabled={isDeletingCv}
                         className="flex items-center gap-2"
@@ -1047,7 +1047,7 @@ export function GamificationAdminClient() {
                         Cancel
                       </Button>
                       <Button
-                        variant="destructive"
+                        variant="error"
                         onClick={clearProfileData}
                         disabled={isClearingProfile}
                         className="flex items-center gap-2"

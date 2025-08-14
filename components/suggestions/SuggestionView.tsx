@@ -80,7 +80,7 @@ export function SuggestionView({
                  <Badge variant="default" className="bg-green-600"><Check className="h-4 w-4 mr-1"/> Accepted</Badge>
              )}
              {status === 'rejected' && (
-                 <Badge variant="destructive"><XIcon className="h-4 w-4 mr-1"/> Rejected</Badge>
+                 <Badge variant="error"><XIcon className="h-4 w-4 mr-1"/> Rejected</Badge>
              )}
          </div>
       </div>
