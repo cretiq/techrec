@@ -20,6 +20,45 @@ const CACHE_TTL_MINUTES = 10; // 10 minutes cache for generated letters
 const CACHE_TTL_SECONDS = CACHE_TTL_MINUTES * 60;
 
 /**
+ * Formats salary data into a human-readable string
+ * @param salaryRaw - Raw salary object from RapidAPI
+ * @returns Formatted salary string or null if no valid data
+ */
+function formatSalary(salaryRaw: any): string | null {
+  if (!salaryRaw || typeof salaryRaw !== 'object') {
+    return null;
+  }
+
+  // Handle RapidAPI MonetaryAmount structure
+  if (salaryRaw['@type'] === 'MonetaryAmount' && salaryRaw.value) {
+    const currency = salaryRaw.currency || 'USD';
+    const value = salaryRaw.value;
+    
+    if (value['@type'] === 'QuantitativeValue') {
+      const { minValue, maxValue, unitText } = value;
+      const unit = unitText ? unitText.toLowerCase() : 'year';
+      const period = unit === 'year' ? 'per year' : `per ${unit}`;
+      
+      if (minValue && maxValue) {
+        return `${currency} ${minValue.toLocaleString()} - ${maxValue.toLocaleString()} ${period}`;
+      } else if (minValue) {
+        return `From ${currency} ${minValue.toLocaleString()} ${period}`;
+      } else if (maxValue) {
+        return `Up to ${currency} ${maxValue.toLocaleString()} ${period}`;
+      }
+    }
+  }
+  
+  // Handle other potential salary formats
+  if (salaryRaw.min && salaryRaw.max) {
+    const currency = salaryRaw.currency || '$';
+    return `${currency}${salaryRaw.min.toLocaleString()} - ${currency}${salaryRaw.max.toLocaleString()} per year`;
+  }
+  
+  return null;
+}
+
+/**
  * Generates a cache key for cover letter generation
  * Key includes essential parameters that affect generation output
  */
@@ -103,6 +142,9 @@ export async function POST(req: Request) {
     const keywords = rankRoleKeywords(roleInfo)
     const coreSkills = pickCoreSkills(developerProfile.skills)
     const achievements = deriveAchievements(developerProfile, providedAchievements)
+    
+    // Format salary for clean presentation
+    const formattedSalary = formatSalary(roleInfo.salaryRaw)
 
     console.log("-".repeat(40));
     console.log("DEVELOPER PROFILE DATA");
@@ -165,19 +207,13 @@ Title: \${roleInfo.title}
 \${roleInfo.location ? \`Location: \${roleInfo.location}\` : ''}
 \${roleInfo.aiWorkArrangement ? \`Work Arrangement: \${roleInfo.aiWorkArrangement}\` : ''}
 \${roleInfo.aiWorkingHours ? \`Working Hours: \${roleInfo.aiWorkingHours} hours/week\` : ''}
-\${roleInfo.salaryRaw ? \`Compensation: \${JSON.stringify(roleInfo.salaryRaw)}\` : ''}
+\${formattedSalary ? \`Compensation: \${formattedSalary}\` : ''}
 
 \${roleInfo.descriptionText ? \`Full Job Description:\\n\${roleInfo.descriptionText}\\n\` : ''}
 
 \${roleInfo.aiCoreResponsibilities ? \`Core Responsibilities:\\n\${roleInfo.aiCoreResponsibilities}\` : ''}
 
 \${roleInfo.aiRequirementsSummary ? \`Requirements Summary:\\n\${roleInfo.aiRequirementsSummary}\` : ''}
-
-Requirements:
-\${roleInfo.requirements?.map(req => \`- \${req}\`).join('\\n') ?? '- Not specified'}
-
-Skills Needed:
-\${roleInfo.skills?.map(skill => \`- \${skill}\`).join('\\n') ?? '- Not specified'}
 
 \${roleInfo.aiKeySkills && roleInfo.aiKeySkills.length > 0 ? \`Key Skills (AI-Extracted): \${roleInfo.aiKeySkills.join(', ')}\` : ''}
 
@@ -186,8 +222,6 @@ Skills Needed:
 \${roleInfo.recruiterName ? \`Recruiter: \${roleInfo.recruiterName}\${roleInfo.recruiterTitle ? \` (\${roleInfo.recruiterTitle})\` : ''}\` : ''}
 \${roleInfo.aiHiringManagerName ? \`Hiring Manager: \${roleInfo.aiHiringManagerName}\` : ''}
 \${roleInfo.aiHiringManagerEmail ? \`HM Email: \${roleInfo.aiHiringManagerEmail}\` : ''}
-
-Keywords: \${keywords.join(", ")}
 
 <FULL CV CONTENT>
 \${developerProfile.mvpContent}
@@ -246,19 +280,13 @@ Title: \${roleInfo.title}
 \${roleInfo.location ? \`Location: \${roleInfo.location}\` : ''}
 \${roleInfo.aiWorkArrangement ? \`Work Arrangement: \${roleInfo.aiWorkArrangement}\` : ''}
 \${roleInfo.aiWorkingHours ? \`Working Hours: \${roleInfo.aiWorkingHours} hours/week\` : ''}
-\${roleInfo.salaryRaw ? \`Compensation: \${JSON.stringify(roleInfo.salaryRaw)}\` : ''}
+\${formattedSalary ? \`Compensation: \${formattedSalary}\` : ''}
 
 \${roleInfo.descriptionText ? \`Full Job Description:\\n\${roleInfo.descriptionText}\\n\` : ''}
 
 \${roleInfo.aiCoreResponsibilities ? \`Core Responsibilities:\\n\${roleInfo.aiCoreResponsibilities}\` : ''}
 
 \${roleInfo.aiRequirementsSummary ? \`Requirements Summary:\\n\${roleInfo.aiRequirementsSummary}\` : ''}
-
-Requirements:
-\${roleInfo.requirements?.map(req => \`- \${req}\`).join('\\n') ?? '- Not specified'}
-
-Skills Needed:
-\${roleInfo.skills?.map(skill => \`- \${skill}\`).join('\\n') ?? '- Not specified'}
 
 \${roleInfo.aiKeySkills && roleInfo.aiKeySkills.length > 0 ? \`Key Skills (AI-Extracted): \${roleInfo.aiKeySkills.join(', ')}\` : ''}
 
@@ -267,8 +295,6 @@ Skills Needed:
 \${roleInfo.recruiterName ? \`Recruiter: \${roleInfo.recruiterName}\${roleInfo.recruiterTitle ? \` (\${roleInfo.recruiterTitle})\` : ''}\` : ''}
 \${roleInfo.aiHiringManagerName ? \`Hiring Manager: \${roleInfo.aiHiringManagerName}\` : ''}
 \${roleInfo.aiHiringManagerEmail ? \`HM Email: \${roleInfo.aiHiringManagerEmail}\` : ''}
-
-Keywords: \${keywords.join(", ")}
 
 <APPLICANT SNAPSHOT>
 Professional Title: \${developerProfile.title ?? "Software Developer"}
@@ -332,19 +358,13 @@ ${roleInfo.directApply !== undefined ? `Application Method: ${roleInfo.directApp
 ${roleInfo.location ? `Location: ${roleInfo.location}` : ''}
 ${roleInfo.aiWorkArrangement ? `Work Arrangement: ${roleInfo.aiWorkArrangement}` : ''}
 ${roleInfo.aiWorkingHours ? `Working Hours: ${roleInfo.aiWorkingHours} hours/week` : ''}
-${roleInfo.salaryRaw ? `Compensation: ${JSON.stringify(roleInfo.salaryRaw)}` : ''}
+${formattedSalary ? `Compensation: ${formattedSalary}` : ''}
 
 ${roleInfo.descriptionText ? `Full Job Description:\n${roleInfo.descriptionText}\n` : ''}
 
 ${roleInfo.aiCoreResponsibilities ? `Core Responsibilities:\n${roleInfo.aiCoreResponsibilities}` : ''}
 
 ${roleInfo.aiRequirementsSummary ? `Requirements Summary:\n${roleInfo.aiRequirementsSummary}` : ''}
-
-Requirements:
-${roleInfo.requirements?.map(req => `- ${req}`).join('\n') ?? '- Not specified'}
-
-Skills Needed:
-${roleInfo.skills?.map(skill => `- ${skill}`).join('\n') ?? '- Not specified'}
 
 ${roleInfo.aiKeySkills && roleInfo.aiKeySkills.length > 0 ? `Key Skills (AI-Extracted): ${roleInfo.aiKeySkills.join(', ')}` : ''}
 
@@ -353,8 +373,6 @@ ${roleInfo.aiBenefits && roleInfo.aiBenefits.length > 0 ? `Benefits:\n${roleInfo
 ${roleInfo.recruiterName ? `Recruiter: ${roleInfo.recruiterName}${roleInfo.recruiterTitle ? ` (${roleInfo.recruiterTitle})` : ''}` : ''}
 ${roleInfo.aiHiringManagerName ? `Hiring Manager: ${roleInfo.aiHiringManagerName}` : ''}
 ${roleInfo.aiHiringManagerEmail ? `HM Email: ${roleInfo.aiHiringManagerEmail}` : ''}
-
-Keywords: ${keywords.join(", ")}
 
 <FULL CV CONTENT>
 ${developerProfile.mvpContent}
@@ -413,19 +431,13 @@ ${roleInfo.directApply !== undefined ? `Application Method: ${roleInfo.directApp
 ${roleInfo.location ? `Location: ${roleInfo.location}` : ''}
 ${roleInfo.aiWorkArrangement ? `Work Arrangement: ${roleInfo.aiWorkArrangement}` : ''}
 ${roleInfo.aiWorkingHours ? `Working Hours: ${roleInfo.aiWorkingHours} hours/week` : ''}
-${roleInfo.salaryRaw ? `Compensation: ${JSON.stringify(roleInfo.salaryRaw)}` : ''}
+${formattedSalary ? `Compensation: ${formattedSalary}` : ''}
 
 ${roleInfo.descriptionText ? `Full Job Description:\n${roleInfo.descriptionText}\n` : ''}
 
 ${roleInfo.aiCoreResponsibilities ? `Core Responsibilities:\n${roleInfo.aiCoreResponsibilities}` : ''}
 
 ${roleInfo.aiRequirementsSummary ? `Requirements Summary:\n${roleInfo.aiRequirementsSummary}` : ''}
-
-Requirements:
-${roleInfo.requirements?.map(req => `- ${req}`).join('\n') ?? '- Not specified'}
-
-Skills Needed:
-${roleInfo.skills?.map(skill => `- ${skill}`).join('\n') ?? '- Not specified'}
 
 ${roleInfo.aiKeySkills && roleInfo.aiKeySkills.length > 0 ? `Key Skills (AI-Extracted): ${roleInfo.aiKeySkills.join(', ')}` : ''}
 
@@ -434,8 +446,6 @@ ${roleInfo.aiBenefits && roleInfo.aiBenefits.length > 0 ? `Benefits:\n${roleInfo
 ${roleInfo.recruiterName ? `Recruiter: ${roleInfo.recruiterName}${roleInfo.recruiterTitle ? ` (${roleInfo.recruiterTitle})` : ''}` : ''}
 ${roleInfo.aiHiringManagerName ? `Hiring Manager: ${roleInfo.aiHiringManagerName}` : ''}
 ${roleInfo.aiHiringManagerEmail ? `HM Email: ${roleInfo.aiHiringManagerEmail}` : ''}
-
-Keywords: ${keywords.join(", ")}
 
 <APPLICANT SNAPSHOT>
 Professional Title: ${developerProfile.title ?? "Software Developer"}

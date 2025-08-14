@@ -209,21 +209,26 @@ export function CoverLetterCreator({
           // Enhanced fields from RapidAPI
           location: role.location,
           url: role.url,
-          seniority: (role as any).seniority, // May be present from RapidAPI
-          employmentType: (role as any).employment_type, // From RapidAPI
+          seniority: role.seniority,
+          employmentType: role.employment_type,
           remote: role.remote,
           directApply: role.applicationInfo?.directApply,
           // AI-extracted fields (if available from RapidAPI)
           aiKeySkills: role.ai_key_skills,
-          aiCoreResponsibilities: (role as any).ai_core_responsibilities,
-          aiRequirementsSummary: (role as any).ai_requirements_summary,
-          aiBenefits: (role as any).ai_benefits,
-          aiWorkArrangement: (role as any).ai_work_arrangement,
-          aiWorkingHours: (role as any).ai_working_hours,
+          aiCoreResponsibilities: role.ai_core_responsibilities,
+          aiRequirementsSummary: role.ai_requirements_summary,
+          aiBenefits: role.ai_benefits,
+          aiWorkArrangement: role.ai_work_arrangement,
+          aiWorkingHours: role.ai_working_hours,
+          // HIGH-IMPACT enhancement fields for better cover letter quality
+          descriptionText: role.description_text, // Full job description
+          salaryRaw: role.salary_raw, // Compensation context
+          organization: role.organization, // Full organizational name
           // Recruiter information
           recruiterName: role.applicationInfo?.recruiter?.name,
           recruiterTitle: role.applicationInfo?.recruiter?.title,
           aiHiringManagerName: role.applicationInfo?.hiringManager?.name,
+          aiHiringManagerEmail: role.applicationInfo?.hiringManager?.email,
         },
         companyInfo: {
           name: role.company.name,
@@ -239,6 +244,11 @@ export function CoverLetterCreator({
           employeeCount: role.company.employeeCount,
           foundedDate: (role.company as any).foundedDate,
           linkedinUrl: role.company.linkedinUrl,
+          // HIGH-IMPACT LinkedIn org fields for enhanced company context
+          linkedinOrgIndustry: role.linkedin_org_industry,
+          linkedinOrgType: role.linkedin_org_type,
+          linkedinOrgDescription: role.linkedin_org_description,
+          linkedinOrgSize: role.linkedin_org_size,
         },
         jobSourceInfo: {
           source: jobSource || undefined

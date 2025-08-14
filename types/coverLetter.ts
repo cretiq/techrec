@@ -35,6 +35,11 @@ export interface RoleInfo {
   recruiterName?: string;
   recruiterTitle?: string;
   aiHiringManagerName?: string;
+  aiHiringManagerEmail?: string;
+  // Additional RapidAPI fields
+  organization?: string;
+  salaryRaw?: any;
+  descriptionText?: string;
 }
 
 export interface CompanyInfo {
@@ -51,6 +56,11 @@ export interface CompanyInfo {
   employeeCount?: number;
   foundedDate?: string;
   linkedinUrl?: string;
+  // LinkedIn organization fields
+  linkedinOrgType?: string;
+  linkedinOrgIndustry?: string;
+  linkedinOrgSize?: string;
+  linkedinOrgDescription?: string;
 }
 
 export interface JobSourceInfo {
@@ -123,6 +133,11 @@ export const CompanyInfoSchema = z.object({
   employeeCount: z.number().optional(),
   foundedDate: z.string().optional(),
   linkedinUrl: z.string().optional(),
+  // LinkedIn organization fields
+  linkedinOrgType: z.string().optional(),
+  linkedinOrgIndustry: z.string().optional(),
+  linkedinOrgSize: z.string().optional(),
+  linkedinOrgDescription: z.string().optional(),
 });
 
 export const RoleInfoSchema = z.object({
@@ -148,6 +163,11 @@ export const RoleInfoSchema = z.object({
   recruiterName: z.string().optional(),
   recruiterTitle: z.string().optional(),
   aiHiringManagerName: z.string().optional(),
+  aiHiringManagerEmail: z.string().optional(),
+  // Additional RapidAPI fields
+  organization: z.string().optional(),
+  salaryRaw: z.any().optional(),
+  descriptionText: z.string().optional(),
 });
 
 export const CoverLetterRequestSchema = z.object({
