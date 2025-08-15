@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { SignInButton } from "@/components/SignInButton"
 import { SignInForm } from "@/components/auth/SignInForm"
+import Link from "next/link"
 
 export default async function SignIn() {
   const session = await getServerSession(authOptions)
@@ -24,6 +25,19 @@ export default async function SignIn() {
         <div className="divider">OR</div>
         
         <SignInButton />
+        
+        <div className="text-center mt-6">
+          <p className="text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link 
+              href="/developer/signup" 
+              className="font-medium text-primary hover:underline"
+              data-testid="auth-signup-link"
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

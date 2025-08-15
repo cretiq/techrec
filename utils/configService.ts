@@ -80,7 +80,7 @@ const DEFAULT_XP_REWARDS: XPRewards = {
 
 const DEFAULT_SUBSCRIPTION_TIERS: SubscriptionTiers = {
   FREE: {
-    monthlyPoints: 10,
+    monthlyPoints: 0, // MVP Beta: Free users get 0 points by default
     xpMultiplier: 1.0,
     price: 0,
     features: ['Basic CV analysis', 'Limited job queries', 'Standard support'],

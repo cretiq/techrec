@@ -131,6 +131,10 @@ export function GamificationAdminClient() {
     experienceProjects: number;
   } | null>(null);
 
+  // Developer deletion
+  const [isDeleteDeveloperConfirmOpen, setIsDeleteDeveloperConfirmOpen] = useState(false);
+  const [isDeletingDeveloper, setIsDeletingDeveloper] = useState(false);
+
   // Load developers on component mount
   useEffect(() => {
     loadDevelopers();
@@ -208,12 +212,12 @@ export function GamificationAdminClient() {
   };
 
 
-  // Award points
+  // Award/deduct points
   const awardPoints = async () => {
     if (!selectedDeveloper || !pointsAmount || !pointsReason) return;
     
     setLoading(true);
-    setOperation({ type: 'loading', message: 'Awarding points...' });
+    setOperation({ type: 'loading', message: pointsAmount > 0 ? 'Awarding points...' : 'Deducting points...' });
     
     try {
       const response = await fetch('/api/admin/gamification/points', {
@@ -229,16 +233,58 @@ export function GamificationAdminClient() {
       const data = await response.json();
       
       if (response.ok) {
-        setOperation({ type: 'success', message: `Successfully awarded ${pointsAmount} points` });
+        setOperation({ 
+          type: 'success', 
+          message: pointsAmount > 0 
+            ? `Successfully awarded ${pointsAmount} points` 
+            : `Successfully deducted ${Math.abs(pointsAmount)} points`
+        });
         setPointsAmount(0);
         setPointsReason('');
         // Refresh developer data
         await loadDevelopers();
       } else {
-        setOperation({ type: 'error', message: data.error || 'Failed to award points' });
+        setOperation({ type: 'error', message: data.error || 'Failed to process points' });
       }
     } catch (error) {
-      setOperation({ type: 'error', message: 'Error awarding points' });
+      setOperation({ type: 'error', message: 'Error processing points' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Set exact points amount
+  const setExactPoints = async (targetAmount: number, reason: string) => {
+    if (!selectedDeveloper) return;
+    
+    setLoading(true);
+    setOperation({ type: 'loading', message: `Setting points to exactly ${targetAmount}...` });
+    
+    try {
+      const response = await fetch('/api/admin/gamification/points/set', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          developerId: selectedDeveloper.id,
+          amount: targetAmount,
+          reason: reason
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setOperation({ 
+          type: 'success', 
+          message: `Successfully set points to exactly ${targetAmount} (${data.difference > 0 ? '+' : ''}${data.difference} change)`
+        });
+        // Refresh developer data
+        await loadDevelopers();
+      } else {
+        setOperation({ type: 'error', message: data.error || 'Failed to set exact points' });
+      }
+    } catch (error) {
+      setOperation({ type: 'error', message: 'Error setting exact points' });
     } finally {
       setLoading(false);
     }
@@ -434,6 +480,42 @@ export function GamificationAdminClient() {
     }
   };
 
+  // Handle delete developer confirmation
+  const handleDeleteDeveloperClick = async () => {
+    if (!selectedDeveloper) return;
+    setIsDeleteDeveloperConfirmOpen(true);
+  };
+
+  // Delete developer completely
+  const deleteDeveloper = async () => {
+    if (!selectedDeveloper) return;
+    
+    setIsDeletingDeveloper(true);
+    setOperation({ type: 'loading', message: 'Deleting developer account...' });
+    
+    try {
+      const response = await fetch(`/api/admin/gamification/delete-developer?developerId=${selectedDeveloper.id}`, {
+        method: 'DELETE'
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setOperation({ type: 'success', message: `Developer "${selectedDeveloper.name}" has been completely deleted` });
+        // Clear selected developer and refresh list
+        setSelectedDeveloper(null);
+        await loadDevelopers();
+      } else {
+        setOperation({ type: 'error', message: data.error || 'Failed to delete developer' });
+      }
+    } catch (error) {
+      setOperation({ type: 'error', message: 'Error deleting developer' });
+    } finally {
+      setIsDeletingDeveloper(false);
+      setIsDeleteDeveloperConfirmOpen(false);
+    }
+  };
+
   // Format file size
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -459,10 +541,10 @@ export function GamificationAdminClient() {
       {/* Left Half - Developer Table */}
       <div className="w-1/2 flex flex-col">
         <Card className="flex-1 flex flex-col">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center justify-between">
+          <CardHeader className="py-2">
+            <CardTitle className="flex items-center justify-between text-base">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
+                <Users className="w-4 h-4" />
                 Developers ({filteredDevelopers.length})
               </div>
               <Button 
@@ -470,26 +552,27 @@ export function GamificationAdminClient() {
                 disabled={loadingDevelopers}
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-xs"
               >
-                {loadingDevelopers ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                {loadingDevelopers ? <Loader2 className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
                 Refresh
               </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col">
             {/* Search Filter */}
-            <div className="mb-3">
+            <div className="mb-2">
               <Input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Filter by name or email..."
-                className="max-w-sm"
+                className="max-w-sm text-sm"
+                size="sm"
               />
             </div>
 
-            {/* Developer Table */}
+            {/* Developer List */}
             {loadingDevelopers ? (
               <div className="text-center py-8">
                 <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
@@ -497,134 +580,54 @@ export function GamificationAdminClient() {
               </div>
             ) : (
               <div className="overflow-auto flex-1">
-                <table className="table table-compact table-zebra w-full">
-                  <thead className="sticky top-0 bg-base-100 z-10">
-                    <tr className="text-xs">
-                      <th 
-                        className="cursor-pointer hover:bg-base-200 p-2"
-                        onClick={() => handleSort('name')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Name
-                          {sortBy === 'name' && (
-                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
-                          )}
-                        </div>
-                      </th>
-                      <th 
-                        className="cursor-pointer hover:bg-base-200 p-2"
-                        onClick={() => handleSort('email')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Email
-                          {sortBy === 'email' && (
-                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
-                          )}
-                        </div>
-                      </th>
-                      <th 
-                        className="cursor-pointer hover:bg-base-200 p-2"
-                        onClick={() => handleSort('currentLevel')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Level
-                          {sortBy === 'currentLevel' && (
-                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
-                          )}
-                        </div>
-                      </th>
-                      <th 
-                        className="cursor-pointer hover:bg-base-200 p-2"
-                        onClick={() => handleSort('totalXP')}
-                      >
-                        <div className="flex items-center gap-1">
-                          XP
-                          {sortBy === 'totalXP' && (
-                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
-                          )}
-                        </div>
-                      </th>
-                      <th className="p-2">Points</th>
-                      <th 
-                        className="cursor-pointer hover:bg-base-200 p-2"
-                        onClick={() => handleSort('subscriptionTier')}
-                      >
-                        <div className="flex items-center gap-1">
-                          Tier
-                          {sortBy === 'subscriptionTier' && (
-                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
-                          )}
-                        </div>
-                      </th>
-                      <th className="p-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredDevelopers.map((developer) => (
-                      <tr 
-                        key={developer.id}
-                        className={`cursor-pointer hover:bg-base-200/50 ${
-                          selectedDeveloper?.id === developer.id ? 'bg-primary/10' : ''
+                <ul className="menu menu-compact bg-base-100 w-full p-0">
+                  {filteredDevelopers.map((developer) => (
+                    <li key={developer.id}>
+                      <a
+                        className={`flex justify-between items-center p-3 ${
+                          selectedDeveloper?.id === developer.id 
+                            ? 'active bg-primary text-primary-content' 
+                            : 'hover:bg-base-200'
                         }`}
                         onClick={() => selectDeveloper(developer)}
                       >
-                        <td className="p-2">
-                          <div className="text-sm font-medium truncate max-w-[120px]" title={developer.name}>
-                            {developer.name}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-sm truncate" title={developer.name}>
+                                {developer.name}
+                              </div>
+                              <div className="text-xs opacity-70 truncate" title={developer.email}>
+                                {developer.email}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 ml-4">
+                              <div className="text-xs font-medium">
+                                {(developer.monthlyPoints - developer.pointsUsed + developer.pointsEarned).toLocaleString()} pts
+                              </div>
+                              {process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true' && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-8 p-0 text-xs"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    selectDeveloper(developer);
+                                    setPointsAmount(50);
+                                    setPointsReason('Quick beta points top-up');
+                                  }}
+                                  title="Quick add 50 points"
+                                >
+                                  +50
+                                </Button>
+                              )}
+                            </div>
                           </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs text-base-content/70 truncate max-w-[150px]" title={developer.email}>
-                            {developer.email}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <Badge variant="outline" className="text-xs px-2 py-1">L{developer.currentLevel}</Badge>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs">{developer.totalXP.toLocaleString()}</div>
-                        </td>
-                        <td className="p-2">
-                          <div className="text-xs flex items-center gap-1">
-                            <span>{(developer.monthlyPoints - developer.pointsUsed + developer.pointsEarned).toLocaleString()}</span>
-                            {process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true' && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-4 w-6 p-0 text-xs"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  selectDeveloper(developer);
-                                  setPointsAmount(50);
-                                  setPointsReason('Quick beta points top-up');
-                                }}
-                                title="Quick add 50 points"
-                              >
-                                +50
-                              </Button>
-                            )}
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <Badge variant="outline" className="text-xs px-2 py-1">{developer.subscriptionTier}</Badge>
-                        </td>
-                        <td className="p-2">
-                          <Button
-                            variant={selectedDeveloper?.id === developer.id ? "default" : "outline"}
-                            size="sm"
-                            className="text-xs px-2 py-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              selectDeveloper(developer);
-                            }}
-                          >
-                            {selectedDeveloper?.id === developer.id ? "✓" : "Select"}
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </div>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </CardContent>
@@ -721,11 +724,12 @@ export function GamificationAdminClient() {
 
           {/* Admin Actions */}
           <Tabs defaultValue="points" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="points">Points</TabsTrigger>
               <TabsTrigger value="xp">XP</TabsTrigger>
               <TabsTrigger value="badges">Badges</TabsTrigger>
               <TabsTrigger value="cvs">CV Management</TabsTrigger>
+              <TabsTrigger value="dangerous" className="text-error">⚠️ Dangerous</TabsTrigger>
             </TabsList>
 
             <TabsContent value="points" className="space-y-4">
@@ -774,7 +778,7 @@ export function GamificationAdminClient() {
                           size="sm"
                           className="text-warning"
                           onClick={() => {
-                            setPointsAmount(Math.abs(amount));
+                            setPointsAmount(amount); // Keep negative for deduction
                             setPointsReason(`Points deduction - ${Math.abs(amount)} points`);
                           }}
                         >
@@ -792,8 +796,7 @@ export function GamificationAdminClient() {
                         type="number"
                         value={pointsAmount}
                         onChange={(e) => setPointsAmount(Number(e.target.value))}
-                        placeholder="100"
-                        min="1"
+                        placeholder="100 (negative to deduct)"
                       />
                     </div>
                     <div>
@@ -813,7 +816,7 @@ export function GamificationAdminClient() {
                     className="flex items-center gap-2"
                   >
                     <Plus className="w-4 h-4" />
-                    Award Points
+                    {pointsAmount > 0 ? 'Award Points' : pointsAmount < 0 ? 'Deduct Points' : 'Adjust Points'}
                   </Button>
 
                   {/* Beta Tester Quick Setup */}
@@ -821,11 +824,9 @@ export function GamificationAdminClient() {
                     <div className="pt-4 border-t">
                       <Button
                         variant="primary"
-                        onClick={() => {
-                          setPointsAmount(300);
-                          setPointsReason('Beta tester initial allocation');
-                        }}
+                        onClick={() => setExactPoints(300, 'Beta tester initial allocation - set to exactly 300 points')}
                         className="w-full"
+                        disabled={loading}
                       >
                         Set as Beta Tester (300 points)
                       </Button>
@@ -835,7 +836,7 @@ export function GamificationAdminClient() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="xp" className="space-y-4">
+              <TabsContent value="xp" className="space-y-3 flex-1 overflow-auto">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -1153,9 +1154,151 @@ export function GamificationAdminClient() {
                 </div>
               )}
             </TabsContent>
+
+            <TabsContent value="dangerous" className="space-y-4">
+              <Card className="border-red-200 bg-red-50/10">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-700">
+                    <AlertCircle className="w-5 h-5" />
+                    ⚠️ Dangerous Actions
+                  </CardTitle>
+                  <p className="text-sm text-red-600">
+                    These actions are irreversible and will permanently delete data. Use with extreme caution.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  
+                  {/* Clear Profile Data */}
+                  <div className="border border-orange-200 bg-orange-50/20 p-4 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold text-orange-800">Clear Profile Data</h4>
+                        <p className="text-sm text-orange-700 mt-1">
+                          Removes all profile data (skills, experience, education, achievements) but keeps the developer account
+                        </p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleClearProfileClick}
+                        disabled={loading || isClearingProfile}
+                        className="border-orange-300 text-orange-700 hover:bg-orange-100"
+                      >
+                        {isClearingProfile ? (
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        ) : (
+                          <Trash2 className="w-4 h-4 mr-2" />
+                        )}
+                        Clear Profile Data
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Delete Developer Account */}
+                  <div className="border border-red-300 bg-red-50/30 p-4 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold text-red-800">Delete Developer Account</h4>
+                        <p className="text-sm text-red-700 mt-1">
+                          Permanently deletes the developer account and ALL associated data including profile, gamification data, transactions, and CVs
+                        </p>
+                        <div className="text-xs text-red-600 mt-2 font-medium">
+                          ⚠️ This action cannot be undone and will remove all traces of the developer from the system
+                        </div>
+                      </div>
+                      <Button
+                        variant="error"
+                        size="sm"
+                        onClick={handleDeleteDeveloperClick}
+                        disabled={loading || isDeletingDeveloper}
+                        className="flex items-center gap-2"
+                      >
+                        {isDeletingDeveloper ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Users className="w-4 h-4" />
+                        )}
+                        Delete Developer
+                      </Button>
+                    </div>
+                  </div>
+
+                </CardContent>
+              </Card>
+
+              {/* Delete Developer Confirmation Modal */}
+              {isDeleteDeveloperConfirmOpen && selectedDeveloper && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-base-100 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <AlertCircle className="w-6 h-6 text-red-500" />
+                      <h3 className="text-lg font-semibold text-red-700">⚠️ Confirm Developer Deletion</h3>
+                    </div>
+                    
+                    <div className="space-y-4 mb-6">
+                      <div className="bg-red-100 border border-red-300 p-4 rounded-lg">
+                        <p className="text-red-800 font-semibold mb-2">
+                          This will PERMANENTLY DELETE the entire developer account:
+                        </p>
+                        <div className="text-sm text-red-700 mb-3">
+                          <div><strong>Developer:</strong> {selectedDeveloper.name}</div>
+                          <div><strong>Email:</strong> {selectedDeveloper.email}</div>
+                          <div><strong>Level:</strong> {selectedDeveloper.currentLevel}</div>
+                          <div><strong>Total XP:</strong> {selectedDeveloper.totalXP.toLocaleString()}</div>
+                        </div>
+                      </div>
+
+                      <div className="bg-red-50 border border-red-200 p-4 rounded-md">
+                        <h4 className="font-semibold text-red-800 mb-2">All of the following data will be permanently deleted:</h4>
+                        <ul className="text-sm text-red-700 space-y-1">
+                          <li>• Developer account and authentication</li>
+                          <li>• All profile data (contact info, skills, experience, education)</li>
+                          <li>• All gamification data (XP, points, badges, challenges)</li>
+                          <li>• All uploaded CVs and analysis results</li>
+                          <li>• All generated content (cover letters, outreach messages)</li>
+                          <li>• All transaction history and subscription data</li>
+                        </ul>
+                        <div className="mt-4 p-3 bg-red-200 rounded border border-red-400">
+                          <p className="text-red-900 font-bold text-sm">
+                            ⚠️ THIS ACTION CANNOT BE UNDONE
+                          </p>
+                          <p className="text-red-800 text-xs mt-1">
+                            The developer will need to create a completely new account to use the platform again.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-3 justify-end">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setIsDeleteDeveloperConfirmOpen(false)}
+                        disabled={isDeletingDeveloper}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="error"
+                        onClick={deleteDeveloper}
+                        disabled={isDeletingDeveloper}
+                        className="flex items-center gap-2"
+                      >
+                        {isDeletingDeveloper ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Users className="w-4 h-4" />
+                        )}
+                        Permanently Delete Developer
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </TabsContent>
           </Tabs>
         </div>
       )}
+      </div>
     </div>
   );
 }

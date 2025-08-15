@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    if (amount <= 0) {
-      return NextResponse.json({ error: 'Amount must be positive' }, { status: 400 });
+    if (amount === 0) {
+      return NextResponse.json({ error: 'Amount cannot be zero' }, { status: 400 });
     }
 
     // Check if developer exists
@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Developer not found' }, { status: 404 });
     }
 
-    // Award points as earned points (not monthly allocation)
+    // Handle both positive and negative point adjustments
     const result = await prisma.$transaction(async (tx) => {
-      // Update developer's earned points
+      // Update developer's earned points (can be positive or negative)
       const updatedDeveloper = await tx.developer.update({
         where: { id: developerId },
         data: { pointsEarned: { increment: amount } }
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
         data: {
           developerId,
           amount,
-          source: 'ADMIN_GRANTED',
-          description: `Admin award: ${reason}`,
+          source: amount > 0 ? 'ADMIN_GRANTED' : 'ADMIN_DEDUCTED',
+          description: amount > 0 ? `Admin award: ${reason}` : `Admin deduction: ${reason}`,
           metadata: {
             adminUser: session.user.email,
             timestamp: new Date().toISOString(),
@@ -77,7 +77,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Successfully awarded ${amount} points to ${developer.name}`,
+      message: amount > 0 
+        ? `Successfully awarded ${amount} points to ${developer.name}`
+        : `Successfully deducted ${Math.abs(amount)} points from ${developer.name}`,
       newEarnedPoints: result.updatedDeveloper.pointsEarned,
       transaction: {
         id: result.transaction.id,
