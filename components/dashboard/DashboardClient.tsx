@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card';
 import { Button } from '@/components/ui-daisy/button';
 import { Badge } from '@/components/ui-daisy/badge';
-import { ArrowRight, AlertCircle, RefreshCw, Coins, BookOpen, Search, Sparkles, Info } from 'lucide-react';
+import { ArrowRight, AlertCircle, RefreshCw, Coins, BookOpen, Search, Sparkles, Info, Upload, CheckCircle, FileText, Zap, Send, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { OnboardingRoadmap } from './OnboardingRoadmap';
 import { DashboardStats } from './DashboardStats';
@@ -109,6 +109,17 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
   const [pointsLoading, setPointsLoading] = useState<boolean>(true);
   const isMvpBetaEnabled = process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true';
 
+  // CV Upload Status State
+  const [cvUploadStatus, setCvUploadStatus] = useState<{
+    hasCV: boolean;
+    cvCount: number;
+    loading: boolean;
+  }>({
+    hasCV: false,
+    cvCount: 0,
+    loading: true
+  });
+
   console.log('🏠 [DashboardClient] Component mounted');
 
   const handleRetry = () => {
@@ -134,6 +145,26 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
     }
   }, [isMvpBetaEnabled]);
 
+  // Function to fetch CV upload status
+  const fetchCvUploadStatus = useCallback(async () => {
+    setCvUploadStatus(prev => ({ ...prev, loading: true }));
+    try {
+      const response = await fetch('/api/developer/me/profile');
+      if (response.ok) {
+        const data = await response.json();
+        const cvCount = data.cvCount || 0;
+        setCvUploadStatus({
+          hasCV: cvCount > 0,
+          cvCount,
+          loading: false
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch CV upload status:', error);
+      setCvUploadStatus(prev => ({ ...prev, loading: false }));
+    }
+  }, []);
+
   useEffect(() => {
     if (!dashboardData) {
       dispatch(fetchDashboardData());
@@ -143,7 +174,10 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
     if (isMvpBetaEnabled) {
       fetchPointsBalance();
     }
-  }, [dispatch, dashboardData, fetchPointsBalance, isMvpBetaEnabled]);
+    
+    // Fetch CV upload status
+    fetchCvUploadStatus();
+  }, [dispatch, dashboardData, fetchPointsBalance, fetchCvUploadStatus, isMvpBetaEnabled]);
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -184,119 +218,199 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
       
       {/* MVP Beta Dashboard */}
       {isMvpBetaEnabled && (
-        <Card variant="elevated-interactive" animated className="mb-8">
+        <Card variant="elevated-interactive" animated className="mb-8 max-w-6xl mx-auto">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-                  <Sparkles className="h-6 w-6 text-white" />
-                </div>
                 <div>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    TechRec Beta Dashboard
-                    <Badge variant="secondary" className="text-xs">BETA</Badge>
+                  <CardTitle className="text-3xl font-light font-bold text-base-content/60">
+                    Dashboard
                   </CardTitle>
-                  <p className="text-base-content/70">
-                    Welcome to the TechRec beta! Use your points to search for jobs and test our features.
-                  </p>
                 </div>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="flex flex-col lg:flex-row gap-6">
               
               {/* Points Balance */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Coins className={`h-5 w-5 ${pointsBalance < 50 ? 'text-warning' : 'text-success'}`} />
-                  <div>
-                    <p className="text-sm font-medium">Beta Points Balance</p>
-                    <div className="flex items-center gap-2">
-                      <p className={`text-2xl font-bold ${
-                        pointsBalance < 50 ? 'text-warning' : 
-                        pointsBalance < 10 ? 'text-error' : 'text-success'
-                      }`}>
-                        {pointsLoading ? '...' : pointsBalance}
-                      </p>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="stats bg-base-200/50 shadow">
+                  <div className="stat place-items-center">
+                    <div className="stat-figure text-secondary">
+                      <Coins className={`h-8 w-8 ${pointsBalance < 50 ? 'text-warning' : 'text-success'}`} />
+                    </div>
+                    <div className="stat-title text-lg">Points Balance</div>
+                    <div className={`stat-value text-4xl ${
+                      pointsBalance < 50 ? 'text-warning' : 
+                      pointsBalance < 10 ? 'text-error' : 'text-success'
+                    }`}>
+                      {pointsLoading ? '...' : pointsBalance}
+                    </div>
+                    <div className="stat-desc">
                       {!pointsLoading && pointsBalance < 50 && (
-                        <Badge variant={pointsBalance < 10 ? 'destructive' : 'warning'} className="text-xs">
-                          {pointsBalance < 10 ? 'Low' : 'Running Low'}
-                        </Badge>
+                        <span className={pointsBalance < 10 ? 'text-error' : 'text-warning'}>
+                          {pointsBalance < 10 ? 'Low balance' : 'Running low'}
+                        </span>
+                      )}
+                      {!pointsLoading && pointsBalance >= 50 && (
+                        <span className="text-success">Good balance</span>
                       )}
                     </div>
                   </div>
                 </div>
-                
-                <div className="bg-base-200/50 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Info className="h-4 w-4 text-base-content/60" />
-                    <span className="text-sm font-medium text-base-content/80">How it works</span>
+              </div>
+
+              {/* Divider */}
+              <div className="divider lg:divider-horizontal"></div>
+              
+              {/* Timeline Section */}
+              <div className="flex-1 space-y-4">
+                <div className="bg-base-200/50 p-4 rounded-lg">
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <Sparkles className="h-5 w-5 text-primary/60" />
+                    <span className="text-base font-semibold text-base-content/50">Follow the steps below to get started</span>
                   </div>
-                  <ul className="text-xs text-base-content/60 space-y-1">
-                    <li>• 1 point per job search result</li>
-                    <li>• No points used if no results found</li>
-                    <li>• Contact support for more points</li>
+                  
+                  {/* DaisyUI Vertical Timeline */}
+                  <ul className="timeline timeline-vertical">
+                    
+                    {/* Step 1: Upload CV (Top) */}
+                    <li>
+                      <div className="timeline-start timeline-box p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Upload className={`h-6 w-6 ${cvUploadStatus.hasCV ? 'text-success' : 'text-accent'}`} />
+                          <span className="font-medium text-lg">Upload CV</span>
+                          {cvUploadStatus.hasCV && <CheckCircle className="h-5 w-5 text-success" />}
+                        </div>
+                        <p className="text-base text-base-content/70 mb-3">Upload your resume to get started</p>
+                        {!cvUploadStatus.hasCV && (
+                          <Link href="/developer/cv-management">
+                            <Button size="default" variant="accent" className="w-full">
+                              Upload Now
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                      <div className="timeline-middle">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg ${cvUploadStatus.hasCV ? 'bg-success' : 'bg-accent'}`}>
+                          1
+                        </div>
+                      </div>
+                      <hr className={cvUploadStatus.hasCV ? 'bg-success' : 'bg-accent'} />
+                    </li>
+
+                    {/* Step 2: Improve CV (Bottom) */}
+                    <li>
+                      <hr className="bg-warning" />
+                      <div className="timeline-middle">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg bg-warning">
+                          2
+                        </div>
+                      </div>
+                      <div className="timeline-end timeline-box p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Zap className="h-6 w-6 text-warning" />
+                          <span className="font-medium text-lg">Improve CV</span>
+                        </div>
+                        <p className="text-base text-base-content/70 mb-3">Follow feedback to optimize your resume</p>
+                        {cvUploadStatus.hasCV && (
+                          <Link href="/developer/cv-management">
+                            <Button size="default" variant="outline" className="w-full">
+                              View Feedback
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                      <hr className="bg-warning" />
+                    </li>
+
+                    {/* Step 3: Reupload (Top) */}
+                    <li>
+                      <hr className="bg-info" />
+                      <div className="timeline-start timeline-box p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <RefreshCw className="h-6 w-6 text-info" />
+                          <span className="font-medium text-lg">Reupload</span>
+                        </div>
+                        <p className="text-base text-base-content/70">Upload your improved CV version</p>
+                      </div>
+                      <div className="timeline-middle">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg bg-info">
+                          3
+                        </div>
+                      </div>
+                      <hr className="bg-info" />
+                    </li>
+
+                    {/* Step 4: Search Jobs (Bottom) */}
+                    <li>
+                      <hr className="bg-primary" />
+                      <div className="timeline-middle">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg bg-primary">
+                          4
+                        </div>
+                      </div>
+                      <div className="timeline-end timeline-box p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Search className="h-6 w-6 text-primary" />
+                          <span className="font-medium text-lg">Search Jobs</span>
+                        </div>
+                        <p className="text-base text-base-content/70 mb-2">Find roles using your {pointsLoading ? '...' : pointsBalance} points</p>
+                        <div className="text-sm text-base-content/60 mb-3">1 search result = 1 point</div>
+                        <Link href="/developer/roles/search">
+                          <Button size="default" variant="primary" className="w-full">
+                            Search Now
+                          </Button>
+                        </Link>
+                      </div>
+                      <hr className="bg-primary" />
+                    </li>
+
+                    {/* Step 5: Cover Letters (Top) */}
+                    <li>
+                      <hr className="bg-secondary" />
+                      <div className="timeline-start timeline-box p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <FileText className="h-6 w-6 text-secondary" />
+                          <span className="font-medium text-lg">Cover Letters</span>
+                        </div>
+                        <p className="text-base text-base-content/70 mb-3">AI writes personalized cover letters</p>
+                        <Link href="/developer/writing-help">
+                          <Button size="default" variant="secondary" className="w-full">
+                            Create Letters
+                          </Button>
+                        </Link>
+                      </div>
+                      <div className="timeline-middle">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg bg-secondary">
+                          5
+                        </div>
+                      </div>
+                      <hr className="bg-secondary" />
+                    </li>
+
+                    {/* Step 6: Apply (Bottom) */}
+                    <li>
+                      <hr className="bg-success" />
+                      <div className="timeline-middle">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg bg-success">
+                          6
+                        </div>
+                      </div>
+                      <div className="timeline-end timeline-box p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <ExternalLink className="h-6 w-6 text-success" />
+                          <span className="font-medium text-lg">Apply</span>
+                        </div>
+                        <p className="text-base text-base-content/70">Apply on company websites with your materials</p>
+                      </div>
+                    </li>
+                    
                   </ul>
                 </div>
               </div>
               
-              {/* Quick Actions */}
-              <div className="space-y-3">
-                <h3 className="font-medium text-base-content/80">Quick Actions</h3>
-                
-                <Link href="/developer/roles/search">
-                  <Button 
-                    variant="gradient" 
-                    size="lg"
-                    className="w-full justify-between"
-                    leftIcon={<Search className="h-4 w-4" />}
-                  >
-                    <span>Search Jobs</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-                
-                <Link href="/developer/cv-management">
-                  <Button 
-                    variant="outline" 
-                    size="md"
-                    className="w-full justify-between"
-                  >
-                    <span>Upload CV</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-              
-              {/* How-to Guides */}
-              <div className="space-y-3">
-                <h3 className="font-medium text-base-content/80">Need Help?</h3>
-                
-                <Link href="/developer/how-to/app">
-                  <Button 
-                    variant="ghost" 
-                    size="md"
-                    className="w-full justify-between"
-                    leftIcon={<BookOpen className="h-4 w-4" />}
-                  >
-                    <span>How to Use TechRec</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-                
-                <Link href="/developer/how-to/job-search">
-                  <Button 
-                    variant="ghost" 
-                    size="md"
-                    className="w-full justify-between"
-                    leftIcon={<BookOpen className="h-4 w-4" />}
-                  >
-                    <span>How to Get a Job</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -309,7 +423,7 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
           {/* Left Column - Onboarding Roadmap (50%) */}
         <div className="space-y-6">
           <Card 
-            variant="transparent" 
+            variant="elevated-interactive" 
             data-testid="dashboard-roadmap-card"
           >
             <CardHeader>
@@ -367,12 +481,25 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
             <CardContent className="space-y-3">
               <Link href="/developer/cv-management">
                 <Button 
-                  variant="default" 
+                  variant={cvUploadStatus.hasCV ? "default" : "gradient"} 
                   size="lg"
-                  className="w-full justify-between"
+                  className={`w-full justify-between ${!cvUploadStatus.hasCV ? 'ring-2 ring-primary/50 shadow-lg' : ''}`}
                   data-testid="dashboard-action-cv-management"
+                  leftIcon={cvUploadStatus.hasCV ? <CheckCircle className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
                 >
-                  <span>Manage CV</span>
+                  <div className="flex items-center gap-2">
+                    <span>{cvUploadStatus.hasCV ? 'Manage CV' : 'Upload CV'}</span>
+                    {cvUploadStatus.hasCV && cvUploadStatus.cvCount > 1 && (
+                      <Badge variant="secondary" className="text-xs">
+                        {cvUploadStatus.cvCount}
+                      </Badge>
+                    )}
+                    {!cvUploadStatus.hasCV && (
+                      <Badge variant="warning" className="text-xs animate-pulse">
+                        Required
+                      </Badge>
+                    )}
+                  </div>
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>

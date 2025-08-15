@@ -59,10 +59,7 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                     Dashboard
                   </Link>
                   <Link href="/developer/cv-management" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-cv-management-trigger">
-                    CV Management
-                  </Link>
-                  <Link href="/developer/saved-roles" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-saved-roles-trigger">
-                    Saved Roles
+                    Your CV
                   </Link>
                   <Link href="/developer/roles/search" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-job-search-trigger">
                     Job Search
