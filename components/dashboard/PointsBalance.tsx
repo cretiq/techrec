@@ -117,7 +117,8 @@ export function PointsBalance({ className = '', pointsData: propPointsData }: Po
   const getDaysUntilReset = (resetDate: string | null) => {
     if (!resetDate) return 0;
     const now = new Date();
-    const diffTime = resetDate.getTime() - now.getTime();
+    const resetDateObj = new Date(resetDate);
+    const diffTime = resetDateObj.getTime() - now.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-daisy/card';
 import { Button } from '@/components/ui-daisy/button';
-import { ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
+import { Badge } from '@/components/ui-daisy/badge';
+import { ArrowRight, AlertCircle, RefreshCw, Coins, BookOpen, Search, Sparkles, Info } from 'lucide-react';
 import Link from 'next/link';
 import { OnboardingRoadmap } from './OnboardingRoadmap';
 import { DashboardStats } from './DashboardStats';
@@ -103,6 +104,11 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
   const isLoading = useSelector(selectDashboardLoading);
   const error = useSelector(selectDashboardError);
 
+  // MVP Beta Points State
+  const [pointsBalance, setPointsBalance] = useState<number>(0);
+  const [pointsLoading, setPointsLoading] = useState<boolean>(true);
+  const isMvpBetaEnabled = process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true';
+
   console.log('🏠 [DashboardClient] Component mounted');
 
   const handleRetry = () => {
@@ -110,11 +116,34 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
     dispatch(fetchDashboardData());
   };
 
+  // Function to fetch points balance for MVP Beta
+  const fetchPointsBalance = useCallback(async () => {
+    if (!isMvpBetaEnabled) return;
+    
+    setPointsLoading(true);
+    try {
+      const response = await fetch('/api/gamification/points');
+      if (response.ok) {
+        const data = await response.json();
+        setPointsBalance(data.balance?.available || 0);
+      }
+    } catch (error) {
+      console.error('Failed to fetch points balance:', error);
+    } finally {
+      setPointsLoading(false);
+    }
+  }, [isMvpBetaEnabled]);
+
   useEffect(() => {
     if (!dashboardData) {
       dispatch(fetchDashboardData());
     }
-  }, [dispatch, dashboardData]);
+    
+    // Fetch points balance for MVP Beta
+    if (isMvpBetaEnabled) {
+      fetchPointsBalance();
+    }
+  }, [dispatch, dashboardData, fetchPointsBalance, isMvpBetaEnabled]);
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -151,106 +180,233 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
   }
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 ${className}`} data-testid="dashboard-client">
+    <div className={`space-y-8 ${className}`} data-testid="dashboard-client">
       
-      {/* Left Column - Onboarding Roadmap (50%) */}
-      <div className="space-y-6">
-        <Card 
-          variant="transparent" 
-          data-testid="dashboard-roadmap-card"
-        >
+      {/* MVP Beta Dashboard */}
+      {isMvpBetaEnabled && (
+        <Card variant="elevated-interactive" animated className="mb-8">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <span className="text-2xl">🗺️</span>
-                  Your Journey to Success
-                </CardTitle>
-                <p className="text-base-content/70">
-                  Complete these milestones to unlock your full potential on TechRec
-                </p>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    TechRec Beta Dashboard
+                    <Badge variant="secondary" className="text-xs">BETA</Badge>
+                  </CardTitle>
+                  <p className="text-base-content/70">
+                    Welcome to the TechRec beta! Use your points to search for jobs and test our features.
+                  </p>
+                </div>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <OnboardingRoadmap 
-              roadmapData={roadmapProgress}
-              profileScore={profileCompleteness?.score || 0}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* Points Balance */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Coins className={`h-5 w-5 ${pointsBalance < 50 ? 'text-warning' : 'text-success'}`} />
+                  <div>
+                    <p className="text-sm font-medium">Beta Points Balance</p>
+                    <div className="flex items-center gap-2">
+                      <p className={`text-2xl font-bold ${
+                        pointsBalance < 50 ? 'text-warning' : 
+                        pointsBalance < 10 ? 'text-error' : 'text-success'
+                      }`}>
+                        {pointsLoading ? '...' : pointsBalance}
+                      </p>
+                      {!pointsLoading && pointsBalance < 50 && (
+                        <Badge variant={pointsBalance < 10 ? 'destructive' : 'warning'} className="text-xs">
+                          {pointsBalance < 10 ? 'Low' : 'Running Low'}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-base-200/50 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Info className="h-4 w-4 text-base-content/60" />
+                    <span className="text-sm font-medium text-base-content/80">How it works</span>
+                  </div>
+                  <ul className="text-xs text-base-content/60 space-y-1">
+                    <li>• 1 point per job search result</li>
+                    <li>• No points used if no results found</li>
+                    <li>• Contact support for more points</li>
+                  </ul>
+                </div>
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="space-y-3">
+                <h3 className="font-medium text-base-content/80">Quick Actions</h3>
+                
+                <Link href="/developer/roles/search">
+                  <Button 
+                    variant="gradient" 
+                    size="lg"
+                    className="w-full justify-between"
+                    leftIcon={<Search className="h-4 w-4" />}
+                  >
+                    <span>Search Jobs</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                
+                <Link href="/developer/cv-management">
+                  <Button 
+                    variant="outline" 
+                    size="md"
+                    className="w-full justify-between"
+                  >
+                    <span>Upload CV</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              
+              {/* How-to Guides */}
+              <div className="space-y-3">
+                <h3 className="font-medium text-base-content/80">Need Help?</h3>
+                
+                <Link href="/developer/how-to/app">
+                  <Button 
+                    variant="ghost" 
+                    size="md"
+                    className="w-full justify-between"
+                    leftIcon={<BookOpen className="h-4 w-4" />}
+                  >
+                    <span>How to Use TechRec</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                
+                <Link href="/developer/how-to/job-search">
+                  <Button 
+                    variant="ghost" 
+                    size="md"
+                    className="w-full justify-between"
+                    leftIcon={<BookOpen className="h-4 w-4" />}
+                  >
+                    <span>How to Get a Job</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Main Dashboard - Hidden in MVP mode */}
+      {!isMvpBetaEnabled && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* Left Column - Onboarding Roadmap (50%) */}
+        <div className="space-y-6">
+          <Card 
+            variant="transparent" 
+            data-testid="dashboard-roadmap-card"
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <span className="text-2xl">🗺️</span>
+                    Your Journey to Success
+                  </CardTitle>
+                  <p className="text-base-content/70">
+                    Complete these milestones to unlock your full potential on TechRec
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <OnboardingRoadmap 
+                roadmapData={roadmapProgress}
+                profileScore={profileCompleteness?.score || 0}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column - Gamification Stats (50%) */}
+        <div className="space-y-6">
+          
+          {/* Level Progress */}
+          {profileData && (
+            <LevelProgressBar 
+              userProfile={profileData}
+              showDetails={false}
+              animated={true}
+              className="w-full"
             />
-          </CardContent>
-        </Card>
-      </div>
+          )}
 
-      {/* Right Column - Gamification Stats (50%) */}
-      <div className="space-y-6">
+          {/* Points Balance */}
+          <PointsBalance pointsData={pointsData} />
+
+          {/* Daily Streak - Commented out for UI simplification */}
+          {/* <DailyStreak streakData={streakData} /> */}
+
+          {/* Recent Badges */}
+          <RecentBadges badges={recentBadges} />
+
+          {/* Quick Actions */}
+          <Card 
+            variant="transparent" 
+            data-testid="dashboard-quick-actions"
+          >
+            <CardHeader>
+              <CardTitle className="text-lg">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Link href="/developer/cv-management">
+                <Button 
+                  variant="default" 
+                  size="lg"
+                  className="w-full justify-between"
+                  data-testid="dashboard-action-cv-management"
+                >
+                  <span>Manage CV</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/developer/roles/search">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="w-full justify-between"
+                  data-testid="dashboard-action-search-roles"
+                >
+                  <span>Search Roles</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/developer/writing-help">
+                <Button 
+                  variant="ghost" 
+                  size="lg"
+                  className="w-full justify-between"
+                  data-testid="dashboard-action-writing-help"
+                >
+                  <span>Writing Help</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Dashboard Stats */}
+          <DashboardStats activityStats={activityStats} />
+        </div>
         
-        {/* Level Progress */}
-        {profileData && (
-          <LevelProgressBar 
-            userProfile={profileData}
-            showDetails={false}
-            animated={true}
-            className="w-full"
-          />
-        )}
-
-        {/* Points Balance */}
-        <PointsBalance pointsData={pointsData} />
-
-        {/* Daily Streak - Commented out for UI simplification */}
-        {/* <DailyStreak streakData={streakData} /> */}
-
-        {/* Recent Badges */}
-        <RecentBadges badges={recentBadges} />
-
-        {/* Quick Actions */}
-        <Card 
-          variant="transparent" 
-          data-testid="dashboard-quick-actions"
-        >
-          <CardHeader>
-            <CardTitle className="text-lg">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Link href="/developer/cv-management">
-              <Button 
-                variant="default" 
-                size="lg"
-                className="w-full justify-between"
-                data-testid="dashboard-action-cv-management"
-              >
-                <span>Manage CV</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/developer/roles/search">
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="w-full justify-between"
-                data-testid="dashboard-action-search-roles"
-              >
-                <span>Search Roles</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/developer/writing-help">
-              <Button 
-                variant="ghost" 
-                size="lg"
-                className="w-full justify-between"
-                data-testid="dashboard-action-writing-help"
-              >
-                <span>Writing Help</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-
-        {/* Dashboard Stats */}
-        <DashboardStats activityStats={activityStats} />
-      </div>
+        </div>
+      )}
     </div>
   );
 }
