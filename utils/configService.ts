@@ -56,7 +56,7 @@ const DEFAULT_POINTS_COSTS: PointsCosts = {
 
 // MVP Beta Configuration
 export const MVP_BETA_CONFIG = {
-  enabled: process.env.ENABLE_MVP_MODE === 'true',
+  enabled: process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true',
   initialPoints: parseInt(process.env.MVP_INITIAL_POINTS || '300'),
   pointsPerResult: parseInt(process.env.MVP_POINTS_PER_RESULT || '1'),
   warningThreshold: parseInt(process.env.MVP_WARNING_THRESHOLD || '50'),

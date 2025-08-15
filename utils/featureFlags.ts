@@ -13,7 +13,7 @@
  * - Faster processing times (<5s vs 15s+)
  */
 export const isInMvpMode = (): boolean => {
-  return process.env.ENABLE_MVP_MODE === 'true';
+  return process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true';
 };
 
 /**
@@ -55,7 +55,7 @@ export const featureFlags = {
 export const logFeatureFlags = (): void => {
   if (process.env.NODE_ENV === 'development') {
     console.log('🏁 [FEATURE-FLAGS] Current configuration:', {
-      ENABLE_MVP_MODE: process.env.ENABLE_MVP_MODE,
+      NEXT_PUBLIC_ENABLE_MVP_MODE: process.env.NEXT_PUBLIC_ENABLE_MVP_MODE,
       ENABLE_DIRECT_GEMINI_UPLOAD: process.env.ENABLE_DIRECT_GEMINI_UPLOAD,
       DEBUG_CV_UPLOAD: process.env.DEBUG_CV_UPLOAD,
       NODE_ENV: process.env.NODE_ENV,

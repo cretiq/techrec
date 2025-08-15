@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
 
     // For MVP Beta: JOB_QUERY cost is dynamic based on results
     let effectiveCost: number;
-    if (action === 'JOB_QUERY' && process.env.ENABLE_MVP_MODE === 'true' && metadata?.resultsCount) {
+    if (action === 'JOB_QUERY' && process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true' && metadata?.resultsCount) {
       const pointsPerResult = parseInt(process.env.MVP_POINTS_PER_RESULT || '1');
       effectiveCost = metadata.resultsCount * pointsPerResult;
       console.log(`[MVP Beta] Dynamic cost for JOB_QUERY: ${metadata.resultsCount} results × ${pointsPerResult} = ${effectiveCost} points`);
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Skip validation for MVP Beta dynamic JOB_QUERY costs
-    if (!(action === 'JOB_QUERY' && process.env.ENABLE_MVP_MODE === 'true' && metadata?.resultsCount)) {
+    if (!(action === 'JOB_QUERY' && process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true' && metadata?.resultsCount)) {
       // Validate the spend first (for non-MVP Beta flows)
       const validation = await PointsManager.validatePointsSpend(spend);
       if (!validation.isValid) {

@@ -296,7 +296,7 @@ window.dispatchEvent(new CustomEvent('expandAllSections'));
 ### MVP Beta Points System (Active)
 **🚀 BETA TESTING MODE**: Dynamic points-per-result system for controlled API usage
 - **Points Deduction**: 1 point per job result returned (0 points if no results)
-- **Configuration**: `ENABLE_MVP_MODE=true`, `MVP_INITIAL_POINTS=300`
+- **Configuration**: `NEXT_PUBLIC_ENABLE_MVP_MODE=true`, `MVP_INITIAL_POINTS=300`
 - **UI Integration**: Real-time balance display, cost preview, usage notifications
 - **Admin Tools**: Quick adjustment buttons, beta tester setup (300 points)
 - **Rate Limiting**: 5,000 requests/month RapidAPI Pro plan protected by points
@@ -425,12 +425,11 @@ DEBUG_CV_UPLOAD=true NODE_ENV=development npx tsx scripts/analyze-direct-upload.
 **Key categories**: Database & Caching, Authentication, AI Providers, Gemini Models, Payments, Storage, Debug Settings
 
 **MVP Beta Configuration**:
-- `ENABLE_MVP_MODE=true` - Enable beta testing points system
+- `NEXT_PUBLIC_ENABLE_MVP_MODE=true` - Enable beta testing points system (unified flag)
 - `MVP_INITIAL_POINTS=300` - Initial points for beta testers
 - `MVP_POINTS_PER_RESULT=1` - Points cost per search result
 - `MVP_WARNING_THRESHOLD=50` - UI warning when below this
 - `MVP_CRITICAL_THRESHOLD=10` - Critical warning threshold
-- `NEXT_PUBLIC_ENABLE_MVP_MODE=true` - Client-side flag
 
 ### Core Implementation Mandate
 When implementing new features:

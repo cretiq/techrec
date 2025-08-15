@@ -151,10 +151,11 @@ RAPIDAPI_HOST="linkedin-api8.p.rapidapi.com"
 
 # Production Configuration
 NODE_ENV="production"
-ENABLE_MVP_MODE=true
+NEXT_PUBLIC_ENABLE_MVP_MODE=true
 MVP_INITIAL_POINTS=300
 MVP_POINTS_PER_RESULT=1
-NEXT_PUBLIC_ENABLE_MVP_MODE=true
+MVP_WARNING_THRESHOLD=50
+MVP_CRITICAL_THRESHOLD=10
 
 # Debug Settings (set to false in production)
 DEBUG_CV_UPLOAD=false

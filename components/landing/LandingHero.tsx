@@ -3,8 +3,10 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { Button, Badge, HeroSection, TrustIndicator } from "@/components/ui-daisy"
+import { isInMvpMode } from "@/utils/featureFlags"
 
 export function LandingHero() {
+  const mvpMode = isInMvpMode()
   const trustItems = [
     { icon: "checkCircle" as const, text: "No Credit Card Required", iconColor: "text-green-500" },
     { icon: "star" as const, text: "Setup Takes 2 Minutes", iconColor: "text-yellow-500" },
@@ -45,14 +47,16 @@ export function LandingHero() {
               Start My Free Job Match Analysis
             </Button>
           </Link>
-          <Link href="#how-it-works">
-            <Button 
-              variant="glass" 
-              size="xl" 
-            >
-              See How It Works
-            </Button>
-          </Link>
+          {!mvpMode && (
+            <Link href="#how-it-works">
+              <Button 
+                variant="glass" 
+                size="xl" 
+              >
+                See How It Works
+              </Button>
+            </Link>
+          )}
         </div>
 
         <TrustIndicator items={trustItems} />

@@ -55,12 +55,11 @@ DEBUG_COVER_LETTER=true     # Enable cover letter generation debug logging
 
 ## MVP Beta Testing
 ```bash
-ENABLE_MVP_MODE=true              # Enable beta testing points system
+NEXT_PUBLIC_ENABLE_MVP_MODE=true  # Enable beta testing points system (replaces ENABLE_MVP_MODE)
 MVP_INITIAL_POINTS=300            # Initial points allocation for beta testers
 MVP_POINTS_PER_RESULT=1           # Points charged per job search result
 MVP_WARNING_THRESHOLD=50          # Show warning when points below this
 MVP_CRITICAL_THRESHOLD=10         # Show critical warning below this
-NEXT_PUBLIC_ENABLE_MVP_MODE=true  # Client-side flag for UI features
 ```
 
 ## Configuration Notes

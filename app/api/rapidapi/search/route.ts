@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   const requestId = RapidApiEndpointLogger.generateRequestId()
   
   // Check if MVP beta mode is enabled
-  const isMvpBetaEnabled = process.env.ENABLE_MVP_MODE === 'true'
+  const isMvpBetaEnabled = process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true'
   const pointsPerResult = parseInt(process.env.MVP_POINTS_PER_RESULT || '1')
   
   // Extract all possible parameters from URL
