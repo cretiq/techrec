@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "postinstall": "prisma generate",
     "seed": "tsx scripts/seed-db.ts",
     "seed:roles": "tsx scripts/seed-roles.ts",
     "seed:companies": "tsx scripts/seed-companies-roles.ts",
