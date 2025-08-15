@@ -1,7 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
-import { getHoverEffect } from "@/lib/hoverSystem"
 
 /**
  * Card component built on DaisyUI v5 card system
@@ -92,24 +91,13 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(({
   children,
   ...props 
 }, ref) => {
-  // Apply hover effects for interactive variants or clickable cards
-  const isInteractiveVariant = variant.includes('-interactive')
-  const isSelectedVariant = variant.includes('selected')
-  
   const cardClasses = cn(
     cardVariants[variant],
-    // DaisyUI size classes
     size && sizeVariants[size],
-    // Legacy compact support
     compact && 'card-sm',
-    // DaisyUI modifiers
     imageFull && 'image-full',
     side && 'card-side',
-    // Apply hover effects for interactive variants (but not selected variants)
-    isInteractiveVariant && !isSelectedVariant && getHoverEffect('card', variant.replace('-interactive', '')),
-    // Apply interactive effects for clickable cards (but not selected variants)
-    clickable && !isInteractiveVariant && !isSelectedVariant && getHoverEffect('card', 'interactive'),
-    clickable && "cursor-pointer",
+    clickable && "cursor-pointer transition-all duration-100",
     className
   )
 

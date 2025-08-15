@@ -26,13 +26,6 @@ const animatedTabsVariants = {
   elevated: `${animatedTabsBase}`,
   minimal: `${animatedTabsBase}`,
   outlined: `${animatedTabsBase}`,
-  
-  // Interactive variants with built-in hover effects
-  'default-interactive': `${animatedTabsBase}`,
-  'glass-interactive': `${animatedTabsBase}`,
-  'elevated-interactive': `${animatedTabsBase}`,
-  'minimal-interactive': `${animatedTabsBase}`,
-  'outlined-interactive': `${animatedTabsBase}`,
 }
 
 // Tab container variants - controls the overall container styling
@@ -46,7 +39,7 @@ const tabContainerVariants = {
 
 // Background variants for the animated selection indicator
 const backgroundVariants = {
-  default: "bg-primary/50 rounded-lg shadow-sm",
+  default: "bg-accent rounded-lg shadow-sm",
   glass: "bg-base-300/80 rounded-lg shadow-sm",
   elevated: "bg-base-300 rounded-lg shadow-md",
   minimal: "bg-base-300 rounded-sm shadow-xs",
@@ -109,7 +102,6 @@ export function AnimatedTabs({
   const tabWidth = `calc(${100 / tabs.length}% - ${4 * (tabs.length - 1) / tabs.length}px)`
   const leftPosition = activeIndex >= 0 ? `calc(${(100 / tabs.length) * activeIndex}% + ${activeIndex * 2}px)` : "0px"
   
-  const isInteractiveVariant = variant.includes('-interactive')
   const baseVariant = variant.replace('-interactive', '') as keyof typeof tabContainerVariants
   const sizeConfig = sizeVariants[size]
 
@@ -128,7 +120,7 @@ export function AnimatedTabs({
       className={cn(animatedTabsVariants[variant], className)}
     >
       <TabsList 
-        variant="glass"
+        variant="default"
         className={containerClasses}
         style={{ gridTemplateColumns: `repeat(${tabs.length}, 1fr)` }}
         data-testid={`${testId}-list`}
@@ -138,7 +130,7 @@ export function AnimatedTabs({
             key={tab.value}
             value={tab.value}
             disabled={tab.disabled}
-            variant="glass"
+            variant="default"
             className={cn(
               "relative flex items-center justify-center font-medium rounded-lg transition-all duration-100 z-20 h-full min-h-0 py-0 leading-none",
               sizeConfig.gap,
@@ -154,9 +146,6 @@ export function AnimatedTabs({
             <span className="hidden sm:inline font-semibold">{tab.label}</span>
             {tab.shortLabel && (
               <span className="sm:hidden font-semibold">{tab.shortLabel}</span>
-            )}
-            {tab.disabled && (
-              <span className="ml-1 text-xs hidden lg:inline">(Coming Soon)</span>
             )}
           </TabsTrigger>
         ))}

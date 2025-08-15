@@ -78,10 +78,10 @@ export function CoverLetterPersonalization({
               size="sm"
               onClick={() => handleToneChange(toneOption)}
               className={cn(
-                "transition-all duration-100 capitalize",
+                "transition-all duration-100 capitalize text-sm",
                 tone === toneOption 
-                  ? "bg-primary text-primary-content shadow-md" 
-                  : "bg-base-100/60 hover:bg-base-100/80 text-base-content border-base-300/50"
+                  ? "bg-primary text-primary-content border-primary" 
+                  : "btn-outline border border-base-300"
               )}
               data-testid={`write-coverletter-button-tone-${toneOption}`}
             >

@@ -4,9 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import {  Button  } from '@/components/ui-daisy/button'
-import {  Tabs, TabsContent  } from '@/components/ui-daisy/tabs'
 import { FileText, Mail, PenTool, ArrowRight, Loader2, Rocket } from "lucide-react"
-import { AnimatedTabs } from '@/components/ui-daisy/animated-tabs'
 import { useToast } from "@/components/ui-daisy/use-toast"
 import { useSession } from "next-auth/react"
 import { useSelector, useDispatch } from 'react-redux';
@@ -180,129 +178,82 @@ export default function WritingHelpPage() {
   return (
     <div className="container max-w-7xl mx-auto p-4">
 
-      {/* Enhanced Tabs Section */}
-      <AnimatedTabs
-        tabs={[
-          {
-            value: "cv",
-            icon: FileText,
-            label: "CV Optimization",
-            shortLabel: "CV",
-            testId: "write-nav-tab-cv-trigger",
-            disabled: true
-          },
-          {
-            value: "cover-letter",
-            icon: PenTool,
-            label: "Cover Letter",
-            shortLabel: "Letter",
-            testId: "write-nav-tab-cover-letter-trigger"
-          },
-          {
-            value: "outreach",
-            icon: Mail,
-            label: "Outreach Message",
-            shortLabel: "Outreach",
-            testId: "write-nav-tab-outreach-trigger"
-          }
-        ]}
-        value={activeTab}
-        onValueChange={(value) => {
-          // Don't allow switching to CV tab
-          if (value === "cv") return;
-          
-          setActiveTab(value as "cv" | "cover-letter" | "outreach")
-          // Update URL without navigation
-          const newUrl = new URL(window.location.href)
-          if (value === 'cover-letter') {
-            // Remove tab param for default tab
-            newUrl.searchParams.delete('tab')
-          } else {
-            newUrl.searchParams.set('tab', value)
-          }
-          window.history.pushState({}, '', newUrl.toString())
-        }}
-        layoutId="writeHelpTabBackground"
-        testId="write-nav-tabs-main"
-      />
+      {/* DaisyUI Tabs Section */}
+      <div className="flex justify-center mb-6" data-testid="write-nav-tabs-main">
+        <div className="tabs tabs-box">
+          {/* CV Tab - Disabled */}
+          <button 
+            className="tab opacity-50 cursor-not-allowed flex items-center gap-2 whitespace-nowrap px-4"
+            disabled
+            data-testid="write-nav-tab-cv-trigger"
+          >
+            <FileText className="h-4 w-4" />
+            <span className="hidden sm:inline font-semibold">CV Optimization</span>
+            <span className="sm:hidden font-semibold">CV</span>
+          </button>
+
+          {/* Cover Letter Tab */}
+          <button 
+            className={`tab flex items-center gap-2 whitespace-nowrap px-4 ${activeTab === 'cover-letter' ? 'tab-active' : ''}`}
+            onClick={() => {
+              setActiveTab('cover-letter')
+              const newUrl = new URL(window.location.href)
+              newUrl.searchParams.delete('tab')
+              window.history.pushState({}, '', newUrl.toString())
+            }}
+            data-testid="write-nav-tab-cover-letter-trigger"
+          >
+            <PenTool className="h-4 w-4" />
+            <span className="hidden sm:inline font-semibold">Cover Letter</span>
+            <span className="sm:hidden font-semibold">Letter</span>
+          </button>
+
+          {/* Outreach Tab - Disabled */}
+          <button 
+            className="tab opacity-50 cursor-not-allowed flex items-center gap-2 whitespace-nowrap px-4"
+            disabled
+            data-testid="write-nav-tab-outreach-trigger"
+          >
+            <Mail className="h-4 w-4" />
+            <span className="hidden sm:inline font-semibold">Outreach Message</span>
+            <span className="sm:hidden font-semibold">Outreach</span>
+          </button>
+        </div>
+      </div>
         
         {/* Action Buttons Row - Show in cover-letter and outreach tabs */}
         {(activeTab === 'cover-letter' || activeTab === 'outreach') && selectedRoles.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="grid grid-cols-2 gap-4 mt-6 w-full"
-          >
-            {/* Back to Roles Button */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.1 }}
+          <div className="relative flex justify-center items-center mt-6 w-full">
+            {/* Back to Roles Button - Absolutely positioned to not affect centering */}
+            <Button
+              onClick={() => router.push("/developer/roles/search")}
+              variant="default"
+              size="lg"
+              leftIcon={<ArrowRight className="h-5 w-5 rotate-180" />}
+              data-testid="write-button-back-to-roles-trigger"
+              className="absolute left-0 top-1/2 -translate-y-1/3 w-auto px-4 min-w-0"
             >
-              <Button
-                onClick={() => router.push("/developer/roles/search")}
-                variant="glass"
-                size="lg"
-                leftIcon={<ArrowRight className="h-5 w-5 rotate-180" />}
-                data-testid="write-button-back-to-roles-trigger"
-              >
-                Back to Roles
-              </Button>
-            </motion.div>
+              <span className="text-lg font-medium whitespace-nowrap">Back</span>
+            </Button>
 
-            {/* Generate All Button - Aligned to right column */}
-            <div className="flex justify-end">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.1 }}
-                className="relative"
-              >
-                <Button
-                  onClick={handleGenerateAll}
-                  disabled={isAnyGenerationActive}
-                  size="xl"
-                  variant="gradient"
-                  loading={isAnyGenerationActive}
-                  leftIcon={!isAnyGenerationActive ? (
-                    <motion.div
-                      animate={{ 
-                        y: [0, -1, 0],
-                        rotate: [0, 3, -3, 0]
-                      }}
-                      transition={{ 
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <Rocket className="h-5 w-5" />
-                    </motion.div>
-                  ) : undefined}
-                  rightIcon={!isAnyGenerationActive ? (
-                    <motion.div
-                      animate={{ x: [0, 2, 0] }}
-                      transition={{ 
-                        duration: 2.5,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                    >
-                      <ArrowRight className="h-5 w-5" />
-                    </motion.div>
-                  ) : undefined}
-                  data-testid="write-button-generate-all-trigger"
-                >
-                  {(isAnyGenerationActive) 
-                    ? `Generating...`
-                    : `Generate All ${activeTab === 'cover-letter' ? 'Letters' : 'Messages'} (${selectedRoles.length})`
-                  }
-                </Button>
-              </motion.div>
-            </div>
-          </motion.div>
+            {/* Generate All Button - Perfectly centered */}
+            <Button
+              onClick={handleGenerateAll}
+              disabled={isAnyGenerationActive}
+              size="lg"
+              variant="primary"
+              loading={isAnyGenerationActive}
+              leftIcon={!isAnyGenerationActive ? <Rocket className="h-5 w-5" /> : undefined}
+              rightIcon={!isAnyGenerationActive ? <ArrowRight className="h-5 w-5" /> : undefined}
+              data-testid="write-button-generate-all-trigger"
+              className="w-1/2 max-w-md"
+            >
+              {(isAnyGenerationActive) 
+                ? `Generating...`
+                : `Generate All ${activeTab === 'cover-letter' ? 'Letters' : 'Messages'} (${selectedRoles.length})`
+              }
+            </Button>
+          </div>
         )}
 
         {/* Grid Layout Container - Render MultiRolePane for each role */} 
