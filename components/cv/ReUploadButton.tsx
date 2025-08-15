@@ -109,8 +109,10 @@ export function ReUploadButton({ analysisData, onUploadComplete, onAnimationStat
       const deleteResult = await deleteResponse.json();
       console.log('[ReUpload] Profile data cleared successfully:', deleteResult);
       
-      // Step 2: Show file picker
+      // Reset deleting state immediately after successful deletion
       setIsDeleting(false);
+      
+      // Step 2: Show file picker
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = '.pdf,.docx,.txt';
@@ -119,6 +121,7 @@ export function ReUploadButton({ analysisData, onUploadComplete, onAnimationStat
       fileInput.onchange = async (event) => {
         const file = (event.target as HTMLInputElement).files?.[0];
         if (!file) {
+          // User cancelled file selection - no action needed since we're already in normal state
           toast({
             title: "No File Selected",
             description: "Please select a file to upload",
@@ -152,7 +155,7 @@ export function ReUploadButton({ analysisData, onUploadComplete, onAnimationStat
         // Step 3: Upload new CV
         await handleFileUpload(file);
       };
-
+      
       // Trigger file picker
       document.body.appendChild(fileInput);
       fileInput.click();
