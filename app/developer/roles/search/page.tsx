@@ -666,7 +666,7 @@ const RoleCardWrapper = React.memo<RoleCardWrapperProps>(({
                             </div>
                             <div className="flex flex-wrap gap-2">
                               {(role as any).ai_key_skills.map((skill: string, idx: number) => (
-                                <Badge key={`${role.id}-ai-skill-${idx}`} variant="default" className={cn("text-xs", "badge-soft")}>
+                                <Badge key={`${role.id}-ai-skill-${idx}`} variant="default-soft" className={cn("text-xs")}>
                                   {skill}
                                 </Badge>
                               ))}

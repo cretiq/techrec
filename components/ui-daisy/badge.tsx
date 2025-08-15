@@ -18,6 +18,7 @@ const badgeVariants = {
   warning: `${badgeBase} badge-warning`,
   error: `${badgeBase} badge-error`,
   info: `${badgeBase} badge-info`,
+  'default-soft': `${badgeBase} bg-neutral/15 border-0`,
   
   // DaisyUI style variants
   outline: `${badgeBase} badge-outline`,
