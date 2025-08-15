@@ -311,7 +311,7 @@ GET    /api/gamification/leaderboard     // Get tier-specific leaderboards
 
 // Points Economy
 GET    /api/gamification/points          // Get user's points balance
-POST   /api/gamification/points          // Spend points for actions
+POST   /api/gamification/points          // Spend points for actions (MVP: dynamic cost for JOB_QUERY)
 GET    /api/gamification/points/history  // Get points transaction history
 
 // Achievements and Badges
@@ -586,32 +586,33 @@ const handleBatchApplication = async (roleIds: string[]) => {
 ### Subscription Tier Progression
 
 #### FREE Tier (Default)
-- **Monthly Points**: 5
+- **Monthly Points**: 10 (MVP Beta: 300 initial for testers)
 - **XP Multiplier**: 1.0x
 - **Point Efficiency**: 1.0x (standard costs)
 - **Features**: Basic CV analysis, limited cover letters
+- **MVP Beta**: Dynamic job search pricing (1 point per result)
 
-#### BASIC Tier ($9.99/month)
-- **Monthly Points**: 25
+#### BASIC Tier ($4.99/month)
+- **Monthly Points**: 30
 - **XP Multiplier**: 1.2x
 - **Point Efficiency**: 0.95x (5% discount)
 - **Features**: Enhanced analysis, batch applications
 
-#### STARTER Tier ($19.99/month)
+#### STARTER Tier ($9.99/month)
 - **Monthly Points**: 75
 - **XP Multiplier**: 1.5x
 - **Point Efficiency**: 0.90x (10% discount)
 - **Features**: Premium insights, unlimited cover letters
 
-#### PRO Tier ($39.99/month)
+#### PRO Tier ($19.99/month)
 - **Monthly Points**: 200
-- **XP Multiplier**: 2.0x
+- **XP Multiplier**: 1.75x
 - **Point Efficiency**: 0.85x (15% discount)
 - **Features**: Advanced analytics, priority support
 
-#### EXPERT Tier ($79.99/month)
+#### EXPERT Tier ($39.99/month)
 - **Monthly Points**: 500
-- **XP Multiplier**: 2.5x
+- **XP Multiplier**: 2.0x
 - **Point Efficiency**: 0.80x (20% discount)
 - **Features**: Unlimited everything, personal consultation
 
@@ -757,6 +758,42 @@ Administrative dashboard tracks:
 
 ---
 
+## MVP Beta Points System
+
+### Overview
+During beta testing phase, the points system operates in a dynamic cost mode where job searches are charged based on actual results returned rather than fixed costs.
+
+### Configuration
+- **Enable**: `ENABLE_MVP_MODE=true` in environment variables
+- **Initial Allocation**: 300 points per beta tester
+- **Cost Structure**: 1 point per job result (0 points if no results)
+- **Rate Limiting**: Protects 5,000 requests/month RapidAPI Pro plan
+
+### Implementation Details
+1. **API Integration** (`/api/rapidapi/search`):
+   - Pre-search validation ensures minimum 1 point available
+   - Post-search deduction based on actual results count
+   - Works with cached, mock, and production responses
+
+2. **UI Components** (`/developer/roles/search`):
+   - Real-time points balance display with color coding
+   - Cost preview showing maximum possible deduction
+   - Post-search notifications with points consumed
+
+3. **Admin Tools** (`/admin/gamification`):
+   - Quick adjustment buttons (+50 to +300, -10 to -200)
+   - "Set as Beta Tester" one-click 300 points allocation
+   - Inline quick add buttons in user list
+
+### Beta Testing Workflow
+1. Admin sets user as beta tester (300 points)
+2. User performs searches, paying per result
+3. Points tracked in existing PointsTransaction table
+4. Admin monitors usage and adjusts as needed
+5. System prevents searches when points exhausted
+
+---
+
 ## Implementation Status
 
 ### ✅ Completed Core Features
@@ -769,6 +806,7 @@ Administrative dashboard tracks:
 - [x] Redis caching for configuration and performance
 - [x] Frontend components with subscription tier styling
 - [x] Security measures and validation systems
+- [x] MVP Beta points system with dynamic pricing
 
 ### 🚧 In Progress
 - [ ] Advanced leaderboard system with tier segmentation

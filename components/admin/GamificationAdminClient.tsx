@@ -455,161 +455,184 @@ export function GamificationAdminClient() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Developer List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              Developers ({filteredDevelopers.length})
+    <div className="flex gap-6 h-[calc(100vh-12rem)]">
+      {/* Left Half - Developer Table */}
+      <div className="w-1/2 flex flex-col">
+        <Card className="flex-1 flex flex-col">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                Developers ({filteredDevelopers.length})
+              </div>
+              <Button 
+                onClick={loadDevelopers}
+                disabled={loadingDevelopers}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                {loadingDevelopers ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                Refresh
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col">
+            {/* Search Filter */}
+            <div className="mb-3">
+              <Input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Filter by name or email..."
+                className="max-w-sm"
+              />
             </div>
-            <Button 
-              onClick={loadDevelopers}
-              disabled={loadingDevelopers}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              {loadingDevelopers ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              Refresh
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Search Filter */}
-          <div className="mb-4">
-            <Input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Filter by name or email..."
-              className="max-w-sm"
-            />
-          </div>
 
-          {/* Developer Table */}
-          {loadingDevelopers ? (
-            <div className="text-center py-8">
-              <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
-              <p className="text-base-content/70">Loading developers...</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="table table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th 
-                      className="cursor-pointer hover:bg-base-200"
-                      onClick={() => handleSort('name')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Name
-                        {sortBy === 'name' && (
-                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-base-200"
-                      onClick={() => handleSort('email')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Email
-                        {sortBy === 'email' && (
-                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-base-200"
-                      onClick={() => handleSort('currentLevel')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Level
-                        {sortBy === 'currentLevel' && (
-                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-base-200"
-                      onClick={() => handleSort('totalXP')}
-                    >
-                      <div className="flex items-center gap-1">
-                        XP
-                        {sortBy === 'totalXP' && (
-                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th>Points</th>
-                    <th 
-                      className="cursor-pointer hover:bg-base-200"
-                      onClick={() => handleSort('subscriptionTier')}
-                    >
-                      <div className="flex items-center gap-1">
-                        Tier
-                        {sortBy === 'subscriptionTier' && (
-                          sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                        )}
-                      </div>
-                    </th>
-                    <th>Profile Data</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredDevelopers.map((developer) => (
-                    <tr 
-                      key={developer.id}
-                      className={selectedDeveloper?.id === developer.id ? 'bg-primary/10' : ''}
-                    >
-                      <td>
-                        <div className="font-medium">{developer.name}</div>
-                      </td>
-                      <td>
-                        <div className="text-sm text-base-content/70">{developer.email}</div>
-                      </td>
-                      <td>
-                        <Badge variant="outline">Level {developer.currentLevel}</Badge>
-                      </td>
-                      <td>
-                        <div className="text-sm">{developer.totalXP.toLocaleString()}</div>
-                      </td>
-                      <td>
-                        <div className="text-sm">
-                          {(developer.monthlyPoints - developer.pointsUsed + developer.pointsEarned).toLocaleString()}
+            {/* Developer Table */}
+            {loadingDevelopers ? (
+              <div className="text-center py-8">
+                <Loader2 className="w-8 h-8 mx-auto animate-spin text-primary mb-4" />
+                <p className="text-base-content/70">Loading developers...</p>
+              </div>
+            ) : (
+              <div className="overflow-auto flex-1">
+                <table className="table table-compact table-zebra w-full">
+                  <thead className="sticky top-0 bg-base-100 z-10">
+                    <tr className="text-xs">
+                      <th 
+                        className="cursor-pointer hover:bg-base-200 p-2"
+                        onClick={() => handleSort('name')}
+                      >
+                        <div className="flex items-center gap-1">
+                          Name
+                          {sortBy === 'name' && (
+                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                          )}
                         </div>
-                      </td>
-                      <td>
-                        <Badge variant="outline">{developer.subscriptionTier}</Badge>
-                      </td>
-                      <td>
-                        <div className="text-xs text-base-content/60">
-                          <div>CVs: {developer.cvCount}</div>
-                          <div>Skills: {developer.skillsCount}</div>
-                          <div>Exp: {developer.experienceCount}</div>
-                          <div>Edu: {developer.educationCount}</div>
+                      </th>
+                      <th 
+                        className="cursor-pointer hover:bg-base-200 p-2"
+                        onClick={() => handleSort('email')}
+                      >
+                        <div className="flex items-center gap-1">
+                          Email
+                          {sortBy === 'email' && (
+                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                          )}
                         </div>
-                      </td>
-                      <td>
-                        <Button
-                          variant={selectedDeveloper?.id === developer.id ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => selectDeveloper(developer)}
-                        >
-                          {selectedDeveloper?.id === developer.id ? "Selected" : "Select"}
-                        </Button>
-                      </td>
+                      </th>
+                      <th 
+                        className="cursor-pointer hover:bg-base-200 p-2"
+                        onClick={() => handleSort('currentLevel')}
+                      >
+                        <div className="flex items-center gap-1">
+                          Level
+                          {sortBy === 'currentLevel' && (
+                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                      <th 
+                        className="cursor-pointer hover:bg-base-200 p-2"
+                        onClick={() => handleSort('totalXP')}
+                      >
+                        <div className="flex items-center gap-1">
+                          XP
+                          {sortBy === 'totalXP' && (
+                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                      <th className="p-2">Points</th>
+                      <th 
+                        className="cursor-pointer hover:bg-base-200 p-2"
+                        onClick={() => handleSort('subscriptionTier')}
+                      >
+                        <div className="flex items-center gap-1">
+                          Tier
+                          {sortBy === 'subscriptionTier' && (
+                            sortOrder === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                          )}
+                        </div>
+                      </th>
+                      <th className="p-2">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  </thead>
+                  <tbody>
+                    {filteredDevelopers.map((developer) => (
+                      <tr 
+                        key={developer.id}
+                        className={`cursor-pointer hover:bg-base-200/50 ${
+                          selectedDeveloper?.id === developer.id ? 'bg-primary/10' : ''
+                        }`}
+                        onClick={() => selectDeveloper(developer)}
+                      >
+                        <td className="p-2">
+                          <div className="text-sm font-medium truncate max-w-[120px]" title={developer.name}>
+                            {developer.name}
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <div className="text-xs text-base-content/70 truncate max-w-[150px]" title={developer.email}>
+                            {developer.email}
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <Badge variant="outline" className="text-xs px-2 py-1">L{developer.currentLevel}</Badge>
+                        </td>
+                        <td className="p-2">
+                          <div className="text-xs">{developer.totalXP.toLocaleString()}</div>
+                        </td>
+                        <td className="p-2">
+                          <div className="text-xs flex items-center gap-1">
+                            <span>{(developer.monthlyPoints - developer.pointsUsed + developer.pointsEarned).toLocaleString()}</span>
+                            {process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true' && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-4 w-6 p-0 text-xs"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  selectDeveloper(developer);
+                                  setPointsAmount(50);
+                                  setPointsReason('Quick beta points top-up');
+                                }}
+                                title="Quick add 50 points"
+                              >
+                                +50
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-2">
+                          <Badge variant="outline" className="text-xs px-2 py-1">{developer.subscriptionTier}</Badge>
+                        </td>
+                        <td className="p-2">
+                          <Button
+                            variant={selectedDeveloper?.id === developer.id ? "default" : "outline"}
+                            size="sm"
+                            className="text-xs px-2 py-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              selectDeveloper(developer);
+                            }}
+                          >
+                            {selectedDeveloper?.id === developer.id ? "✓" : "Select"}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Right Half - User Details */}
+      <div className="w-1/2 flex flex-col">
 
       {/* Operation Status */}
       {operation && (
@@ -710,10 +733,58 @@ export function GamificationAdminClient() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Coins className="w-5 h-5" />
-                    Award Points
+                    Points Management
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Current Balance Display */}
+                  <div className="p-4 bg-base-200 rounded-lg">
+                    <div className="text-sm text-base-content/70">Current Available Points</div>
+                    <div className="text-2xl font-bold">
+                      {(selectedDeveloper.monthlyPoints - selectedDeveloper.pointsUsed + selectedDeveloper.pointsEarned).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-base-content/50 mt-1">
+                      Monthly: {selectedDeveloper.monthlyPoints} | Used: {selectedDeveloper.pointsUsed} | Earned: {selectedDeveloper.pointsEarned}
+                    </div>
+                  </div>
+
+                  {/* Quick Adjustment Buttons */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Quick Adjustments (Beta Testing)</label>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                      {[50, 100, 150, 200, 250, 300].map((amount) => (
+                        <Button
+                          key={amount}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setPointsAmount(amount);
+                            setPointsReason(`Beta testing allocation - ${amount} points`);
+                          }}
+                        >
+                          +{amount}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mt-2">
+                      {[-10, -25, -50, -100, -150, -200].map((amount) => (
+                        <Button
+                          key={amount}
+                          variant="outline"
+                          size="sm"
+                          className="text-warning"
+                          onClick={() => {
+                            setPointsAmount(Math.abs(amount));
+                            setPointsReason(`Points deduction - ${Math.abs(amount)} points`);
+                          }}
+                        >
+                          {amount}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Manual Input */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-2">Points Amount</label>
@@ -734,6 +805,8 @@ export function GamificationAdminClient() {
                       />
                     </div>
                   </div>
+                  
+                  {/* Award Button */}
                   <Button 
                     onClick={awardPoints}
                     disabled={loading || !pointsAmount || !pointsReason}
@@ -742,6 +815,22 @@ export function GamificationAdminClient() {
                     <Plus className="w-4 h-4" />
                     Award Points
                   </Button>
+
+                  {/* Beta Tester Quick Setup */}
+                  {process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true' && (
+                    <div className="pt-4 border-t">
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          setPointsAmount(300);
+                          setPointsReason('Beta tester initial allocation');
+                        }}
+                        className="w-full"
+                      >
+                        Set as Beta Tester (300 points)
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

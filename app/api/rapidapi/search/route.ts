@@ -20,6 +20,10 @@ export async function GET(request: Request) {
 
   const requestId = RapidApiEndpointLogger.generateRequestId()
   
+  // Check if MVP beta mode is enabled
+  const isMvpBetaEnabled = process.env.ENABLE_MVP_MODE === 'true'
+  const pointsPerResult = parseInt(process.env.MVP_POINTS_PER_RESULT || '1')
+  
   // Extract all possible parameters from URL
   const params: SearchParameters = {
     limit: parseInt(searchParams.get('limit') || '10'),
@@ -119,36 +123,34 @@ export async function GET(request: Request) {
     // Use normalized parameters
     const normalizedParams = validation.normalizedParams
     
-    // Handle premium endpoint validation
-    if (isPremiumEndpoint(normalizedParams.endpoint)) {
-      // Get user session for premium validation
+    // MVP Beta Points Check - Check if user has enough points BEFORE search
+    let developerForPoints: any = null
+    if (isMvpBetaEnabled) {
+      // Get user session for points validation
       const session = await getServerSession()
       if (!session?.user?.email) {
-        RapidApiEndpointLogger.logError('Premium Endpoint Unauthorized', 'No user session for premium endpoint', { requestId, endpoint: normalizedParams.endpoint })
         return NextResponse.json(
           { 
-            error: 'Authentication required for premium endpoints',
-            details: 'Please sign in to use 24-hour and 1-hour search endpoints',
+            error: 'Authentication required',
+            details: 'Please sign in to use the job search feature',
             requestId
           },
           { status: 401 }
         )
       }
 
-      // Get user's subscription tier and points
-      const developer = await prisma.developer.findUnique({
+      // Get user's points balance
+      developerForPoints = await prisma.developer.findUnique({
         where: { email: session.user.email },
         select: {
           id: true,
-          subscriptionTier: true,
           monthlyPoints: true,
           pointsUsed: true,
           pointsEarned: true,
         },
       })
 
-      if (!developer) {
-        RapidApiEndpointLogger.logError('Premium Endpoint User Not Found', 'Developer record not found', { requestId, email: session.user.email })
+      if (!developerForPoints) {
         return NextResponse.json(
           { 
             error: 'User profile not found',
@@ -158,49 +160,17 @@ export async function GET(request: Request) {
         )
       }
 
-      // Validate subscription tier
-      if (!isEligibleSubscriptionTier(developer.subscriptionTier)) {
-        RapidApiEndpointLogger.logPremiumValidation({
-          userId: developer.id,
-          endpoint: normalizedParams.endpoint,
-          subscriptionTier: developer.subscriptionTier,
-          pointsAvailable: 0,
-          pointsRequired: 5,
-          validationResult: 'invalid_tier'
-        })
-        
-        return NextResponse.json(
-          { 
-            error: 'Subscription tier insufficient',
-            details: 'Premium search endpoints require Starter tier or higher',
-            currentTier: developer.subscriptionTier,
-            requiredTier: 'STARTER',
-            requestId
-          },
-          { status: 402 }
-        )
-      }
-
       // Calculate available points
-      const availablePoints = Math.max(0, developer.monthlyPoints + developer.pointsEarned - developer.pointsUsed)
-      const requiredPoints = 5 // ADVANCED_SEARCH cost
+      const availablePoints = Math.max(0, developerForPoints.monthlyPoints + developerForPoints.pointsEarned - developerForPoints.pointsUsed)
+      const maxPossibleCost = (normalizedParams.limit || 10) * pointsPerResult
 
-      // Validate points balance
-      if (availablePoints < requiredPoints) {
-        RapidApiEndpointLogger.logPremiumValidation({
-          userId: developer.id,
-          endpoint: normalizedParams.endpoint,
-          subscriptionTier: developer.subscriptionTier,
-          pointsAvailable: availablePoints,
-          pointsRequired: requiredPoints,
-          validationResult: 'insufficient_points'
-        })
-        
+      // Check if user has at least 1 point (minimum to search)
+      if (availablePoints < 1) {
         return NextResponse.json(
           { 
             error: 'Insufficient points',
-            details: `Premium search requires ${requiredPoints} points. You have ${availablePoints} points available.`,
-            pointsRequired: requiredPoints,
+            details: `You need at least 1 point to search. You have ${availablePoints} points available. Please contact support for more points.`,
+            pointsRequired: 1,
             pointsAvailable: availablePoints,
             requestId
           },
@@ -208,82 +178,49 @@ export async function GET(request: Request) {
         )
       }
 
-      // Deduct points for premium search
-      try {
-        const pointsResponse = await fetch(`${new URL(request.url).origin}/api/gamification/points`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cookie': request.headers.get('Cookie') || '',
-          },
-          body: JSON.stringify({
-            action: 'ADVANCED_SEARCH',
-            sourceId: `search_${normalizedParams.endpoint}_${requestId}`,
-            metadata: {
-              endpoint: normalizedParams.endpoint,
-              requestId,
-              searchParams: normalizedParams,
-            },
-          }),
-        })
-
-        if (!pointsResponse.ok) {
-          const errorData = await pointsResponse.json()
-          RapidApiEndpointLogger.logPointsDeduction({
-            userId: developer.id,
-            pointsBefore: availablePoints,
-            pointsAfter: availablePoints,
-            pointsDeducted: 0,
-            success: false,
-            error: errorData.error
-          })
-          
-          return NextResponse.json(
-            { 
-              error: 'Points deduction failed',
-              details: errorData.error,
-              requestId
-            },
-            { status: pointsResponse.status }
-          )
-        }
-
-        const pointsResult = await pointsResponse.json()
-        RapidApiEndpointLogger.logPointsDeduction({
-          userId: developer.id,
-          pointsBefore: availablePoints,
-          pointsAfter: pointsResult.newBalance,
-          pointsDeducted: pointsResult.pointsSpent,
-          transactionId: pointsResult.transaction?.id,
-          success: true
-        })
-
-        RapidApiEndpointLogger.logPremiumValidation({
-          userId: developer.id,
-          endpoint: normalizedParams.endpoint,
-          subscriptionTier: developer.subscriptionTier,
-          pointsAvailable: availablePoints,
-          pointsRequired: requiredPoints,
-          validationResult: 'success'
-        })
-
-      } catch (error) {
-        RapidApiEndpointLogger.logError('Points Deduction Error', error, { requestId, userId: developer.id })
-        return NextResponse.json(
-          { 
-            error: 'Premium validation failed',
-            details: 'Unable to process points transaction',
-            requestId
-          },
-          { status: 500 }
-        )
-      }
+      console.log(`[MVP Beta] User ${developerForPoints.id} has ${availablePoints} points, max possible cost: ${maxPossibleCost}`)
     }
 
     // Check cache first
     const cachedResponse = cacheManager.getCachedResponse(normalizedParams)
     if (cachedResponse) {
       console.log('Returning cached response for parameters:', normalizedParams)
+      
+      // Deduct points for MVP Beta (even for cached results)
+      if (isMvpBetaEnabled && developerForPoints) {
+        const resultsCount = cachedResponse.data.length
+        const pointsToDeduct = resultsCount * pointsPerResult
+        
+        if (pointsToDeduct > 0) {
+          try {
+            const pointsResponse = await fetch(`${new URL(request.url).origin}/api/gamification/points`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Cookie': request.headers.get('Cookie') || '',
+              },
+              body: JSON.stringify({
+                action: 'JOB_QUERY',
+                sourceId: `search_cached_${requestId}`,
+                metadata: {
+                  requestId,
+                  searchParams: normalizedParams,
+                  resultsCount,
+                  cached: true,
+                  pointsPerResult,
+                },
+              }),
+            })
+
+            if (pointsResponse.ok) {
+              const pointsResult = await pointsResponse.json()
+              console.log(`[MVP Beta] Deducted ${pointsToDeduct} points for ${resultsCount} cached results`)
+            }
+          } catch (error) {
+            console.error('[MVP Beta] Failed to deduct points for cached results:', error)
+          }
+        }
+      }
       
       // Add cache metadata to response headers
       const response = NextResponse.json(cachedResponse.data)
@@ -340,6 +277,42 @@ export async function GET(request: Request) {
     if (forceDevMode) {
       // DEVELOPMENT MODE: Return mock data with simulated headers
       console.log('Running in DEVELOPMENT mode (forced for testing)')
+      
+      // Deduct points for MVP Beta (mock results)
+      if (isMvpBetaEnabled && developerForPoints) {
+        const resultsCount = mockJobResponse.length
+        const pointsToDeduct = resultsCount * pointsPerResult
+        
+        if (pointsToDeduct > 0) {
+          try {
+            const pointsResponse = await fetch(`${new URL(request.url).origin}/api/gamification/points`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Cookie': request.headers.get('Cookie') || '',
+              },
+              body: JSON.stringify({
+                action: 'JOB_QUERY',
+                sourceId: `search_mock_${requestId}`,
+                metadata: {
+                  requestId,
+                  searchParams: normalizedParams,
+                  resultsCount,
+                  mockData: true,
+                  pointsPerResult,
+                },
+              }),
+            })
+
+            if (pointsResponse.ok) {
+              const pointsResult = await pointsResponse.json()
+              console.log(`[MVP Beta] Deducted ${pointsToDeduct} points for ${resultsCount} mock results`)
+            }
+          } catch (error) {
+            console.error('[MVP Beta] Failed to deduct points for mock results:', error)
+          }
+        }
+      }
       
       // Simulate usage headers for development
       const mockHeaders = new Headers()
@@ -438,6 +411,44 @@ export async function GET(request: Request) {
     }
 
     console.log(`PRODUCTION API success: received ${result.length} jobs`)
+
+    // Deduct points for MVP Beta (production results)
+    if (isMvpBetaEnabled && developerForPoints) {
+      const resultsCount = result.length
+      const pointsToDeduct = resultsCount * pointsPerResult
+      
+      if (pointsToDeduct > 0) {
+        try {
+          const pointsResponse = await fetch(`${new URL(request.url).origin}/api/gamification/points`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Cookie': request.headers.get('Cookie') || '',
+            },
+            body: JSON.stringify({
+              action: 'JOB_QUERY',
+              sourceId: `search_production_${requestId}`,
+              metadata: {
+                requestId,
+                searchParams: normalizedParams,
+                resultsCount,
+                production: true,
+                pointsPerResult,
+              },
+            }),
+          })
+
+          if (pointsResponse.ok) {
+            const pointsResult = await pointsResponse.json()
+            console.log(`[MVP Beta] Deducted ${pointsToDeduct} points for ${resultsCount} production results`)
+          }
+        } catch (error) {
+          console.error('[MVP Beta] Failed to deduct points for production results:', error)
+        }
+      } else {
+        console.log(`[MVP Beta] No points deducted - search returned 0 results`)
+      }
+    }
 
     // Update usage tracking
     cacheManager.updateUsage(apiResponse.headers)

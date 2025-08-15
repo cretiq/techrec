@@ -146,7 +146,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Developer not found' }, { status: 404 });
     }
 
-    const effectiveCost = await PointsManager.getEffectiveCost(action, developer.subscriptionTier);
+    // For MVP Beta: JOB_QUERY cost is dynamic based on results
+    let effectiveCost: number;
+    if (action === 'JOB_QUERY' && process.env.ENABLE_MVP_MODE === 'true' && metadata?.resultsCount) {
+      const pointsPerResult = parseInt(process.env.MVP_POINTS_PER_RESULT || '1');
+      effectiveCost = metadata.resultsCount * pointsPerResult;
+      console.log(`[MVP Beta] Dynamic cost for JOB_QUERY: ${metadata.resultsCount} results × ${pointsPerResult} = ${effectiveCost} points`);
+    } else {
+      effectiveCost = await PointsManager.getEffectiveCost(action, developer.subscriptionTier);
+    }
     
     // Create spend record for validation
     const spend: PointsSpend = {
@@ -158,10 +166,13 @@ export async function POST(request: NextRequest) {
       metadata,
     };
 
-    // Validate the spend first
-    const validation = await PointsManager.validatePointsSpend(spend);
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.reason }, { status: 400 });
+    // Skip validation for MVP Beta dynamic JOB_QUERY costs
+    if (!(action === 'JOB_QUERY' && process.env.ENABLE_MVP_MODE === 'true' && metadata?.resultsCount)) {
+      // Validate the spend first (for non-MVP Beta flows)
+      const validation = await PointsManager.validatePointsSpend(spend);
+      if (!validation.isValid) {
+        return NextResponse.json({ error: validation.reason }, { status: 400 });
+      }
     }
 
     // ATOMIC TRANSACTION: Check balance and spend points in single operation

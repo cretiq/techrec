@@ -293,6 +293,14 @@ window.dispatchEvent(new CustomEvent('expandAllSections'));
 
 **Key features**: AI-enhanced job search, type-safe architecture, memoized components
 
+### MVP Beta Points System (Active)
+**🚀 BETA TESTING MODE**: Dynamic points-per-result system for controlled API usage
+- **Points Deduction**: 1 point per job result returned (0 points if no results)
+- **Configuration**: `ENABLE_MVP_MODE=true`, `MVP_INITIAL_POINTS=300`
+- **UI Integration**: Real-time balance display, cost preview, usage notifications
+- **Admin Tools**: Quick adjustment buttons, beta tester setup (300 points)
+- **Rate Limiting**: 5,000 requests/month RapidAPI Pro plan protected by points
+
 ### Security & Performance
 - **Gamification Protection**: Atomic transactions, server-side validation, rate limiting, audit trails
 - **Stripe Integration**: Webhook signature verification, replay attack protection, idempotency keys
@@ -416,6 +424,14 @@ DEBUG_CV_UPLOAD=true NODE_ENV=development npx tsx scripts/analyze-direct-upload.
 
 **Key categories**: Database & Caching, Authentication, AI Providers, Gemini Models, Payments, Storage, Debug Settings
 
+**MVP Beta Configuration**:
+- `ENABLE_MVP_MODE=true` - Enable beta testing points system
+- `MVP_INITIAL_POINTS=300` - Initial points for beta testers
+- `MVP_POINTS_PER_RESULT=1` - Points cost per search result
+- `MVP_WARNING_THRESHOLD=50` - UI warning when below this
+- `MVP_CRITICAL_THRESHOLD=10` - Critical warning threshold
+- `NEXT_PUBLIC_ENABLE_MVP_MODE=true` - Client-side flag
+
 ### Core Implementation Mandate
 When implementing new features:
 1. **Component-First Thinking**: Check existing components before creating anything new
@@ -457,7 +473,13 @@ When implementing new features:
 
 ## 📜 Update History
 
-**Latest Update**: August 14, 2025 - **DOCUMENTATION ARCHITECTURE OPTIMIZATION**:
+**Latest Update**: August 15, 2025 - **MVP BETA POINTS SYSTEM**:
+- ✅ **Dynamic Points Deduction**: 1 point per job result (not fixed cost)
+- ✅ **Beta Testing Configuration**: 300 initial points, controlled via ENV vars
+- ✅ **UI Integration**: Real-time balance display, cost preview, notifications
+- ✅ **Admin Enhancements**: Quick adjustment buttons, beta tester setup
+
+**Previous Update**: August 14, 2025 - **DOCUMENTATION ARCHITECTURE OPTIMIZATION**:
 - ✅ **Two-Tier Documentation System**: CLAUDE.md as primary entry + atomic reference docs
 - ✅ **40% Size Reduction**: Extracted detailed workflows to `@docs/claude-references/`
 - ✅ **Zero Information Loss**: All content preserved in appropriate locations

@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import {  Button  } from '@/components/ui-daisy/button'
 import {  Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter  } from '@/components/ui-daisy/card'
 import {  Badge  } from '@/components/ui-daisy/badge'
-import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, PenTool, Check, Bookmark, BookmarkCheck, Sparkles, Users, Target } from "lucide-react"
+import { Search, MapPin, Briefcase, Clock, Building, ArrowRight, PenTool, Check, Bookmark, BookmarkCheck, Sparkles, Users, Target, Coins } from "lucide-react"
 import ApplicationBadge from '@/components/roles/ApplicationBadge'
 import ApplicationActionButton from '@/components/roles/ApplicationActionButton'
 import RecruiterCard from '@/components/roles/RecruiterCard'
@@ -59,6 +59,11 @@ export default function RolesSearch2Page() {
   const { toast } = useToast()
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
+  
+  // MVP Beta Points State
+  const [pointsBalance, setPointsBalance] = useState<number>(0)
+  const [pointsLoading, setPointsLoading] = useState<boolean>(true)
+  const isMvpBetaEnabled = process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true'
 
   // Redux state
   const roles = useSelector(selectRoles)
@@ -98,8 +103,29 @@ export default function RolesSearch2Page() {
       dispatch(fetchSavedRolesRedux({ includeRoleDetails: true }))
       // DISABLED: Skill matching temporarily disabled
       // dispatch(fetchUserSkillProfile())
+      
+      // Fetch points balance for MVP Beta
+      if (isMvpBetaEnabled) {
+        fetchPointsBalance()
+      }
     }
   }, [status, dispatch])
+  
+  // Function to fetch points balance
+  const fetchPointsBalance = useCallback(async () => {
+    setPointsLoading(true)
+    try {
+      const response = await fetch('/api/gamification/points')
+      if (response.ok) {
+        const data = await response.json()
+        setPointsBalance(data.balance?.available || 0)
+      }
+    } catch (error) {
+      console.error('Failed to fetch points balance:', error)
+    } finally {
+      setPointsLoading(false)
+    }
+  }, [])
 
   // Memoize the search trigger condition to prevent unnecessary effect runs
   const shouldAutoSearch = useMemo(() => {
@@ -185,7 +211,7 @@ export default function RolesSearch2Page() {
   }, [roles.length, userHasSkills, matchingLoading, enhancedRolesData, dispatch])
   */
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!canMakeRequest && nextRequestTime) {
       const timeRemaining = Math.ceil((nextRequestTime - Date.now()) / 1000 / 60)
       toast({
@@ -195,8 +221,37 @@ export default function RolesSearch2Page() {
       })
       return
     }
+    
+    // Check points before search in MVP Beta
+    if (isMvpBetaEnabled && pointsBalance < 1) {
+      toast({
+        title: 'Insufficient Points',
+        description: 'You need at least 1 point to perform a search. Please contact support for more points.',
+        variant: 'destructive',
+      })
+      return
+    }
 
-    dispatch(searchRoles(currentFilters))
+    const result = await dispatch(searchRoles(currentFilters))
+    
+    // Refresh points balance after search in MVP Beta
+    if (isMvpBetaEnabled && result.meta.requestStatus === 'fulfilled') {
+      fetchPointsBalance()
+      
+      // Show points used notification
+      const resultsCount = (result.payload as any)?.roles?.length || 0
+      if (resultsCount > 0) {
+        toast({
+          title: 'Search Completed',
+          description: `Found ${resultsCount} jobs. ${resultsCount} points used. ${Math.max(0, pointsBalance - resultsCount)} points remaining.`,
+        })
+      } else {
+        toast({
+          title: 'No Results Found',
+          description: 'Your search returned no results. No points were deducted.',
+        })
+      }
+    }
   }
 
   const handleFiltersChange = (filters: SearchParameters) => {
@@ -324,6 +379,51 @@ export default function RolesSearch2Page() {
 
         {/* Center - Advanced Filters & Selected Roles */}
         <div className="lg:col-span-1 space-y-6" data-testid="role-search-container-filters">
+          {/* MVP Beta Points Display */}
+          {isMvpBetaEnabled && (
+            <Card variant="elevated-interactive" animated>
+              <CardContent className="py-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Coins className={cn(
+                      "h-5 w-5",
+                      pointsBalance < 50 ? "text-warning" : "text-success"
+                    )} />
+                    <div>
+                      <p className="text-sm font-medium">Beta Points Balance</p>
+                      <p className={cn(
+                        "text-2xl font-bold",
+                        pointsBalance < 50 ? "text-warning" : pointsBalance < 10 ? "text-error" : "text-success"
+                      )}>
+                        {pointsLoading ? "..." : pointsBalance}
+                      </p>
+                    </div>
+                  </div>
+                  {!pointsLoading && pointsBalance < 50 && (
+                    <Badge variant={pointsBalance < 10 ? "destructive" : "warning"}>
+                      {pointsBalance < 10 ? "Low Balance" : "Running Low"}
+                    </Badge>
+                  )}
+                </div>
+                
+                {/* Search Cost Preview */}
+                <div className="pt-2 border-t border-base-300/50">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Search cost:</span>
+                    <span className="font-medium">
+                      1 point per result (max {currentFilters.limit || 10})
+                    </span>
+                  </div>
+                  {pointsBalance < (currentFilters.limit || 10) && (
+                    <p className="text-xs text-warning mt-1">
+                      ⚠️ You may not have enough points for all results
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
           <AdvancedFilters 
             onFiltersChange={handleFiltersChange}
             onSearch={handleSearch}

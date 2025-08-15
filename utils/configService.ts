@@ -45,13 +45,22 @@ export interface SubscriptionTiers {
 
 // Default configurations
 const DEFAULT_POINTS_COSTS: PointsCosts = {
-  JOB_QUERY: 3,
+  JOB_QUERY: 3, // In MVP Beta mode, this becomes dynamic (1 point per result)
   COVER_LETTER: 1,
   OUTREACH_MESSAGE: 1,
   CV_SUGGESTION: 1,
   BULK_APPLICATION: 8, // 3 queries + 5 cover letters
   PREMIUM_ANALYSIS: 5,
   ADVANCED_SEARCH: 5, // Premium search endpoints (24h, 1h)
+};
+
+// MVP Beta Configuration
+export const MVP_BETA_CONFIG = {
+  enabled: process.env.ENABLE_MVP_MODE === 'true',
+  initialPoints: parseInt(process.env.MVP_INITIAL_POINTS || '300'),
+  pointsPerResult: parseInt(process.env.MVP_POINTS_PER_RESULT || '1'),
+  warningThreshold: parseInt(process.env.MVP_WARNING_THRESHOLD || '50'),
+  criticalThreshold: parseInt(process.env.MVP_CRITICAL_THRESHOLD || '10'),
 };
 
 const DEFAULT_XP_REWARDS: XPRewards = {
