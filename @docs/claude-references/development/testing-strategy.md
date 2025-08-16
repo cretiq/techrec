@@ -5,6 +5,41 @@
 **🚨 CRITICAL**: Read the complete testing best practices document first:
 **📖 See: [`docs/testing/e2e-best-practices.md`](./docs/testing/e2e-best-practices.md)**
 
+## 🎯 Three-Tier Testing Architecture
+
+### ⚡ Unit Tests (< 5s) - **COMPLETE IMPLEMENTATION**
+**Target**: Core business logic validation with fast feedback
+**Status**: ✅ **113 tests passing in 0.4 seconds**
+
+**📦 Test Suites Implemented**:
+- **PointsManager** (28 tests): MVP Beta pricing, atomic transactions, subscription discounts
+- **Debug Modes** (26 tests): All modes (off/log/stop) with points deduction validation  
+- **Search Validation** (30 tests): Parameter validation, cache keys, security
+- **Usage Tracking** (29 tests): Universal header processing across all response types
+
+**🔧 Infrastructure**:
+```bash
+# Run all unit tests
+npm test -- __tests__/unit/
+
+# Run specific suite
+npm test -- __tests__/unit/pointsManager.test.ts
+```
+
+**🚨 Critical Validations**:
+- Points **ALWAYS** deducted in ALL debug modes for system integrity
+- MVP Beta pricing (1 point per result, 0 if no results)
+- Atomic transaction handling with race condition protection
+- Admin dashboard usage display regardless of debug mode
+
+### 🔄 Integration Tests (< 30s) - **IN DEVELOPMENT**
+**Target**: API routes with mocked dependencies
+**Status**: 🚧 Partial implementation, transaction mocking needs refinement
+
+### 🌐 E2E Tests (< 60s) - **LEGACY SYSTEM**
+**Target**: Critical user flows with real browser interaction
+**Status**: 📊 91% success rate (41/45 tests passing)
+
 ## Critical Testing Rules
 
 ### 🚨 AUTHENTICATION RULE

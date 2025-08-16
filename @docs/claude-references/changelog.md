@@ -4,7 +4,28 @@ Complete update history for the CLAUDE.md documentation and project guidelines.
 
 ---
 
-## **Last Update**: August 16, 2025 - **RAPIDAPI USAGE TRACKING SYSTEM COMPREHENSIVE FIX**:
+## **Last Update**: August 16, 2025 - **SERVER-SIDE MODULE ISOLATION FIX & ARCHITECTURE IMPROVEMENT**:
+- ✅ **Fixed Critical Build Error**: Resolved "Module not found: Can't resolve 'dns'" client-side import error
+- ✅ **Server-Only Redis Pattern**: Created `lib/api/rapidapi-redis-utils.ts` for isolated server-side Redis operations
+- ✅ **Webpack Configuration**: Added `next.config.mjs` exclusions for Node.js modules (ioredis, dns, net, tls) from client bundle
+- ✅ **Dynamic Import Refactor**: Updated `rapidapi-cache.ts` to use async server-only imports for Redis operations
+- ✅ **Development Stability**: Fixed development server startup and build process to complete without errors
+- ✅ **Architecture Pattern**: Established best practice for proper client-server module separation in Next.js
+- ✅ **Admin Route Fix**: Updated `/api/admin/rapidapi/usage` to use new `getCurrentUsageAsync()` method
+- ✅ **Documentation Updated**: CLAUDE.md technology stack, security patterns, file-locations.md, and changelog
+
+## **Previous Update**: August 16, 2025 - **COMPREHENSIVE RAPIDAPI TESTING SYSTEM IMPLEMENTATION**:
+- ✅ **Complete Unit Test Suite**: 113 tests covering PointsManager, debug modes, search validation, usage tracking
+- ✅ **Three-Tier Testing Architecture**: Established Unit (< 5s), Integration (< 30s), E2E (< 60s) strategy
+- ✅ **Jest Infrastructure**: TypeScript-optimized configuration with deep Prisma mocking via jest-mock-extended
+- ✅ **MVP Beta Testing**: Critical validation that points are deducted in ALL debug modes for system integrity
+- ✅ **Performance Achievement**: All unit tests execute in 0.4 seconds for rapid development feedback
+- ✅ **Mock Infrastructure**: Transaction simulation, error scenarios, realistic test data fixtures
+- ✅ **Test Coverage**: PointsManager (28), Debug Modes (26), Search Validation (30), Usage Tracking (29)
+- ✅ **Debug Mode Validation**: Verified off/log/stop modes maintain points system integrity during testing
+- ✅ **Documentation Updated**: CLAUDE.md, testing-strategy.md, development-commands.md enhanced with testing details
+
+## **Previous Update**: August 16, 2025 - **RAPIDAPI USAGE TRACKING SYSTEM COMPREHENSIVE FIX**:
 - ✅ **Universal Headers Processing**: Usage data captured from ALL response types (real API, mock, cached, debug)
 - ✅ **Fixed Environment Variables**: Standardized `DEBUG_RAPIDAPI` usage across admin and search endpoints  
 - ✅ **Enhanced Cache Manager**: Usage headers preserved and restored from cached responses

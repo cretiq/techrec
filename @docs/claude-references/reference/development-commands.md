@@ -18,6 +18,18 @@ npx prisma studio            # GUI
 ```
 
 ## Testing
+
+### Unit Tests (New Implementation)
+```bash
+npm test -- __tests__/unit/                    # All unit tests (0.4s)
+npm test -- __tests__/unit/pointsManager.test.ts    # PointsManager tests
+npm test -- __tests__/unit/debugMode.test.ts        # Debug mode tests  
+npm test -- __tests__/unit/searchValidation.test.ts # Search validation
+npm test -- __tests__/unit/usageTracking.test.ts    # Usage tracking
+npm test -- __tests__/unit/ --verbose          # Verbose output
+```
+
+### E2E Tests (Legacy)
 ```bash
 npm run test:e2e              # Playwright E2E tests
 npx playwright test --headed  # Run tests with visible browser

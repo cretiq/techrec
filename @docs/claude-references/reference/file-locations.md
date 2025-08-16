@@ -65,9 +65,11 @@ Complete reference of key directories and files in the TechRec codebase.
 
 ### Configuration Files
 - **tailwind.config.ts**: Critical Tailwind CSS configuration with safelist
+- **next.config.mjs**: Webpack configuration with Node.js module exclusions
 - **prisma/schema.prisma**: Database schema definition
 - **lib/modelConfig.ts**: Centralized Gemini model configuration
 - **lib/redis.ts**: Redis connection management
+- **lib/api/rapidapi-redis-utils.ts**: Server-only Redis utilities for RapidAPI cache
 
 ### Debug & Analysis (`scripts/`)
 - Analysis scripts for debugging CV upload and cover letter generation
