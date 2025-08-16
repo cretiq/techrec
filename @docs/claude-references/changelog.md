@@ -4,7 +4,27 @@ Complete update history for the CLAUDE.md documentation and project guidelines.
 
 ---
 
-## **Last Update**: August 15, 2025 - **MVP BETA POINTS SYSTEM IMPLEMENTATION**:
+## **Last Update**: August 16, 2025 - **RAPIDAPI USAGE TRACKING SYSTEM COMPREHENSIVE FIX**:
+- ✅ **Universal Headers Processing**: Usage data captured from ALL response types (real API, mock, cached, debug)
+- ✅ **Fixed Environment Variables**: Standardized `DEBUG_RAPIDAPI` usage across admin and search endpoints  
+- ✅ **Enhanced Cache Manager**: Usage headers preserved and restored from cached responses
+- ✅ **Admin Dashboard Integration**: Always displays usage data when available, regardless of debug mode
+- ✅ **Realistic Mock/Debug Data**: Authentic usage simulation in all non-production modes
+- ✅ **Improved Debug Information**: Enhanced admin UI with debug context without hiding data
+- ✅ **Documentation Updated**: CLAUDE.md and rapidapi-integration.md updated with comprehensive changes
+
+## **Previous Update**: August 16, 2025 - **SEARCH OPTIMIZATION & API ROUTE SIMPLIFICATION**:
+- ✅ **Removed Auto-Search**: Eliminated automatic searches on page reload - users must explicitly click search
+- ✅ **Redux Persistence Enhanced**: Search results now persist across page refreshes (added `roles` to whitelist)
+- ✅ **API Route Simplified**: Reduced `/api/rapidapi/search` from 830+ to 371 lines (55% reduction)
+- ✅ **Debug Modes Consolidated**: Single `DEBUG_RAPIDAPI` variable replaces `DEBUG_RAPIDAPI_CALL` and `STOP_RAPIDAPI_CALL`
+- ✅ **Points Logic Extracted**: Created `deductPointsForResults()` helper function to eliminate code duplication
+- ✅ **Auto-Detection Removed**: Explicit `USE_MOCK_DATA` flag replaces API key presence detection
+- ✅ **TheirStack Route Deleted**: Removed unused `/api/roles/search/route.ts` endpoint
+- ✅ **Cleaner Architecture**: Linear flow, early returns, clear separation of concerns
+- ✅ **Documentation Updated**: CLAUDE.md, environment-variables.md, and changelog updated with changes
+
+## **Previous Update**: August 15, 2025 - **MVP BETA POINTS SYSTEM IMPLEMENTATION**:
 - ✅ **Dynamic Points Deduction**: Job searches now charge 1 point per result (not fixed cost)
 - ✅ **Beta Testing Mode**: Controlled via `ENABLE_MVP_MODE` environment variable
 - ✅ **UI Integration**: Real-time points balance display, cost preview, usage notifications

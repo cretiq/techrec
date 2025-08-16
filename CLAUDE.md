@@ -60,10 +60,12 @@ safelist: [
 
 ### API Development Standards
 **⚠️ MANDATORY**: All API routes must follow established patterns:
-1. **Zod Schema Validation**: Runtime validation for all inputs
+1. **Parameter Validation**: Runtime validation for all inputs
 2. **Semantic Caching**: Cache keys that capture business logic meaning
 3. **Structured Error Handling**: Custom error classes with metadata
 4. **Graceful Degradation**: External service failures don't break core functionality
+5. **Simplified Debug Modes**: Use single `DEBUG_RAPIDAPI` variable (off|log|stop)
+6. **Explicit Configuration**: Use `USE_MOCK_DATA` flag instead of auto-detection
 
 ---
 
@@ -136,6 +138,7 @@ This project uses a **two-tier documentation system**:
 - `gamificationSlice`: XP, points, achievements (persisted)
 - `selectedRolesSlice`: Multi-role application state (persisted)
 - `coverLettersSlice`: Generated content cache (persisted)
+- `rolesSlice`: Search parameters AND results (persisted) - No auto-search on reload
 
 ### AI Integration
 **Centralized Model Configuration System** (`lib/modelConfig.ts`):
@@ -291,7 +294,21 @@ window.dispatchEvent(new CustomEvent('expandAllSections'));
 📖 **See detailed integration documentation:**
 - **[RapidAPI Integration](@docs/claude-references/integrations/rapidapi-integration.md)**
 
-**Key features**: AI-enhanced job search, type-safe architecture, memoized components
+**Key features**: AI-enhanced job search, type-safe architecture, memoized components, **comprehensive usage tracking**
+
+**🔧 Debug Configuration (Simplified Aug 2025)**:
+- `DEBUG_RAPIDAPI=off` - Normal operation (default)
+- `DEBUG_RAPIDAPI=log` - Make real calls with comprehensive logging
+- `DEBUG_RAPIDAPI=stop` - Log request details without making API call
+- `USE_MOCK_DATA=true` - Use mock data instead of real API calls
+- **Removed**: Separate `DEBUG_RAPIDAPI_CALL` and `STOP_RAPIDAPI_CALL` variables
+
+**📊 Usage Tracking System (Enhanced Aug 2025)**:
+- **Universal Headers Processing**: Usage data captured from ALL response types (real API, mock, cached, debug)
+- **Admin Dashboard Integration**: `/admin` page displays current usage regardless of debug mode
+- **Cache Persistence**: Usage headers preserved across cached responses
+- **Realistic Mock Data**: Mock and debug modes provide authentic usage simulation
+- **Environment Standardization**: Consistent `DEBUG_RAPIDAPI` variable across all endpoints
 
 ### MVP Beta Points System (Active)
 **🚀 BETA TESTING MODE**: Dynamic points-per-result system for controlled API usage
@@ -334,6 +351,18 @@ window.dispatchEvent(new CustomEvent('expandAllSections'));
 - **[Development Commands](@docs/claude-references/reference/development-commands.md)**
 
 **Essential commands**: `npm run dev`, `npm run build`, `npm run test:e2e`, debug analysis scripts
+
+**Simplified RapidAPI Debug** (Aug 2025):
+```bash
+# Debug with logging
+DEBUG_RAPIDAPI=log npm run dev
+
+# Debug without API calls
+DEBUG_RAPIDAPI=stop npm run dev
+
+# Use mock data
+USE_MOCK_DATA=true npm run dev
+```
 
 ### Debug Workflows
 
@@ -431,6 +460,11 @@ DEBUG_CV_UPLOAD=true NODE_ENV=development npx tsx scripts/analyze-direct-upload.
 - `MVP_WARNING_THRESHOLD=50` - UI warning when below this
 - `MVP_CRITICAL_THRESHOLD=10` - Critical warning threshold
 
+**RapidAPI Debug Configuration** (Simplified Aug 2025):
+- `DEBUG_RAPIDAPI=off|log|stop` - Single debug control variable
+- `USE_MOCK_DATA=true` - Explicit mock data flag
+- **Deprecated**: `DEBUG_RAPIDAPI_CALL`, `STOP_RAPIDAPI_CALL` (replaced by single variable)
+
 ### Core Implementation Mandate
 When implementing new features:
 1. **Component-First Thinking**: Check existing components before creating anything new
@@ -472,7 +506,23 @@ When implementing new features:
 
 ## 📜 Update History
 
-**Latest Update**: August 15, 2025 - **MVP BETA POINTS SYSTEM**:
+**Latest Update**: August 16, 2025 - **RAPIDAPI USAGE TRACKING SYSTEM FIX**:
+- ✅ **Universal Headers Processing**: Usage data captured from ALL response types (real API, mock, cached, debug)
+- ✅ **Fixed Environment Variables**: Standardized `DEBUG_RAPIDAPI` usage across admin and search endpoints
+- ✅ **Enhanced Cache Manager**: Usage headers preserved and restored from cached responses
+- ✅ **Admin Dashboard Integration**: Always displays usage data when available, regardless of debug mode
+- ✅ **Realistic Mock/Debug Data**: Authentic usage simulation in all non-production modes
+- ✅ **Improved Debug Information**: Enhanced admin UI with debug context without hiding data
+
+**Previous Update**: August 16, 2025 - **SEARCH OPTIMIZATION & API SIMPLIFICATION**:
+- ✅ **Removed Auto-Search**: No automatic searches on page reload
+- ✅ **Redux Persistence**: Search results now persist across refreshes
+- ✅ **Simplified API Route**: Reduced from 830+ to 371 lines (55% reduction)
+- ✅ **Consolidated Debug Modes**: Single `DEBUG_RAPIDAPI` variable replaces two
+- ✅ **Cleaner Architecture**: Extracted points logic, removed auto-detection
+- ✅ **Deleted TheirStack Route**: Removed unused `/api/roles/search` endpoint
+
+**Previous Update**: August 15, 2025 - **MVP BETA POINTS SYSTEM**:
 - ✅ **Dynamic Points Deduction**: 1 point per job result (not fixed cost)
 - ✅ **Beta Testing Configuration**: 300 initial points, controlled via ENV vars
 - ✅ **UI Integration**: Real-time balance display, cost preview, notifications
