@@ -109,6 +109,15 @@ export function DashboardClient({ className = '' }: DashboardClientProps) {
   const [pointsLoading, setPointsLoading] = useState<boolean>(true);
   const isMvpBetaEnabled = process.env.NEXT_PUBLIC_ENABLE_MVP_MODE === 'true';
 
+  // 🔍 DEBUG: Log MVP mode status (TEMPORARY)
+  useEffect(() => {
+    console.log('🔍 [DASHBOARD-DEBUG] MVP Mode Status:');
+    console.log('NEXT_PUBLIC_ENABLE_MVP_MODE (raw):', process.env.NEXT_PUBLIC_ENABLE_MVP_MODE);
+    console.log('isMvpBetaEnabled:', isMvpBetaEnabled);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('All NEXT_PUBLIC vars:', Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC_')));
+  }, [isMvpBetaEnabled]);
+
   // CV Upload Status State
   const [cvUploadStatus, setCvUploadStatus] = useState<{
     hasCV: boolean;

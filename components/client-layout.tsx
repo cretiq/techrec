@@ -65,7 +65,7 @@ function SessionAwareLayout({ children }: { children: React.ReactNode }) {
                     Job Search
                   </Link>
                   {session?.user?.email === "admin@test.com" && (
-                    <Link href="/admin/gamification" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-admin-trigger">
+                    <Link href="/admin" className="text-sm font-medium text-base-content/80 hover:text-violet-600 transition-colors" data-testid="nav-desktop-link-admin-trigger">
                       Admin
                     </Link>
                   )}

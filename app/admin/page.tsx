@@ -2,11 +2,13 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { GamificationAdminClient } from "@/components/admin/GamificationAdminClient"
+import { RapidApiUsageTracker } from "@/components/admin/RapidApiUsageTracker"
 
 /**
  * Admin Dashboard Page
  * 
  * Main admin panel for platform management:
+ * - RapidAPI usage monitoring and tracking
  * - User management and gamification
  * - Award/deduct points
  * - Award badges and XP
@@ -38,11 +40,27 @@ export default async function AdminPage() {
           Admin Dashboard
         </h1>
         <p className="text-base-content/70 mt-2">
-          Manage users, gamification, and platform settings
+          Manage users, gamification, RapidAPI usage, and platform settings
         </p>
       </div>
 
-      <GamificationAdminClient />
+      <div className="space-y-8">
+        {/* RapidAPI Usage Monitoring */}
+        <section>
+          <h2 className="text-2xl font-semibold text-base-content mb-4">
+            RapidAPI Usage Monitoring
+          </h2>
+          <RapidApiUsageTracker />
+        </section>
+
+        {/* Gamification Management */}
+        <section>
+          <h2 className="text-2xl font-semibold text-base-content mb-4">
+            Gamification Management
+          </h2>
+          <GamificationAdminClient />
+        </section>
+      </div>
     </div>
   )
 }
