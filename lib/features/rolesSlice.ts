@@ -44,7 +44,7 @@ const initialState: RolesState = {
   apiUsage: null,
   usageWarningLevel: 'none',
   requestThrottling: {
-    enabled: true,
+    enabled: process.env.NODE_ENV === 'production', // Disable in development for debugging
     lastRequestTime: 0,
     minIntervalMs: 5 * 60 * 1000, // 5 minutes between requests
     maxJobsPerSearch: 10, // Conservative limit
@@ -56,18 +56,19 @@ const initialState: RolesState = {
 
 // Async thunk for searching roles with caching and validation
 export const searchRoles = createAsyncThunk<
-  { roles: Role[]; cached: boolean; usage?: ApiUsageHeaders },
-  SearchParameters,
+  { roles: Role[]; cached: boolean; usage?: ApiUsageHeaders; pointsInfo?: { pointsSpent: number; newBalance: number; resultsCount: number } },
+  SearchParameters & { forceRefresh?: boolean },
   { rejectValue: string }
 >(
   'roles/searchRoles',
   async (params, { rejectWithValue }) => {
+    const { forceRefresh, ...searchParams } = params;
     const cacheManager = RapidApiCacheManager.getInstance();
     const validator = RapidApiValidator.getInstance();
 
     try {
       // Validate parameters
-      const validation = validator.validateSearchParameters(params);
+      const validation = validator.validateSearchParameters(searchParams);
       if (!validation.valid) {
         return rejectWithValue(`Validation failed: ${validation.errors.join(', ')}`);
       }
@@ -75,12 +76,13 @@ export const searchRoles = createAsyncThunk<
       // Use normalized parameters
       const normalizedParams = validation.normalizedParams;
 
-      // Check cache first
-      const cachedResponse = cacheManager.getCachedResponse(normalizedParams);
+      // Check Redux-level cache first (unless forceRefresh is true)
+      const cachedResponse = (!forceRefresh) ? cacheManager.getCachedResponse(normalizedParams) : null;
       if (cachedResponse) {
         return {
           roles: cachedResponse.data.map(mapRapidApiJobToRole),
           cached: true,
+          // Note: Cached responses don't include points info since points are deducted by the server
         };
       }
 
@@ -92,15 +94,20 @@ export const searchRoles = createAsyncThunk<
 
       // Construct API URL
       const baseUrl = '/api/rapidapi/search';
-      const searchParams = new URLSearchParams();
+      const apiSearchParams = new URLSearchParams();
       
       Object.entries(normalizedParams).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          searchParams.append(key, value.toString());
+          apiSearchParams.append(key, value.toString());
         }
       });
 
-      const apiUrl = `${baseUrl}?${searchParams.toString()}`;
+      // Add forceRefresh parameter to bypass API-level cache
+      if (forceRefresh) {
+        apiSearchParams.append('forceRefresh', 'true');
+      }
+
+      const apiUrl = `${baseUrl}?${apiSearchParams.toString()}`;
 
       // Make API request
       const response = await fetch(apiUrl);
@@ -120,11 +127,19 @@ export const searchRoles = createAsyncThunk<
 
       // Map jobs to roles
       const roles = jobs.map(mapRapidApiJobToRole);
+      
+      // Extract points information from headers (MVP Beta)
+      const pointsInfo = {
+        pointsSpent: response.headers.get('X-Points-Spent') ? parseInt(response.headers.get('X-Points-Spent')!) : null,
+        newBalance: response.headers.get('X-Points-New-Balance') ? parseInt(response.headers.get('X-Points-New-Balance')!) : null,
+        resultsCount: response.headers.get('X-Points-Results-Count') ? parseInt(response.headers.get('X-Points-Results-Count')!) : null,
+      };
 
       return {
         roles,
         cached: false,
         usage: cacheManager.getCurrentUsage(),
+        pointsInfo: pointsInfo.pointsSpent !== null ? pointsInfo : undefined,
       };
 
     } catch (error: any) {

@@ -35,7 +35,6 @@ interface SearchParameters {
   
   // Job characteristics
   remote?: string; // 'true', 'false', or undefined for both
-  remote_derived?: string; // BLUEPRINT REQUIREMENT - boolean filter for remote positions
   agency?: string; // 'true' for agencies only, 'false' for companies only
   description_type?: string; // 'text' to include job description
   
@@ -98,6 +97,13 @@ class RapidApiCacheManager {
       }, {} as SearchParameters);
 
     return btoa(JSON.stringify(sortedParams)).replace(/[^a-zA-Z0-9]/g, '');
+  }
+
+  /**
+   * Public method to generate cache key for debugging purposes
+   */
+  generateCacheKey(params: SearchParameters): string {
+    return this.generateParameterHash(params);
   }
 
   /**
@@ -202,12 +208,22 @@ class RapidApiCacheManager {
       return null;
     }
 
+    // Update current usage with cached headers if available and current usage is null
+    if (entry.usageHeaders && !this.currentUsage) {
+      this.currentUsage = entry.usageHeaders;
+      console.log('Restored usage data from cache:', {
+        jobsRemaining: this.currentUsage.jobsRemaining,
+        requestsRemaining: this.currentUsage.requestsRemaining
+      });
+    }
+
     console.log('Cache hit for parameters:', params);
     return {
       data: entry.data,
       cached: true,
       timestamp: entry.timestamp,
-      age: Date.now() - entry.timestamp
+      age: Date.now() - entry.timestamp,
+      usageHeaders: entry.usageHeaders
     };
   }
 

@@ -439,6 +439,7 @@ class RapidApiValidator {
 
   /**
    * Normalizes parameters according to API requirements
+   * CRITICAL: Preserves all default values set in the route handler
    */
   private normalizeParameters(params: SearchParameters): SearchParameters {
     const normalized = { ...params };
@@ -468,6 +469,13 @@ class RapidApiValidator {
     if ((normalized.title_filter || normalized.description_filter) && normalized.limit && normalized.limit > 10) {
       normalized.limit = 10;
     }
+
+    // CRITICAL FIX: Preserve high-fidelity defaults from route handler
+    // These defaults are essential for enhanced data quality:
+    // - agency: 'FALSE' (direct employers only)
+    // - include_ai: 'true' (AI-enriched fields)
+    // - description_type: 'text' (full job descriptions)
+    // The validator MUST NOT override these carefully set defaults
 
     return normalized;
   }
