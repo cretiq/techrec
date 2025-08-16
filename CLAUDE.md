@@ -69,6 +69,131 @@ safelist: [
 
 ---
 
+## 🧠 AI WORKING METHODOLOGY & VALIDATION
+
+### ⚡ CONFIDENCE & EXECUTION STANDARDS
+
+**🚨 MANDATORY CONFIDENCE THRESHOLD**:
+- **95%+ confidence required** before executing any significant changes
+- **Below 95% confidence**: Ask for clarification, gather more context, or propose alternatives
+- **Never guess or assume** when dealing with critical business logic, security, or data integrity
+
+**📋 PRE-EXECUTION VALIDATION CHECKLIST**:
+1. **Do I understand the complete requirements?** (Not just the immediate ask)
+2. **Have I read relevant documentation?** (Package docs, existing code patterns)
+3. **Do I know the potential impact?** (Breaking changes, dependencies, side effects)
+4. **Is my approach consistent with existing patterns?** (Architecture, code style, conventions)
+5. **Have I considered edge cases and error scenarios?**
+
+### 📚 MANDATORY DOCUMENTATION RESEARCH
+
+**🔍 ALWAYS READ BEFORE IMPLEMENTING**:
+- **Package/Library Documentation**: For ANY package you'll interact with (check version compatibility)
+- **Existing Code Patterns**: Search codebase for similar implementations before creating new ones  
+- **API Documentation**: For external services, databases, or complex internal APIs
+- **Project-Specific Docs**: CLAUDE.md sections relevant to your task
+
+**📖 VERSION-SPECIFIC DOCUMENTATION STRATEGY**:
+1. **ALWAYS Check Package Versions FIRST**: Read `package.json` to identify exact versions
+2. **Sequential Documentation Source Priority**:
+   - **1st: Context7 MCP** → `mcp__context7-mcp__resolve-library-id` then `get-library-docs`
+   - **2nd: Official Documentation** → Use exact version URLs (e.g., `docs.library.com/v2.1.3/`)
+   - **3rd: GitHub/Repository Docs** → Check version tags for version-specific docs
+   - **4th: Community Sources** → Only as fallback, verify against official sources
+3. **Version Compatibility Verification**:
+   - **Major Version Changes**: Read migration guides and breaking changes
+   - **Minor/Patch Differences**: Check changelog for relevant updates
+   - **Legacy Versions**: Understand deprecated features and upgrade paths
+4. **Documentation Quality Validation**:
+   - **Cross-reference** multiple sources for accuracy
+   - **Verify with existing code** patterns in the project
+   - **Test examples** from docs against actual package behavior
+
+**📋 PRACTICAL EXAMPLE - React Documentation Reading**:
+```bash
+# 1. Check version first
+grep "react" package.json  # Shows "react": "^18.2.0"
+
+# 2. Use Context7 MCP for React 18.2.0 docs
+mcp__context7-mcp__resolve-library-id("react")
+mcp__context7-mcp__get-library-docs("/facebook/react/v18.2.0")
+
+# 3. If Context7 unavailable, use version-specific URL
+# ✅ CORRECT: https://react.dev/reference/react/useEffect (React 18)
+# ❌ WRONG: https://react.dev/docs/hooks-effect (React 16 docs)
+
+# 4. Cross-reference with existing usage in project
+grep -r "useEffect" components/ --include="*.tsx"
+```
+
+### 🔄 SYSTEMATIC PROBLEM-SOLVING APPROACH
+
+**📈 PROGRESSIVE COMPLEXITY HANDLING**:
+1. **Start Simple**: Understand the basic requirement before adding complexity
+2. **Plan in Stages**: Break complex tasks into smaller, validatable steps  
+3. **Validate Early**: Test understanding with simple examples before full implementation
+4. **Iterate and Refine**: Build incrementally, validating each step
+
+**🧪 VALIDATION METHODS**:
+- **Version-First Documentation Reading**: 
+  1. Check `package.json` for exact version
+  2. Use Context7 MCP for that specific version
+  3. Fallback to official docs with version-specific URLs
+  4. Cross-reference with project's existing implementation
+- **Code Pattern Discovery**: Search for existing patterns using Grep/Glob tools
+- **Type Compatibility Verification**: Check TypeScript interfaces and type compatibility
+- **Breaking Changes Assessment**: Compare current usage vs documented changes
+- **Impact Analysis**: Consider effects on existing functionality and dependencies
+
+### 🚨 CRITICAL REVIEW REQUIREMENTS
+
+**⚠️ MANDATORY SELF-REVIEW BEFORE EXECUTION**:
+1. **Plan Validation**: "Does this plan address all requirements?"
+2. **Risk Assessment**: "What could go wrong? How likely? How severe?"
+3. **Alternative Evaluation**: "Is there a simpler, more maintainable approach?"
+4. **Consistency Check**: "Does this follow existing project patterns?"
+5. **Future-Proofing**: "Will this be maintainable as the project grows?"
+
+**🔍 UNCERTAINTY ESCALATION PROTOCOL**:
+- **High Impact + Low Confidence**: Always ask for clarification
+- **Version Mismatches**: When project version differs significantly from available docs
+- **Unfamiliar Technology**: Research documentation thoroughly first, starting with Context7 MCP
+- **Business Logic Questions**: Validate understanding rather than guess
+- **Breaking Changes**: Explicitly confirm intention and impact
+- **Documentation Gaps**: When multiple sources conflict or lack version-specific info
+
+### 🎯 QUALITY ASSURANCE STANDARDS
+
+**✅ COMPLETION CRITERIA**:
+- **Functional Requirements**: All stated requirements met
+- **Non-Functional Requirements**: Performance, security, maintainability considered
+- **Integration Points**: Changes work with existing systems
+- **Documentation**: Updated where changes affect documented behavior
+- **Testing**: Appropriate tests written for new functionality
+
+**🔄 CONTINUOUS IMPROVEMENT**:
+- **Learn from Patterns**: Identify and reuse successful approaches
+- **Document Decisions**: Explain non-obvious choices for future reference
+- **Optimize for Maintainability**: Prefer clear, readable solutions over clever ones
+- **Validate Assumptions**: Test edge cases and error conditions
+
+### 🚀 EXECUTION EXCELLENCE PRINCIPLES
+
+**🏗️ IMPLEMENTATION STRATEGY**:
+1. **Research First**: Understand before building
+2. **Plan Explicitly**: Write out the approach before coding
+3. **Build Incrementally**: Implement in small, testable pieces
+4. **Validate Continuously**: Check each step before proceeding
+5. **Document Clearly**: Explain complex decisions and trade-offs
+
+**⚡ EFFICIENCY GUIDELINES**:
+- **Reuse Before Create**: Always check for existing solutions
+- **Compose Before Customize**: Use existing patterns and components
+- **Abstract When Appropriate**: Create reusable solutions for repeated patterns
+- **Optimize Later**: Prioritize correctness and clarity over premature optimization
+
+---
+
 ## 📖 DOCUMENTATION NAVIGATION & MAINTENANCE
 
 ### Documentation Architecture
@@ -117,10 +242,11 @@ This project uses a **two-tier documentation system**:
 - **Frontend**: Next.js 15.2+ with App Router, TypeScript (strict mode)
 - **Styling**: TailwindCSS 4 + DaisyUI components
 - **Database**: MongoDB with Prisma ORM (6.6.0)
-- **Caching**: Redis (ioredis) for configuration and performance
+- **Caching**: Redis (ioredis) for configuration and performance, with server-side isolation pattern
 - **State Management**: Redux Toolkit with persistence
 - **Payments**: Stripe with webhook security
 - **Authentication**: NextAuth.js with OAuth providers
+- **Build Configuration**: Webpack exclusions for Node.js modules (DNS, ioredis) from client bundle
 
 ### Database Architecture (Single Source of Truth)
 **✅ CRITICAL UPDATE (January 2025)**: Complete migration from redundant CvAnalysis table to proper single source of truth.
@@ -323,6 +449,7 @@ window.dispatchEvent(new CustomEvent('expandAllSections'));
 - **Stripe Integration**: Webhook signature verification, replay attack protection, idempotency keys
 - **Advanced Caching**: Configuration caching (24h TTL), semantic cache keys, Redis connection resilience
 - **Graceful Degradation**: Cache failures don't break functionality
+- **Server-Side Module Isolation**: Client-side bundle excludes Node.js modules (Redis, DNS, etc.) via webpack configuration
 
 ---
 
@@ -351,6 +478,21 @@ window.dispatchEvent(new CustomEvent('expandAllSections'));
 - **[Development Commands](@docs/claude-references/reference/development-commands.md)**
 
 **Essential commands**: `npm run dev`, `npm run build`, `npm run test:e2e`, debug analysis scripts
+
+**🧪 Testing Commands** (New Implementation):
+```bash
+# Run all unit tests (0.4s)
+npm test -- __tests__/unit/
+
+# Run specific test suite
+npm test -- __tests__/unit/pointsManager.test.ts
+npm test -- __tests__/unit/debugMode.test.ts
+npm test -- __tests__/unit/searchValidation.test.ts
+npm test -- __tests__/unit/usageTracking.test.ts
+
+# Run with verbose output
+npm test -- __tests__/unit/ --verbose
+```
 
 **Simplified RapidAPI Debug** (Aug 2025):
 ```bash
@@ -386,14 +528,41 @@ DEBUG_CV_UPLOAD=true NODE_ENV=development npx tsx scripts/analyze-direct-upload.
 
 ## 🧪 TESTING STRATEGY
 
-### 📋 Testing Strategy
+### 📋 RapidAPI Subsystem Testing (Complete Implementation)
+
+**🎯 THREE-TIER TESTING ARCHITECTURE**:
+- **Unit Tests**: Core logic validation (< 5s) - **113 tests passing** ✅
+- **Integration Tests**: API routes with mocked dependencies (< 30s) 
+- **E2E Tests**: Critical user flows (< 60s)
+
+**📦 COMPREHENSIVE UNIT TEST COVERAGE**:
+```bash
+npm test -- __tests__/unit/     # Run all unit tests (0.4s)
+```
+
+**🔧 Test Infrastructure**:
+- **Jest + TypeScript**: Optimized configuration for Next.js
+- **Deep Prisma Mocking**: `jest-mock-extended` for transaction simulation
+- **Test Fixtures**: Centralized realistic data in `__tests__/fixtures/`
+- **Mock Helpers**: Transaction setup, points deduction, error scenarios
+
+**✅ VALIDATED SYSTEMS**:
+- **PointsManager**: MVP Beta pricing (1 point/result), atomic transactions, tier discounts
+- **Debug Modes**: All modes (off/log/stop) with consistent points deduction
+- **Search Validation**: Parameter limits, cache keys, security validation
+- **Usage Tracking**: Universal header processing (real/mock/cached/debug)
+
+**🚨 CRITICAL MVP BETA VALIDATION**:
+- Points **ALWAYS** deducted in ALL debug modes for system integrity testing
+- Zero points deducted when no results returned
+- Admin dashboard shows usage regardless of debug mode
+- Safe testing without external API costs in stop mode
 
 📖 **See complete testing guide:**
 - **[Testing Strategy](@docs/claude-references/development/testing-strategy.md)**
 - **[E2E Best Practices](docs/testing/e2e-best-practices.md)**
 
-**Critical rules**: Authenticate first, handle existing data gracefully, use test skipping
-**Success rate**: 91% (41/45 tests passing)
+**Legacy E2E Success Rate**: 91% (41/45 tests passing)
 
 ---
 
@@ -506,7 +675,33 @@ When implementing new features:
 
 ## 📜 Update History
 
-**Latest Update**: August 16, 2025 - **RAPIDAPI USAGE TRACKING SYSTEM FIX**:
+**Latest Update**: August 16, 2025 - **SERVER-SIDE MODULE ISOLATION FIX**:
+- ✅ **Fixed Client-Side Redis Import Error**: Resolved "Module not found: Can't resolve 'dns'" error
+- ✅ **Server-Only Redis Utilities**: Created `rapidapi-redis-utils.ts` for isolated server operations
+- ✅ **Webpack Configuration**: Added client-side exclusions for Node.js modules (ioredis, dns, net, tls)
+- ✅ **Dynamic Import Pattern**: Refactored cache manager to use async server-only imports
+- ✅ **Development Stability**: Fixed development server and build process to complete without errors
+- ✅ **Architecture Improvement**: Established pattern for proper client-server module separation
+
+**Previous Update**: August 16, 2025 - **AI WORKING METHODOLOGY & VALIDATION FRAMEWORK**:
+- ✅ **Confidence Standards**: 95%+ confidence threshold required before significant changes
+- ✅ **Documentation Research**: Mandatory reading of relevant package/library docs before implementation
+- ✅ **Critical Review Process**: Self-validation checklist for plan quality and risk assessment
+- ✅ **Progressive Problem-Solving**: Systematic approach to breaking down complex tasks
+- ✅ **Uncertainty Escalation**: Clear protocols for handling low-confidence scenarios
+- ✅ **Quality Assurance**: Completion criteria and continuous improvement standards
+- ✅ **Execution Excellence**: Research-first, plan-explicitly, build-incrementally methodology
+
+**Previous Update**: August 16, 2025 - **COMPREHENSIVE RAPIDAPI TESTING SYSTEM**:
+- ✅ **Complete Unit Test Suite**: 113 tests covering PointsManager, debug modes, search validation, usage tracking
+- ✅ **Three-Tier Architecture**: Unit (< 5s), Integration (< 30s), E2E (< 60s) testing strategy
+- ✅ **Jest Infrastructure**: TypeScript-optimized configuration with deep Prisma mocking
+- ✅ **MVP Beta Validation**: Critical points deduction testing across ALL debug modes
+- ✅ **Test Performance**: All unit tests execute in 0.4 seconds for rapid development feedback
+- ✅ **Mock Infrastructure**: Transaction simulation, error scenarios, realistic test data fixtures
+- ✅ **Debug Mode Testing**: Validates off/log/stop modes maintain points system integrity
+
+**Previous Update**: August 16, 2025 - **RAPIDAPI USAGE TRACKING SYSTEM FIX**:
 - ✅ **Universal Headers Processing**: Usage data captured from ALL response types (real API, mock, cached, debug)
 - ✅ **Fixed Environment Variables**: Standardized `DEBUG_RAPIDAPI` usage across admin and search endpoints
 - ✅ **Enhanced Cache Manager**: Usage headers preserved and restored from cached responses
