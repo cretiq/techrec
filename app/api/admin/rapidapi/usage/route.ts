@@ -41,10 +41,30 @@ export async function GET() {
     // Get RapidAPI cache manager instance
     const cacheManager = RapidApiCacheManager.getInstance()
     
+    const debugUsage = process.env.DEBUG_RAPIDAPI_USAGE === 'true';
+    
+    if (debugUsage) {
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] Admin endpoint called by:', session.user.email);
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] Cache manager instance:', !!cacheManager);
+    }
+    
     // Get current usage data
-    const currentUsage = cacheManager.getCurrentUsage()
+    const currentUsage = await cacheManager.getCurrentUsageAsync()
     const cacheStats = cacheManager.getCacheStats()
     const warningLevel = cacheManager.getUsageWarningLevel()
+    
+    if (debugUsage) {
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] Admin data retrieved:', {
+        hasCurrentUsage: !!currentUsage,
+        currentUsage,
+        cacheStats: {
+          size: cacheStats.size,
+          maxSize: cacheStats.maxSize,
+          entriesCount: cacheStats.entries.length
+        },
+        warningLevel
+      });
+    }
 
     // Calculate usage percentages
     let usageData = null

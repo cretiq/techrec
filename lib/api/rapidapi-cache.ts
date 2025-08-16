@@ -136,20 +136,80 @@ class RapidApiCacheManager {
    * Updates current API usage tracking
    */
   updateUsage(headers: Headers): void {
+    const debugUsage = process.env.DEBUG_RAPIDAPI_USAGE === 'true';
+    
+    if (debugUsage) {
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] updateUsage called with headers:', {
+        'x-ratelimit-jobs-limit': headers.get('x-ratelimit-jobs-limit'),
+        'x-ratelimit-jobs-remaining': headers.get('x-ratelimit-jobs-remaining'),
+        'x-ratelimit-requests-limit': headers.get('x-ratelimit-requests-limit'),
+        'x-ratelimit-requests-remaining': headers.get('x-ratelimit-requests-remaining'),
+        'x-ratelimit-jobs-reset': headers.get('x-ratelimit-jobs-reset'),
+      });
+    }
+    
     this.currentUsage = this.extractUsageHeaders(headers);
+    
+    if (debugUsage) {
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] Extracted usage data:', this.currentUsage);
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] Cache manager instance ID:', this.constructor.name);
+    }
+    
     if (this.currentUsage) {
       console.log('RapidAPI Usage Updated:', {
         jobsRemaining: this.currentUsage.jobsRemaining,
         requestsRemaining: this.currentUsage.requestsRemaining,
         resetIn: `${Math.round(this.currentUsage.jobsReset / 3600)} hours`
       });
+      
+      // Persist to Redis for cross-request availability (Next.js dev mode singleton issue)
+      // Only run on server-side to avoid client-side import issues
+      if (typeof window === 'undefined') {
+        this.persistUsageToRedisAsync(this.currentUsage);
+      }
+    } else if (debugUsage) {
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] ❌ Failed to extract usage headers');
     }
   }
 
   /**
    * Gets current API usage statistics
+   * Client-safe version that doesn't block on Redis operations
    */
   getCurrentUsage(): ApiUsageHeaders | null {
+    const debugUsage = process.env.DEBUG_RAPIDAPI_USAGE === 'true';
+    
+    if (debugUsage) {
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] getCurrentUsage called');
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] Current in-memory state:', this.currentUsage);
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] Cache manager instance state:', {
+        hasCurrentUsage: !!this.currentUsage,
+        cacheSize: this.cache.size,
+        instanceId: this.constructor.name
+      });
+    }
+    
+    return this.currentUsage;
+  }
+
+  /**
+   * Server-side async version for getting usage with Redis sync
+   */
+  async getCurrentUsageAsync(): Promise<ApiUsageHeaders | null> {
+    const debugUsage = process.env.DEBUG_RAPIDAPI_USAGE === 'true';
+    
+    if (debugUsage) {
+      console.log('🔍 [DEBUG_RAPIDAPI_USAGE] getCurrentUsageAsync called');
+    }
+    
+    // Only restore from Redis on server-side
+    if (typeof window === 'undefined') {
+      const restored = await this.restoreUsageFromRedisAsync();
+      if (restored) {
+        this.currentUsage = restored;
+      }
+    }
+    
     return this.currentUsage;
   }
 
@@ -292,6 +352,32 @@ class RapidApiCacheManager {
     if (minPercentage < 10) return 'critical';
     if (minPercentage < 25) return 'low';
     return 'none';
+  }
+
+  /**
+   * Server-side only async wrapper for Redis persistence
+   */
+  private async persistUsageToRedisAsync(usage: ApiUsageHeaders): Promise<void> {
+    try {
+      const { persistUsageToRedis } = await import('./rapidapi-redis-utils');
+      await persistUsageToRedis(usage);
+    } catch (error) {
+      console.error('Failed to persist usage to Redis:', error);
+      // Don't throw - this is optional persistence
+    }
+  }
+
+  /**
+   * Server-side only async wrapper for Redis restoration
+   */
+  private async restoreUsageFromRedisAsync(): Promise<ApiUsageHeaders | null> {
+    try {
+      const { restoreUsageFromRedis } = await import('./rapidapi-redis-utils');
+      return await restoreUsageFromRedis();
+    } catch (error) {
+      console.error('Failed to restore usage from Redis:', error);
+      return null;
+    }
   }
 }
 

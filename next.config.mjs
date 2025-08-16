@@ -27,6 +27,24 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  webpack: (config, { isServer }) => {
+    // Exclude ioredis and other server-only modules from client-side bundle
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
+        'ioredis': false,
+      };
+      
+      config.externals = config.externals || [];
+      config.externals.push('ioredis');
+    }
+    
+    return config;
+  },
 }
 
 if (userConfig) {
