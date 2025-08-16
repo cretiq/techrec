@@ -259,7 +259,7 @@ Requirements Summary: ${roleInfo.aiRequirementsSummary}     // NEW: Requirements
 
 ### Blueprint Compliance Parameters
 - **`advanced_title_filter`** - Advanced title search with boolean operators
-- **`remote_derived`** - AI-derived remote job filtering (more accurate than basic `remote`)
+- **`remote`** - Remote job filtering ('true', 'false', or omit for both)
 - **`external_apply_url='true'`** - Jobs with direct application URLs
 
 ### Search Parameters
@@ -274,8 +274,7 @@ interface SearchParameters {
   // Advanced search  
   advanced_title_filter?: string;     // Advanced boolean title search
   description_filter?: string;        // Job description search
-  remote?: string;                    // Basic remote filtering
-  remote_derived?: string;            // AI-derived remote filtering (more accurate)
+  remote?: string;                    // Remote job filtering ('true', 'false', or omit for both)
   
   // Company filters
   agency?: string;                    // 'FALSE' for direct employers (default)

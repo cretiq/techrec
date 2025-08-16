@@ -47,10 +47,29 @@ STRIPE_WEBHOOK_SECRET=  # Webhook security
 AWS_S3_BUCKET_NAME=     # File storage
 ```
 
-## Debug & Development
+## RapidAPI Integration
 ```bash
+RAPIDAPI_KEY=                     # RapidAPI key for LinkedIn job search
+RAPIDAPI_DEFAULT_AGENCY=FALSE     # Default: direct employers only
+RAPIDAPI_DEFAULT_INCLUDE_AI=true  # Default: enable AI-enriched fields
+RAPIDAPI_DEFAULT_DESCRIPTION_TYPE=text # Default: full job descriptions
+```
+
+## Debug & Development (Updated Aug 2025)
+```bash
+# Simplified RapidAPI Debug (Consolidated Aug 16, 2025)
+DEBUG_RAPIDAPI=off          # Normal operation (default)
+DEBUG_RAPIDAPI=log          # Make real calls with comprehensive logging
+DEBUG_RAPIDAPI=stop         # Log request details without making API call
+USE_MOCK_DATA=true          # Use mock data instead of real API calls
+
+# Other Debug Flags
 DEBUG_CV_UPLOAD=true        # Enable CV upload debug logging
 DEBUG_COVER_LETTER=true     # Enable cover letter generation debug logging
+
+# DEPRECATED (Removed Aug 16, 2025)
+# DEBUG_RAPIDAPI_CALL=true  # Replaced by DEBUG_RAPIDAPI=log
+# STOP_RAPIDAPI_CALL=true   # Replaced by DEBUG_RAPIDAPI=stop
 ```
 
 ## MVP Beta Testing

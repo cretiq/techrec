@@ -41,8 +41,9 @@
 1. User initiates job search
 2. Request sent to RapidAPI endpoint with optimized parameters
 3. AI enhancement processing applied
-4. Type-safe response with `EnhancedRole` interface
-5. Memoized rendering of job cards
+4. **Universal usage tracking** - headers captured from all response types
+5. Type-safe response with `EnhancedRole` interface
+6. Memoized rendering of job cards
 
 ### Response Enhancement
 - AI-generated insights added to each job posting
@@ -50,6 +51,16 @@
 - Salary range predictions
 - Company culture analysis
 - Role difficulty assessments
+
+### Usage Tracking System (Enhanced Aug 2025)
+- **Universal Headers Processing**: Usage data captured from ALL response types
+  - Real API calls → Actual RapidAPI headers
+  - Mock data → Realistic simulated headers
+  - Cached responses → Preserved headers from original request
+  - Debug mode → Authentic simulation headers
+- **Admin Dashboard Integration**: Live usage monitoring at `/admin`
+- **Environment Standardization**: Consistent `DEBUG_RAPIDAPI` variable
+- **Cache Persistence**: Usage data survives across cached responses
 
 ## Development Setup
 
@@ -70,6 +81,27 @@ interface EnhancedRole {
 - **Accessibility**: Proper ARIA labels and keyboard navigation
 - **Loading States**: Skeleton screens during API calls
 - **Error Handling**: Graceful degradation for API failures
+- **Usage Monitoring**: Real-time admin dashboard for API consumption tracking
+
+### Debug Configuration (Aug 2025)
+```bash
+# Normal operation
+DEBUG_RAPIDAPI=off npm run dev
+
+# Real API calls with comprehensive logging
+DEBUG_RAPIDAPI=log npm run dev
+
+# Log requests without making API calls
+DEBUG_RAPIDAPI=stop npm run dev
+
+# Use mock data (with realistic headers)
+USE_MOCK_DATA=true npm run dev
+```
+
+### Admin Monitoring
+- **URL**: `/admin` (admin email required)
+- **Features**: Live usage statistics, cache performance, environment configuration
+- **Data Source**: Always shows latest available usage data regardless of mode
 
 ## Related Documentation
 

@@ -39,7 +39,7 @@ Comprehensive role search system implementation with **AI-enriched data processi
 #### 4. Enhanced API Route (`/app/api/rapidapi/search/route.ts`)
 - **High-Fidelity Defaults**: Automatic `agency='FALSE'`, `include_ai='true'`, `description_type='text'`
 - **Environment Overrides**: Configurable via `RAPIDAPI_DEFAULT_*` environment variables
-- **Blueprint Compliance**: Supports `advanced_title_filter`, `remote_derived`, `external_apply_url`
+- **Blueprint Compliance**: Supports `advanced_title_filter`, `external_apply_url`, correct `remote` filtering
 - **Enhanced Mock Data**: Uses `rapidapi_job_response_enhanced.json` with realistic AI fields
 - **Development Mode**: Mock responses with simulated usage tracking
 - **Production Ready**: Commented real API integration code
@@ -98,8 +98,7 @@ Comprehensive role search system implementation with **AI-enriched data processi
 ### Advanced Parameters  
 - `advanced_title_filter`: Advanced title search with boolean operators and wildcards
 - `description_filter`: Job description search (with timeout warnings)
-- `remote`: Remote job filtering (true/false)
-- `remote_derived`: AI-derived remote job filtering (boolean)
+- `remote`: Remote job filtering ('true', 'false', or omit for both)
 - `agency`: Filter by company type (agencies vs direct employers) - **Default: 'FALSE'**
 - `external_apply_url`: Filter for jobs with external application URLs
 - `employees_gte/lte`: Company size filtering
