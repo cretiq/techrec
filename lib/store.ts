@@ -38,11 +38,11 @@ const selectedRolesPersistConfig = {
   whitelist: ['selectedRoles', 'selectedRoleIds'], // Only persist these fields
 };
 
-// Configuration for persisting roles slice filters only
+// Configuration for persisting roles slice with search results
 const rolesPersistConfig = {
   key: 'roles',
   storage,
-  whitelist: ['lastSearchParams'], // Only persist search filters, not the roles array
+  whitelist: ['lastSearchParams', 'roles'], // Persist both search filters AND the actual search results
 };
 
 // Configuration for persisting cover letters
@@ -140,7 +140,7 @@ export type AppDispatch = typeof store.dispatch;
 // Add debug logging for development
 if (process.env.NODE_ENV === 'development') {
   console.log('[Redux Store] Store configured with persistence');
-  console.log('[Redux Store] Persisted slices: selectedRoles, roles (filters only), coverLetters, outreachMessages');
+  console.log('[Redux Store] Persisted slices: selectedRoles, roles (filters + results), coverLetters, outreachMessages');
   
   // Development utility for clearing persisted state (client-side only)
   if (typeof window !== 'undefined') {

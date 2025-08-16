@@ -53,8 +53,18 @@ interface SavedRole {
 export default function RolesSearch2Page() {
   const { data: session, status } = useSession()
   const savedRoles = useSelector(selectSavedRoles)
-  const [currentFilters, setCurrentFilters] = useState<SearchParameters>({
-    limit: 10
+  
+  // Get lastSearchParams first so we can use it in useState initialization
+  const lastSearchParams = useSelector(selectLastSearchParams)
+  
+  // Initialize filters from persisted params if available, otherwise use defaults
+  const [currentFilters, setCurrentFilters] = useState<SearchParameters>(() => {
+    // If we have persisted search params, use those (including the limit)
+    if (lastSearchParams && Object.keys(lastSearchParams).length > 0) {
+      return lastSearchParams
+    }
+    // Otherwise use default
+    return { limit: 10 }
   })
   const { toast } = useToast()
   const router = useRouter()
@@ -71,7 +81,6 @@ export default function RolesSearch2Page() {
   const error = useSelector(selectRolesError)
   const canMakeRequest = useSelector(selectCanMakeRequest)
   const nextRequestTime = useSelector(selectNextRequestTime)
-  const lastSearchParams = useSelector(selectLastSearchParams)
   const selectedRoles = useSelector(selectSelectedRoles)
   const selectedCount = useSelector(selectSelectedRolesCount)
 
@@ -127,29 +136,18 @@ export default function RolesSearch2Page() {
     }
   }, [])
 
-  // Memoize the search trigger condition to prevent unnecessary effect runs
-  const shouldAutoSearch = useMemo(() => {
-    return status === 'authenticated' && 
-           lastSearchParams && 
-           roles.length === 0 && 
-           !loading &&
-           canMakeRequest;
-  }, [status, lastSearchParams, roles.length, loading, canMakeRequest]);
-
-  // Auto-search when persisted search params exist but no roles are loaded
+  // REMOVED: Auto-search logic - users should explicitly search when they want fresh data
+  // Update filters if persisted params change (e.g., from another tab/window)
   useEffect(() => {
-    if (shouldAutoSearch) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[Auto-Search] Triggering auto-search with cached params');
+    // Only update if lastSearchParams exists and is different from current
+    if (lastSearchParams && JSON.stringify(lastSearchParams) !== JSON.stringify(currentFilters)) {
+      // Check if this is a meaningful change (not just initial load)
+      const hasUserInteracted = Object.keys(currentFilters).length > 1 || currentFilters.limit !== 10
+      if (!hasUserInteracted) {
+        setCurrentFilters(lastSearchParams)
       }
-      
-      // Set the current filters to the persisted params
-      setCurrentFilters(lastSearchParams!)
-      
-      // Trigger search with persisted parameters (uses cache if available)
-      dispatch(searchRoles(lastSearchParams!))
     }
-  }, [shouldAutoSearch, lastSearchParams, dispatch])
+  }, [lastSearchParams])
 
   // Clear errors when component unmounts or when error changes
   useEffect(() => {
@@ -157,7 +155,7 @@ export default function RolesSearch2Page() {
       toast({
         title: 'Search Error',
         description: error,
-        variant: 'destructive',
+        variant: 'error',
       })
       dispatch(clearError())
     }
@@ -212,44 +210,74 @@ export default function RolesSearch2Page() {
   */
 
   const handleSearch = async () => {
+    console.log('🔍 [DEBUG] handleSearch called', { canMakeRequest, nextRequestTime, isMvpBetaEnabled, pointsBalance });
+    
     if (!canMakeRequest && nextRequestTime) {
       const timeRemaining = Math.ceil((nextRequestTime - Date.now()) / 1000 / 60)
+      console.log('🚫 [DEBUG] Rate limited, returning early');
       toast({
         title: 'Rate Limited',
         description: `Please wait ${timeRemaining} more minutes before searching again.`,
-        variant: 'destructive',
+        variant: 'error',
       })
       return
     }
     
     // Check points before search in MVP Beta
     if (isMvpBetaEnabled && pointsBalance < 1) {
+      console.log('🚫 [DEBUG] Insufficient points, returning early');
       toast({
         title: 'Insufficient Points',
         description: 'You need at least 1 point to perform a search. Please contact support for more points.',
-        variant: 'destructive',
+        variant: 'error',
       })
       return
     }
 
-    const result = await dispatch(searchRoles(currentFilters))
+    console.log('🚀 [DEBUG] About to dispatch searchRoles with filters (EXPLICIT SEARCH):', currentFilters);
+    const result = await dispatch(searchRoles({
+      ...currentFilters,
+      forceRefresh: true  // Force fresh API call for explicit searches
+    }))
+    console.log('✅ [DEBUG] searchRoles completed:', result.meta.requestStatus);
     
-    // Refresh points balance after search in MVP Beta
+    // Handle points balance update after search in MVP Beta
     if (isMvpBetaEnabled && result.meta.requestStatus === 'fulfilled') {
-      fetchPointsBalance()
+      const payload = result.payload as any;
+      const resultsCount = payload?.roles?.length || 0;
       
-      // Show points used notification
-      const resultsCount = (result.payload as any)?.roles?.length || 0
-      if (resultsCount > 0) {
-        toast({
-          title: 'Search Completed',
-          description: `Found ${resultsCount} jobs. ${resultsCount} points used. ${Math.max(0, pointsBalance - resultsCount)} points remaining.`,
-        })
+      // Use server-returned balance if available, otherwise refresh manually
+      if (payload?.pointsInfo) {
+        // Server provided actual points spent and new balance - use it directly
+        const { pointsSpent, newBalance, resultsCount: serverResultsCount } = payload.pointsInfo;
+        setPointsBalance(newBalance);
+        
+        if (resultsCount > 0) {
+          toast({
+            title: 'Search Completed',
+            description: `Found ${resultsCount} jobs. ${pointsSpent} points used. ${newBalance} points remaining.`,
+          });
+        } else {
+          toast({
+            title: 'No Results Found',
+            description: 'Your search returned no results. No points were deducted.',
+          });
+        }
       } else {
-        toast({
-          title: 'No Results Found',
-          description: 'Your search returned no results. No points were deducted.',
-        })
+        // Fallback: refresh balance manually (for cached results or if server didn't provide points info)
+        fetchPointsBalance();
+        
+        if (resultsCount > 0) {
+          toast({
+            title: 'Search Completed',
+            description: `Found ${resultsCount} jobs. Check your points balance for usage details.`,
+          });
+        } else {
+          toast({
+            title: 'No Results Found',
+            description: 'Your search returned no results.',
+          });
+        }
       }
     }
   }
@@ -279,7 +307,7 @@ export default function RolesSearch2Page() {
       toast({
         title: 'Error',
         description: 'Role data not found',
-        variant: 'destructive',
+        variant: 'error',
       })
       return
     }
@@ -316,7 +344,7 @@ export default function RolesSearch2Page() {
       toast({
         title: 'Error',
         description: 'Failed to save role',
-        variant: 'destructive',
+        variant: 'error',
       })
     }
   }, [session?.user, savedRoles, roles, router, toast])
@@ -411,7 +439,7 @@ export default function RolesSearch2Page() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Search cost:</span>
                     <span className="font-medium">
-                      1 point per result (max {currentFilters.limit || 10})
+                      1 point per result
                     </span>
                   </div>
                   {pointsBalance < (currentFilters.limit || 10) && (
@@ -496,7 +524,10 @@ export default function RolesSearch2Page() {
               <CardHeader>
                 <CardTitle>Ready to Search for Roles</CardTitle>
                 <CardDescription>
-                  Use the advanced filters to search for job opportunities. Configure your search parameters and click the search button to get started.
+                  {lastSearchParams ? 
+                    'Your previous search returned no results. Try adjusting your filters and search again.' :
+                    'Use the advanced filters to search for job opportunities. Configure your search parameters and click the search button to get started.'
+                  }
                 </CardDescription>
               </CardHeader>
               <CardContent>
