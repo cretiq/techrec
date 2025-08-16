@@ -19,7 +19,6 @@ import {
   Briefcase, 
   AlertTriangle, 
   Info, 
-  Clock,
   DollarSign,
   Users,
   Building2,
@@ -69,10 +68,9 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
     type_filter: '',
     seniority_filter: '',
     description_filter: '',
-    remote: '',
     limit: 10,
     offset: 0,
-    include_ai: 'false',
+    include_ai: 'true', // High-fidelity default for enhanced data quality
     description_type: 'text',
     endpoint: '7d' // Default to 7 days
   })
@@ -268,15 +266,30 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               value={[filters.limit || 10]}
               onValueChange={([value]) => updateFilters({ limit: value })}
               min={1}
-              max={25}
+              max={10}
               step={1}
               className="w-full"
               data-testid="advanced-filters-slider-limit"
             />
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>1</span>
-              <span>25 (max for search)</span>
+              <span>10 (max for search)</span>
             </div>
+          </div>
+
+          {/* Visa Sponsorship Filter */}
+          <div className="flex items-center justify-between p-3 bg-base-200/30 rounded-lg border border-base-300/50">
+            <Label htmlFor="visa-sponsorship" className="flex items-center gap-2 cursor-pointer">
+              <Info className="h-4 w-4" />
+              <span>Visa Sponsorship Available</span>
+              <Badge variant="secondary" className="text-xs">Beta</Badge>
+            </Label>
+            <Switch
+              id="visa-sponsorship"
+              checked={filters.ai_visa_sponsorship_filter === 'true'}
+              onCheckedChange={(checked) => updateFilters({ ai_visa_sponsorship_filter: checked ? 'true' : undefined })}
+              data-testid="advanced-filters-switch-visa-sponsorship"
+            />
           </div>
 
           {/* TODO: Job Freshness Selection temporarily hidden for UI simplicity
@@ -288,8 +301,6 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             disabled={loading || disabled}
           /> */}
         </div>
-
-        <Separator />
 
         {/* TODO: Advanced Filters Toggle and Advanced Filters sections temporarily hidden for UI simplicity
             These could potentially be brought back later when we want to offer
@@ -344,39 +355,6 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               </AccordionContent>
             </AccordionItem> */}
 
-            {/* Remote Work - BLUEPRINT REQUIREMENT */}
-            <AccordionItem value="remote">
-              <AccordionTrigger data-testid="advanced-filters-trigger-remote">
-                <Clock className="h-4 w-4 mr-2" />
-                Remote Work
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-4 pt-2">
-                  {/* Remote Derived Filter - BLUEPRINT REQUIREMENT */}
-                  <div className="space-y-2">
-                    <Label>Remote Job Filter</Label>
-                    <div className="flex gap-2">
-                      <Badge
-                        variant={filters.remote_derived === 'true' ? "default" : "outline"}
-                        className="cursor-pointer hover:bg-primary/20"
-                        onClick={() => updateFilters({ remote_derived: filters.remote_derived === 'true' ? '' : 'true' })}
-                        data-testid="advanced-filters-badge-remote-derived-true"
-                      >
-                        Remote Only
-                      </Badge>
-                      <Badge
-                        variant={filters.remote_derived === 'false' ? "default" : "outline"}
-                        className="cursor-pointer hover:bg-primary/20"
-                        onClick={() => updateFilters({ remote_derived: filters.remote_derived === 'false' ? '' : 'false' })}
-                        data-testid="advanced-filters-badge-remote-derived-false"
-                      >
-                        On-site Only
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
 
                   {/* AI Work Arrangement (Beta) */}
                   {/* <div className="space-y-2">
@@ -602,17 +580,8 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                     />
                   </div> */}
 
-                  {/* Visa Sponsorship */}
-                  {/* <div className="flex items-center justify-between">
-                    <Label htmlFor="visa-sponsorship">Visa Sponsorship Available</Label>
-                    <Switch
-                      id="visa-sponsorship"
-                      checked={filters.ai_visa_sponsorship_filter === 'true'}
-                      onCheckedChange={(checked) => updateFilters({ ai_visa_sponsorship_filter: checked ? 'true' : undefined })}
-                      data-testid="advanced-filters-switch-visa-sponsorship"
-                    />
-                  </div>
-                </div>
+                  {/* Visa Sponsorship - moved to main filters section for better visibility */}
+                {/* </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -638,11 +607,11 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           </div>
         )}
 
-        {/* TODO: Search Jobs (Rate Limited) button temporarily hidden for UI simplicity
-            This could potentially be brought back later when we want to show
-            manual search functionality to users */}
-        {/* <Button
-          onClick={onSearch}
+        <Button
+          onClick={() => {
+            console.log('🎯 [DEBUG] Search button clicked!');
+            onSearch();
+          }}
           disabled={!canMakeRequest || loading || disabled || (validation && !validation.valid)}
           className="w-full"
           size="lg"
@@ -659,7 +628,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
               Search Jobs {!canMakeRequest && '(Rate Limited)'}
             </>
           )}
-        </Button> */}
+        </Button>
 
         {/* TODO: Search info and rate limit text temporarily hidden for UI simplicity
             This could be restored when we bring back the search button functionality */}
