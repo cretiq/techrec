@@ -217,6 +217,7 @@ export async function POST(request: NextRequest) {
           spendType: action,
           sourceId,
           description: spend.description,
+          source: 'SUBSCRIPTION_MONTHLY', // Points are spent from monthly subscription allocation
           metadata: {
             ...metadata,
             costCalculation: {
@@ -241,7 +242,7 @@ export async function POST(request: NextRequest) {
 
       return { transaction, newBalance, pointsSpent: effectiveCost };
     }, {
-      isolationLevel: 'Serializable', // Highest isolation to prevent race conditions
+      // MongoDB doesn't support isolation levels, removed isolationLevel option
       timeout: 10000, // 10 second timeout
     });
 

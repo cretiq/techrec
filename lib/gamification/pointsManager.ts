@@ -146,6 +146,7 @@ export class PointsManager {
             spendType,
             sourceId,
             description: `${spendType.toLowerCase().replace('_', ' ')} action`,
+            source: 'SUBSCRIPTION_MONTHLY', // Points are spent from monthly subscription allocation
             metadata,
           },
         });
@@ -163,7 +164,7 @@ export class PointsManager {
           transaction,
         };
       }, {
-        isolationLevel: 'Serializable',
+        // MongoDB doesn't support isolation levels, removed isolationLevel option
         timeout: 10000,
       });
     } catch (error) {
